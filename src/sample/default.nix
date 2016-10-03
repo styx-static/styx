@@ -1,57 +1,55 @@
-{ pkgs ? import <nixpkgs> {}
-, currentTimestamp
+{ currentTimestamp
 , previewMode ? false
 , siteUrl ? null
 }@args:
 
-let lib = import ./lib.nix { inherit pkgs; };
-  in with lib;
+let lib = import ./lib;
+in with lib;
 
 let
 
-  # global configuration
+  # Load the configuration
   conf = extendConf (import ./conf.nix) args;
 
-  # state
+  # Set the state
   state = { inherit currentTimestamp; };
 
-  /* Loads a template with a generic environment
-  */
+  # Function to load a template with a generic environment
   loadTemplate = loadTemplateWithEnv { inherit conf state lib templates; };
 
-  # list of used templates
+  # List of templates
   templates = {
-    base = loadTemplate "base.nix";
+    base    = loadTemplate "base.nix";
     archive = loadTemplate "archive.nix";
-    index = loadTemplate "index.nix";
-    mailchimp = loadTemplate "mailchimp.nix";
-    atom = loadTemplate "atom.nix";
-    post.full = loadTemplate "post.full.nix";
-    post.list = loadTemplate "post.list.nix";
-    post.atomList = loadTemplate "post.atom-list.nix";
+    index   = loadTemplate "index.nix";
+    atom    = loadTemplate "atom.nix";
+    post = {
+      full     = loadTemplate "post.full.nix";
+      list     = loadTemplate "post.list.nix";
+      atomList = loadTemplate "post.atom-list.nix";
+    };
   };
 
-  # posts
+  # Group the posts between index and archive according to the configuration settings
+  groupedPosts = groupPosts conf posts;
+
+  # The index page, take the groupedPosts as a parameter
+  index = generateIndex templates.index groupedPosts;
+
+  # RSS feed page
+  feed = { inherit posts; href = "atom.xml"; template = templates.atom; };
+
+  # Archive page, only generated if the number of posts is greater than conf.postsOnIndexPage
+  archives = generateArchives templates.archive groupedPosts;
+
+  # List of posts
+  # Fetch and sort the posts and drafts (only in preview mode) and set the template
   posts = let
     posts = (getPosts conf.postsDir);
     drafts = optionals previewMode (getPosts conf.draftsDir);
-    template = templates.post.full;
-  in sortPosts (map (setTemplate template) (posts ++ drafts));
+  in sortPosts (map (setTemplate templates.post.full) (posts ++ drafts));
 
-  /* List of pages to generate, pages are attribute sets that should have at
-     least the following attributes:
+  # List of pages to generate
+  pages = [ index feed ] ++ archives ++ posts;
 
-     - href: the path of the page, absolute to the site root
-     - template: a template that evaluate the page attribute set and return
-       the page HTML
-  */
-  pages = let
-    # group post according to settings
-    groupedPosts = groupPosts conf posts;
-    index = generateIndex templates.index groupedPosts;
-    archives = generateArchives templates.archive groupedPosts.archive;
-    feed = { inherit posts; href = "atom.xml"; template = templates.atom; };
-  in
-   [ index feed ] ++ archives ++ posts;
-
-in generateSite { inherit conf pages; }
+in generateBasicSite { inherit conf pages; }

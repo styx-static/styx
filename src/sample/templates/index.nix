@@ -12,10 +12,6 @@ page:
 
                 ${concat templates.post.list page.posts}
 
-                ${optionalString (page.prevPage != null) ''
-                  <a href="${page.prevPage}">&larr; newer</a>
-                ''}
-
                 ${optionalString (page.nextPage != null) ''
                   <a href="${page.nextPage}">older &rarr;</a>
                 ''}
