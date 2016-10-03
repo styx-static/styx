@@ -2,7 +2,7 @@
 
 let styx =
 
-{ stdenv, caddy }:
+{ stdenv, caddy, asciidoctor }:
 
 stdenv.mkDerivation rec {
   name    = "styx-${version}";
@@ -12,6 +12,8 @@ stdenv.mkDerivation rec {
 
   server = caddy.bin;
 
+  nativeBuildInputs = [ asciidoctor ];
+
   installPhase = ''
     mkdir $out
     install -D -m 777 styx.sh $out/bin/styx
@@ -19,8 +21,12 @@ stdenv.mkDerivation rec {
     mkdir -p $out/share/styx
     cp -r sample $out/share/styx
 
+    mkdir -p $out/share/doc/styx
+    asciidoctor doc/manual.doc -o $out/share/doc/styx/index.html
+
     substituteAllInPlace $out/bin/styx
     substituteAllInPlace $out/share/styx/sample/templates/atom.nix
+    substituteAllInPlace $out/share/doc/styx/index.html
   '';
 
   meta = with stdenv.lib; {

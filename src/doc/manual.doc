@@ -1,0 +1,299 @@
+= Styx manual
+version @version@
+:description: Styx static site generator documentation
+:toc: left
+:toclevels: 4
+:icons: font
+
+== Introduction
+
+Styx is a functional static site generator written in Nix expression language.
+
+
+== Installation
+
+The only requirement to install Styx is the link:http://nixos.org/nix/[Nix package manager].
+Styx does not have an official release yet, but it is possible to install a development snapshot with the following command:
+
+[source, bash]
+----
+$ nix-env -i https://github.com/ericsagnes/styx/archive/master.tar.gz
+----
+
+To only test styx, it is recommended to use the `nix-shell` command to start a temporary environment including styx:
+
+[source, bash]
+----
+$ nix-shell -p `nix-build https://github.com/ericsagnes/styx/archive/master.tar.gz`
+----
+
+
+== QuickStart
+
+A styx site can be created and locally served with the following set of commands:
+
+[source, bash]
+----
+$ nix-shell -p `nix-build https://github.com/ericsagnes/styx/archive/master.tar.gz` # <1>
+[nix-shell]$ styx new myblog # <2>
+[nix-shell]$ cd myblog # <3>
+[nix-shell:~/myblog]$ styx serve # <4>
+----
+
+<1> Enter a nix-shell with styx.
+<2> Generate a new site in the `myblog` directory.
+<3> Enter the styx site root folder.
+<4> Serve the site on a local server.
+
+== Basics
+
+Styx is using the Nix expression language.
+The Nix expression language is a lazy evaluated functional language with unconventional semantics. It is recommended to read the link:http://nixos.org/nix/manual/#ch-expression-language[Nix expression language chapter] of the Nix manual to get more familiar with it.
+
+=== Configuration
+
+Styx is configured with the `conf.nix` file in the site root directory.
+
+[source, nix]
+.conf.nix
+----
+include::../sample/conf.nix[]
+----
+
+The configuration a Nix attribute set, and new configuration options can be added at will.
+
+TODO: document default configuration options.
+
+=== Directory Structure
+
+----
+├── conf.nix # <1>
+├── default.nix # <2>
+├── drafts/ # <3>
+├── lib/ # <4>
+├── nixpkgs-path.nix # <5>
+├── posts/ # <6>
+├── static/ # <7>
+└── templates/ # <8>
+----
+
+<1> `conf.nix` is the main configuration, see <<Configuration>> for details.
+<2> `default.nix` is the main file for site generation, see <<default.nix>> for details.
+<3> `drafts/` is the default directory containing drafts, see <<Drafts>> for details.
+<4> `lib/` is the directory holding styx library functions, see <<Library>> for details.
+<5> `nixpkgs-path.nix` is the file setting the nixpkgs to use, it should not be changed.
+<6> `posts/` is the default directory containing drafts, see <<Drafts>> for details.
+<7> `static/` is the default directory containing static files, see <<Static files>> for details.
+<8> `templates/` is the default directory containing templates files, see <<Templates>> for details.
+
+=== default.nix
+
+`default.nix` is the central file of a styx file and is reponsible for generating the website.
+
+TODO: explain the sample `default.nix`.
+
+=== Library
+
+The library contains various functions that are used through styx source.
+The functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy manner.
+
+=== Generation
+
+This namespace contains functions responsible for content generation.
+
+TODO: document all the functions
+
+=== nixpkgs
+
+This namespace include the nixpkgs library and builtins functions.
+
+TODO: document all the functions
+
+=== Posts
+
+This namespace contains functions to manipulate posts.
+
+TODO: document all the functions
+
+=== Template
+
+This namespace contains functions to manipulate templates.
+
+TODO: document all the functions
+
+=== Utils
+
+This namespace contains various utily functions.
+
+TODO: document all the functions
+
+== Content
+
+=== Pages
+
+Pages is the most basic content unit. Every content in Styx is a page (posts and drafts are a special types of pages).
+
+A page in Styx is an attribute set following a set of rules:
+
+- It must define at least the `href` and the `template` keys.
+- The `template` key must be a template function that take the `page` attribute set as a parameter and return the page source.
+- The `href` key is the path of the generated page relative to site root.
+
+It is possible to extend a page attribute set at will for more complex use cases.
+
+Example of aa about page definition:
+
+[source, nix]
+----
+  about = { href = "about.html"; template = templates.about; };
+----
+
+=== Posts
+
+Posts are a special type of pages. Posts should be located in configuration `postsDir` value and in markdown format.
+Posts files should be in the `conf.postsDir` directory.
+
+=== Drafts
+
+Posts are a special type of posts that are only generated when the `-preview` flag is passed to styx.
+Drafts files should be in the `conf.draftsDir` directory.
+
+=== Custom content
+
+There is no limitation in the type of content styx can generate.
+The page attribute and the template environment can be extended to include any key, and the templates can also be extended.
+
+It is also possible to use any program provided in the nixpkgs packages in library functions.
+
+Example snippet from `lib.posts.parsePost` function:
+
+[source, nix]
+----
+  title = readFile (pkgs.runCommand "${timestamp}-${id}.title" {} ''
+    ${pkgs.xidel}/bin/xidel ${html} -e "//h1[1]/node()" -q > $out # <1>
+    echo -n `tr -d '\n' < $out` > $out
+  '');
+----
+
+<1> Using the link:http://www.videlibri.de/xidel.html[Xidel] program to fetch the first title text of the post.
+
+=== Static files
+
+TODO
+
+== Customization
+
+This section introduce how to customize your styx site.
+
+=== Templates
+
+Styx templates are functions that return text when fully evaluated.
+
+==== Basic templates
+
+The most basic template is a function that takes the template environment as parameter and return a text:
+
+[source, nix]
+----
+environment: # <1>
+''
+  hello world! # <2>
+''
+----
+
+<1> Functions in Nix are declared in the form `argument: body`, so this declare a function taking an `environment` parameter.
+<2> This is the text returned by the function, `''` denotes that the text is multiline.
+
+==== Page templates
+
+A page template is a template that takes the page attribute as an extra parameter.
+
+Example of a basic template:
+
+[source, nix]
+----
+environment:
+page: # <1>
+''
+  hello world!
+''
+----
+
+<1> The page attribute set.
+
+
+==== Template environment
+
+The template environment is the first parameter of the template function.
+It is defined with template loading function in `default.nix`.
+
+The default template environment consists in:
+
+- `conf`: the configuration attribute set
+- `templates`: the templates attribute set
+- `state`: the state attribute set, by default it only holds the timestamp of the generation
+- `lib`: the library attribute set, it contains styx and nixpkgs functions.
+
+It is possible to extends the template environment at will.
+
+There are two ways of writing the `environment` in the template, as a set or as a deconstructed set.
+
+Example, environment as a variable:
+
+[source, nix]
+----
+environment: # <1>
+page:
+''
+  ${environment.conf.siteTitle}
+''
+----
+
+<1> `environment` is used as a set, and its key can be accessed with `.`.
+
+Example, environment as a deconstructed set:
+
+[source, nix]
+----
+{ conf, lib, ... }: # <1>
+page: # <1>
+''
+  ${conf.siteTitle}
+''
+----
+
+<1> environment is descontructed in its keys values. The last `...` means all others keys and is required if the set contains more keys than the keys deconstructed.
+
+=== Calling templates in templates
+
+TODO
+
+=== Types of templates
+
+TODO
+
+=== Applying templates to multiple contents
+
+TODO
+
+== Cookbook
+
+=== Adding a navbar
+
+TODO
+
+=== Adding pagination
+
+TODO
+
+=== Setting breadcrumbs
+
+TODO
+
+== Deployment
+
+TODO
+
+== Release Notes
+
+TODO make a release
