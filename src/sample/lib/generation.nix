@@ -3,7 +3,7 @@
 with import ./nixpkgs-lib.nix;
 
 let
-  pkgs = import (import ../nixpkgs-path.nix) {};
+  pkgs = import ./pkgs.nix;
 in
 
 {

@@ -1,1 +1,1 @@
-(import (import ../nixpkgs-path.nix) {}).lib
+(import ./pkgs.nix).lib

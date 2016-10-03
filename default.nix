@@ -1,11 +1,16 @@
 { pkgs ? import <nixpkgs> {} }:
-with pkgs;
+
+let styx =
+
+{ stdenv, caddy }:
 
 stdenv.mkDerivation rec {
-  name = "styx-${version}";
-  version = "0.1";
+  name    = "styx-${version}";
+  version = "0.1.0";
 
-  caddy = pkgs.caddy.bin;
+  src = ./src;
+
+  server = caddy.bin;
 
   installPhase = ''
     mkdir $out
@@ -18,5 +23,12 @@ stdenv.mkDerivation rec {
     substituteAllInPlace $out/share/styx/sample/templates/atom.nix
   '';
 
-  src = ./src;
+  meta = with stdenv.lib; {
+    description = "Nix based static site generator";
+    maintainers = with maintainers; [ ericsagnes ];
+    platforms   = platforms.all;
+  };
 }
+
+;in
+  pkgs.callPackage styx {}

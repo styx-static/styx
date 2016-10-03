@@ -28,7 +28,7 @@ EOF
 origArgs=("$@")
 action=
 target="styx-site"
-server=@caddy@/bin/caddy
+server=@server@/bin/caddy
 dir="$(dirname "${BASH_SOURCE[0]}")"
 share="$dir/../share/styx"
 version=@version@

@@ -4,25 +4,8 @@ with import ./nixpkgs-lib.nix;
 with builtins;
 
 let
-  # Extra packages to use
-  extraPkgs = {
-    markdown = pkgs.callPackage ({ stdenv, fetchzip }: stdenv.mkDerivation {
-      name = "markdown-1.0.1";
-      src = fetchzip {
-        url = http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip;
-        sha256 = "1mic1v7cliz59h04pj1gw001wzh346aw3dvb266agj706bg79kdf";
-      };
-      phases = ["installPhase"];
-      installPhase = ''
-        mkdir -p $out/bin
-        cp $src/Markdown.pl $out/bin/markdown
-        sed -i '1s:/usr/bin/perl:${pkgs.perl}/bin/perl:' $out/bin/markdown
-      '';
-    }) {};
-  };
-
   # Package set
-  pkgs = (import (import ../nixpkgs-path.nix) {}) // extraPkgs;
+  pkgs = import ./pkgs.nix;
 
   # Non exposed functions
 
