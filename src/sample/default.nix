@@ -30,20 +30,24 @@ let
     };
   };
 
-  # Group the posts between index and archive according to the configuration settings
-  groupedPosts = groupPosts conf posts;
+  # Group posts for a typical blog structure into index and archive
+  # posts according to the configuration
+  groupedPosts = groupBlogPosts conf posts;
 
-  # The index page, take the groupedPosts as a parameter
-  index = generateIndex templates.index groupedPosts;
+  # Generate a standard blog index page
+  index = generateBlogIndex templates.index groupedPosts;
 
   # RSS feed page
   feed = { inherit posts; href = "atom.xml"; template = templates.atom; };
 
-  # Archive page, only generated if the number of posts is greater than conf.postsOnIndexPage
-  archives = generateArchives templates.archive groupedPosts;
+  # Generate a standard blog archive page
+  # only generated if the number of posts is greater than conf.postsOnIndexPage
+  # and will generate as many archive pages as required
+  archives = generateBlogArchives templates.archive groupedPosts;
 
   # List of posts
-  # Fetch and sort the posts and drafts (only in preview mode) and set the template
+  # Fetch and sort the posts and drafts (only in preview mode) and set the
+  # template
   posts = let
     posts = (getPosts conf.postsDir);
     drafts = optionals previewMode (getPosts conf.draftsDir);

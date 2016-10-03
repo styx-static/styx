@@ -68,7 +68,7 @@ rec {
 
   /* Group posts for index and archive pages
   */
-  groupPosts = conf: posts: {
+  groupBlogPosts = conf: posts: {
     index   = take conf.postsOnIndexPage posts;
     archive = if conf.postsPerArchivePage == null
               then [ (drop conf.postsOnIndexPage posts) ]

@@ -7,9 +7,9 @@ let
 in
 
 {
-  /* Generate the index page
+  /* Generate a blog index page
   */
-  generateIndex = template: groupedPosts: {
+  generateBlogIndex = template: groupedPosts: {
     inherit template;
     href     = "index.html";
     posts    = groupedPosts.index;
@@ -18,9 +18,9 @@ in
                else null;
   };
 
-  /* Generate the archives pages
+  /* Generate a blog archives pages
   */
-  generateArchives = template: groupedPosts:
+  generateBlogArchives = template: groupedPosts:
     imap (i: posts: {
       inherit posts template;
       href     = "archive-${toString i}.html";
