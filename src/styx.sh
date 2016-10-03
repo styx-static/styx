@@ -35,6 +35,11 @@ version=@version@
 port=8080
 extraFlags=()
 
+if [ $# -eq 0 ]; then
+  display_usage
+  exit 1
+fi
+
 while [ "$#" -gt 0 ]; do
   i="$1"; shift 1
   case "$i" in
