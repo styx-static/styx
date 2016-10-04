@@ -1,4 +1,4 @@
-{ conf, templates, lib, ... }:
+{ conf, templates, lib, feed, ... }:
 with lib;
 page:
   templates.base
@@ -17,7 +17,7 @@ page:
                 </li>
 
               </ul>
-              <p>Subscribe <a href="${conf.siteUrl}/atom.xml">via RSS</a></p>
+              <p>Subscribe <a href="${conf.siteUrl}/${feed.href}">via RSS</a></p>
             </div>
           </div>
         '';

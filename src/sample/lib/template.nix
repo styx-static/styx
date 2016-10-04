@@ -30,4 +30,19 @@ with import ./nixpkgs-lib.nix;
   */
   mapTemplate = concatMapStringsSep "\n";
 
+  /* Generate html tag attributes
+
+       htmlAttr "class" "foo"
+       => class="foo" (as a string)
+
+       htmlAttr "class" [ "foo" "bar" ]
+       => class="foo bar" (as a string)
+  */
+  htmlAttr = attrName: value:
+    let
+      value' = if isList value
+               then concatStringsSep " " value
+               else value;
+    in "${attrName}=\"${value'}\"";
+
 }

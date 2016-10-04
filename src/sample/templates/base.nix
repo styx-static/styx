@@ -1,7 +1,11 @@
-{ conf, ... }:
+{ conf, lib, templates
+, navbar ? false
+, feed ? false
+, ... }:
 { title
 , content
 }:
+with lib;
   ''
     <!DOCTYPE html>
     <html>
@@ -13,7 +17,7 @@
       <title>${title}</title>
   
       <link
-          href="${conf.siteUrl}/atom.xml"
+          href="${conf.siteUrl}/${feed.href}"
           type="application/atom+xml"
           rel="alternate"
           title="${conf.siteTitle}"
@@ -28,13 +32,17 @@
           href="${conf.siteUrl}/style.css">
     </head>
   
-    <body>
+    <body${optionalString (navbar != false) " ${htmlAttr "class" "with-navbar"}"}>
   
-      <header class="site-header">
-        <div class="container wrapper">
-          <a class="site-title" href="${conf.siteUrl}">${conf.siteTitle}</a>
-        </div>
-      </header>
+      ${if (navbar != false)
+          then (templates.navbar.main navbar)
+          else ''
+            <header class="site-header">
+              <div class="container wrapper">
+                <a class="site-title" href="${conf.siteUrl}">${conf.siteTitle}</a>
+              </div>
+            </header>
+          ''}
 
       <div class="page-content">
         <div class="container wrapper">

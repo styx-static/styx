@@ -20,6 +20,7 @@ Options:
         --preview              Enables the draft preview mode for build and serve subcommands.
         --arg ARG VAL          Pass an argument ARG with the value VAL to the build and serve subcommands.
         --argstr ARG VAL       Pass an argument ARG with the value VAL as a string to the build and serve subcommands.
+        --show-trace           Show debug trace messages
 
 EOF
     exit 0
@@ -59,6 +60,9 @@ while [ "$#" -gt 0 ]; do
       ;;
     --arg|--argstr)
       extraFlags+=("$i" "$1" "$2"); shift 2
+      ;;
+    --show-trace)
+      extraFlags+=("$i")
       ;;
 	  -p|--port)
 	    port="$1"; shift 1
