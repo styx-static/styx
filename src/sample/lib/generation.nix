@@ -15,42 +15,6 @@ let
 in
 
 {
-  /* Generate a blog archives pages
-  */
-  generateBlogArchives = template: groupedPosts:
-    imap (i: posts: {
-      inherit posts template;
-      href     = "archive-${toString i}.html";
-      nextPage = if length posts >= i + 1
-                    then "archive-${toString (i + 1)}.html"
-                    else null;
-      prevPage = if i == 1
-                    then "index.html"
-                    else "archive-${toString (i - 1)}.html";
-    }) groupedPosts.archive;
-
-  /* Split a page in multiple pages with a list of itemsPerPage items
-     Return a list of pages
-  */
-  splitPage = { baseHref, items, template, itemsPerPage }:
-    let
-      itemsList = chunksOf itemsPerPage items;
-      pages = imap (i: items: {
-        inherit template items;
-        href = if i == 1 then "${baseHref}.html"
-               else "${baseHref}-${toString i}.html";
-        index = i;
-      }) itemsList;
-    in map (p: p // { inherit pages; }) pages;
-
-  /* Convert a page attribute set to a list of pages
-  */
-  pagesToList = pages:
-    let
-      pages' = attrValues pages;
-    in fold
-         (y: x: if isList y then x ++ y else x ++ [y])
-         [] pages';
 
   /* Generate a site with pages
   */
@@ -82,4 +46,28 @@ in
 
       eval "${postInstall}"
     '';
+  /* Split a page in multiple pages with a list of itemsPerPage items
+     Return a list of pages
+  */
+
+  /* Convert a page attribute set to a list of pages
+  */
+  pagesToList = pages:
+    let
+      pages' = attrValues pages;
+    in fold
+         (y: x: if isList y then x ++ y else x ++ [y])
+         [] pages';
+
+  splitPage = { baseHref, items, template, itemsPerPage }:
+    let
+      itemsList = chunksOf itemsPerPage items;
+      pages = imap (i: items: {
+        inherit template items;
+        href = if i == 1 then "${baseHref}.html"
+               else "${baseHref}-${toString i}.html";
+        index = i;
+      }) itemsList;
+    in map (p: p // { inherit pages; }) pages;
+
 }

@@ -10,6 +10,13 @@ let
 in
 rec {
 
+  /* Similar to getPosts but add a `isDraft = true` attribute to all the posts
+  */
+  getDrafts = draftDir:
+    let
+      drafts = getPosts draftDir;
+    in map (d: d // { isDraft = true; }) drafts;
+
   /* Get all the posts from a directory as post attribute sets
   */
   getPosts = postsDir:

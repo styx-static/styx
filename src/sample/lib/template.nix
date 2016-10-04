@@ -4,11 +4,30 @@ with import ./nixpkgs-lib.nix;
 
 {
 
+  /* Generate html tag attributes
+
+       htmlAttr "class" "foo"
+       => class="foo" (as a string)
+
+       htmlAttr "class" [ "foo" "bar" ]
+       => class="foo bar" (as a string)
+  */
+  htmlAttr = attrName: value:
+    let
+      value' = if isList value
+               then concatStringsSep " " value
+               else value;
+    in "${attrName}=\"${value'}\"";
+
+  /* concat strings with a new line, useful for merging templates
+  */
+  mapTemplate = concatMapStringsSep "\n";
+
   prettyTimestamp = timestamp:
     let
       year   = substring 0 4 timestamp;
-      day    = substring 8 2 timestamp;
       month' = substring 5 2 timestamp;
+      day    = substring 8 2 timestamp;
       month  =
              if month' == "01" then "JAN"
         else if month' == "02" then "FEB"
@@ -25,24 +44,5 @@ with import ./nixpkgs-lib.nix;
         else abort "Unknown month (${month'}) for date (${timestamp}).";
     in
       "${day} ${month} ${year}";
-
-  /* concat strings with a new line, useful for merging templates
-  */
-  mapTemplate = concatMapStringsSep "\n";
-
-  /* Generate html tag attributes
-
-       htmlAttr "class" "foo"
-       => class="foo" (as a string)
-
-       htmlAttr "class" [ "foo" "bar" ]
-       => class="foo bar" (as a string)
-  */
-  htmlAttr = attrName: value:
-    let
-      value' = if isList value
-               then concatStringsSep " " value
-               else value;
-    in "${attrName}=\"${value'}\"";
 
 }

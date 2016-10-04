@@ -87,7 +87,7 @@ let
     # template
     posts = let
       posts = (getPosts conf.postsDir);
-      drafts = optionals previewMode (getPosts conf.draftsDir);
+      drafts = optionals previewMode (getDrafts conf.draftsDir);
     in sortPosts (map (setTemplate templates.post.full) (posts ++ drafts));
 
   };

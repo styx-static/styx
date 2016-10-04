@@ -1,4 +1,5 @@
 # Packages to use
+# This is the place to define packages that are not available in nixpkgs
 
 let
   pkgs = (import (import ../nixpkgs-path.nix) {});

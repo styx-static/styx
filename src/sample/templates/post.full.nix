@@ -8,7 +8,7 @@ post:
 
           <header class="post-header">
             <div class="text-center">
-              <time pubdate="pubdate" datetime="${post.timestamp}">${prettyTimestamp post.timestamp}</time>
+              <time pubdate="pubdate" datetime="${post.timestamp}">${prettyTimestamp post.timestamp}${optionalString (attrByPath ["isDraft"] false post) " <span class=\"glyphicon glyphicon-edit\"></span>"}</time>
             </div>
           </header>
 
