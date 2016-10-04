@@ -34,23 +34,22 @@ rec {
       timestamp = elemAt result 0;
       id = elemAt result 1;
       path = "${postsDir}/${filename}";
-      year = substring 0 4 timestamp;
       href = "posts/${timestamp}-${id}.html";
-      html = pkgs.runCommand "${timestamp}.html" {} ''
-        ${pkgs.markdown}/bin/markdown < ${path} > $out
+      data = pkgs.runCommand "${timestamp}-data" {} ''
+        mkdir $out
+        ${pkgs.markdown}/bin/markdown < ${path} > $out/html
+        ${pkgs.xidel}/bin/xidel $out/html -e "//h1[1]/node()" -q > $out/title
+        echo -n `tr -d '\n' < $out/title` > $out/title
       '';
-      title = readFile (pkgs.runCommand "${timestamp}-${id}.title" {} ''
-        ${pkgs.xidel}/bin/xidel ${html} -e "//h1[1]/node()" -q > $out
-        echo -n `tr -d '\n' < $out` > $out
-      '');
+      html  = readFile "${data}/html";
+      title = readFile "${data}/title";
     in
       if result == null 
          then trace "Post (${filename}) is not in correct form (YYYY-MM-DD-<id>.md) and will be ignored." null
       else if title == ""
          then trace "Post (${filename}) does not include title (h1) and will be ignored." null
       else {
-        inherit timestamp href title id;
-        html = readFile html;
+        inherit timestamp href title id html;
       };
 
   /* Sort a list of posts chronologically
