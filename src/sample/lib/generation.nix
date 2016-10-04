@@ -29,16 +29,16 @@ in
                     else "archive-${toString (i - 1)}.html";
     }) groupedPosts.archive;
 
-  /* Paginate a page in multiple pages with a list of itemsPerPage items
+  /* Split a page in multiple pages with a list of itemsPerPage items
      Return a list of pages
   */
-  paginatePage = { baseName, items, template, itemsPerPage }:
+  splitPage = { baseHref, items, template, itemsPerPage }:
     let
       itemsList = chunksOf itemsPerPage items;
       pages = imap (i: items: {
         inherit template items;
-        href = if i == 1 then "${baseName}.html"
-               else "${baseName}-${toString i}.html";
+        href = if i == 1 then "${baseHref}.html"
+               else "${baseHref}-${toString i}.html";
         index = i;
       }) itemsList;
     in map (p: p // { inherit pages; }) pages;

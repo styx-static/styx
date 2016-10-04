@@ -282,9 +282,39 @@ TODO
 
 TODO
 
-=== Adding pagination
+=== Pagination
 
-TODO
+The `pagination.tpl` template provide a generic way to generate a pagination.
+
+Example in a template used with the `splitPage` function:
+
+[source, nix]
+----
+templates.pagination { pages = page.pages; index = page.index; }
+----
+
+The styx library provide a `splitPage` function that can be used to split a page in multiple pages according to a list of items and a number of items to display per page.
+
+Its arguments are:
+
+- `baseHref`: `href` of the archive pages, the first page `href` will be "`baseHref`.html", following pages `href` will be "`baseHref`-`i`.html" where `i` is the number of the page.
+- `template`: template used by the splitted pages.
+- `items`: items to be splited through the pages.
+- `itemsPerPage`: maximum number of items displayed on each page.
+
+Example, creating posts archive pages:
+
+[source, nix]
+----
+archives = splitPage {
+  baseHref = "archives/posts";
+  template = templates.archive;
+  items = posts;
+  itemsPerPage = conf.postsPerArchivePage;
+};
+----
+
+It is then possible to use the previous snippet in the used template to add a pagination.
 
 === Setting breadcrumbs
 

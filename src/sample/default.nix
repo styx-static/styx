@@ -39,9 +39,9 @@ let
     archivePage = head archives;
   };
 
-  # Archive page using pagination
-  archives = paginatePage {
-    baseName = "archives/posts";
+  # Post archives pages gnerated by spliting the number of posts on multiple pages
+  archives = splitPage {
+    baseHref = "archives/posts";
     template = templates.archive;
     items = posts;
     itemsPerPage = conf.postsPerArchivePage;

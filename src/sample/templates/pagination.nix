@@ -1,3 +1,13 @@
+/* Pagination template, Takes two parameters:
+
+   - pages: A list of pages
+   - index: The current page index
+
+   Usage example in a template used with the `splitPage` function:
+
+     templates.pagination { pages = page.pages; index = page.index; }
+
+*/
 { lib, conf, ... }:
 { pages, index }:
   with lib;
