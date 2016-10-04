@@ -16,7 +16,7 @@ page:
       <link href="${conf.siteUrl}/atom.xml" rel="self" type="application/atom+xml"/>
       <link href="${conf.siteUrl}" rel="alternate"/>
       
-      ${concat templates.post.atomList page.posts}
+      ${mapTemplate templates.post.atomList page.posts}
 
     </feed>
   ''

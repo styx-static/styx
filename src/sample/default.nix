@@ -23,6 +23,7 @@ let
     archive = loadTemplate "archive.nix";
     index   = loadTemplate "index.nix";
     atom    = loadTemplate "atom.nix";
+    pagination = loadTemplate "pagination.nix";
     post = {
       full     = loadTemplate "post.full.nix";
       list     = loadTemplate "post.list.nix";
@@ -30,20 +31,24 @@ let
     };
   };
 
-  # Group posts for a typical blog structure into index and archive
-  # posts according to the configuration
-  groupedPosts = groupBlogPosts conf posts;
+  # Index page
+  index = {
+    href = "index.html";
+    template = templates.index;
+    posts = take conf.postsOnIndexPage posts;
+    archivePage = head archives;
+  };
 
-  # Generate a standard blog index page
-  index = generateBlogIndex templates.index groupedPosts;
+  # Archive page using pagination
+  archives = paginatePage {
+    baseName = "archives/posts";
+    template = templates.archive;
+    items = posts;
+    itemsPerPage = conf.postsPerArchivePage;
+  };
 
   # RSS feed page
-  feed = { inherit posts; href = "atom.xml"; template = templates.atom; };
-
-  # Generate a standard blog archive page
-  # only generated if the number of posts is greater than conf.postsOnIndexPage
-  # and will generate as many archive pages as required
-  archives = generateBlogArchives templates.archive groupedPosts;
+  feed = { posts = take 10 posts; href = "atom.xml"; template = templates.atom; };
 
   # List of posts
   # Fetch and sort the posts and drafts (only in preview mode) and set the

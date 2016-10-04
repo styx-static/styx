@@ -28,6 +28,6 @@ with import ./nixpkgs-lib.nix;
 
   /* concat strings with a new line, useful for merging templates
   */
-  concat = concatMapStringsSep "\n";
+  mapTemplate = concatMapStringsSep "\n";
 
 }

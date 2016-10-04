@@ -16,4 +16,5 @@ with import ./nixpkgs-lib.nix;
   */
   extendConf = conf: override:
     conf // (filterAttrs (k: v: (hasAttr k conf) && (v != null)) override);
+
 }

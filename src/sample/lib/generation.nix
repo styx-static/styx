@@ -4,33 +4,45 @@ with import ./nixpkgs-lib.nix;
 
 let
   pkgs = import ./pkgs.nix;
+
+  chunksOf = k:
+    let f = ys: xs:
+        if xs == []
+           then ys
+           else f (ys ++ [(take k xs)]) (drop k xs);
+    in f [];
+
 in
 
 {
-  /* Generate a blog index page
-  */
-  generateBlogIndex = template: groupedPosts: {
-    inherit template;
-    href     = "index.html";
-    posts    = groupedPosts.index;
-    nextPage = if length groupedPosts.archive > 1
-               then "archive-1.html"
-               else null;
-  };
-
   /* Generate a blog archives pages
   */
   generateBlogArchives = template: groupedPosts:
     imap (i: posts: {
       inherit posts template;
       href     = "archive-${toString i}.html";
-      nextPage = if length archivePosts >= i + 1
+      nextPage = if length posts >= i + 1
                     then "archive-${toString (i + 1)}.html"
                     else null;
       prevPage = if i == 1
                     then "index.html"
                     else "archive-${toString (i - 1)}.html";
     }) groupedPosts.archive;
+
+  /* Paginate a page in multiple pages with a list of itemsPerPage items
+     Return a list of pages
+  */
+  paginatePage = { baseName, items, template, itemsPerPage }:
+    let
+      itemsList = chunksOf itemsPerPage items;
+      pages = imap (i: items: {
+        inherit template items;
+        href = if i == 1 then "${baseName}.html"
+               else "${baseName}-${toString i}.html";
+        index = i;
+      }) itemsList;
+    in map (p: p // { inherit pages; }) pages;
+
 
   /* Generate a site with pages
   */

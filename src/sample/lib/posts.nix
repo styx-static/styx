@@ -1,4 +1,5 @@
 # Posts functions
+# TODO: post generation is quite slow, to improve
 
 with import ./nixpkgs-lib.nix;
 with builtins;
@@ -6,16 +7,6 @@ with builtins;
 let
   # Package set
   pkgs = import ./pkgs.nix;
-
-  # Non exposed functions
-
-  chunksOf = k:
-    let f = ys: xs:
-        if xs == []
-           then ys
-           else f (ys ++ [(take k xs)]) (drop k xs);
-    in f [];
-
 in
 rec {
 
@@ -54,9 +45,9 @@ rec {
       '');
     in
       if result == null 
-         then abort "Post (${filename}) not in correct form (YYYY-MM-DD-<id>.md)."
+         then trace "Post (${filename}) is not in correct form (YYYY-MM-DD-<id>.md) and will be ignored." null
       else if title == ""
-         then abort "Post (${filename}) does not include title (h1)."
+         then trace "Post (${filename}) does not include title (h1) and will be ignored." null
       else {
         inherit timestamp href title id;
         html = readFile html;
@@ -65,14 +56,5 @@ rec {
   /* Sort a list of posts chronologically
   */
   sortPosts = sort (a: b: lessThan b.timestamp a.timestamp);
-
-  /* Group posts for index and archive pages
-  */
-  groupBlogPosts = conf: posts: {
-    index   = take conf.postsOnIndexPage posts;
-    archive = if conf.postsPerArchivePage == null
-              then [ (drop conf.postsOnIndexPage posts) ]
-              else chunksOf conf.postsPerArchivePage (drop conf.postsOnIndexPage posts);
-  };
 
 }
