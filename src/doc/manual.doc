@@ -9,10 +9,27 @@ version @version@
 
 Styx is a functional static site generator written in Nix expression language.
 
+Styx is aimed to be flexible and easy to customize, also Styx is usin the Nix package manager so it has a very strong caching system.
+It also allow to use external applications in a very easy way without having to install them.
+
+Pros:
+
+- Uniformity: The same expression language used in templates and logic.
+- Caching: Styx benefit of the Nix package system caching system, only needed pages are rebuild.
+- Light weight: Styx has very few dependencies.
+- Customizable: It is very easy to implement new features.
+
+Cons:
+
+- Performance: Some parts of Styx like the posts conversion can be *very* slow, this is partly counter-balanced by the caching system, but on a fresh site generation Styx can be magnitude slower than other static site generators.
+- Semantics: Styx is using the Nix expression language for its logic and templates. The Nix expression language is quite different of usual languages and can require some time to get familiar with.
+- Nix: Styx has only one dependency, the Nix package manager. To use Styx you must install Nix, and depending your platform, that can be challenging. But installing Nix might totally change your views on package management!
 
 == Installation
 
 The only requirement to install Styx is the link:http://nixos.org/nix/[Nix package manager].
+Refer to the link:http://nixos.org/nix/manual/#chap-installation[Nix installation instructions] to install Nix.
+
 Styx does not have an official release yet, but it is possible to install a development snapshot with the following command:
 
 [source, bash]
@@ -97,7 +114,7 @@ TODO: explain the sample `default.nix`.
 The library contains various functions that are used through styx source.
 The functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy manner.
 
-=== Generation
+=== generation
 
 This namespace contains functions responsible for content generation.
 
@@ -109,19 +126,19 @@ This namespace include the nixpkgs library and builtins functions.
 
 TODO: document all the functions
 
-=== Posts
+=== posts
 
 This namespace contains functions to manipulate posts.
 
 TODO: document all the functions
 
-=== Template
+=== template
 
 This namespace contains functions to manipulate templates.
 
 TODO: document all the functions
 
-=== Utils
+=== utils
 
 This namespace contains various utily functions.
 
@@ -141,12 +158,19 @@ A page in Styx is an attribute set following a set of rules:
 
 It is possible to extend a page attribute set at will for more complex use cases.
 
-Example of aa about page definition:
+[source, nix]
+.Page definition example
+----
+  pages.about = { href = "about.html"; template = templates.about; };
+----
+
 
 [source, nix]
+.Extending a page attribute set
 ----
-  about = { href = "about.html"; template = templates.about; };
+  pages.about // { title = "About"; }
 ----
+
 
 === Posts
 
@@ -155,7 +179,7 @@ Posts files should be in the `conf.postsDir` directory.
 
 === Drafts
 
-Posts are a special type of posts that are only generated when the `-preview` flag is passed to styx.
+Drafts are a special type of posts that are only generated when the `-preview` flag is passed to styx.
 Drafts files should be in the `conf.draftsDir` directory.
 
 === Custom content
@@ -165,9 +189,8 @@ The page attribute and the template environment can be extended to include any k
 
 It is also possible to use any program provided in the nixpkgs packages in library functions.
 
-Example snippet from `lib.posts.parsePost` function:
-
 [source, nix]
+.Example snippet from `lib.posts.parsePost` function
 ----
   title = readFile (pkgs.runCommand "${timestamp}-${id}.title" {} ''
     ${pkgs.xidel}/bin/xidel ${html} -e "//h1[1]/node()" -q > $out # <1>
@@ -191,9 +214,10 @@ Styx templates are functions that return text when fully evaluated.
 
 ==== Basic templates
 
-The most basic template is a function that takes the template environment as parameter and return a text:
+The most basic template is a function that takes the template environment as parameter and return a text.
 
 [source, nix]
+.Basic template
 ----
 environment: # <1>
 ''
@@ -208,9 +232,8 @@ environment: # <1>
 
 A page template is a template that takes the page attribute as an extra parameter.
 
-Example of a basic template:
-
 [source, nix]
+.Basic page template
 ----
 environment:
 page: # <1>
@@ -234,13 +257,12 @@ The default template environment consists in:
 - `state`: the state attribute set, by default it only holds the timestamp of the generation
 - `lib`: the library attribute set, it contains styx and nixpkgs functions.
 
-It is possible to extends the template environment at will.
+It is possible to extend the template environment at will.
 
 There are two ways of writing the `environment` in the template, as a set or as a deconstructed set.
 
-Example, environment as a variable:
-
 [source, nix]
+.Environment as a variable
 ----
 environment: # <1>
 page:
@@ -251,9 +273,8 @@ page:
 
 <1> `environment` is used as a set, and its key can be accessed with `.`.
 
-Example, environment as a deconstructed set:
-
 [source, nix]
+.Environment as a deconstructed set
 ----
 { conf, lib, ... }: # <1>
 page: # <1>
@@ -278,17 +299,69 @@ TODO
 
 == Cookbook
 
-=== Adding a navbar
+=== NavBar
 
-TODO
+The sample `default.nix` is setting a NavBar.
+Because the NavBar is a site wide feature is should be applied to the base template (`base.nix`).
+
+Setting a Navbar consists in two steps:
+
+1. Extending the base template environment to include a list of pages that should be in the navbar.
+
++
+Example from `default.nix`:
+
++
+[source, nix]
+----
+  navbar = let # <1>
+             archive = (head pages.archives) // { title = "Archives"; }; # <2>
+           in [ archive pages.about ]; # <3>
+
+  templates.base = loadTemplateWithEnv # <4>
+                     (genericEnv // { inherit navbar; }) # <5>
+                     "base.nix"; # <6>
+----
+
++
+<1> Declaring a `navbar` variable.
+<2> Declare an `archive` variable in the local scope. `pages.archives` is a list of pages so we extract the first page with `head pages.archive`, then we extends this page by setting a `title` using the `//` operator.
+<3> The `navbar` value is a list containing the first archive page and the about page.
+<4> Loading the `templates.base` template file.
+<5> The first parameter of the `loadTemplateWithEnv` must be an environment attribute set.
+`genericEnv` is the generic template environment, but as we want to pass the `navbar` variable to the template, we extends the environment with `navbar`. 
+<6> The template file to load.
+
++
+NOTE: `{ inherit navbar; }` is a shortcut to `{ navbar = navbar; }`
+
+2. Using the NavBar template.
+
++
+Styx provides a template for generating the Navbar, `navbar.main.nix`.
+
++
+Example, calling the NavBar template in a template:
+
++
+[source, nix]
+----
+${templates.navbar.main navbar} # <1>
+----
+
++
+<1> `navbar` must be a list of pages as showed in the previous section.
+
++
+NOTE: The brand part of the NavBar displays `conf.siteTitle` by default.
+To set the NavBar brand to something different than `conf.siteTitle`, it is recommended to directly edit and change the `navbar.brand.nix` template.
 
 === Pagination
 
 The `pagination.tpl` template provide a generic way to generate a pagination.
 
-Example in a template used with the `splitPage` function:
-
 [source, nix]
+.Using in a page generated by the `splitPage` function
 ----
 templates.pagination { pages = page.pages; index = page.index; }
 ----
@@ -297,14 +370,13 @@ The styx library provide a `splitPage` function that can be used to split a page
 
 Its arguments are:
 
-- `baseHref`: `href` of the archive pages, the first page `href` will be "`baseHref`.html", following pages `href` will be "`baseHref`-`i`.html" where `i` is the number of the page.
+- `baseHref`: `href` of the archive pages, the first page `href` will be `baseHref.html`, following pages `href` will be `baseHref-i.html` where `i` is the index number of the page.
 - `template`: template used by the splitted pages.
 - `items`: items to be splited through the pages.
 - `itemsPerPage`: maximum number of items displayed on each page.
 
-Example, creating posts archive pages:
-
 [source, nix]
+.Splitting posts into multiple archive pages
 ----
 archives = splitPage {
   baseHref = "archives/posts";

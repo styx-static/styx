@@ -1,3 +1,13 @@
+/* NavBar template, take one parameter:
+
+   - navbar: A list of pages to include in the NavBar. (Pages must have a `title` attribute set)
+   - index: The current page index
+
+   Usage example in the base template function:
+
+     templates.navbar.main navbar
+
+*/
 { templates, lib, conf, ... }:
 navbar:
 with lib;
