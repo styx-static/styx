@@ -43,6 +43,14 @@ in
       }) itemsList;
     in map (p: p // { inherit pages; }) pages;
 
+  /* Convert a page attribute set to a list of pages
+  */
+  pagesToList = pages:
+    let
+      pages' = attrValues pages;
+    in fold
+         (y: x: if isList y then x ++ y else x ++ [y])
+         [] pages';
 
   /* Generate a site with pages
   */

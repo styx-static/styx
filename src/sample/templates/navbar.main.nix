@@ -1,4 +1,4 @@
-{ templates, lib, ... }:
+{ templates, lib, conf, ... }:
 navbar:
 with lib;
 ''
@@ -18,7 +18,7 @@ with lib;
     <div class="collapse navbar-collapse" id="navbar">
       <ul class="nav navbar-nav">
         ${mapTemplate (item: ''
-        <li><a href="${item.href}">${item.title}</a></li>
+        <li><a href="${conf.siteUrl}/${item.href}">${item.title}</a></li>
         '') navbar}
       </ul>
     </div>
