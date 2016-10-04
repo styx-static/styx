@@ -10,7 +10,7 @@ page:
       <access:restriction xmlns:access="http://www.bloglines.com/about/specs/fac-1.0" relationship="deny"/>
 
       <title>${conf.siteTitle}</title>
-      <updated>${state.currentTimestamp}</updated>
+      <updated>${state.lastChange}</updated>
       <generator>Styx @version@</generator>
       <id>${conf.siteUrl}/atom.xml</id>
       <link href="${conf.siteUrl}/atom.xml" rel="self" type="application/atom+xml"/>

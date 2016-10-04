@@ -1,6 +1,6 @@
-{ currentTimestamp
-, previewMode ? false
+{ previewMode ? false
 , siteUrl ? null
+, lastChange ? null
 }@args:
 
 let lib = import ./lib;
@@ -12,7 +12,7 @@ let
   conf = extendConf (import ./conf.nix) args;
 
   # Set the state
-  state = { inherit currentTimestamp; };
+  state = { inherit lastChange; };
 
   # Function to load a template with a generic environment
   loadTemplate = loadTemplateWithEnv { inherit conf state lib templates; };

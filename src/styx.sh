@@ -34,6 +34,8 @@ share="$dir/../share/styx"
 version=@version@
 port=8080
 extraFlags=()
+lastTimestamp="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d".")"
+lastChange="$(date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ)"
 
 if [ $# -eq 0 ]; then
   display_usage
@@ -88,8 +90,9 @@ if [ "$action" = new ]; then
 fi
 
 if [ "$action" = serve ]; then
+  echo "$date"
   if [ -f $(pwd)/default.nix ]; then
-    path=$(nix-build --no-out-link --argstr currentTimestamp `date -u +%Y-%m-%dT%TZ` --argstr siteUrl "http://127.0.0.1:$port" "${extraFlags[@]}")
+    path=$(nix-build --no-out-link --argstr lastChange "$lastChange" --argstr siteUrl "http://127.0.0.1:$port" "${extraFlags[@]}")
     echo "server listening on http://127.0.0.1:$port"
     echo "press ctrl+c to stop"
     $($server --root "$path" --port "$port")
@@ -101,7 +104,7 @@ fi
 
 if [ "$action" = build ]; then
   if [ -f $(pwd)/default.nix ]; then
-    path=$(nix-build --argstr currentTimestamp `date -u +%Y-%m-%dT%TZ` "${extraFlags[@]}")
+    path=$(nix-build --argstr lastChange "$lastChange" "${extraFlags[@]}")
   else
     echo "no default.nix in current directory"
     exit 1;
