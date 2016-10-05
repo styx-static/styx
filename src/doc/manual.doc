@@ -4,12 +4,14 @@ version @version@
 :toc: left
 :toclevels: 4
 :icons: font
+:sectnums:
+:sectanchors:
 
 == Introduction
 
 Styx is a functional static site generator written in Nix expression language.
 
-Styx is aimed to be flexible and easy to customize, also Styx is usin the Nix package manager so it has a very strong caching system.
+Styx is aimed to be flexible and easy to customize, also Styx is usin the Nix package manager so it has a very performant caching system.
 It also allow to use external applications in a very easy way without having to install them.
 
 Pros:
@@ -21,7 +23,7 @@ Pros:
 
 Cons:
 
-- Performance: Some parts of Styx like the posts conversion can be *very* slow, this is partly counter-balanced by the caching system, but on a fresh site generation Styx can be magnitude slower than other static site generators.
+- Performance: Some parts of Styx like the posts conversion can be *very* slow, this is partly counter-balanced by the caching system, but on a fresh site generation Styx can be magnitudes slower than other static site generators.
 - Semantics: Styx is using the Nix expression language for its logic and templates. The Nix expression language is quite different of usual languages and can require some time to get familiar with.
 - Nix: Styx has only one dependency, the Nix package manager. To use Styx you must install Nix, and depending your platform, that can be challenging. But installing Nix might totally change your views on package management!
 
@@ -83,6 +85,7 @@ TODO: document default configuration options.
 
 === Directory Structure
 
+[source]
 ----
 ├── conf.nix # <1>
 ├── default.nix # <2>
@@ -95,7 +98,7 @@ TODO: document default configuration options.
 ----
 
 <1> `conf.nix` is the main configuration, see <<Configuration>> for details.
-<2> `default.nix` is the main file for site generation, see <<default.nix>> for details.
+<2> `default.nix` is the main file for site generation, see <<defaultnix>> for details.
 <3> `drafts/` is the default directory containing drafts, see <<Drafts>> for details.
 <4> `lib/` is the directory holding styx library functions, see <<Library>> for details.
 <5> `nixpkgs-path.nix` is the file setting the nixpkgs to use, it should not be changed.
@@ -103,6 +106,7 @@ TODO: document default configuration options.
 <7> `static/` is the default directory containing static files, see <<Static files>> for details.
 <8> `templates/` is the default directory containing templates files, see <<Templates>> for details.
 
+[[defaultnix]]
 === default.nix
 
 `default.nix` is the central file of a styx file and is reponsible for generating the website.
@@ -116,33 +120,272 @@ The functions are grouped in namespaces, but are also all included in the top-le
 
 === generation
 
-This namespace contains functions responsible for content generation.
+This namespace contains functions related to content generation.
 
-TODO: document all the functions
+'''
+
+`generateSite`::
+  Description::: Generate a site with a list of pages. This is the function returned by `default.nix`.
+  Parameter Type::: Set
+  Parameters:::
+    * `conf`: The configuration set.
+    * `pages`: A list of pages to generate.
+    * `preGen` (optional): A set of commands to execute before generating the site.
+    * `postGen` (optional): A set of commands to execute after generating the site.
+  Return::: A generated Styx site.
+  Example:::
+
++
+[source, nix]
+----
+generateSite { inherit conf; pages = pageList; }
+----
+
+'''
+
+`pagesToList`::
+  Description::: Convert an attribute set of pages to a list of pages. Useful to convert the `pages` attribute set in `default.nix` to a page list for `generateSite`.
+  Parameter Type: Standard
+  Parameters:::
+    * `pages`: An attributes which every key value is a page attribute set.
+  Return::: A list of pages.
+  Example:::
+
++
+[source, nix]
+----
+pages = {
+  about = {
+    href = "about.html";
+    template = templates.about;
+    title = "About";
+  };
+};
+
+pageList = pagesToList pages;
+----
+
+'''
+
+`splitPage`::
+  Description::: Split a page in multiple pages according to parameters. Used for pagination like pages.
+  Parameter Type::: Set
+  Parameters:::
+    * `baseHref`: The `href` of the archive pages, the first page `href` will be `baseHref.html`, following pages `href` will be `baseHref-i.html` where `i` is the index number of the page.
+    * `items`: Items to be splitted through the pages.
+    * `template`: The template used by the splitted pages.
+    * `itemsPerPage`: Maximum number of items displayed on each page.
+    * Any extra arguments will be included in the splitted pages attribute set.
+  Return::: A list of splitted pages.
+  Example:::
+
++
+[source, nix]
+----
+archives = splitPage {
+  baseHref = "archives/posts";
+  template = templates.archive;
+  items = posts;
+  itemsPerPage = conf.postsPerArchivePage;
+  title = "Posts";
+};
+----
+
+'''
 
 === nixpkgs
 
-This namespace include the nixpkgs library and builtins functions.
-
-TODO: document all the functions
+This namespace include the nixpkgs library and link:http://nixos.org/nix/manual/#ssec-builtins[builtins] functions.
 
 === posts
 
 This namespace contains functions to manipulate posts.
 
-TODO: document all the functions
+'''
+
+`getPosts`::
+  Description::: Fetch all the posts from a `postDir`.
+  Parameter Type::: Standard
+  Parameters:::
+    * `postsDir`: Path to the folder containing the posts.
+  Return::: A list of post attribute sets.
+  Example:::
+
++
+[source, nix]
+----
+posts = getPosts conf.postsDir;
+----
+
+'''
+
+`getDrafts`::
+  Description::: Fetch all the posts from a `postDir`. This function is similar to `getPosts`, but add a `isDraft = true` attribute to every draft attribute set.
+  Parameter Type::: Standard
+  Parameters:::
+    * `draftsDir`: Path to the folder containing the drafts.
+  Return::: A list of draft attribute sets.
+  Example:::
+
++
+[source, nix]
+----
+posts = getDrafts conf.draftsDir;
+----
+
+'''
+
+`parsePost`::
+  Description::: Convert a post file into a post attribute set.
+  Parameter Type::: Standard
+  Parameters:::
+    * `postDir`: Path to the folder containing the post.
+    * `filename`: Post file name.
+  Return::: A post attribute set.
+  Example:::
+
++
+[source, nix]
+----
+myPost = parsePost conf.postsDir "2016-09-12-welcome-to-styx.md";
+----
+
+'''
+
+`sortPosts`::
+  Description::: Sort a list of posts chronologically.
+  Parameter Type::: Standard
+  Parameters:::
+    * `postList`: A list of posts to sort.
+  Return::: The sorted list of posts.
+  Example:::
+
++
+[source, nix]
+----
+sortedPosts = sortPosts (getPosts conf.postsDir);
+----
+
+'''
 
 === template
 
 This namespace contains functions to manipulate templates.
 
-TODO: document all the functions
+'''
+
+`htmlAttr`::
+  Description::: Generate an HTML attribute.
+  Parameter Type::: Standard
+  Parameters:::
+    * `attrName`: The attribute name.
+    * `value`: The attribute value, can be a list.
+  Return::: An HTML attribute.
+  Example:::
+
++
+[source, nix]
+----
+htmlAttr "class" "foo"
+=> class="foo"
+
+htmlAttr "class" [ "foo" "bar" ]
+=> class="foo bar"
+----
+
+'''
+
+`mapTemplate`::
+  Description::: Map a template to a list of items.
+  Parameter Type::: Standard
+  Parameters:::
+    * `template`: The template function.
+    * `list`: A list of items passed to the template function.
+  Return::: Resulting HTML.
+  Example:::
+
++
+[source, nix]
+----
+mapTemplate templates.post.list page.posts
+----
+
+'''
+
+`prettyTimestamp`::
+  Description::: Convert a timestamp to a prettier format.
+  Parameter Type::: Standard
+  Parameters:::
+    * `timestamp`: A timestamp in the format `YYYY-MM-DD`.
+  Return::: A timestamp in format `DD MMM YYYY`.
+  Example:::
+
++
+[source, nix]
+----
+prettyTimestamp "2016-09-26"
+=> "26 SEP 2016"
+----
+
+'''
 
 === utils
 
 This namespace contains various utily functions.
 
-TODO: document all the functions
+'''
+
+`overrideConf`::
+  Description::: Extend the configuration attribute set.
+  Parameter Type::: Standard
+  Parameters:::
+    * `conf`: The configuration attribute set.
+    * `override`: The override configuration set.
+  Return::: Overriden configuration.
+  Example:::
+
++
+[source, nix]
+----
+conf = overrideConf (import ./conf.nix) args;
+----
+
+'''
+
+`loadTemplateWithEnv`::
+  Description::: Load a template with a template environment.
+  Parameter Type::: Standard
+  Parameters:::
+    * `env`: The template environment set.
+    * `template`: The template file to load, relatively to `conf.templatesDir`.
+  Return::: The template function.
+  Example:::
+
++
+[source, nix]
+----
+index = loadTemplateWithEnv { inherit conf state lib templates; } "index.nix";
+----
+
+'''
+
+`setTemplate`::
+  Description::: Set a template to a page attribute set.
+  Parameter Type::: Standard
+  Parameters:::
+    * `template`: The template function.
+    * `page`: A page attribute set.
+  Return::: The template function.
+  Example:::
+
++
+[source, nix]
+----
+map (setTemplate templates.post.full) (posts ++ drafts)
+----
+
+'''
+
 
 == Content
 
@@ -152,7 +395,7 @@ Pages is the most basic content unit. Every content in Styx is a page (posts and
 
 A page in Styx is an attribute set following a set of rules:
 
-- It must define at least the `href` and the `template` keys.
+- It must define at least the `href`, `title` and the `template` keys.
 - The `template` key must be a template function that take the `page` attribute set as a parameter and return the page source.
 - The `href` key is the path of the generated page relative to site root.
 
@@ -161,7 +404,7 @@ It is possible to extend a page attribute set at will for more complex use cases
 [source, nix]
 .Page definition example
 ----
-  pages.about = { href = "about.html"; template = templates.about; };
+  pages.about = { href = "about.html"; template = templates.about; title = "About"; };
 ----
 
 
@@ -176,6 +419,8 @@ It is possible to extend a page attribute set at will for more complex use cases
 
 Posts are a special type of pages. Posts should be located in configuration `postsDir` value and in markdown format.
 Posts files should be in the `conf.postsDir` directory.
+
+Post files should follow the `YYYY-MM-DD-TITLE.md` convention to be loaded. During build, styx with display a message if it cannot load a post file.
 
 === Drafts
 
@@ -202,7 +447,8 @@ It is also possible to use any program provided in the nixpkgs packages in libra
 
 === Static files
 
-TODO
+Static files are the files that are added to the generated site folder.
+Static files should be in the `conf.staticDir` directory.
 
 == Customization
 
@@ -289,10 +535,6 @@ page: # <1>
 
 TODO
 
-=== Types of templates
-
-TODO
-
 === Applying templates to multiple contents
 
 TODO
@@ -358,7 +600,7 @@ To set the NavBar brand to something different than `conf.siteTitle`, it is reco
 
 === Pagination
 
-The `pagination.tpl` template provide a generic way to generate a pagination.
+The `pagination.nix` template provide a generic way to generate a pagination.
 
 [source, nix]
 .Using in a page generated by the `splitPage` function
@@ -383,14 +625,31 @@ archives = splitPage {
   template = templates.archive;
   items = posts;
   itemsPerPage = conf.postsPerArchivePage;
+  title = "Posts";
 };
 ----
 
 It is then possible to use the previous snippet in the used template to add a pagination.
 
-=== Setting breadcrumbs
+=== Breadcrumbs
 
-TODO
+Breadcrumbs can be set by adding a `breadcrumbs` attribute with the list of pages to include in the breadcrumbs.
+An attribute set without a breadcrumbs attribute will not have breadcrumbs.
+
+[source, nix]
+.Adding breadcrumbs to a page
+----
+about = {
+  href = "about.html";
+  template = templates.about;
+  title = "About";
+  breadcrumbs = [ index ];
+};
+----
+
+Breadcrumbs are generated with the `breadcrumbs.nix` template. The default base template include this template.
+
+The text of the breadcrumb will be the page `title`. It is possible to set different text that the title by setting a `breadcrumbTitle` to page.
 
 == Deployment
 

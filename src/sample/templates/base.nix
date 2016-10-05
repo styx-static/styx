@@ -2,9 +2,8 @@
 , navbar ? false
 , feed ? false
 , ... }:
-{ title
-, content
-}:
+
+{ title, content, ... }@page:
 with lib;
   ''
     <!DOCTYPE html>
@@ -46,6 +45,7 @@ with lib;
 
       <div class="page-content">
         <div class="container wrapper">
+          ${templates.breadcrumbs page}
           ${content}
         </div>
       </div>

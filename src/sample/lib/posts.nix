@@ -44,7 +44,7 @@ rec {
       href = "posts/${timestamp}-${id}.html";
       data = pkgs.runCommand "${timestamp}-data" {} ''
         mkdir $out
-        ${pkgs.markdown}/bin/markdown < ${path} > $out/html
+        ${pkgs.multimarkdown}/bin/multimarkdown < ${path} > $out/html
         ${pkgs.xidel}/bin/xidel $out/html -e "//h1[1]/node()" -q > $out/title
         echo -n `tr -d '\n' < $out/title` > $out/title
       '';

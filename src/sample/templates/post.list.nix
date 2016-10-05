@@ -8,7 +8,7 @@ post:
           <p class="text-muted time-prefix">
             <time pubdate="pubdate" datetime="${post.timestamp}">${prettyTimestamp post.timestamp}${optionalString (attrByPath ["isDraft"] false post) " <span class=\"glyphicon glyphicon-edit\"></span>"}</time>
           </>
-          <p><a href="${post.href}">${post.title}</a></p>
+          <p><a href="${conf.siteUrl}/${post.href}">${post.title}</a></p>
         </div>
       </div>
     </li>

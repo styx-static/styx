@@ -4,10 +4,10 @@ with import ./nixpkgs-lib.nix;
 
 {
 
-  /* Extend the conf attribute set with the override attribute set.
+  /* Override the conf attribute set with an attribute set.
      Update is recursive and only keys with a non-null value are updated.
   */
-  extendConf = conf: override:
+  overrideConf = conf: override:
     conf // (filterAttrs (k: v: (hasAttr k conf) && (v != null)) override);
 
   /* Load a template with an environment set

@@ -16,18 +16,18 @@ in
 
 {
 
-  /* Generate a site with pages
+  /* Generate a site with a list pages
   */
-  generateBasicSite = {
+  generateSite = {
     conf
   , pages
-  , preInstall ? ""
-  , postInstall ? ""
+  , preGen ? ""
+  , postGen ? ""
   }:
     pkgs.runCommand conf.siteId {} ''
       mkdir -p $out
 
-      eval "${preInstall}"
+      eval "${preGen}"
 
       for file in ${conf.staticDir}/*; do
         ln -s $file $out/
@@ -44,11 +44,8 @@ in
 
       touch $out/.nojekyll
 
-      eval "${postInstall}"
+      eval "${postGen}"
     '';
-  /* Split a page in multiple pages with a list of itemsPerPage items
-     Return a list of pages
-  */
 
   /* Convert a page attribute set to a list of pages
   */
@@ -59,7 +56,10 @@ in
          (y: x: if isList y then x ++ y else x ++ [y])
          [] pages';
 
-  splitPage = { baseHref, items, template, itemsPerPage }:
+  /* Split a page in multiple pages with a list of itemsPerPage items
+     Return a list of pages
+  */
+  splitPage = { baseHref, items, template, itemsPerPage, ... }@args:
     let
       itemsList = chunksOf itemsPerPage items;
       pages = imap (i: items: {
@@ -67,7 +67,8 @@ in
         href = if i == 1 then "${baseHref}.html"
                else "${baseHref}-${toString i}.html";
         index = i;
-      }) itemsList;
+      } // (removeAttrs args ["baseHref" "items" "template" "itemsPerPage"])
+      ) itemsList;
     in map (p: p // { inherit pages; }) pages;
 
 }
