@@ -11,11 +11,15 @@
 { lib, conf, ... }:
 { pages, index }:
   with lib;
+  let
+    prevHref = if (index > 1) then "${conf.siteUrl}/${(elemAt pages (index - 2)).href}" else "#";
+    nextHref = if (index < (length pages)) then "${conf.siteUrl}/${(elemAt pages (index)).href}" else "#";
+  in
   ''
   <nav aria-label="Page navigation">
     <ul class="pagination">
       <li${optionalString (index == 1) " ${htmlAttr "class" "disabled"}"}>
-        <a href=${if (index > 1) then "\"${conf.siteUrl}/${(elemAt pages (index - 2)).href}\"" else "\"#\""} aria-label="Previous">
+        <a ${htmlAttr "href" prevHref} aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
@@ -24,7 +28,7 @@
       '') pages)}
       <li>
       <li${optionalString (index == (length pages)) " ${htmlAttr "class" "disabled"}"}>
-        <a href=${if (index < (length pages)) then "\"${conf.siteUrl}/${(elemAt pages (index)).href}\"" else "\"#\""} aria-label="Next">
+        <a ${htmlAttr "href" nextHref} aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>

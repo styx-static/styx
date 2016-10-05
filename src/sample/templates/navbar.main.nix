@@ -27,8 +27,12 @@ with lib;
 
     <div class="collapse navbar-collapse" id="navbar">
       <ul class="nav navbar-nav">
-        ${mapTemplate (item: ''
-        <li><a href="${conf.siteUrl}/${item.href}">${item.title}</a></li>
+        ${mapTemplate (item:
+        let
+          externalLink = (match "^http.*" item.href) != null;
+        in
+        ''
+          <li><a ${htmlAttr "href" (if externalLink then "${item.href}" else "${conf.siteUrl}/${item.href}")}>${item.title}</a></li>
         '') navbar}
       </ul>
     </div>
@@ -36,3 +40,6 @@ with lib;
   </div>
 </nav>
 ''
+        /*
+        <li><a href="${conf.siteUrl}/${item.href}">${item.title}</a></li>
+        */
