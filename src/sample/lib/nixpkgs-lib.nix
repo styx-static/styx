@@ -1,1 +1,1 @@
-(import ./pkgs.nix).lib
+(import ./pkgs.nix).lib // builtins

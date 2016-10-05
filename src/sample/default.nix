@@ -18,29 +18,22 @@ let
   loadTemplate = loadTemplateWithEnv genericEnv;
 
   # Generic template environment
-  genericEnv = { inherit conf state lib templates; feed = pages.feed; };
+  genericEnv = { inherit conf state lib templates; };
 
   # List of pages to include in the navbar
   navbar = [ (head pages.archives) pages.about ];
 
   # List of templates
   templates = {
-    # layout template
     # Example of setting a custom template environment
     base    = loadTemplateWithEnv 
-                (genericEnv // { inherit navbar; })
+                (genericEnv // { inherit navbar; feed = pages.feed; })
                 "base.nix";
-    # index page template
     index   = loadTemplate "index.nix";
-    # about page
     about   = loadTemplate "about.nix";
-    # archive pages template
     archive = loadTemplate "archive.nix";
-    # feed template
     feed    = loadTemplate "feed.nix";
-    # pagination template
-    pagination = loadTemplate "pagination.nix";
-    # breadcrumbs template
+    pagination  = loadTemplate "pagination.nix";
     breadcrumbs = loadTemplate "breadcrumbs.nix";
     navbar = {
       main = loadTemplate "navbar.main.nix";
@@ -57,19 +50,21 @@ let
   pages = rec {
 
     # Index page
+    # Example of extending a page attribute set
     index = {
+      title = "Home";
       href = "index.html";
       template = templates.index;
+      inherit feed;
       posts = take conf.postsOnIndexPage posts;
       archivePage = head archives;
-      title = "Home";
     };
 
     # About page
     about = {
+      title = "About";
       href = "about.html";
       template = templates.about;
-      title = "About";
       breadcrumbs = [ index ];
     };
 
@@ -84,7 +79,7 @@ let
     };
 
     # RSS feed page
-    feed = { posts = take 10 posts; href = "feed.xml"; template = templates.feed; };
+    feed = { href = "feed.xml"; template = templates.feed; posts = take 10 posts; };
 
     # List of posts
     # Fetch and sort the posts and drafts (only in preview mode) and set the

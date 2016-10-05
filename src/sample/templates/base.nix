@@ -3,7 +3,9 @@
 , feed ? false
 , ... }:
 
-{ title, content, ... }@page:
+{ title
+, content
+, ... }@page:
 with lib;
   ''
     <!DOCTYPE html>
@@ -15,12 +17,14 @@ with lib;
   
       <title>${title}</title>
   
+      ${optionalString (feed != false) ''
       <link
           href="${conf.siteUrl}/${feed.href}"
           type="application/atom+xml"
           rel="alternate"
           title="${conf.siteTitle}"
           />
+      ''}
   
       <link
           rel="stylesheet"

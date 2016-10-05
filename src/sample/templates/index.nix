@@ -1,4 +1,4 @@
-{ conf, templates, lib, feed, ... }:
+{ conf, templates, lib, ... }:
 with lib;
 page:
 
@@ -17,7 +17,7 @@ let
             </li>
 
           </ul>
-          <p>Subscribe <a href="${conf.siteUrl}/${feed.href}">via RSS</a></p>
+          <p>Subscribe <a href="${conf.siteUrl}/${page.feed.href}">via RSS</a></p>
         </div>
       </div>
     '';

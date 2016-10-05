@@ -19,7 +19,12 @@ with import ./nixpkgs-lib.nix;
                else value;
     in "${attrName}=\"${value'}\"";
 
-  /* concat strings with a new line, useful for merging templates
+  /* Check if an href is pointing to an external domain
+     Any href starting with http is considered external
+  */
+  isExternalHref = href: (match "^http.*" href) != null;
+
+  /* Concat strings with a new line, useful for merging templates
   */
   mapTemplate = concatMapStringsSep "\n";
 

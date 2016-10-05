@@ -12,5 +12,5 @@ in
   {
     inherit nixpkgsLib template utils posts generation; 
   }
-  // nixpkgsLib // builtins
+  // nixpkgsLib
   // template // utils //posts // generation
