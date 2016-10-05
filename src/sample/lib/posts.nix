@@ -40,7 +40,7 @@ rec {
       result = match "^(....-..-..)-(.*)\.md$" filename;
       timestamp = elemAt result 0;
       id = elemAt result 1;
-      path = "${postsDir}/${filename}";
+      path = "${postsDir + "/${filename}"}";
       href = "posts/${timestamp}-${id}.html";
       data = pkgs.runCommand "${timestamp}-data" {} ''
         mkdir $out
