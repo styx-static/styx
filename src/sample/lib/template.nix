@@ -1,7 +1,7 @@
 # Template functions
 
-with import ./nixpkgs-lib.nix;
-
+lib:
+with lib;
 {
 
   /* Generate html tag attributes

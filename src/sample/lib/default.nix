@@ -1,16 +1,17 @@
+pkgs:
 let
   # nixpkgs lib
-  nixpkgsLib = import ./nixpkgs-lib.nix;
+  nixLib = pkgs.lib // builtins;
 
   # Styx lib
-  template   = import ./template.nix;
-  utils      = import ./utils.nix;
-  posts      = import ./posts.nix;
-  generation = import ./generation.nix;
+  template   = import ./template.nix nixLib;
+  utils      = import ./utils.nix nixLib;
+  posts      = import ./posts.nix nixLib pkgs;
+  generation = import ./generation.nix nixLib;
 
 in
   {
-    inherit nixpkgsLib template utils posts generation; 
+    inherit nixLib template utils posts generation;
   }
-  // nixpkgsLib
-  // template // utils //posts // generation
+  // nixLib
+  // template // utils // posts // generation

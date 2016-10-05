@@ -1,13 +1,9 @@
 # Posts functions
 # TODO: post generation is quite slow, to improve
 
-with import ./nixpkgs-lib.nix;
-with builtins;
+lib: pkgs:
+with lib;
 
-let
-  # Package set
-  pkgs = import ./pkgs.nix;
-in
 rec {
 
   /* Similar to getPosts but add a `isDraft = true` attribute to all the posts

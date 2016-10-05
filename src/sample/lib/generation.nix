@@ -1,6 +1,7 @@
 # Page and site generation functions
 
-with import ./nixpkgs-lib.nix;
+lib:
+with lib;
 
 let
   pkgs = import ./pkgs.nix;

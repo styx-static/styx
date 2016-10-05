@@ -1,6 +1,7 @@
 # utilities
 
-with import ./nixpkgs-lib.nix;
+lib:
+with lib;
 
 {
 

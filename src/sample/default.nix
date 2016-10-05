@@ -1,9 +1,10 @@
-{ previewMode ? false
+{ pkgs ? import <nixpkgs> {}
+, previewMode ? false
 , siteUrl ? null
 , lastChange ? null
 }@args:
 
-let lib = import ./lib;
+let lib = import ./lib pkgs;
 in with lib;
 
 let
