@@ -37,19 +37,28 @@ rec {
   */
   parsePost = postsDir: filename:
     let
-      result = match "(....-..-..)-(.*)\.md" filename;
+      result = match "^(....-..-..)-(.*)\.md$" filename;
       timestamp = elemAt result 0;
       id = elemAt result 1;
       path = "${postsDir}/${filename}";
       href = "posts/${timestamp}-${id}.html";
       data = pkgs.runCommand "${timestamp}-data" {} ''
         mkdir $out
-        ${pkgs.multimarkdown}/bin/multimarkdown < ${path} > $out/html
+        matterBlock="/{---/,/---}/p"
+        if [ "$(sed -n "$matterBlock" < ${path})" ]; then
+          sed -n "$matterBlock" < ${path} | sed '1d;$d' > $out/matter
+          sed "1,`sed -n "$matterBlock" < ${path} | wc -l`d" < ${path} > $out/content
+        else
+          echo "{}" > $out/matter
+          cp ${path} $out/content
+        fi
+        ${pkgs.multimarkdown}/bin/multimarkdown < $out/content > $out/html
         ${pkgs.xidel}/bin/xidel $out/html -e "//h1[1]/node()" -q > $out/title
         echo -n `tr -d '\n' < $out/title` > $out/title
       '';
       html  = readFile "${data}/html";
       title = readFile "${data}/title";
+      matter = import "${data}/matter";
     in
       if result == null 
          then trace "Post (${filename}) is not in correct form (YYYY-MM-DD-<id>.md) and will be ignored." null
@@ -57,7 +66,7 @@ rec {
          then trace "Post (${filename}) does not include title (h1) and will be ignored." null
       else {
         inherit timestamp href title id html;
-      };
+      } // { inherit matter; };
 
   /* Sort a list of posts chronologically
   */
