@@ -38,12 +38,6 @@ in
         ln -s ${pkgs.writeText "${conf.siteId}-${replaceStrings ["/"] ["-"] page.href}" (page.template page) } $out/${page.href}
       '') pages}
 
-      echo "${conf.siteUrl}" > $out/CNAME
-      sed -i -e "s|https://||" $out/CNAME
-      sed -i -e "s|http://||" $out/CNAME
-
-      touch $out/.nojekyll
-
       eval "${postGen}"
     '';
 
