@@ -1,0 +1,5 @@
+== Deployment
+
+Styx does not yet provide a deployment method.
+`rsync` can be used to deploy a Styx site to a remote server.
+

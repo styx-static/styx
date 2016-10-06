@@ -1,0 +1,165 @@
+== Customization
+
+This section introduces how to customize your Styx site.
+
+=== Templates
+
+Styx templates are functions that return text when fully evaluated.
+
+Templates are divided in two types:
+
+- Layout templates, responsible for the "frame" of the page. (page attribute set `layout` key)
+- Partial templates responsible for the "content" of the page. (page attribute set `template` key)
+
+The template evaluation flow is:
+
+- The partial template evaluate the page attribute set, this generate a partial result that is stored in the page attribute set `content` key.
+- The layout template evaluate the page attribute set returned by the partial template, this generate the final source of the page.
+
+==== Text handling basics
+
+Templates are function that ultimately return text.
+There are different way to handle text in the Nix expression language.
+
+- multi-line text, delimited by `''`.
+
++
+[source, nix]
+.Multi-line text
+----
+''
+  Hello world!
+  Hello Styx!
+''
+----
+
+- single line text, delimited by `"`.
+
++
+[source, nix]
+.Multi-line text
+----
+"Hello world!"
+----
+
+Nix expressions can be included in text in enclosed in `${...}`.
+
+[source, nix]
+.Expression antiquotation
+----
+let name = "world"; in
+"Hello ${name}!"
+----
+
+==== Layout templates
+
+The layout template is responsible for the final rendering of the page.
+The layout template takes a template environment, and a page attribute set with a `content`.
+The layout template is usually takes care of the HTML code that is not directly related to the content, like the `head` tag.
+
+[source, nix]
+.Simple layout template.
+----
+env:
+page:
+''
+  <html>
+    ...
+  <body>
+    ...
+    ${page.content}
+    ...
+  </body>
+  </html>
+''
+----
+
+TIP: Layout templates are just functions, in case the partial template return the full page source like in the rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent.
+
+==== Partial templates
+
+Partial templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
+The partial template should set or update the `content` attribute of the page attribute set so the layout template can be rendered correctly.
+Partial templates can also add other attributes to the page attribute to fit any special need.
+
+----
+{ templates, ... }:
+page:
+let
+  content =
+    ''
+      <h1>${page.title}</h1>
+    '';
+in
+  page // { inherit content; }
+----
+
+
+==== Template environment
+
+The template environment is the first parameter of the template function.
+It is defined with template loading function in `default.nix`.
+
+The default template environment consists in:
+
+- `conf`: the configuration attribute set
+- `templates`: the templates attribute set
+- `state`: the state attribute set, by default it only holds the timestamp of the generation
+- `lib`: the library attribute set, it contains Styx and nixpkgs functions.
+
+It is possible to extend the template environment at will.
+
+There are two ways of writing the `environment` in the template, as a set or as a deconstructed set.
+
+[source, nix]
+.Environment as a variable
+----
+environment: # <1>
+page:
+''
+  ${environment.conf.siteTitle}
+''
+----
+
+<1> `environment` is used as a set, and its key can be accessed with `.`.
+
+[source, nix]
+.Environment as a deconstructed set
+----
+{ conf, lib, ... }: # <1>
+page: # <1>
+''
+  ${conf.siteTitle}
+''
+----
+
+<1> environment is deconstructed in its keys values. The last `...` means all others keys and is required if the set contains more keys than the keys deconstructed.
+
+=== Calling templates in templates
+
+It is possible to call templates in a template by accessing to the `templates` attribute of the template generic environment.
+
+[source, nix]
+.Calling a template in a template
+----
+{ templates, ... }:
+page:
+''
+  ${templates.foo}
+''
+----
+
+NOTE: The `loadTemplateWithEnv` function, or calling the `loadTemplate` with an environment will partially evaluate the template function. This means that the template function will be become a single argument function (`page`).
+
+WARNING: Calling the current template will trigger an infinite loop and make the site generation fail.
+
+=== Applying templates to multiple contents
+
+The `mapTemplate` function can be used to map a template to a list of contents.
+
+[source, nix]
+.Applying a template to multiple contents
+----
+${mapTemplate templates.post.list page.posts}
+----
+

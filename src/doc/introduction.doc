@@ -1,0 +1,22 @@
+== Introduction
+
+Styx is a functional static site generator written in Nix expression language.
+
+Styx is aimed to be flexible and easy to customize, also Styx is using the Nix package manager so it has a very effective caching system.
+It also allow to use external applications in a very easy way without having to install them.
+
+=== Why use Styx
+
+Pros:
+
+- Uniformity: The same expression language used in templates and logic.
+- Caching: Styx benefit of the Nix package system caching system, only needed pages are rebuild.
+- Light weight: Styx has very few dependencies.
+- Customizable: It is easy to implement new features.
+
+Cons:
+
+- Performance: Some parts of Styx like the posts conversion can be *very* slow, this is partly counter-balanced by the caching system, but on a fresh site generation Styx can be magnitudes slower than other static site generators.
+- Semantics: Styx is using the Nix expression language for its logic and templates. The Nix expression language is quite different of usual languages and can need some time to get familiar with.
+- Nix: Styx has only one dependency, the Nix package manager. To use Styx you must install Nix, and depending your platform, that can be challenging. But installing Nix might totally change your views on package management!
+
