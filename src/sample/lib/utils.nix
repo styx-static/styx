@@ -15,6 +15,14 @@ with lib;
   */
   loadTemplateWithEnv = env: file: import (env.conf.templatesDir + "/${file}") env;
 
+  /* Set a default layout to a page attribute set
+     Does nothing if a layout is already set
+  */
+  setDefaultLayout = layout: page:
+    if page ? layout
+       then page
+       else page // {  inherit layout; };
+
   /* Attach a template to a page attribute set
   */
   setTemplate = template: page: page // { inherit template; };

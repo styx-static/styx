@@ -18,4 +18,4 @@ let
     </div>
   '';
 in
-  templates.base (post // { inherit content; })
+  post // { inherit content; }

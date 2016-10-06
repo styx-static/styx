@@ -35,7 +35,7 @@ in
 
       ${concatMapStringsSep "\n" (page: ''
         mkdir -p `dirname $out/${page.href}`
-        ln -s ${pkgs.writeText "${conf.siteId}-${replaceStrings ["/"] ["-"] page.href}" (page.template page) } $out/${page.href}
+        ln -s ${pkgs.writeText "${conf.siteId}-${replaceStrings ["/"] ["-"] page.href}" (page.layout (page.template page)) } $out/${page.href}
       '') pages}
 
       eval "${postGen}"

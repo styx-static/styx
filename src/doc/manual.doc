@@ -218,9 +218,9 @@ The sample site contains many similar templates declarations, so this section wi
 ----
   templates = { # <1>
     index   = loadTemplate "index.nix"; # <2>
-    base    = loadTemplateWithEnv  # <3>
+    layout  = loadTemplateWithEnv  # <3>
                 (genericEnv // { inherit navbar; feed = pages.feed; }) # <4>
-                "base.nix"; # <5>
+                "layout.nix"; # <5>
     navbar = { # <6>
       main = loadTemplate "navbar.main.nix";
       brand = loadTemplate "navbar.brand.nix";
@@ -230,11 +230,11 @@ The sample site contains many similar templates declarations, so this section wi
 
 <1> Declaring a `templates` attribute set where all the templates will be declared.
 <2> Declaring an `index` variable that holds the `index.nix` template loaded with the generic template environment.
-<3> Declaring a `base` template, this use the `loadTemplateWithEnv` function so a custom environment can be passed as the first argument.
+<3> Declaring a `layout` template that holds the layout template, this use the `loadTemplateWithEnv` function so a custom environment can be passed as the first argument.
 <4> The environment passed to the template is the generic environment extended with a variable `feed` that holds the feed page (`pages.feed`) and the `navbar` variable that holds the list of pages to show in the NavBar.
 The base template is managing the main layout of the site and the `head` section of the HTML document.
 As we want to have a link to the feed in it, we add the feed page to a variable so it can be used in the template. Similar for the NavBar.
-<5> The template file to load, `base.nix`.
+<5> The template file to load, `layout.nix`.
 <6> Declaring templates in a sub attribute set. Templates in a subset can be accessed with `.`, for example the navbar main template is accessed by `templates.navbar.main`.
 
 NOTE: `//` is the operator to merge attribute sets. If the two sets have a same key, the right hand set value will be set. The merge is not recursive.
@@ -293,7 +293,7 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
       breadcrumbs = [ index ];
     };
 
-    feed = { posts = take 10 posts; href = "feed.xml"; template = templates.feed; }; # <2>
+    feed = { posts = take 10 posts; href = "feed.xml"; template = templates.feed; layout = id; }; # <2>
 
     posts = let  # <3>
       posts = getPosts conf.postsDir "posts"; # <4>
@@ -302,24 +302,28 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
     in sortPosts (map preparePosts (posts ++ drafts)); # <7>
   };
 
-  pageList = pagesToList pages; # <8>
+  pageList =
+    let list = (pagesToList pages); # <8>
+    in map (setDefaultLayout templates.layout) list; # <9>
 ----
 
 <1> Declaring an archives list of pages by splitting items trough multiple pages. See <<splitPage>> for details.
 <2> A simple page declaration. As the feed template is using `conf.siteTitle` in place of `title`, it is not required to set a title in this special case.
+Also, as the feed page does not need a layout, the layout function is set to `id`, see <<Layout templates>> for details.
 <3> Declare the list of posts, this is the most complex page declaration presented in this section.
 <4> Fetching the posts and setting their output path to `posts`.
 <5> Fetching the drafts only if `previewMode` is enabled. (by using the `--preview` flag to the Nix command)
 <6> Declaring a `preparePost` function that take a post and extends it by setting a template and breadcrumbs.
 <7> Finally merging the posts and drafts in a list, setting the template and breadcrumbs to each, and sorting the list so the posts are in chronological order.
 <8> `generateSite` needs a list of pages, so we convert the `pages` attribute set to a `pageList` list with the `pagesToList` function.
+<9> Then, `setDefaultLayout` is used to set a layout template to all the pages that don't set the `layout` attribute.
 
-=== Library
+== Library
 
 The library contains various functions that are used through Styx source.
 The functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy way.
 
-==== generation
+=== generation
 
 This namespace contains functions related to content generation.
 
@@ -394,11 +398,11 @@ archives = splitPage {
 
 '''
 
-==== nixpkgs
+=== nixpkgs
 
 This namespace include the nixpkgs library and link:http://nixos.org/nix/manual/#ssec-builtins[builtins] functions.
 
-==== content
+=== content
 
 This namespace contains functions to manipulate content, especially posts.
 
@@ -497,7 +501,7 @@ sortedPosts = sortPosts (getPosts conf.postsDir "posts");
 
 '''
 
-==== template
+=== template
 
 This namespace contains functions to manipulate templates.
 
@@ -558,7 +562,7 @@ prettyTimestamp "2016-09-26"
 
 '''
 
-==== utils
+=== utils
 
 This namespace contains various utility functions.
 
@@ -598,13 +602,32 @@ index = loadTemplateWithEnv { inherit conf state lib templates; } "index.nix";
 
 '''
 
+`setDefaultLayout`::
+  Description::: Set a layout to a page attribute set. Does nothing if the page attribute set already has a layout.
+  Parameter Type::: Standard
+  Parameters:::
+    * `layout`: The layout template.
+    * `page`: A page attribute set.
+  Return::: A page attribute set with `layout` set.
+  Example:::
+
++
+[source, nix]
+----
+  pageList =
+    let list = (pagesToList pages);
+    in map (setDefaultLayout templates.layout) list;
+----
+
+'''
+
 `setTemplate`::
   Description::: Set a template to a page attribute set.
   Parameter Type::: Standard
   Parameters:::
     * `template`: The template function.
     * `page`: A page attribute set.
-  Return::: The template function.
+  Return::: The template function partially evaluated.
   Example:::
 
 +
@@ -624,8 +647,9 @@ Pages is the most basic content unit. Every content in Styx is a page (posts and
 
 A page in Styx is an attribute set following a set of rules:
 
-- It must define at least the `href`, `title` and the `template` keys.
-- The `template` key must be a template function that take the `page` attribute set as a parameter and return the page source.
+- It must define at least the `href`, `title`, `layout` and the `template` keys.
+- The `template` key must be a template function that take the `page` attribute set as a parameter and return the page attribute set augmented with a `content` key representing the result of the template.
+- The `layout` take a page attribute set with a `content` key and render the final page source.
 - The `href` key is the path of the generated page relative to site root.
 
 It is possible to extend a page attribute set at will for more complex use cases.
@@ -633,8 +657,10 @@ It is possible to extend a page attribute set at will for more complex use cases
 [source, nix]
 .Page definition example
 ----
-  pages.about = { href = "about.html"; template = templates.about; title = "About"; };
+  pages.about = { href = "about.html"; template = templates.about; title = "About"; layout = templates.layout; };
 ----
+
+NOTE: The layout being common to most of pages, the default layout is usually set with a map function when the page attribute set is converted to a list of pages.
 
 [source, nix]
 .Extending a page attribute set
@@ -719,37 +745,94 @@ This section introduces how to customize your Styx site.
 
 Styx templates are functions that return text when fully evaluated.
 
-==== Basic templates
+Templates are divided in two types:
 
-The most basic template is a function that takes the template environment as parameter and return a text.
+- Layout templates, responsible for the "frame" of the page. (page attribute set `layout` key)
+- Partial templates responsible for the "content" of the page. (page attribute set `template` key)
+
+The template evaluation flow is:
+
+- The partial template evaluate the page attribute set, this generate a partial result that is stored in the page attribute set `content` key.
+- The layout template evaluate the page attribute set returned by the partial template, this generate the final source of the page.
+
+==== Text handling basics
+
+Templates are function that ultimately return text.
+There are different way to handle text in the Nix expression language.
+
+- multi-line text, delimited by `''`.
+
++
+[source, nix]
+.Multi-line text
+----
+''
+  Hello world!
+  Hello Styx!
+''
+----
+
+- single line text, delimited by `"`.
+
++
+[source, nix]
+.Multi-line text
+----
+"Hello world!"
+----
+
+Nix expressions can be included in text in enclosed in `${...}`.
+
++
+[source, nix]
+.Expression antiquotation
+----
+let name = "world"; in
+"Hello ${name}!"
+----
+
+==== Layout templates
+
+The layout template is responsible for the final rendering of the page.
+The layout template takes a template environment, and a page attribute set with a `content`.
+The layout template is usually takes care of the HTML code that is not directly related to the content, like the `head` tag.
 
 [source, nix]
-.Basic template
+.Simple layout template.
 ----
-environment: # <1>
+env:
+page:
 ''
-  hello world! # <2>
-''
-----
-
-<1> Functions in Nix are declared in the form `argument: body`, so this declare a function taking an `environment` parameter.
-<2> This is the text returned by the function, `''` denotes that the text is multi-line.
-
-==== Page templates
-
-A page template is a template that takes the page attribute as an extra parameter.
-
-[source, nix]
-.Basic page template
-----
-environment:
-page: # <1>
-''
-  hello world!
+  <html>
+    ...
+  <body>
+    ...
+    ${page.content}
+    ...
+  </body>
+  </html>
 ''
 ----
 
-<1> The page attribute set.
+TIP: Layout templates are just functions, in case the partial template return the full page source like for a rss feed, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent.
+
+==== Partial templates
+
+Partial templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
+The partial template should set or update the `content` attribute of the page attribute set so the layout template can be rendered correctly.
+Partial templates can also add other attributes to the page attribute to fit any special need.
+
+----
+{ templates, ... }:
+page:
+let
+  content =
+    ''
+      <h1>${page.title}</h1>
+    '';
+in
+  page // { inherit content; }
+----
 
 
 ==== Template environment
@@ -806,6 +889,8 @@ page:
 ''
 ----
 
+NOTE: The `loadTemplateWithEnv` function, or calling the `loadTemplate` with an environment will partially evaluate the template function. This means that the template function will be become a single argument function (`page`).
+
 WARNING: Calling the current template will trigger an infinite loop and make the site generation fail.
 
 === Applying templates to multiple contents
@@ -815,11 +900,7 @@ The `mapTemplate` function can be used to map a template to a list of contents.
 [source, nix]
 .Applying a template to multiple contents
 ----
-{ templates, ... }:
-page:
-''
-  ${mapTemplate templates.post.list page.posts}
-''
+${mapTemplate templates.post.list page.posts}
 ----
 
 == Cookbook
@@ -827,7 +908,7 @@ page:
 === NavBar
 
 The sample `default.nix` is setting a NavBar.
-Because the NavBar is a site wide feature is should be applied to the base template (`base.nix`).
+Because the NavBar is a site wide feature is should be applied to the layout template (`layout.nix`).
 
 Setting a Navbar consists in two steps:
 
@@ -843,16 +924,16 @@ Example from `default.nix`:
              archive = (head pages.archives) // { title = "Archives"; }; # <2>
            in [ archive pages.about ]; # <3>
 
-  templates.base = loadTemplateWithEnv # <4>
-                     (genericEnv // { inherit navbar; }) # <5>
-                     "base.nix"; # <6>
+  templates.layout = loadTemplateWithEnv # <4>
+                     (genericEnv // { inherit navbar; feed = pages.feed; }) # <5>
+                     "layout.nix"; # <6>
 ----
 
 +
 <1> Declaring a `navbar` variable.
 <2> Declare an `archive` variable in the local scope. `pages.archives` is a list of pages so we extract the first page with `head pages.archive`, then we extends this page by setting a `title` using the `//` operator.
 <3> The `navbar` value is a list containing the first archive page and the about page.
-<4> Loading the `templates.base` template file.
+<4> Loading the `templates.layout` template file.
 <5> The first parameter of the `loadTemplateWithEnv` must be an environment attribute set.
 `genericEnv` is the generic template environment, but as we want to pass the `navbar` variable to the template, we extends the environment with `navbar`. 
 <6> The template file to load.

@@ -26,20 +26,29 @@ let
 
   # List of templates
   templates = {
+    # layout template loading
     # Example of setting a custom template environment
-    base    = loadTemplateWithEnv 
+    layout  = loadTemplateWithEnv
                 (genericEnv // { inherit navbar; feed = pages.feed; })
-                "base.nix";
+                "layout.nix";
+
     index   = loadTemplate "index.nix";
+
     generic = loadTemplate "generic.nix";
+
     archive = loadTemplate "archive.nix";
+
     feed    = loadTemplate "feed.nix";
+
     pagination  = loadTemplate "pagination.nix";
+
     breadcrumbs = loadTemplate "breadcrumbs.nix";
+
     navbar = {
       main = loadTemplate "navbar.main.nix";
       brand = loadTemplate "navbar.brand.nix";
     };
+
     post = {
       full     = loadTemplate "post.full.nix";
       list     = loadTemplate "post.list.nix";
@@ -80,7 +89,7 @@ let
     };
 
     # RSS feed page
-    feed = { href = "feed.xml"; template = templates.feed; posts = take 10 posts; };
+    feed = { href = "feed.xml"; template = templates.feed; posts = take 10 posts; layout = id; };
 
     # List of posts
     # Fetch and sort the posts and drafts (only in preview mode) and set the
@@ -93,8 +102,9 @@ let
 
   };
 
-  # Convert the `pages` attribute set to a list
-  # Can also be done manually with [ pages.index ... ]
-  pageList = pagesToList pages;
+  # Convert the `pages` attribute set to a list and set a default layout
+  pageList =
+    let list = (pagesToList pages);
+    in map (setDefaultLayout templates.layout) list;
 
 in generateSite { inherit conf; pages = pageList; }

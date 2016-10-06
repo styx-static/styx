@@ -8,4 +8,4 @@ let
     </div>
     '';
 in
-  templates.base (page // { inherit content; })
+  page // { inherit content; }

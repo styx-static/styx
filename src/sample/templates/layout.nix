@@ -3,9 +3,7 @@
 , feed ? false
 , ... }:
 
-{ title
-, content
-, ... }@page:
+page:
 with lib;
   ''
     <!DOCTYPE html>
@@ -15,7 +13,7 @@ with lib;
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width; initial-scale=1">
   
-      <title>${title}</title>
+      <title>${page.title}</title>
   
       ${optionalString (feed != false) ''
       <link
@@ -50,7 +48,7 @@ with lib;
       <div class="page-content">
         <div class="container wrapper">
           ${templates.breadcrumbs page}
-          ${content}
+          ${page.content}
         </div>
       </div>
 

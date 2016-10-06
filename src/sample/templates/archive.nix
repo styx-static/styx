@@ -16,4 +16,4 @@ let
       ${templates.pagination { pages = page.pages; index = page.index; }}
     '';
 in
- templates.base (page // { inherit content; })
+ page // { inherit content; }
