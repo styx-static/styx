@@ -4,7 +4,7 @@ A Styx site can be created and locally served with the following set of commands
 
 [source, bash]
 ----
-$ nix-shell -p `nix-build https://github.com/ericsagnes/styx/archive/master.tar.gz` # <1>
+$ nix-shell -p `nix-build https://github.com/styx-static/styx/archive/master.tar.gz` # <1>
 [nix-shell]$ styx new myblog # <2>
 [nix-shell]$ cd myblog # <3>
 [nix-shell:~/myblog]$ styx serve # <4>
