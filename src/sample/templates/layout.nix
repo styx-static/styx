@@ -28,6 +28,14 @@ with lib;
           rel="stylesheet"
           href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
+      <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        crossorigin="anonymous"></script>
+
+      <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        crossorigin="anonymous"></script>
+
       <link
           rel="stylesheet"
           href="${conf.siteUrl}/style.css">
