@@ -13,7 +13,7 @@ with lib;
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width; initial-scale=1">
   
-      <title>${page.title}</title>
+      <title>${page.title} - ${conf.siteTitle}</title>
   
       ${optionalString (feed != false) ''
       <link

@@ -7,12 +7,15 @@
 :sectnums:
 :sectanchors:
 :nofooter:
+:experimental:
 
 include::introduction.doc[]
 
 include::installation.doc[]
 
 include::quickstart.doc[]
+
+include::cli.doc[]
 
 include::basics.doc[]
 

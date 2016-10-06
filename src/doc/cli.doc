@@ -1,0 +1,38 @@
+== Command line interface
+
+The Styx provides a command line program `styx`. The `styx` command has multiple actions that will be explained in the following sections.
+
+=== Generic commands
+
+`styx --help`:: Display Styx help message.
+`styx --version`:: Display Styx version.
+
+=== Build
+
+The `build` command is used to build a Styx site. It must be used in a Styx site root file.
+
+`styx build`:: Build the Styx site and write the output in the `public` folder.
+`styx build -o FOLDER`:: Build the nix site and write the output in the `FOLDER` folder.
+
+NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `build` command.
+
+=== Serve
+
+The `serve` command is used to build a site and launch a local server. This allow to check the site without having to deploying it.
+The server can be stopped by pressing kbd:[Ctrl+C].
+
+`styx serve`:: Will serve on the localhost on port `8080`.
+`styx-serve --port 9090`:: Will serve on the port `9090`.
+`styx-serve --preview`:: Enable preview mode. In preview mode drafts are displayed.
+
+NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `serve` command.
+
+=== Deploy
+
+The deploy command is used to deploy A styx site on a remote server.
+Currently only GitHub pages are supported.
+
+For more details see the <<Deployment>> section.
+
+`styx deploy --init--gh-pages`:: Setup a git repository to be able to deploy on GitHub pages.
+`styx deploy --gh-pages`:: Commit the Styx site to the `gh-pages` branch.
