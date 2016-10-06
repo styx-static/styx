@@ -17,6 +17,7 @@ Options:
     -h, --help                 Show this help.
     -v, --version              Print the name and version.
     -p, --port                 Select the port number for the serve subcommand.
+    -o, --out                  Set the output for the build subcommand, "public" by default.
         --preview              Enables the draft preview mode for build and serve subcommands.
         --arg ARG VAL          Pass an argument ARG with the value VAL to the build and serve subcommands.
         --argstr ARG VAL       Pass an argument ARG with the value VAL as a string to the build and serve subcommands.
@@ -28,6 +29,7 @@ EOF
 
 origArgs=("$@")
 action=
+output="public"
 target="styx-site"
 server=@server@/bin/caddy
 dir="$(dirname "${BASH_SOURCE[0]}")"
@@ -64,6 +66,9 @@ while [ "$#" -gt 0 ]; do
     --show-trace)
       extraFlags+=("$i")
       ;;
+	  -o|--output)
+	    output="$1"; shift 1
+	    ;;
 	  -p|--port)
 	    port="$1"; shift 1
 	    ;;
@@ -107,7 +112,11 @@ fi
 
 if [ "$action" = build ]; then
   if [ -f $(pwd)/default.nix ]; then
-    path=$(nix-build --argstr lastChange "$lastChange" "${extraFlags[@]}")
+    path=$(nix-build --no-out-link --argstr lastChange "$lastChange" "${extraFlags[@]}")
+    # copying the build results as normal files
+    $(cp -L -r "$path" "$output")
+    # fixing permissions
+    $(chmod u+rw -R "$output")
   else
     echo "no default.nix in current directory"
     exit 1;
