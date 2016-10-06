@@ -6,7 +6,7 @@ let styx =
 
 stdenv.mkDerivation rec {
   name    = "styx-${version}";
-  version = "0.1.0";
+  version = pkgs.lib.fileContents ./VERSION;
 
   src = ./src;
 

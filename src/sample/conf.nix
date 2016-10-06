@@ -1,4 +1,7 @@
 {
+  # Directory where templates are located
+  pagesDir = ./pages;
+
   # Directory where posts are located
   postsDir = ./posts;
 

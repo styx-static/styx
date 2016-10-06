@@ -1,5 +1,5 @@
 = Styx manual
-version @version@
+:revnumber: @version@
 :description: Styx static site generator documentation
 :toc: left
 :toclevels: 3
@@ -84,6 +84,7 @@ include::../sample/conf.nix[]
 
 The configuration is an attribute set, and new configuration attributes can be added at will.
 
+`pagesDir`:: Directory where pages are located.
 `postsDir`:: Directory where posts are located.
 `draftsDir`:: Directory where drafts are located.
 `templatesDir`:: Directory where templates are located.
@@ -265,11 +266,10 @@ The feed page is an exception as it use the site title from `conf` and then does
     };
 
     about = {
-      title = "About";
       href = "about.html";
       template = templates.about;
       breadcrumbs = [ index ]; # <6>
-    };
+    } // (parsePage conf.pagesDir "about.md"); # <7>
 ----
 
 <1> Declaring the `pages` attribute set. It is important that this set holds only valid pages or list of pages.
@@ -279,6 +279,7 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
 <4> This also set a non-standard attribute, `posts` set to the first `conf.postsOnIndexPage` items of the post page list.
 <5> Another non-standard attribute, `archivePage` set to the first page of the archives page list.
 <6> Setting page breadcrumbs, for details on the breadcrumbs system see the <<Breadcrumbs>> section.
+<7> Fetching page content and title from a markdown.
 
 [source, nix]
 .Pages declaration 2/2
@@ -358,8 +359,7 @@ pages = {
   about = {
     href = "about.html";
     template = templates.about;
-    title = "About";
-  };
+  } // (parsePage conf.pagesDir "about.md");
 };
 
 pageList = pagesToList pages;
@@ -398,9 +398,9 @@ archives = splitPage {
 
 This namespace include the nixpkgs library and link:http://nixos.org/nix/manual/#ssec-builtins[builtins] functions.
 
-==== posts
+==== content
 
-This namespace contains functions to manipulate posts.
+This namespace contains functions to manipulate content, especially posts.
 
 '''
 
@@ -437,6 +437,27 @@ For a post in a file `2016-09-12-welcome-to-styx.md` and an `outDir` set to `pos
 [source, nix]
 ----
 posts = getDrafts conf.draftsDir;
+----
+
+'''
+
+`parsePage`::
+  Description::: Parse a markdown file to a partial page attribute set.
+  Parameter Type::: Standard
+  Parameters:::
+    * `pageDir`: Path to the folder containing the page.
+    * `filename`: Page file name.
+  Return::: An attribute set containing `content` (the page HTML source) and `title`.
+  Example:::
+
++
+[source, nix]
+----
+  about = {
+    href = "about.html";
+    template = templates.about;
+    breadcrumbs = [ index ];
+  } // (parsePage conf.pagesDir "about.md");
 ----
 
 '''
@@ -615,13 +636,25 @@ It is possible to extend a page attribute set at will for more complex use cases
   pages.about = { href = "about.html"; template = templates.about; title = "About"; };
 ----
 
-
 [source, nix]
 .Extending a page attribute set
 ----
   pages.about // { breadcrumbs = [ pages.index ]; }
 ----
 
+Page content can be directly set in the template, or imported from an external file with the `parsePage` function:
+
+[source, nix]
+.Loading a markdown file
+----
+  about = {
+    href = "about.html";
+    template = templates.about;
+    breadcrumbs = [ index ];
+  } // (parsePage conf.pagesDir "about.md");
+----
+
+NOTE: `parsePage` return a set with `title` and `content`, the HTML source of the page.
 
 === Posts
 

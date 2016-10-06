@@ -6,12 +6,12 @@ let
   # Styx lib
   template   = import ./template.nix nixLib;
   utils      = import ./utils.nix nixLib;
-  posts      = import ./posts.nix nixLib pkgs;
+  content    = import ./content.nix nixLib pkgs;
   generation = import ./generation.nix nixLib pkgs;
 
 in
   {
-    inherit nixLib template utils posts generation;
+    inherit nixLib template utils content generation;
   }
   // nixLib
-  // template // utils // posts // generation
+  // template // utils // content // generation

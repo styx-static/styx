@@ -12,7 +12,7 @@
 navbar:
 with lib;
 ''
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-fixed-top">
   <div class="container">
 
     <div class="navbar-header">
@@ -37,6 +37,3 @@ with lib;
   </div>
 </nav>
 ''
-        /*
-        <li><a href="${conf.siteUrl}/${item.href}">${item.title}</a></li>
-        */
