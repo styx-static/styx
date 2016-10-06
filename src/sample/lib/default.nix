@@ -7,7 +7,7 @@ let
   template   = import ./template.nix nixLib;
   utils      = import ./utils.nix nixLib;
   posts      = import ./posts.nix nixLib pkgs;
-  generation = import ./generation.nix nixLib;
+  generation = import ./generation.nix nixLib pkgs;
 
 in
   {

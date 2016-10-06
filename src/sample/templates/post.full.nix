@@ -12,7 +12,7 @@ let
       </header>
 
       <article class="post-content">
-        ${post.html}
+        ${post.content}
       </article>
 
     </div>

@@ -1,10 +1,9 @@
 # Page and site generation functions
 
-lib:
+lib: pkgs:
 with lib;
 
 let
-  pkgs = import ./pkgs.nix;
 
   chunksOf = k:
     let f = ys: xs:

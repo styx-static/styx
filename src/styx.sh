@@ -94,11 +94,10 @@ if [ "$action" = new ]; then
 fi
 
 if [ "$action" = serve ]; then
-  echo "$date"
   if [ -f $(pwd)/default.nix ]; then
     path=$(nix-build --no-out-link --argstr lastChange "$lastChange" --argstr siteUrl "http://127.0.0.1:$port" "${extraFlags[@]}")
     echo "server listening on http://127.0.0.1:$port"
-    echo "press ctrl+c to stop"
+    echo "press Ctrl+c to stop"
     $($server --root "$path" --port "$port")
   else
     echo "no default.nix in current directory"

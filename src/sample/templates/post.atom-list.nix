@@ -8,7 +8,7 @@ post:
       <title>${post.title}</title>
       <summary type="xhtml">
         <div xmlns="http://www.w3.org/1999/xhtml">
-          ${post.html}
+          ${post.content}
         </div>
       </summary>
     </entry>
