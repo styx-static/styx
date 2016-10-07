@@ -177,6 +177,7 @@ if [ "$action" = deploy ]; then
       else
         echo "There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' to initialize it."
         exit 1
+      fi
     else
       echo "Not in git repository, doing nothing."
       exit 1
