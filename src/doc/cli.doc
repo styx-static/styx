@@ -1,11 +1,11 @@
 == Command line interface
 
-The Styx provides a command line program `styx`. The `styx` command has multiple actions that will be explained in the following sections.
+The Styx provides a command line program `styx`.
 
 === Generic commands
 
-`styx --help`:: Display Styx help message.
-`styx --version`:: Display Styx version.
+`styx --help`:: Display the help message.
+`styx --version`:: Display the version.
 
 === Build
 
@@ -29,10 +29,10 @@ NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALU
 
 === Deploy
 
-The deploy command is used to deploy A styx site on a remote server.
+The`deploy` command is used to deploy A styx site on a remote server.
 Currently only GitHub pages are supported.
 
 For more details see the <<Deployment>> section.
 
-`styx deploy --init--gh-pages`:: Setup a git repository to be able to deploy on GitHub pages.
+`styx deploy --init--gh-pages`:: Prepare a git repository to be able to deploy on GitHub pages.
 `styx deploy --gh-pages`:: Commit the Styx site to the `gh-pages` branch.

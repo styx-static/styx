@@ -53,7 +53,7 @@ The configuration is an attribute set, and new configuration attributes can be a
 [[defaultnix]]
 === default.nix
 
-`default.nix` is the central file of a Styx file and is responsible for generating the website.
+`default.nix` is the central file of a Styx site and is responsible for generating the website.
 
 `default.nix` consists in a single function that generate a site when evaluated.
 
@@ -101,7 +101,7 @@ So in the previous line `lib` is imported in the `lib` local variable, and in th
 <7> Contains the main logic, and will be explained in the next section.
 <8> This is what the whole `default.nix` function return. `generateSite` is a function that generate the site. All the logic in the "Main Logic" part is meant to prepare `generateSite` arguments.
 
-WARNING: The default parameters in `default.nix`: `pkgs`, head, `previewMode`, `siteUrl` and `lastChange` are set and expected by Styx. Removing or changing them will break the site generation process.
+WARNING: The default parameters in `default.nix` head: `pkgs`, `previewMode`, `siteUrl` and `lastChange` are set and expected by Styx. Removing or changing them will break the site generation process.
 
 ==== Main Logic
 
@@ -110,8 +110,8 @@ The order of declarations in the main logic part is not important and can be cha
 
 ===== Setup
 
-This contains some boiler-plate code. Variables can be declared at will to fit any special needs.
-The following snippet is just an example. (Comments removed in favor of call-out explanations)
+This part contains some boiler-plate code. Variables can be declared at will to fit any special needs.
+(Comments removed in favor of call-out explanations)
 
 [source, nix]
 .Setup section in default.nix
@@ -132,7 +132,7 @@ The following snippet is just an example. (Comments removed in favor of call-out
 `lastChange` value is automatically set by the Styx command.
 <3> This initialize a generic template environment. Most of templates expect to have access to `conf`, `state`, `lib` and `templates`. It is not recommended to remove any of these.
 On the other hand it is fine to add new attributes to the default environment to fit special needs.
-<4> Defining a helper function `loadTemplate` that loads a template with the default environment. This function is defined taking advantage of η-reduction.
+<4> Defining a helper function `loadTemplate` that loads a template with the default environment. This function is defined taking advantage of η-reduction so its argument is not specified.
 `loadTemplate` is actively used during template declaration.
 <5> This define a `navbar` local variable containing pages to include in the NavBar. For more details about Navbar setting, see the <<NavBar>> section.
 
@@ -175,12 +175,9 @@ NOTE: `//` is the operator to merge attribute sets. If the two sets have a same 
 ===== Pages declaration
 
 The pages declaration consists in declaring all the pages of the site in an attribute set.
-
 The sample site contains many similar pages declarations, so this section will only present interesting examples.
 
 A page is an attribute set with a few constraints, to learn more about how it should be structured see the <<Pages>> section.
-
-As this section present a lot of information, the code snippet is divided in two parts.
 
 NOTE: A page attribute set must consist at least of `template`, `href` and `title` attributes.
 The feed page is an exception as it use the site title from `conf` and then does not need a `title` attribute.
@@ -226,7 +223,12 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
       breadcrumbs = [ index ];
     };
 
-    feed = { posts = take 10 posts; href = "feed.xml"; template = templates.feed; layout = id; }; # <2>
+    feed = { # <2>
+      posts = take 10 posts;
+      href = "feed.xml";
+      template = templates.feed;
+      layout = id;
+    };
 
     posts = let  # <3>
       posts = getPosts conf.postsDir "posts"; # <4>

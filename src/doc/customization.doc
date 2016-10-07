@@ -1,25 +1,26 @@
 == Customization
 
-This section introduces how to customize your Styx site.
+This section explains how to customize a Styx site.
 
 === Templates
 
-Styx templates are functions that return text when fully evaluated.
+Styx templates are functions that return text or page attribute sets when fully evaluated.
 
 Templates are divided in two types:
 
-- Layout templates, responsible for the "frame" of the page. (page attribute set `layout` key)
-- Partial templates responsible for the "content" of the page. (page attribute set `template` key)
+- Layout templates, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
+- Partial templates responsible for the partial rendering of a page, it should return a page attibute set, but in some special cases can return text. (page attribute set `template` key)
 
 The template evaluation flow is:
 
 - The partial template evaluate the page attribute set, this generate a partial result that is stored in the page attribute set `content` key.
-- The layout template evaluate the page attribute set returned by the partial template, this generate the final source of the page.
+- The layout template evaluate the page attribute set returned by the partial template and produce the final source of the page.
 
 ==== Text handling basics
 
-Templates are function that ultimately return text.
-There are different way to handle text in the Nix expression language.
+Most of the work in template is done by manipulating text.
+
+This introduce the basics of text handling in the templates:
 
 - multi-line text, delimited by `''`.
 
@@ -53,9 +54,10 @@ let name = "world"; in
 
 ==== Layout templates
 
-The layout template is responsible for the final rendering of the page.
-The layout template takes a template environment, and a page attribute set with a `content`.
-The layout template is usually takes care of the HTML code that is not directly related to the content, like the `head` tag.
+The layout template is responsible for rendering the final source of the page.
+The layout template function usually takes a template environment, and a page attribute set with a `content`. (There are exceptions)
+
+In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag.
 
 [source, nix]
 .Simple layout template.
@@ -74,12 +76,12 @@ page:
 ''
 ----
 
-TIP: Layout templates are just functions, in case the partial template return the full page source like in the rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent.
+TIP: Layout templates are just functions, in case the partial template return the full page source like in the rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent and return the `template` result.
 
 ==== Partial templates
 
 Partial templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
-The partial template should set or update the `content` attribute of the page attribute set so the layout template can be rendered correctly.
+The partial template should set or update the `content` attribute of the page attribute set so the layout template can render the final source.
 Partial templates can also add other attributes to the page attribute to fit any special need.
 
 ----
@@ -98,7 +100,7 @@ in
 ==== Template environment
 
 The template environment is the first parameter of the template function.
-It is defined with template loading function in `default.nix`.
+It is defined when loading the template in `default.nix`.
 
 The default template environment consists in:
 
@@ -151,7 +153,7 @@ page:
 
 NOTE: The `loadTemplateWithEnv` function, or calling the `loadTemplate` with an environment will partially evaluate the template function. This means that the template function will be become a single argument function (`page`).
 
-WARNING: Calling the current template will trigger an infinite loop and make the site generation fail.
+WARNING: Trying to call the current template will trigger an infinite loop and make the site generation fail.
 
 === Applying templates to multiple contents
 
