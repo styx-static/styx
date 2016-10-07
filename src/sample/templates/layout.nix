@@ -68,7 +68,7 @@ with lib;
             </div>
             <div class="col-sm-4 col-xs-4">
               <ul class="list-unstyled">
-                <li><a href="https://nixos.org/Nix">Nix</a></li>
+                <li><a href="https://nixos.org/nix/">Nix</a></li>
               </ul>
             </div>
             <div class="col-sm-4 col-xs-4">
