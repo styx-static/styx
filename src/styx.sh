@@ -32,6 +32,11 @@ EOF
     exit 0
 }
 
+last_change() {
+  lastTimestamp="$(find . -not -path '*.git/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d".")"
+  date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ
+}
+
 origArgs=("$@")
 action=
 output="public"
@@ -43,8 +48,6 @@ version=@version@
 port=8080
 extraFlags=()
 deployAction=
-lastTimestamp="$(find . -not -path '*.git/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d".")"
-lastChange="$(date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ)"
 
 if [ $# -eq 0 ]; then
   display_usage
@@ -112,7 +115,7 @@ fi
 
 if [ "$action" = serve ]; then
   if [ -f $(pwd)/default.nix ]; then
-    path=$(nix-build --no-out-link --argstr lastChange "$lastChange" --argstr siteUrl "http://127.0.0.1:$port" "${extraFlags[@]}")
+    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://127.0.0.1:$port" "${extraFlags[@]}")
     echo "server listening on http://127.0.0.1:$port"
     echo "press Ctrl+C to stop"
     $($server --root "$path" --port "$port")
@@ -128,7 +131,7 @@ if [ "$action" = build ]; then
       echo "'$output' folder already exists, doing nothing."
       exit 1
     else
-      path=$(nix-build --no-out-link --argstr lastChange "$lastChange" "${extraFlags[@]}")
+      path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
       # copying the build results as normal files
       $(cp -L -r "$path" "$output")
       # fixing permissions
@@ -165,7 +168,7 @@ if [ "$action" = deploy ]; then
         # and update the feed
         currentBranch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
         echo "building the site"
-        path=$(nix-build --no-out-link --argstr lastChange "$lastChange" "${extraFlags[@]}")
+        path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
         git checkout gh-pages
         $(cp -L -r "$path"/* ./)
         $(chmod u+rw -R ./)
