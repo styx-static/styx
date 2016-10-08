@@ -81,8 +81,8 @@ rec {
      - content: page content in HTML format
      - title: page title (first H1 content)
   */
-  parsePage = pageDir: filename:
-    getFileData "${pageDir + "/${filename}"}";
+  parsePage = { dir, file, substitutions ? {} }:
+    getFileData substitutions "${dir + "/${file}"}";
 
   /* Parse a post file into a post attribute set.
 

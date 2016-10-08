@@ -41,7 +41,7 @@ Page content can be directly set in the template, or imported from an external f
     href = "about.html";
     template = templates.about;
     breadcrumbs = [ index ];
-  } // (parsePage conf.pagesDir "about.md");
+  } // (parsePage { dir = conf.pagesDir; file = "about.md"; });
 ----
 
 NOTE: `parsePage` return a set with `title` and `content`. `content` is the converted HTML source of the page.

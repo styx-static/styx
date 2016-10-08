@@ -48,7 +48,7 @@ Deploy options:
 
 EOF
 # Dev options:
-#   --DEBUG                    Print the commands instead of running them, do not work with 'styx live'
+#   --DEBUG                    set -x mode
     exit 0
 }
 
@@ -154,7 +154,7 @@ while [ "$#" -gt 0 ]; do
     --arg|--argstr)
       extraFlags+=("$i" "$1" "$2"); shift 2
       ;;
-    --show-trace)
+    --show-trace|--quiet|--verbose)
       extraFlags+=("$i")
       ;;
 # Commands
@@ -209,7 +209,7 @@ while [ "$#" -gt 0 ]; do
       ;;
 # Dev options
     --DEBUG)
-      debug=1
+      set -x
       ;;
     *)
       echo "$0: unknown option \`$i'"
@@ -228,13 +228,13 @@ done
 if [ "$action" = new ]; then
   folder="$(pwd)/$target"
   if [ -d "$folder" ]; then
-    cmd+=("echo \"$target directory exists\"")
-    cmd+=("exit 1")
+    echo "$target directory exists"
+    exit 1
   else
-    cmd+=("mkdir \"\$folder\"")
-    cmd+=("cp -r $share/sample/* \"$folder/\"")
-    cmd+=("chmod -R u+rw $folder")
-    cmd+=("echo -e \"New styx site installed in '$folder'.\"")
+    mkdir "$folder"
+    cp -r $share/sample/* "$folder/"
+    chmod -R u+rw "$folder"
+    echo -e "New styx site installed in '$folder'."
   fi
 fi
 
@@ -248,20 +248,21 @@ fi
 if [ "$action" = build ]; then
   if [ -f $(pwd)/default.nix ]; then
     if [ -d "$(pwd)/$output" ]; then
-      cmd+=("echo \"'\$output' folder already exists, doing nothing.\"")
-      cmd+=("exit 1")
+      echo "'$output' folder already exists, doing nothing."
+      exit 1
     else
-      cmd+=("echo \"Building the site...\"")
-      cmd+=("path=\$(nix-build --quiet --no-out-link --argstr lastChange \"$(last_change)\" \"${extraFlags[@]}\")")
+      echo "Building the site..."
+      # this can be long so don't be quiet
+      path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
       # copying the build results as normal files
-      cmd+=("\$(cp -L -r \"\$path\" \"$output\")")
+      $(cp -L -r "$path" "$output")
       # fixing permissions
-      cmd+=("\$(chmod u+rw -R \"$output\")")
-      cmd+=("echo \"Build in '$output' finished\"")
+      $(chmod u+rw -R "$output")
+      echo "Build in '$output' finished"
     fi
   else
-    cmd+=("echo \"No 'default.nix' in current directory\"")
-    cmd+=("exit 1")
+    echo "No 'default.nix' in current directory"
+    exit 1
   fi
 fi
 
@@ -277,24 +278,24 @@ if [ "$action" = serve ]; then
     siteUrlFlag=
     if [ -n "$siteURL" ]; then
       if [ "$siteURL" = "PREVIEW" ]; then
-        siteUrlFlag="--argstr siteUrl \"http://$serverHost:$port\""
+        siteUrlFlag="--argstr siteUrl http://$serverHost:$port"
       else
-        siteUrlFlag="--argstr siteUrl \"$siteURL\""
+        siteUrlFlag="--argstr siteUrl $siteURL"
       fi
     fi
-    cmd+=("path=\$(nix-build --quiet --no-out-link --argstr lastChange \"$(last_change)\" $siteUrlFlag \"${extraFlags[@]}\")")
+    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}")
     if [ -n "$detachServer" ]; then
-      cmd+=("$server --root \"\$path\" --host \"$serverHost\" --port \"$port\" >/dev/null &")
-      cmd+=("serverPid=\$!")
-      cmd+=("echo \"server listening on http://$serverHost:$port qith pid ${serverPid}\"")
+      $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
+      serverPid=$!
+      echo "server listening on http://$serverHost:$port with pid ${serverPid}"
     else
-      cmd+=("echo \"server listening on http://$serverHost:$port\"")
-      cmd+=("echo \"press Ctrl+C to stop\"")
-      cmd+=("\$($server --root \"\$path\" --host \"$serverHost\" --port \"$port\")")
+      echo "server listening on http://$serverHost:$port"
+      echo "press Ctrl+C to stop"
+      $($server --root "$path" --host "$serverHost" --port "$port")
     fi
   else
-    cmd+=("echo \"No 'default.nix' in current directory\"")
-    cmd+=("exit 1")
+    echo "No 'default.nix' in current directory"
+    exit 1
   fi
 fi
 
@@ -312,7 +313,7 @@ if [ "$action" = live ]; then
     # get last change
     lastChange=$(last_timestamp)
     # building to result a first time
-    path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
+    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
     # start the server
     $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
     echo "Started live preview on http://$serverHost:$port"
@@ -362,54 +363,43 @@ fi
 if [ "$action" = deploy ]; then
   if [ "$deployAction" == "init-gh-pages" ]; then
     if [ -d $(pwd)/.git ]; then
-      cmd+=("git checkout --orphan gh-pages")
-      cmd+=("git rm -rf .")
-      cmd+=("touch .styx")
-      cmd+=("git add .styx")
-      cmd+=("git commit -m \"initialized gh-pages branch\"")
-      cmd+=("git checkout \"$(current_branch)\"")
-      cmd+=("echo \"Successfully created the 'gh-pages' branch.\"")
-      cmd+=("echo \"You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'.\"")
+      startBranch=$(current_branch)
+      git checkout --orphan gh-pages
+      git rm -rf .
+      touch .styx
+      git add .styx
+      git commit -m "initialized gh-pages branch"
+      git checkout "$startBranch"
+      echo "Successfully created the 'gh-pages' branch."
+      echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
     else
-      cmd+=("echo \"Not in a git repository, doing nothing.\"")
-      cmd+=("exit 1")
+      echo "Not in a git repository, doing nothing."
+      exit 1
     fi
   elif [ "$deployAction" == "gh-pages" ]; then
     if [ -d $(pwd)/.git ]; then
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
+        startBranch=$(current_branch)
         # Everytime a checkout is done, files atime and ctime are modified
         # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
         # and update the feed
-        cmd+=("echo \"Building the site\"")
-        cmd+=("path=\$(nix-build --quiet --no-out-link --argstr lastChange \"\$(last_change)\" \"\${extraFlags[@]}\")")
-        cmd+=("git checkout gh-pages")
-        cmd+=("\$(cp -L -r \"\$path\"/* ./)")
-        cmd+=("\$(chmod u+rw -R ./)")
-        cmd+=("git add .")
-        cmd+=("git commit -m \"Styx update - \$(git rev-parse --short HEAD)\"")
-        cmd+=("git checkout \"$(current_branch)\"")
-        cmd+=("echo \"Successfully updated the gh-pages branch.\"")
-        cmd+=("echo \"Push the 'gh-pages' branch to the GitHub repository to publish your site.\"")
+        echo "Building the site"
+        path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
+        git checkout gh-pages
+        $(cp -L -r "$path"/* ./)
+        $(chmod u+rw -R ./)
+        git add .
+        git commit -m "Styx update - $(git rev-parse --short HEAD)"
+        git checkout "$startBranch"
+        echo "Successfully updated the gh-pages branch."
+        echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
       else
-        cmd+=("echo \"There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' to GiHub pages deployment it..\"")
-        cmd+=("exit 1")
+        echo "There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' to set it."
+        exit 1
       fi
     else
-      cmd+=("echo \"Not in a git repository, doing nothing.\"")
-      cmd+=("exit 1")
+      echo "Not in a git repository, doing nothing."
+      exit 1
     fi
   fi
-fi
-
-
-#-------------------------------
-#
-# Debug
-#
-#-------------------------------
-
-if [ -n "$debug" ]; then
-  print_commands cmd
-else
-  run_commands cmd
 fi

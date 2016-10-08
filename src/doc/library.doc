@@ -129,10 +129,11 @@ posts = getDrafts { from = conf.draftsDir; to = "drafts"; };
 
 `parsePage`::
   Description::: Parse a markdown file to a partial page attribute set.
-  Parameter Type::: Standard
+  Parameter Type::: Attribute Set
   Parameters:::
-    * `pageDir`: Path to the folder containing the page.
-    * `filename`: Page file name.
+    * `dir`: Path to the folder containing the page.
+    * `file`: Page file name.
+    * `substitutions`: An attribute set containing substitutions (Optional). For details, see <<Substitutions>>.
   Return::: An attribute set containing `content` (the page HTML source) and `title`.
   Example:::
 
@@ -143,7 +144,7 @@ posts = getDrafts { from = conf.draftsDir; to = "drafts"; };
     href = "about.html";
     template = templates.about;
     breadcrumbs = [ index ];
-  } // (parsePage conf.pagesDir "about.md");
+  } // (parsePage { dir = conf.pagesDir; file = "about.md"; });
 ----
 
 '''
