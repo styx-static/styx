@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   src = ./src;
 
-  server = caddy.bin;
+  server = "${caddy.bin}/bin/caddy";
 
   nativeBuildInputs = [ asciidoctor ];
 

@@ -16,6 +16,15 @@ The `build` command is used to build a Styx site. It must be used in a Styx site
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `build` command.
 
+=== Preview
+
+The `preview` command is used to launch a server that will list on localhost (127.0.0.1) port 8080 by default. The preview command will override `conf.siteUrl` to preserve links.
+The server can be stopped by pressing kbd:[Ctrl+C].
+
+`styx preview`:: Will start a preview server on 127.0.0.1:8080.
+`styx preview --port 9090`:: Will start a preview server on 127.0.0.1:9090.
+`styx preview --port 9090 --drafts`:: Will start a preview server on 127.0.0.1:9090 with drafts rendered.
+
 === Serve
 
 The `serve` command is used to build a site and launch a local server. This allow to check the site without having to deploying it.
@@ -23,7 +32,7 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 
 `styx serve`:: Will serve on the localhost on port `8080`.
 `styx-serve --port 9090`:: Will serve on the port `9090`.
-`styx-serve --preview`:: Enable preview mode. In preview mode drafts are displayed.
+`styx serve --detach`:: Will serve on the localhost on port `8080` and run the server on background, process can be found by running `ps aux | grep caddy`.
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `serve` command.
 

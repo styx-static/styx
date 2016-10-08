@@ -11,24 +11,36 @@ Usage:
 Subcommands:
     new, n FOLDER              Create a new Styx site in FOLDER.
     build                      Build the site in the "public" or "--out" folder.
-    serve                      Build the site and serve it locally.
+    preview                    Build the site and serve it locally, shortcut for 'styx serve --site-url "http://HOST:PORT"'.
+                               This override the configuration file 'siteUrl' to not break links.
+    serve                      Build the site and serve it.
     deploy                     Deploy the site, must be used with a deploy option.
 
-Options:
+Generic options:
     -h, --help                 Show this help.
     -v, --version              Print the name and version.
-    -p, --port                 Select the port number for the serve subcommand.
-    -o, --out                  Set the output for the build subcommand, "public" by default.
-        --preview              Enables the draft preview mode for build and serve subcommands.
         --arg ARG VAL          Pass an argument ARG with the value VAL to the build and serve subcommands.
         --argstr ARG VAL       Pass an argument ARG with the value VAL as a string to the build and serve subcommands.
-        --show-trace           Show debug trace messages
+        --show-trace           Show debug trace messages.
+
+Build options:
+    -o, --out                  Set the build output, "public" by default.
+        --drafts               Process and render drafts.
+
+Serve options:
+    -p, --port PORT            Set the server listening port number to PORT, default is "8080".
+        --site-url URL         Override configuration "siteUrl" setting with the URL value.
+        --server-host HOST     Set the server listening host to HOST, default is "127.0.0.1".
+        --detach               Detach the server from the terminal.
+        --drafts               Process and render drafts.
 
 Deploy options:
     --init-gh-pages            If in a git repository, will create a gh-pages branch wit a .styx file.
     --gh-pages                 Build the site, copy the build results in the gh-pages branch and make a commit.
 
 EOF
+# Dev options:
+#   --DEBUG                    Print the commands instead of running them.
     exit 0
 }
 
@@ -37,16 +49,59 @@ last_change() {
   date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ
 }
 
-origArgs=("$@")
-action=
-output="public"
-target="styx-site"
-server=@server@/bin/caddy
-dir="$(dirname "${BASH_SOURCE[0]}")"
-share="$dir/../share/styx"
+print_commands(){
+  echo -e "DEBUG MODE:\n\n---\n"
+  for i in "${cmd[@]}"; do
+    echo $i
+  done
+  echo -e "\n---\n"
+}
+
+run_commands(){
+  for i in "${cmd[@]}"; do
+    eval $i
+  done
+}
+
+current_branch(){
+  git rev-parse --symbolic-full-name --abbrev-ref HEAD
+}
+
+# styx version
 version=@version@
-port=8080
+# original arguments
+origArgs=("$@")
+# action to execute
+action=
+# directory of this script
+dir="$(dirname "${BASH_SOURCE[0]}")"
+# styx share directory
+share="$dir/../share/styx"
+# debug mode
+debug=
+# list of commands that will run
+cmd=()
+# extra arguments to be appended to the nix-build command
 extraFlags=()
+
+# target default folder for the new action
+target="styx-site"
+
+# output for the build action
+output="public"
+
+# server program
+server=@server@
+# hostname or ip the server is listening on
+serverHost="127.0.0.1"
+# port used by the server
+port=8080
+# site url to use
+siteUrl=
+# run the server in background process
+detachServer=
+
+# deploy subcommand
 deployAction=
 
 if [ $# -eq 0 ]; then
@@ -63,35 +118,63 @@ while [ "$#" -gt 0 ]; do
         target="$1"; shift 1
       fi
       ;;
-	  build|serve|deploy)
-	    action="$i" 
+# Commands
+	  build)
+	    action="$i"
 	    ;;
-    --preview)
-      extraFlags+=(--arg previewMode true)
-      ;;
+	  serve)
+	    action="$i"
+	    ;;
+	  deploy)
+	    action="$i"
+	    ;;
+	  preview)
+	    action="serve"
+      siteURL="PREVIEW"
+	    ;;
+# Generic options
+	  -h|--help)
+	    Display_usage
+	    ;;
+	  -v|--version)
+      echo -e "styx $version"
+	    ;;
     --arg|--argstr)
       extraFlags+=("$i" "$1" "$2"); shift 2
       ;;
     --show-trace)
       extraFlags+=("$i")
       ;;
+# Build options
+    --drafts)
+      extraFlags+=(--arg renderDrafts true)
+      ;;
 	  -o|--output)
 	    output="$1"; shift 1
 	    ;;
+# Serve options
 	  -p|--port)
 	    port="$1"; shift 1
 	    ;;
-	  -h|--help)
-	    display_usage
+	  --server-host)
+	    serverHost="$1"; shift 1
 	    ;;
-	  -v|--version)
-      echo -e "styx $version"
-	    ;;
+	  --site-url)
+	    siteUrl="$1"; shift 1
+      ;;
+	  --detach)
+      detachServer=1
+      ;;
+# Deploy options
     --init-gh-pages)
       deployAction="init-gh-pages"
       ;;
     --gh-pages)
       deployAction="gh-pages"
+      ;;
+# Dev options
+    --DEBUG)
+      debug=1
       ;;
     *)
       echo "$0: unknown option \`$i'"
@@ -103,25 +186,39 @@ done
 if [ "$action" = new ]; then
   folder="$(pwd)/$target"
   if [ -d "$folder" ]; then
-    echo "$target directory exists"
-    exit 1
+    cmd+=("echo \"$target directory exists\"")
+    cmd+=("exit 1")
   else
-    mkdir "$folder"
-    cp -r $share/sample/* "$folder/"
-    chmod -R u+rw $folder
-    echo -e "New styx site installed in '$folder'."
+    cmd+=("mkdir \"\$folder\"")
+    cmd+=("cp -r $share/sample/* \"$folder/\"")
+    cmd+=("chmod -R u+rw $folder")
+    cmd+=("echo -e \"New styx site installed in '$folder'.\"")
   fi
 fi
 
 if [ "$action" = serve ]; then
   if [ -f $(pwd)/default.nix ]; then
-    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://127.0.0.1:$port" "${extraFlags[@]}")
-    echo "server listening on http://127.0.0.1:$port"
-    echo "press Ctrl+C to stop"
-    $($server --root "$path" --port "$port")
+    siteUrlFlag=
+    if [ -n "$siteURL" ]; then
+      if [ "$siteURL" = "PREVIEW" ]; then
+        siteUrlFlag="--argstr siteUrl \"http://$serverHost:$port\""
+      else
+        siteUrlFlag="--argstr siteUrl \"$siteURL\""
+      fi
+    fi
+	  serverFlag=" 2>&1 >/dev/null &"
+    cmd+=("path=\$(nix-build --no-out-link --argstr lastChange \"$(last_change)\" $siteUrlFlag \"${extraFlags[@]}\")")
+    if [ -n "$detachServer" ]; then
+      cmd+=("\$($server --root \"\$path\" --host \"$serverHost\" --port \"$port\" >/dev/null &)")
+      cmd+=("echo \"server listening on http://$serverHost:$port\"")
+    else
+      cmd+=("echo \"server listening on http://$serverHost:$port\"")
+      cmd+=("echo \"press Ctrl+C to stop\"")
+      cmd+=("\$($server --root \"\$path\" --host \"$serverHost\" --port \"$port\")")
+    fi
   else
-    echo "No 'default.nix' in current directory"
-    exit 1
+    cmd+=("echo \"No 'default.nix' in current directory\"")
+    cmd+=("exit 1")
   fi
 fi
 
@@ -131,34 +228,32 @@ if [ "$action" = build ]; then
       echo "'$output' folder already exists, doing nothing."
       exit 1
     else
-      path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
+      cmd+=("path=\$(nix-build --no-out-link --argstr lastChange \"$(last_change)\" \"${extraFlags[@]}\")")
       # copying the build results as normal files
-      $(cp -L -r "$path" "$output")
+      cmd+=("\$(cp -L -r \"\$path\" \"$output\")")
       # fixing permissions
-      $(chmod u+rw -R "$output")
+      cmd+=("\$(chmod u+rw -R \"$output\")")
     fi
   else
-    echo "No 'default.nix' in current directory"
-    exit 1
+    cmd+=("echo \"No 'default.nix' in current directory\"")
+    cmd+=("exit 1")
   fi
 fi
 
 if [ "$action" = deploy ]; then
   if [ "$deployAction" == "init-gh-pages" ]; then
     if [ -d $(pwd)/.git ]; then
-      currentBranch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-      echo "$currentBranch"
-      git checkout --orphan gh-pages
-      git rm -rf .
-      touch .styx
-      git add .styx
-      git commit -m "initialized gh-pages branch"
-      git checkout "$currentBranch"
-      echo "Successfully created the 'gh-pages' branch."
-      echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
+      cmd+=("git checkout --orphan gh-pages")
+      cmd+=("git rm -rf .")
+      cmd+=("touch .styx")
+      cmd+=("git add .styx")
+      cmd+=("git commit -m \"initialized gh-pages branch\"")
+      cmd+=("git checkout \"$(current_branch)\"")
+      cmd+=("echo \"Successfully created the 'gh-pages' branch.\"")
+      cmd+=("echo \"You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'.\"")
     else
-      echo "Not in a git repository, doing nothing."
-      exit 1
+      cmd+=("echo \"Not in a git repository, doing nothing.\"")
+      cmd+=("exit 1")
     fi
   elif [ "$deployAction" == "gh-pages" ]; then
     if [ -d $(pwd)/.git ]; then
@@ -166,25 +261,29 @@ if [ "$action" = deploy ]; then
         # Everytime a checkout is done, files atime and ctime are modified
         # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
         # and update the feed
-        currentBranch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-        echo "building the site"
-        path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
-        git checkout gh-pages
-        $(cp -L -r "$path"/* ./)
-        $(chmod u+rw -R ./)
-        git add .
-        git commit -m "Styx update - $(git rev-parse --short HEAD)"
-        git checkout "$currentBranch"
-        echo "Successfully updated the gh-pages branch."
-        echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
+        cmd+=("echo \"Building the site\"")
+        cmd+=("path=\$(nix-build --no-out-link --argstr lastChange \"\$(last_change)\" \"\${extraFlags[@]}\")")
+        cmd+=("git checkout gh-pages")
+        cmd+=("\$(cp -L -r \"\$path\"/* ./)")
+        cmd+=("\$(chmod u+rw -R ./)")
+        cmd+=("git add .")
+        cmd+=("git commit -m \"Styx update - \$(git rev-parse --short HEAD)\"")
+        cmd+=("git checkout \"$(current_branch)\"")
+        cmd+=("echo \"Successfully updated the gh-pages branch.\"")
+        cmd+=("echo \"Push the 'gh-pages' branch to the GitHub repository to publish your site.\"")
       else
-        echo "There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' to initialize it."
-        exit 1
+        cmd+=("echo \"There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' to GiHub pages deployment it..\"")
+        cmd+=("exit 1")
       fi
     else
-      echo "Not in git repository, doing nothing."
-      exit 1
+      cmd+=("echo \"Not in a git repository, doing nothing.\"")
+      cmd+=("exit 1")
     fi
   fi
 fi
 
+if [ -n "$debug" ]; then
+  print_commands cmd
+else
+  run_commands cmd
+fi

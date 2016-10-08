@@ -73,7 +73,7 @@ The skeleton is the boiler-plate code of Styx, it should be edited at own risks 
 .`default.nix` skeleton
 ----
 { pkgs ? import <nixpkgs> {} # <1>
-, previewMode ? false # <2>
+, enableDrafts ? false # <2>
 , siteUrl ? null
 , lastChange ? null
 }@args: # <3>
@@ -89,7 +89,7 @@ in generateSite { inherit conf; pages = pageList; } # <8>
 ----
 
 <1> This is a function head declared as a deconstructed set, `?` righthand set the default value for the lefhand argument. This line is importing the default system nixpkgs.
-<2> `previewMode ? false` means that `previewMode` default value is `false`.
+<2> `enableDrafts ? false` means that `enableDrafts` default value is `false`.
 <3> The `{ ... }@args` pattern provide a way to refer to the full parameter attribute set via `args`.
 <4> `let` is a construction to declare local variables, a `let` block finish by a `in`. Any variable defined in a let is available in the let scope and in the scope right after the `in`.
 `let a = 1; 1 + a` will result in `2`.
@@ -101,7 +101,7 @@ So in the previous line `lib` is imported in the `lib` local variable, and in th
 <7> Contains the main logic, and will be explained in the next section.
 <8> This is what the whole `default.nix` function return. `generateSite` is a function that generate the site. All the logic in the "Main Logic" part is meant to prepare `generateSite` arguments.
 
-WARNING: The default parameters in `default.nix` head: `pkgs`, `previewMode`, `siteUrl` and `lastChange` are set and expected by Styx. Removing or changing them will break the site generation process.
+WARNING: The default parameters in `default.nix` head: `pkgs`, `enableDrafts`, `siteUrl` and `lastChange` are set and expected by Styx. Removing or changing them will break the site generation process.
 
 ==== Main Logic
 
@@ -232,7 +232,7 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
 
     posts = let  # <3>
       posts = getPosts conf.postsDir "posts"; # <4>
-      drafts = optionals previewMode (getDrafts conf.draftsDir "drafts"); # <5>
+      drafts = optionals enableDrafts (getDrafts conf.draftsDir "drafts"); # <5>
       preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; }; # <6>
     in sortPosts (map preparePosts (posts ++ drafts)); # <7>
   };
@@ -247,7 +247,7 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
 Also, as the feed page does not need a layout, the layout function is set to `id`, see <<Layout templates>> for details.
 <3> Declare the list of posts, this is the most complex page declaration presented in this section.
 <4> Fetching the posts and setting their output path to `posts`.
-<5> Fetching the drafts only if `previewMode` is enabled. (by using the `--preview` flag to the Nix command)
+<5> Fetching the drafts only if `enableDrafts` is enabled. (by using the Styx command `--drafts` flag)
 <6> Declaring a `preparePost` function that take a post and extends it by setting a template and breadcrumbs.
 <7> Finally merging the posts and drafts in a list, setting the template and breadcrumbs to each, and sorting the list so the posts are in chronological order.
 <8> `generateSite` needs a list of pages, so we convert the `pages` attribute set to a `pageList` list with the `pagesToList` function.

@@ -1,5 +1,5 @@
 { pkgs ? import <nixpkgs> {}
-, previewMode ? false
+, enableDrafts ? false
 , siteUrl ? null
 , lastChange ? null
 }@args:
@@ -92,11 +92,11 @@ let
     feed = { href = "feed.xml"; template = templates.feed; posts = take 10 posts; layout = id; };
 
     # List of posts
-    # Fetch and sort the posts and drafts (only in preview mode) and set the
+    # Fetch and sort the posts and drafts (only if enableDrafts is true) and set the
     # template
     posts = let
       posts = getPosts conf.postsDir "posts";
-      drafts = optionals previewMode (getDrafts conf.draftsDir "drafts");
+      drafts = optionals enableDrafts (getDrafts conf.draftsDir "drafts");
       preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; };
     in sortPosts (map preparePosts (posts ++ drafts));
 
