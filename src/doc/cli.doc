@@ -19,11 +19,24 @@ NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALU
 === Preview
 
 The `preview` command is used to launch a server that will list on localhost (127.0.0.1) port 8080 by default. The preview command will override `conf.siteUrl` to preserve links.
+
 The server can be stopped by pressing kbd:[Ctrl+C].
 
-`styx preview`:: Will start a preview server on 127.0.0.1:8080.
-`styx preview --port 9090`:: Will start a preview server on 127.0.0.1:9090.
-`styx preview --port 9090 --drafts`:: Will start a preview server on 127.0.0.1:9090 with drafts rendered.
+`styx preview`:: Start a preview server on 127.0.0.1:8080.
+`styx preview --port 9090`:: Start a preview server on 127.0.0.1:9090.
+`styx preview --port 9090 --drafts`:: Start a preview server on 127.0.0.1:9090 with drafts rendered.
+
+=== Live
+
+The `live` is similar to preview, with the unique difference that site is automatically rebuilt when a change is made.
+
+The live mode should be quitted by pressing kbd:[q].
+
+`styx live`:: Start a live preview server on 127.0.0.1:8080.
+`styx preview --port 9090`:: Start a live preview server on 127.0.0.1:9090.
+`styx preview --port 9090 --drafts`:: Start a live preview server on 127.0.0.1:9090 with drafts rendered.
+
+WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibility that the server process will stay alive in backgroud. The server process can be found by running `ps aux | grep caddy` and killed with the `kill` command.
 
 === Serve
 

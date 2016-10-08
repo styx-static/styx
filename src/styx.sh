@@ -1,5 +1,12 @@
-#! @shell@ -e
+#! @shell@
 
+#-------------------------------
+
+# Functions
+
+#-------------------------------
+
+# Show help
 display_usage() {
   cat << EOF
 Styx $version -- Styx is a functional static site generator in Nix expression language.
@@ -13,6 +20,7 @@ Subcommands:
     build                      Build the site in the "public" or "--out" folder.
     preview                    Build the site and serve it locally, shortcut for 'styx serve --site-url "http://HOST:PORT"'.
                                This override the configuration file 'siteUrl' to not break links.
+    live                       Similar to preview, but automatically rebuild the site on changes.
     serve                      Build the site and serve it.
     deploy                     Deploy the site, must be used with a deploy option.
 
@@ -40,15 +48,22 @@ Deploy options:
 
 EOF
 # Dev options:
-#   --DEBUG                    Print the commands instead of running them.
+#   --DEBUG                    Print the commands instead of running them, do not work with 'styx live'
     exit 0
 }
 
+# last changed timestamp
+last_timestamp() {
+  find . ! -path '*.git/*' ! -name '*.swp' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
+}
+
+# last changed date
 last_change() {
-  lastTimestamp="$(find . -not -path '*.git/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d".")"
+  lastTimestamp=$(last_timestamp)
   date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ
 }
 
+# print a list of commands
 print_commands(){
   echo -e "DEBUG MODE:\n\n---\n"
   for i in "${cmd[@]}"; do
@@ -57,15 +72,24 @@ print_commands(){
   echo -e "\n---\n"
 }
 
+# run a list of commands
 run_commands(){
   for i in "${cmd[@]}"; do
     eval $i
   done
 }
 
+# current branch name
 current_branch(){
   git rev-parse --symbolic-full-name --abbrev-ref HEAD
 }
+
+
+#-------------------------------
+
+# Variables
+
+#-------------------------------
 
 # styx version
 version=@version@
@@ -109,16 +133,37 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
+
+#-------------------------------
+
+# Option parsing
+
+#-------------------------------
+
+
 while [ "$#" -gt 0 ]; do
   i="$1"; shift 1
   case "$i" in
+# Generic options
+	  -h|--help)
+	    Display_usage
+	    ;;
+	  -v|--version)
+      echo -e "styx $version"
+	    ;;
+    --arg|--argstr)
+      extraFlags+=("$i" "$1" "$2"); shift 2
+      ;;
+    --show-trace)
+      extraFlags+=("$i")
+      ;;
+# Commands
     new|n)
       action="$i"
       if [ -n "$1" ]; then
         target="$1"; shift 1
       fi
       ;;
-# Commands
 	  build)
 	    action="$i"
 	    ;;
@@ -132,18 +177,8 @@ while [ "$#" -gt 0 ]; do
 	    action="serve"
       siteURL="PREVIEW"
 	    ;;
-# Generic options
-	  -h|--help)
-	    Display_usage
-	    ;;
-	  -v|--version)
-      echo -e "styx $version"
-	    ;;
-    --arg|--argstr)
-      extraFlags+=("$i" "$1" "$2"); shift 2
-      ;;
-    --show-trace)
-      extraFlags+=("$i")
+    live)
+      action="$i"
       ;;
 # Build options
     --drafts)
@@ -183,6 +218,13 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
+
+#-------------------------------
+
+# New
+
+#-------------------------------
+
 if [ "$action" = new ]; then
   folder="$(pwd)/$target"
   if [ -d "$folder" ]; then
@@ -196,6 +238,40 @@ if [ "$action" = new ]; then
   fi
 fi
 
+
+#-------------------------------
+#
+# Build
+#
+#-------------------------------
+
+if [ "$action" = build ]; then
+  if [ -f $(pwd)/default.nix ]; then
+    if [ -d "$(pwd)/$output" ]; then
+      cmd+=("echo \"'\$output' folder already exists, doing nothing.\"")
+      cmd+=("exit 1")
+    else
+      cmd+=("echo \"Building the site...\"")
+      cmd+=("path=\$(nix-build --quiet --no-out-link --argstr lastChange \"$(last_change)\" \"${extraFlags[@]}\")")
+      # copying the build results as normal files
+      cmd+=("\$(cp -L -r \"\$path\" \"$output\")")
+      # fixing permissions
+      cmd+=("\$(chmod u+rw -R \"$output\")")
+      cmd+=("echo \"Build in '$output' finished\"")
+    fi
+  else
+    cmd+=("echo \"No 'default.nix' in current directory\"")
+    cmd+=("exit 1")
+  fi
+fi
+
+
+#-------------------------------
+#
+# Serve
+#
+#-------------------------------
+
 if [ "$action" = serve ]; then
   if [ -f $(pwd)/default.nix ]; then
     siteUrlFlag=
@@ -206,11 +282,11 @@ if [ "$action" = serve ]; then
         siteUrlFlag="--argstr siteUrl \"$siteURL\""
       fi
     fi
-	  serverFlag=" 2>&1 >/dev/null &"
-    cmd+=("path=\$(nix-build --no-out-link --argstr lastChange \"$(last_change)\" $siteUrlFlag \"${extraFlags[@]}\")")
+    cmd+=("path=\$(nix-build --quiet --no-out-link --argstr lastChange \"$(last_change)\" $siteUrlFlag \"${extraFlags[@]}\")")
     if [ -n "$detachServer" ]; then
-      cmd+=("\$($server --root \"\$path\" --host \"$serverHost\" --port \"$port\" >/dev/null &)")
-      cmd+=("echo \"server listening on http://$serverHost:$port\"")
+      cmd+=("$server --root \"\$path\" --host \"$serverHost\" --port \"$port\" >/dev/null &")
+      cmd+=("serverPid=\$!")
+      cmd+=("echo \"server listening on http://$serverHost:$port qith pid ${serverPid}\"")
     else
       cmd+=("echo \"server listening on http://$serverHost:$port\"")
       cmd+=("echo \"press Ctrl+C to stop\"")
@@ -222,23 +298,66 @@ if [ "$action" = serve ]; then
   fi
 fi
 
-if [ "$action" = build ]; then
+
+#-------------------------------
+#
+# Live
+#
+#-------------------------------
+
+# Note: debug is not available in live mode
+if [ "$action" = live ]; then
+  serverPid=
   if [ -f $(pwd)/default.nix ]; then
-    if [ -d "$(pwd)/$output" ]; then
-      echo "'$output' folder already exists, doing nothing."
-      exit 1
-    else
-      cmd+=("path=\$(nix-build --no-out-link --argstr lastChange \"$(last_change)\" \"${extraFlags[@]}\")")
-      # copying the build results as normal files
-      cmd+=("\$(cp -L -r \"\$path\" \"$output\")")
-      # fixing permissions
-      cmd+=("\$(chmod u+rw -R \"$output\")")
-    fi
-  else
-    cmd+=("echo \"No 'default.nix' in current directory\"")
-    cmd+=("exit 1")
+    # get last change
+    lastChange=$(last_timestamp)
+    # building to result a first time
+    path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
+    # start the server
+    $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
+    echo "Started live preview on http://$serverHost:$port"
+    echo "Press q to quit"
+    # saving the pid
+    serverPid=$!
+    while true; do
+      curLastChange=$(last_timestamp)
+      if [ "$curLastChange" -gt "$lastChange" ]; then
+        # rebuild
+        echo "Change detected, rebuilding..."
+        path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
+        #echo "$path"
+        # kill the server
+        echo "Restarting the server..."
+        disown "$serverPid"
+        kill -9 "$serverPid"
+        # start the server
+        $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
+        echo "Done!"
+        # updating the pid
+        serverPid=$!
+        # sleep a little to avoid chained rebuilds
+        sleep 3
+        # update the timestamp
+        lastChange=$(last_timestamp)
+      fi
+      read -t 1 -N 1 input
+      if [[ $input = "q" ]] || [[ $input = "Q" ]]; then
+        disown "$serverPid"
+        kill -9 "$serverPid"
+        echo -e "\rBye!"
+        echo
+        break
+      fi
+    done
   fi
 fi
+
+
+#-------------------------------
+#
+# Deploy
+#
+#-------------------------------
 
 if [ "$action" = deploy ]; then
   if [ "$deployAction" == "init-gh-pages" ]; then
@@ -262,7 +381,7 @@ if [ "$action" = deploy ]; then
         # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
         # and update the feed
         cmd+=("echo \"Building the site\"")
-        cmd+=("path=\$(nix-build --no-out-link --argstr lastChange \"\$(last_change)\" \"\${extraFlags[@]}\")")
+        cmd+=("path=\$(nix-build --quiet --no-out-link --argstr lastChange \"\$(last_change)\" \"\${extraFlags[@]}\")")
         cmd+=("git checkout gh-pages")
         cmd+=("\$(cp -L -r \"\$path\"/* ./)")
         cmd+=("\$(chmod u+rw -R ./)")
@@ -281,6 +400,13 @@ if [ "$action" = deploy ]; then
     fi
   fi
 fi
+
+
+#-------------------------------
+#
+# Debug
+#
+#-------------------------------
 
 if [ -n "$debug" ]; then
   print_commands cmd
