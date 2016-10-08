@@ -95,8 +95,9 @@ let
     # Fetch and sort the posts and drafts (only if enableDrafts is true) and set the
     # template
     posts = let
-      posts = getPosts conf.postsDir "posts";
-      drafts = optionals enableDrafts (getDrafts conf.draftsDir "drafts");
+      substitutions = { inherit conf; };
+      posts = getPosts { inherit substitutions; from = conf.postsDir; to = "posts"; };
+      drafts = optionals enableDrafts (getDrafts { inherit substitutions; from = conf.draftsDir; to = "drafts"; });
       preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; };
     in sortPosts (map preparePosts (posts ++ drafts));
 

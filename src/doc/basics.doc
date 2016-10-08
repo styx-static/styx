@@ -231,25 +231,27 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
     };
 
     posts = let  # <3>
-      posts = getPosts conf.postsDir "posts"; # <4>
-      drafts = optionals enableDrafts (getDrafts conf.draftsDir "drafts"); # <5>
-      preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; }; # <6>
-    in sortPosts (map preparePosts (posts ++ drafts)); # <7>
+      substitutions = { inherit conf; }; # <4>
+      posts = getPosts { inherit substitutions; from = conf.postsDir; to = "posts"; }; # <5>
+      drafts = optionals enableDrafts (getDrafts { inherit substitutions; from = conf.draftsDir; to = "drafts"; }); # <6>
+      preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; }; # <7>
+    in sortPosts (map preparePosts (posts ++ drafts)); # <8>
   };
 
   pageList =
-    let list = (pagesToList pages); # <8>
-    in map (setDefaultLayout templates.layout) list; # <9>
+    let list = (pagesToList pages); # <9>
+    in map (setDefaultLayout templates.layout) list; # <10>
 ----
 
 <1> Declaring an archives list of pages by splitting items trough multiple pages. See <<splitPage>> for details.
 <2> A simple page declaration. As the feed template is using `conf.siteTitle` in place of `title`, it is not required to set a title in this special case.
 Also, as the feed page does not need a layout, the layout function is set to `id`, see <<Layout templates>> for details.
 <3> Declare the list of posts, this is the most complex page declaration presented in this section.
-<4> Fetching the posts and setting their output path to `posts`.
-<5> Fetching the drafts only if `enableDrafts` is enabled. (by using the Styx command `--drafts` flag)
-<6> Declaring a `preparePost` function that take a post and extends it by setting a template and breadcrumbs.
-<7> Finally merging the posts and drafts in a list, setting the template and breadcrumbs to each, and sorting the list so the posts are in chronological order.
-<8> `generateSite` needs a list of pages, so we convert the `pages` attribute set to a `pageList` list with the `pagesToList` function.
-<9> Then, `setDefaultLayout` is used to set a layout template to all the pages that don't set the `layout` attribute.
+<4> Adding `conf` to the substitutions. for details see <<Substitutions>>.
+<5> Fetching the posts and setting their output path to `posts`.
+<6> Fetching the drafts only if `enableDrafts` is enabled. (by using the Styx command `--drafts` flag)
+<7> Declaring a `preparePost` function that take a post and extends it by setting a template and breadcrumbs.
+<8> Finally merging the posts and drafts in a list, setting the template and breadcrumbs to each, and sorting the list so the posts are in chronological order.
+<9> `generateSite` needs a list of pages, so we convert the `pages` attribute set to a `pageList` list with the `pagesToList` function.
+<10> Then, `setDefaultLayout` is used to set a layout template to all the pages that don't set the `layout` attribute.
 

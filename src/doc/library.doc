@@ -90,17 +90,18 @@ This namespace contains functions to manipulate content, especially posts.
 
 `getPosts`::
   Description::: Fetch all the posts from a `postDir`.
-  Parameter Type::: Standard
+  Parameter Type::: Attribute Set
   Parameters:::
-    * `postsDir`: Path to the folder containing the posts.
-    * `outDir`: Part before the name of the post attribute set `href`. Should not contain leading and trailing `/`.
+    * `from`: Path to the folder containing the posts.
+    * `to`: Part before the name of the post attribute set `href`. Should not contain leading and trailing `/`.
+    * `substitutions`: An attribute set containing substitutions (Optional). For details, see <<Substitutions>>.
   Return::: A list of post attribute sets.
   Example:::
 
 +
 [source, nix]
 ----
-posts = getPosts conf.postsDir "posts";
+posts = getPosts { from = conf.postsDir; to = "posts"; };
 ----
 
 NOTE: The posts attribute sets `href` depends on the post file name and the `outDir`.
@@ -110,17 +111,18 @@ For a post in a file `2016-09-12-welcome-to-styx.md` and an `outDir` set to `pos
 
 `getDrafts`::
   Description::: Fetch all the posts from a `postDir`. This function is similar to `getPosts`, but add a `isDraft = true` attribute to every draft attribute set.
-  Parameter Type::: Standard
+  Parameter Type::: Attribute Set
   Parameters:::
-    * `draftsDir`: Path to the folder containing the drafts.
-    * `outDir`: Part before the name of the draft attribute set `href`. Should not contain leading and trailing `/`.
+    * `from`: Path to the folder containing the posts.
+    * `to`: Part before the name of the post attribute set `href`. Should not contain leading and trailing `/`.
+    * `substitutions`: An attribute set containing substitutions (Optional). For details, see <<Substitutions>>.
   Return::: A list of draft attribute sets.
   Example:::
 
 +
 [source, nix]
 ----
-posts = getDrafts conf.draftsDir;
+posts = getDrafts { from = conf.draftsDir; to = "drafts"; };
 ----
 
 '''

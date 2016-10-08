@@ -8,7 +8,7 @@ let
 
   /* Get data from a markdown file
   */
-  getFileData = path:
+  getFileData = substitutions: path:
     let
       data = pkgs.runCommand "data" {} ''
         mkdir $out
@@ -20,6 +20,16 @@ let
           echo "{}" > $out/matter
           cp ${path} $out/source
         fi
+        ${concatMapStringsSep "\n" (set:
+          let
+            key = head (attrNames set);
+            value = head (attrValues set);
+          in
+            ''
+              substituteInPlace $out/source \
+                --subst-var-by ${key} ${value}
+            ''
+        ) (setToList substitutions)}
         ${pkgs.multimarkdown}/bin/multimarkdown < $out/source > $out/content
         ${pkgs.xidel}/bin/xidel $out/content -e "//h1[1]/node()" -q > $out/title
         echo -n `tr -d '\n' < $out/title` > $out/title
@@ -30,23 +40,39 @@ let
     in
       { inherit content title; } // matter;
 
+  /* Convert a deep set to a list of sets where the key is the path
+     Used to prepare substitutions
+  */
+  setToList = s:
+    let
+    f = path: set:
+      map (key:
+        let
+          value = set.${key};
+          newPath = path ++ [ key ];
+          pathString = concatStringsSep "." newPath;
+        in
+        if isAttrs value
+           then f newPath value
+           else { "${pathString}" = toString value; }
+      ) (attrNames set);
+    in flatten (f [] s);
+
 in
 rec {
 
   /* Similar to getPosts but add a `isDraft = true` attribute to all the posts
   */
-  getDrafts = draftsDir: outDir:
-    let
-      drafts = getPosts draftsDir outDir;
-    in map (d: d // { isDraft = true; }) drafts;
+  getDrafts = args:
+    map (d: d // { isDraft = true; }) (getPosts args);
 
   /* Get all the posts from a directory as post attribute sets
   */
-  getPosts = postsDir: outDir:
+  getPosts = { from, ... }@args:
     filter (x: x != null)
-           (map (parsePost postsDir outDir)
+           (map (parsePost args)
                 (attrNames (filterAttrs (_: v: v == "regular")
-                           (readDir postsDir))));
+                           (readDir from))));
 
   /* Parse a markdown file to a partial page attribute set
 
@@ -68,14 +94,14 @@ rec {
      - id: name part of the post file name
      - content: post content in HTML format
   */
-  parsePost = postDir: outDir: filename:
+  parsePost = { from, to, substitutions ? {} }@args: filename:
     let
       result = match "^(....-..-..)-(.*)\.md$" filename;
       timestamp = elemAt result 0;
       id = elemAt result 1;
-      path = "${postDir + "/${filename}"}";
-      href = "${outDir}/${timestamp}-${id}.html";
-      data = getFileData path;
+      path = "${from + "/${filename}"}";
+      href = "${to}/${timestamp}-${id}.html";
+      data = getFileData substitutions path;
     in
       if result == null 
          then trace "Post (${filename}) is not in correct form (YYYY-MM-DD-<id>.md) and will be ignored." null
