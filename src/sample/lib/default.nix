@@ -4,14 +4,15 @@ let
   nixLib = pkgs.lib // builtins;
 
   # Styx lib
-  template   = import ./template.nix nixLib;
-  utils      = import ./utils.nix nixLib;
   content    = import ./content.nix nixLib pkgs;
   generation = import ./generation.nix nixLib pkgs;
+  template   = import ./template.nix nixLib;
+  themes     = import ./themes.nix nixLib;
+  utils      = import ./utils.nix nixLib;
 
 in
   {
-    inherit nixLib template utils content generation;
+    inherit nixLib content generation template themes utils;
   }
   // nixLib
-  // template // utils // content // generation
+  // content // generation // template // themes // utils

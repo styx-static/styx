@@ -8,15 +8,11 @@
   # Directory where drafts are located
   draftsDir = ./drafts;
 
-  # Directory where templates are located
-  templatesDir = ./templates;
+  # Directory where the themes are located
+  themesDir = ./themes;
 
   # Directory where static files are located
   staticDir = ./static;
-
-  # Site id, used in the caching scheme. [a-z0-9\-_]+
-  # Default value can be used
-  siteId = "styx-simple";
 
   # URL of the site, must be set to the url of the domain the site will be deployed
   siteUrl = "http://yourdomain.com";
@@ -31,6 +27,5 @@
   postsOnIndexPage = 3;
 
   # Maximum number of posts per archive page
-  # null to have all older posts on first archive page
   postsPerArchivePage = 5;
 }

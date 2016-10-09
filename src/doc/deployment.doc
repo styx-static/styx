@@ -2,7 +2,7 @@
 
 === GitHub pages
 
-Styx support basic deployment to github pages.
+Styx support basic deployment to GitHub pages.
 
 This is a two step process, initialization og the `gh-pages` branch and update of the `gh-branch` with the built site.
 
@@ -27,7 +27,5 @@ This means that two successive `styx deploy --gh-pages` will create changes, nam
 
 === Other
 
-Styx does not yet provide a universal deployment method.
-
-But `rsync` can be used to deploy a Styx site to a remote server via ssh.
+Styx does not yet provide a universal deployment method, but `rsync` can be used to deploy a Styx site to a remote server via ssh.
 

@@ -21,7 +21,9 @@ include::basics.doc[]
 
 include::content.doc[]
 
-include::customization.doc[]
+include::themes.doc[]
+
+include::templates.doc[]
 
 include::library.doc[]
 

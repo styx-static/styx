@@ -114,6 +114,8 @@ debug=
 cmd=()
 # extra arguments to be appended to the nix-build command
 extraFlags=()
+# main site file
+siteFile="site.nix"
 
 # name of the created site for the new action
 name="styx-site"
@@ -243,7 +245,7 @@ if [ "$action" = new ]; then
     cp -r $share/sample/* "$folder/"
     chmod -R u+rw "$folder"
     echo -e "New styx site installed in '$folder'."
-    echo create
+    exit 0
   fi
 fi
 
@@ -256,13 +258,13 @@ fi
 
 if [ "$action" = build ]; then
   folder="$target/$output"
-  if [ -f "$target/default.nix" ]; then
+  if [ -f "$target/$siteFile" ]; then
     if [ -d $folder ]; then
       echo "'$folder' folder already exists, doing nothing."
       exit 1
     else
       echo "Building the site..."
-      path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" $target)
+      path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" "$target/$siteFile")
       if [ $? -ne 0 ]; then
         nix_error
         exit 1
@@ -272,9 +274,10 @@ if [ "$action" = build ]; then
       # fixing permissions
       chmod u+rw -R "$folder"
       echo "Generated site in '$folder'"
+      exit 0
     fi
   else
-    echo "Error: No 'default.nix' in '$target'"
+    echo "Error: No '$siteFile' in '$target'"
     exit 1
   fi
 fi
@@ -287,7 +290,7 @@ fi
 #-------------------------------
 
 if [ "$action" = serve ]; then
-  if [ -f "$target/default.nix" ]; then
+  if [ -f "$target/$siteFile" ]; then
     siteUrlFlag=
     if [ -n "$siteURL" ]; then
       if [ "$siteURL" = "PREVIEW" ]; then
@@ -296,7 +299,7 @@ if [ "$action" = serve ]; then
         siteUrlFlag="--argstr siteUrl $siteURL"
       fi
     fi
-    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}" $target)
+    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}" "$target/$siteFile")
     if [ $? -ne 0 ]; then
       nix_error
       exit 1
@@ -311,7 +314,7 @@ if [ "$action" = serve ]; then
       $($server --root "$path" --host "$serverHost" --port "$port")
     fi
   else
-    echo "Error: No 'default.nix' in '$target'"
+    echo "Error: No '$siteFile' in '$target'"
     exit 1
   fi
 fi
@@ -325,11 +328,11 @@ fi
 
 if [ "$action" = live ]; then
   serverPid=
-  if [ -f "$target/default.nix" ]; then
+  if [ -f "$target/$siteFile" ]; then
     # get last change
     lastChange=$(last_timestamp)
     # building to result a first time
-    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
+    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$target/$siteFile")
     if [ $? -ne 0 ]; then
       nix_error
       exit 1
@@ -345,7 +348,7 @@ if [ "$action" = live ]; then
       if [ "$curLastChange" -gt "$lastChange" ]; then
         # rebuild
         echo "Change detected, rebuilding..."
-        path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
+        path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$target/$siteFile")
         if [ $? -ne 0 ]; then
           echo "There were errors in site generation, server restart is skipped until the site generation success."
         else
@@ -371,10 +374,11 @@ if [ "$action" = live ]; then
         echo -e "\rBye!"
         echo
         break
+        exit 0
       fi
     done
   else
-    echo "Error: No 'default.nix' in '$target'"
+    echo "Error: No '$siteFile' in '$target'"
     exit 1
   fi
 fi
@@ -387,54 +391,61 @@ fi
 #-------------------------------
 
 if [ "$action" = deploy ]; then
-  if [ "$deployAction" == "init-gh-pages" ]; then
-    if [ -d "$target/.git" ]; then
-      (
-        cd $target
-        startBranch=$(current_branch)
-        git checkout --orphan gh-pages
-        git rm -rf .
-        touch .styx
-        git add .styx
-        git commit -m "initialized gh-pages branch"
-        git checkout "$startBranch"
-      )
-      echo "Successfully created the 'gh-pages' branch."
-      echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
-    else
-      echo "Error: '$target' is not a  git repository."
-      exit 1
-    fi
-  elif [ "$deployAction" == "gh-pages" ]; then
-    if [ -d "$target/.git" ]; then (
-      cd $target
-      if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
-        # Everytime a checkout is done, files atime and ctime are modified
-        # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
-        # and update the feed
-        echo "Building the site"
-        path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
-        if [ $? -ne 0 ]; then
-          nix_error
-          exit 1
-        fi
-        startBranch=$(current_branch)
-        git checkout gh-pages
-        cp -L -r "$path"/* ./
-        chmod u+rw -R ./
-        git add .
-        git commit -m "Styx update - $(git rev-parse --short HEAD)"
-        git checkout "$startBranch"
-        echo "Successfully updated the gh-pages branch."
-        echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
+  if [ -f "$target/$siteFile" ]; then
+    if [ "$deployAction" == "init-gh-pages" ]; then
+      if [ -d "$target/.git" ]; then
+        (
+          cd $target
+          startBranch=$(current_branch)
+          git checkout --orphan gh-pages
+          git rm -rf .
+          touch .styx
+          git add .styx
+          git commit -m "initialized gh-pages branch"
+          git checkout "$startBranch"
+        )
+        echo "Successfully created the 'gh-pages' branch."
+        echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
+        exit 0
       else
-        echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
+        echo "Error: '$target' is not a  git repository."
         exit 1
       fi
-    )
-    else
-      echo "Error: '$target' is not a  git repository."
-      exit 1
+    elif [ "$deployAction" == "gh-pages" ]; then
+      if [ -d "$target/.git" ]; then (
+        cd $target
+        if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
+          # Everytime a checkout is done, files atime and ctime are modified
+          # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
+          # and update the feed
+          echo "Building the site"
+          path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" "$target/$siteFile")
+          if [ $? -ne 0 ]; then
+            nix_error
+            exit 1
+          fi
+          startBranch=$(current_branch)
+          git checkout gh-pages
+          cp -L -r "$path"/* ./
+          chmod u+rw -R ./
+          git add .
+          git commit -m "Styx update - $(git rev-parse --short HEAD)"
+          git checkout "$startBranch"
+          echo "Successfully updated the gh-pages branch."
+          echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
+          exit 0
+        else
+          echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
+          exit 1
+        fi
+      )
+      else
+        echo "Error: '$target' is not a  git repository."
+        exit 1
+      fi
     fi
+  else
+    echo "Error: No '$siteFile' in '$target'"
+    exit 1
   fi
 fi

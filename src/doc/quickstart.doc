@@ -14,3 +14,7 @@ $ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.ta
 <2> Generate a new site in the `myblog` directory.
 <3> Enter the Styx site root folder.
 <4> Start a preview the site on a local server.
+
+Your styx site will be available at link:http://127.0.0.1:8080[http://127.0.0.1:8080].
+
+Now, take a look at the `site.nix` to see how the site is defined. There are many comments, but in doubt check the <<sitenix,site.nix>> section, it explains `site.nix` in details.

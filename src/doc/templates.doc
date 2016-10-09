@@ -1,22 +1,18 @@
-== Customization
-
-This section explains how to customize a Styx site.
-
-=== Templates
+== Templates
 
 Styx templates are functions that return text or page attribute sets when fully evaluated.
 
 Templates are divided in two types:
 
 - Layout templates, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
-- Partial templates responsible for the partial rendering of a page, it should return a page attibute set, but in some special cases can return text. (page attribute set `template` key)
+- Partial templates, responsible for the partial rendering of a page, it should return a page attibute set, but in some special cases can return text. (page attribute set `template` key)
 
 The template evaluation flow is:
 
-- The partial template evaluate the page attribute set, this generate a partial result that is stored in the page attribute set `content` key.
+- The partial template evaluate the page attribute set and generates a partial result that is stored in the page attribute set `content` key.
 - The layout template evaluate the page attribute set returned by the partial template and produce the final source of the page.
 
-==== Text handling basics
+=== Text handling basics
 
 Most of the work in template is done by manipulating text.
 
@@ -52,7 +48,7 @@ let name = "world"; in
 "Hello ${name}!"
 ----
 
-==== Layout templates
+=== Layout templates
 
 The layout template is responsible for rendering the final source of the page.
 The layout template function usually takes a template environment, and a page attribute set with a `content`. (There are exceptions)
@@ -60,7 +56,7 @@ The layout template function usually takes a template environment, and a page at
 In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag.
 
 [source, nix]
-.Simple layout template.
+.Layout template example
 ----
 env:
 page:
@@ -78,12 +74,15 @@ page:
 
 TIP: Layout templates are just functions, in case the partial template return the full page source like in the rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent and return the `template` result.
 
-==== Partial templates
+=== Partial templates
 
 Partial templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
 The partial template should set or update the `content` attribute of the page attribute set so the layout template can render the final source.
+
 Partial templates can also add other attributes to the page attribute to fit any special need.
 
+[source, nix]
+.Example of a partial template
 ----
 { templates, ... }:
 page:
@@ -96,20 +95,36 @@ in
   page // { inherit content; }
 ----
 
+NOTE: In some cases, it is useful to have the partial template to return the final source of the page.
+By setting the page `layout` to the `id` function, it is possible to bypass the layout template and have the partial template result being the final source source of the page.
 
-==== Template environment
+=== Template environment
 
 The template environment is the first parameter of the template function.
-It is defined when loading the template in `default.nix`.
+It is defined when loading the template in `site.nix`.
 
 The default template environment consists in:
 
 - `conf`: the configuration attribute set
-- `templates`: the templates attribute set
-- `state`: the state attribute set, by default it only holds the timestamp of the generation
 - `lib`: the library attribute set, it contains Styx and nixpkgs functions.
+- `state`: the state attribute set, by default it only holds the timestamp of the generation
+- `templates`: the templates attribute set
 
-It is possible to extend the template environment at will.
+It is possible to extend the default template environment to fit custom needs.
+
+It is possible to set a specific template environment to a specific template by declaring it in the `customTemplateEnvironments` set.
+
+[source, nix]
+.Setting custom template environments
+----
+  customEnvironments = {
+    layout = defaultEnvironment // { inherit navbar; feed = pages.feed; }; # <1>
+  };
+----
+
+<1> The environment passed to the `layout` template is the default environment extended with `feed` and `navbar` variables.
+
+==== Template environment in templates
 
 There are two ways of writing the `environment` in the template, as a set or as a deconstructed set.
 
@@ -162,6 +177,10 @@ The `mapTemplate` function can be used to map a template to a list of contents.
 [source, nix]
 .Applying a template to multiple contents
 ----
-${mapTemplate templates.post.list page.posts}
+{ templates, ... }:
+page:
+''
+  ${mapTemplate templates.post.list page.posts}
+''
 ----
 

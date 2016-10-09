@@ -25,7 +25,6 @@ stdenv.mkDerivation rec {
     asciidoctor doc/manual.doc -o $out/share/doc/styx/index.html
 
     substituteAllInPlace $out/bin/styx
-    substituteAllInPlace $out/share/styx/sample/templates/feed.nix
     substituteAllInPlace $out/share/doc/styx/index.html
   '';
 

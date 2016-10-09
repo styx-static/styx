@@ -2,7 +2,7 @@
 
 === NavBar
 
-The sample `default.nix` is setting a NavBar.
+There is an example of NavBar setting in the default `site.nix`.
 Because the NavBar is a site wide feature is should be applied to the layout template (`layout.nix`).
 
 Setting a Navbar consists in two steps:
@@ -10,7 +10,7 @@ Setting a Navbar consists in two steps:
 1. Extending the base template environment to include a list of pages that should be in the NavBar.
 
 +
-Example from `default.nix`:
+Example from `site.nix`:
 
 +
 [source, nix]
@@ -19,19 +19,17 @@ Example from `default.nix`:
              archive = (head pages.archives) // { title = "Archives"; }; # <2>
            in [ archive pages.about ]; # <3>
 
-  templates.layout = loadTemplateWithEnv # <4>
-                     (genericEnv // { inherit navbar; feed = pages.feed; }) # <5>
-                     "layout.nix"; # <6>
+  customEnvironments = { # <4>
+    layout = defaultEnvironment // { inherit navbar; feed = pages.feed; }; # <5>
+  };
 ----
 
 +
 <1> Declaring a `navbar` variable.
 <2> Declare an `archive` variable in the local scope. `pages.archives` is a list of pages so we extract the first page with `head pages.archive`, then we extends this page by setting a `title` using the `//` operator.
 <3> The `navbar` value is a list containing the first archive page and the about page.
-<4> Loading the `templates.layout` template file.
-<5> The first parameter of the `loadTemplateWithEnv` must be an environment attribute set.
-`genericEnv` is the generic template environment, but as we want to pass the `navbar` variable to the template, we extends the environment with `navbar`. 
-<6> The template file to load.
+<4> Declares custom template environments. Custom environements are a set mimicking the templates atteibute set, ut where the value is the environment to apply to the template.
+<5> `defaultEnvironment` is the default template environment, but as we want to pass the `navbar` variable to the template, we extends the environment with `navbar`.
 
 +
 NOTE: `{ inherit navbar; }` is a shortcut to `{ navbar = navbar; }`
@@ -89,6 +87,8 @@ archives = splitPage {
 ----
 
 It is then possible to use the previous snippet in the used template to add a pagination.
+
+NOTE: The pagination is only displayed if there is more than one page to display.
 
 === Breadcrumbs
 

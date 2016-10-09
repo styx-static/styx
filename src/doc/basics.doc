@@ -10,7 +10,37 @@ Styx is configured with the `conf.nix` file present in the site root directory.
 [source, nix]
 .conf.nix
 ----
-include::../sample/conf.nix[]
+{
+  # Directory where templates are located
+  pagesDir = ./pages;
+
+  # Directory where posts are located
+  postsDir = ./posts;
+
+  # Directory where drafts are located
+  draftsDir = ./drafts;
+
+  # Directory where the themes are located
+  themesDir = ./themes;
+
+  # Directory where static files are located
+  staticDir = ./static;
+
+  # URL of the site, must be set to the url of the domain the site will be deployed
+  siteUrl = "http://yourdomain.com";
+
+  # Site title, used in the site header and the atom feed
+  siteTitle = "Styx Sample Site";
+
+  # Site description used in the base template
+  siteDescription = "Write a description for your new site here.";
+
+  # Maximum number of posts on the index page
+  postsOnIndexPage = 3;
+
+  # Maximum number of posts per archive page
+  postsPerArchivePage = 5;
+}
 ----
 
 The configuration is an attribute set, and new configuration attributes can be added at will.
@@ -18,9 +48,7 @@ The configuration is an attribute set, and new configuration attributes can be a
 `pagesDir`:: Directory where pages are located.
 `postsDir`:: Directory where posts are located.
 `draftsDir`:: Directory where drafts are located.
-`templatesDir`:: Directory where templates are located.
-`staticDir`:: Directory where static files are located.
-`siteId`:: Site id, used in the caching scheme. Should composed of lowercase letters, numbers, `-` and `_`. Spaces are not allowed.
+`themesDir`:: Directory where themes are located.
 `siteURL`:: URL of the site, must be set to the URL of the domain the site will be deployed. Must not contain a trailing `/`.
 `siteTitle`:: Site title, used in the site header and the atom feed.
 `siteDescription`:: Site description used in the base template.
@@ -32,48 +60,46 @@ The configuration is an attribute set, and new configuration attributes can be a
 [source]
 ----
 ├── conf.nix # <1>
-├── default.nix # <2>
+├── site.nix # <2>
 ├── drafts/ # <3>
 ├── lib/ # <4>
 ├── pages/ # <5>
 ├── posts/ # <6>
-├── static/ # <7>
-└── templates/ # <8>
+├── templates/ # <7>
+└── themes/ # <8>
 ----
 
 <1> `conf.nix` is the main configuration, see <<Configuration>> for details.
-<2> `default.nix` is the main file for site generation, see <<defaultnix>> for details.
+<2> `site.nix` is the main file for site generation, see <<sitenix>> for details.
 <3> `drafts/` is the default directory containing drafts, see <<Drafts>> for details.
 <4> `lib/` is the directory holding Styx library functions, see <<Library>> for details.
 <5> `pages/` is the default directory containing pages, see <<Pages>> for details.
 <6> `posts/` is the default directory containing drafts, see <<Drafts>> for details.
-<7> `static/` is the default directory containing static files, see <<Static files>> for details.
-<8> `templates/` is the default directory containing templates files, see <<Templates>> for details.
+<7> `templates/` is the default directory containing templates files, see <<Templates>> for details.
+<8> `themes/` is the default directory containing themes, see <<Themes>> for details.
 
-[[defaultnix]]
-=== default.nix
+[[sitenix]]
+=== site.nix
 
-`default.nix` is the central file of a Styx site and is responsible for generating the website.
+`site.nix` is the central file of a Styx site and is responsible for generating the website.
 
-`default.nix` consists in a single function that generate a site when evaluated.
+`site.nix` consists in a single function that generate a site when evaluated.
 
 NOTE: Functions in the Nix expression language are declared in a `head: body` syntax, for example `a: b: a + b` is a function adding two numbers.
 
-Sample site `default.nix` show many of the Styx possibilities, so might feel a little complicated for a new user.
-
-A standard site `default.nix` can be lot simpler than the sample one.
-
-The following sections will explain `default.nix` parts by parts.
+The following sections will explain `site.nix` parts by parts.
 
 ==== Skeleton
 
 The skeleton is the boiler-plate code of Styx, it should be edited at own risks as any change in it might lead to unexpected results.
 
+It is not required to understand how the skeleton work to make a Styx site, so this section can be safely skipped.
+
 [source, nix]
-.`default.nix` skeleton
+.`site.nix` skeleton
 ----
 { pkgs ? import <nixpkgs> {} # <1>
-, enableDrafts ? false # <2>
+, renderDrafts ? false # <2>
 , siteUrl ? null
 , lastChange ? null
 }@args: # <3>
@@ -85,13 +111,13 @@ let # <6>
 
 # Main Logic # <7>
 
-in generateSite { inherit conf; pages = pageList; } # <8>
+in generateSite { inherit files pagesList; } # <8>
 ----
 
 <1> This is a function head declared as a deconstructed set, `?` righthand set the default value for the lefhand argument. This line is importing the default system nixpkgs.
-<2> `enableDrafts ? false` means that `enableDrafts` default value is `false`.
+<2> `renderDrafts ? false` means that `renderDrafts` default value is `false`.
 <3> The `{ ... }@args` pattern provide a way to refer to the full parameter attribute set via `args`.
-<4> `let` is a construction to declare local variables, a `let` block finish by a `in`. Any variable defined in a let is available in the let scope and in the scope right after the `in`.
+<4> `let` is a construction to declare local variables, a `let` block finish by a `in`. Any variable defined in a `let` is available in the `let` scope and in the scope right after the `in`.
 `let a = 1; 1 + a` will result in `2`.
 `let` are used to structure code in an easier to understand manner. This line import the `lib/default.nix` file and set it to a `lib` variable.
 The `lib` variable is an attribute set containing Styx library functions.
@@ -99,76 +125,80 @@ The `lib` variable is an attribute set containing Styx library functions.
 So in the previous line `lib` is imported in the `lib` local variable, and in this line all the top-level `lib` functions are inserted in the local scope.
 <6> Another `let` to start a scope inheriting `lib` and all its attributes (top-level functions).
 <7> Contains the main logic, and will be explained in the next section.
-<8> This is what the whole `default.nix` function return. `generateSite` is a function that generate the site. All the logic in the "Main Logic" part is meant to prepare `generateSite` arguments.
+<8> This is what the whole `site.nix` function return. `generateSite` is a function that generate the site. All the logic in the "Main Logic" part is meant to prepare `generateSite` arguments.
 
-WARNING: The default parameters in `default.nix` head: `pkgs`, `enableDrafts`, `siteUrl` and `lastChange` are set and expected by Styx. Removing or changing them will break the site generation process.
+WARNING: The default parameters in `site.nix` head: `pkgs`, `renderDrafts`, `siteUrl` and `lastChange` are set and expected by Styx. Removing or changing them will break the site generation process.
 
 ==== Main Logic
 
-Main logic part can be divided in three parts: setup, template declaration and pages declaration.
+Main logic part can be divided in three parts:
+
+- <<Setup>>
+- <<Templates declaration>>
+- <<Pages declaration>>
+
 The order of declarations in the main logic part is not important and can be changed to fit preference.
+
+Also the main logic part being in a `let` block, it is possible to refer any of its variables at any position. (It is possible to use a variable before declaring it)
 
 ===== Setup
 
-This part contains some boiler-plate code. Variables can be declared at will to fit any special needs.
+This part contains some boiler-plate code. New variables can be declared at will to fit any special needs.
 (Comments removed in favor of call-out explanations)
 
 [source, nix]
-.Setup section in default.nix
+.Setup section
 ----
   conf = overrideConf (import ./conf.nix) args; # <1>
 
-  state = { inherit lastChange; }; # <2>
+  themes = [ "default" ]; # <2>
 
-  genericEnv = { inherit conf state lib templates; }; # <3>
+  state = { inherit lastChange; }; # <3>
 
-  loadTemplate = loadTemplateWithEnv genericEnv; # <4>
+  templates = lib.themes.loadTemplates { # <4>
+    inherit themes defaultEnvironment customEnvironments;
+    themesDir = conf.themesDir;
+  };
 
-  navbar = [ (head pages.archives) pages.about ]; # <5>
-----
-
-<1> Loading the main configuration file, `conf.nix` in a `conf` local variable.
-<2> Setting a `state` local variable containing "impure" values. It contains only the `lastChange` variable coming from `default.nix` main function head. (Skeleton point 1)
-`lastChange` value is automatically set by the Styx command.
-<3> This initialize a generic template environment. Most of templates expect to have access to `conf`, `state`, `lib` and `templates`. It is not recommended to remove any of these.
-On the other hand it is fine to add new attributes to the default environment to fit special needs.
-<4> Defining a helper function `loadTemplate` that loads a template with the default environment. This function is defined taking advantage of η-reduction so its argument is not specified.
-`loadTemplate` is actively used during template declaration.
-<5> This define a `navbar` local variable containing pages to include in the NavBar. For more details about Navbar setting, see the <<NavBar>> section.
-
-NOTE: η-reduction is the process to drop a function abstraction. For example, `x: a x` is equivalent, and can be reduced to `a`.
-
-===== Templates declaration
-
-The template declaration part consists in declaring all the templates that will used. Templates are grouped in a single attribute set.
-
-Template environment used to load templates can be extended on a per template basis to fit special needs.
-
-The sample site contains many similar templates declarations, so this section will only present interesting examples.
-
-[source, nix]
-.Templates declaration
-----
-  templates = { # <1>
-    index   = loadTemplate "index.nix"; # <2>
-    layout  = loadTemplateWithEnv  # <3>
-                (genericEnv // { inherit navbar; feed = pages.feed; }) # <4>
-                "layout.nix"; # <5>
-    navbar = { # <6>
-      main = loadTemplate "navbar.main.nix";
-      brand = loadTemplate "navbar.brand.nix";
-    };
+  files = lib.themes.loadFiles { # <5>
+    inherit themes;
+    themesDir = conf.themesDir;
   };
 ----
 
-<1> Declaring a `templates` attribute set where all the templates will be declared.
-<2> Declaring an `index` variable that holds the `index.nix` template loaded with the generic template environment.
-<3> Declaring a `layout` template that holds the layout template, this use the `loadTemplateWithEnv` function so a custom environment can be passed as the first argument.
-<4> The environment passed to the template is the generic environment extended with a variable `feed` that holds the feed page (`pages.feed`) and the `navbar` variable that holds the list of pages to show in the NavBar.
+<1> Loading the main configuration file, `conf.nix` in a `conf` local variable.
+<2> Setting used themes, themes should be a list of theme names.
+<3> Setting a `state` local variable containing "impure" values. It contains only the `lastChange` variable coming from `site.nix` main function head. (Skeleton point 1)
+`lastChange` value is automatically set by the Styx command.
+<4> Loading themes templates.
+<5> Loading themes static files.
+
+
+===== Templates declaration
+
+Templates are automatically loaded via the theme system.
+
+This section is reposible for setting custom template environments to specific templates. For more details on template environments, see <<Template environment>>.
+
+[source, nix]
+.Templates section
+----
+  defaultEnvironment = { inherit conf state lib templates; }; # <1>
+
+  navbar = [ (head pages.archives) pages.about ]; # <2>
+
+  customEnvironments = { # <3>
+    layout = defaultEnvironment // { inherit navbar; feed = pages.feed; }; # <4>
+  };
+----
+
+<1> This initialize a default template environment. Most of templates expect to have access to `conf`, `state`, `lib` and `templates`. It is not recommended to remove any of these.
+On the other hand it is fine to add new attributes to the default environment to fit special needs.
+<2> This define a `navbar` local variable containing pages to include in the NavBar. For more details about Navbar setting, see the <<NavBar>> section.
+<3> `customEnvironments` should be a set with a similar structure to `templates`, but with keys that defines a custom environment for the template. Any template that is not part of `customEnvironments` will use the `defaultEnvironment`.
+<4> The environment passed to the layout template is the default environment extended with a variable `feed` that holds the feed page (`pages.feed`) and the `navbar` variable that holds the list of pages to show in the NavBar.
 The base template is managing the main layout of the site and the `head` section of the HTML document.
 As we want to have a link to the feed in it, we add the feed page to a variable so it can be used in the template. Similar for the NavBar.
-<5> The template file to load, `layout.nix`.
-<6> Declaring templates in a sub attribute set. Templates in a subset can be accessed with `.`, for example the navbar main template is accessed by `templates.navbar.main`.
 
 NOTE: `//` is the operator to merge attribute sets. If the two sets have a same key, the right hand set value will be set. The merge is not recursive.
 
@@ -183,7 +213,7 @@ NOTE: A page attribute set must consist at least of `template`, `href` and `titl
 The feed page is an exception as it use the site title from `conf` and then does not need a `title` attribute.
 
 [source, nix]
-.Pages declaration 1/2
+.Pages section 1/2
 ----
   pages = rec { # <1>
     index = { # <2>
@@ -208,11 +238,11 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
 <3> Inheriting the feed page, this is equal to `feed = feed;`. `feed` is a non-standard page attribute and is declared to fit contents needs.
 <4> This also set a non-standard attribute, `posts` set to the first `conf.postsOnIndexPage` items of the post page list.
 <5> Another non-standard attribute, `archivePage` set to the first page of the archives page list.
-<6> Setting page breadcrumbs, for details on the breadcrumbs system see the <<Breadcrumbs>> section.
+<6> Setting page breadcrumbs, see the <<Breadcrumbs>> for details.
 <7> Fetching page content and title from a markdown.
 
 [source, nix]
-.Pages declaration 2/2
+.Pages section 2/2
 ----
     archives = splitPage { # <1>
       baseHref = "archives/posts";
@@ -233,12 +263,12 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
     posts = let  # <3>
       substitutions = { inherit conf; }; # <4>
       posts = getPosts { inherit substitutions; from = conf.postsDir; to = "posts"; }; # <5>
-      drafts = optionals enableDrafts (getDrafts { inherit substitutions; from = conf.draftsDir; to = "drafts"; }); # <6>
+      drafts = optionals renderDrafts (getDrafts { inherit substitutions; from = conf.draftsDir; to = "drafts"; }); # <6>
       preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; }; # <7>
     in sortPosts (map preparePosts (posts ++ drafts)); # <8>
   };
 
-  pageList =
+  pagesList =
     let list = (pagesToList pages); # <9>
     in map (setDefaultLayout templates.layout) list; # <10>
 ----
@@ -247,11 +277,11 @@ The `rec` keyword make the set recursive, so it is possible to refer set attribu
 <2> A simple page declaration. As the feed template is using `conf.siteTitle` in place of `title`, it is not required to set a title in this special case.
 Also, as the feed page does not need a layout, the layout function is set to `id`, see <<Layout templates>> for details.
 <3> Declare the list of posts, this is the most complex page declaration presented in this section.
-<4> Adding `conf` to the substitutions. for details see <<Substitutions>>.
+<4> Adding `conf` to the substitutions, see <<Substitutions>> for details.
 <5> Fetching the posts and setting their output path to `posts`.
-<6> Fetching the drafts only if `enableDrafts` is enabled. (by using the Styx command `--drafts` flag)
+<6> Fetching the drafts only if `renderDrafts` is `true`. (by using the Styx command `--drafts` flag)
 <7> Declaring a `preparePost` function that take a post and extends it by setting a template and breadcrumbs.
 <8> Finally merging the posts and drafts in a list, setting the template and breadcrumbs to each, and sorting the list so the posts are in chronological order.
-<9> `generateSite` needs a list of pages, so we convert the `pages` attribute set to a `pageList` list with the `pagesToList` function.
+<9> `generateSite` needs a list of pages, so we convert the `pages` attribute set to a `pagesList` list with the `pagesToList` function.
 <10> Then, `setDefaultLayout` is used to set a layout template to all the pages that don't set the `layout` attribute.
 

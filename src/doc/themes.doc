@@ -1,0 +1,111 @@
+== Themes
+
+Themes are used handle templates and static files and are the main way to customize Styx sites.
+
+Styx comes with a simple `default` theme.
+
+=== Structure
+
+Themes are stored in `conf.themesDir`, `themes` by default, and every theme is stored in its own directory.
+
+[source, shell]
+.Anatomy of a Styx theme
+-----
+themes
+└── NAME # <1>
+    ├── files # <2>
+    └── templates # <3>
+-----
+
+<1> Name of the theme. The name should be a valid folder name.
+<2> `files` is a folder holding static files for the themes. All the files in this folder will be copied in the generated site.
+<3> `templates` is a folder storing all the templates files.
+
+Every template in the `templates` will be accessible by its file basename in the `templates` attribute set.
+Folders are converted to nested sets.
+
+[source, shell]
+.Example of a template directory structure
+-----
+├── archive.nix
+└── post
+    ├── full.nix
+    └── list.nix
+-----
+
+[source, nix]
+.Generated attribute set
+-----
+templates = {
+  archive = ./archive.nix;
+  posts = {
+    full = ./posts/full.nix;
+    list = ./posts/list.nix;
+  };
+};
+-----
+
+=== Themes in site.nix
+
+Themes are declared as a list in the `themes` variable.
+
+[source, shell]
+.Declaring used themes
+-----
+  themes = [ "default" ]; # <1>
+-----
+
+<1> The `themes` variable is a list of theme names, it is possible to set multiple themes. In that cases, themes at the head of the list have a higher priority.
+
+Themes related files are automatically loaded in `site.nix` via the `lib.themes.loadTemplates` and `lib.themes.loadFiles` functions.
+
+[source, shell]
+.Loading theme related files
+----
+  templates = lib.themes.loadTemplates { # <1>
+    inherit themes defaultEnvironment customEnvironments;
+    themesDir = conf.themesDir;
+  };
+
+  files = lib.themes.loadFiles { # <2>
+    inherit themes;
+    themesDir = conf.themesDir;
+  };
+
+  themes = [ "default" ];
+----
+
+<1> Load themes templates. See <<themes.loadFiles,loadFiles>> for details.
+<2> Load themes files. See <<themes.loadTemplates,loadTemplates>> for details.
+
+
+=== Combining Themes
+
+In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the one from the first theme to declare it will be used.
+
+This allows to "extends" themes without modifying them.
+
+For example, to use the default theme but only change the `layout` template. It is possible to create a new theme, and copy the `layout.nix` template in the new theme `templates` folder and change only this file.
+
+[source, bash]
+.Creating a new foo theme
+----
+$ mkdir themes/foo # <1>
+$ mkdir themes/foo/{templates,files} # <2>
+$ cp themes/{default,foo}/templates/layout.nix # <3>
+----
+
+<1> Create the theme directory.
+<2> Create the theme required directories.
+<3> Copying `default` theme `layout.nix` to `foo` theme.
+
+After a new theme has been created, it must be load in the `site.nix` to be used.
+
+[source, nix]
+.Using foo and default themes in `site.nix`
+----
+  themes = [ "foo" "default" ]; #<1>
+----
+
+<1> This will use foo and default theme, with foo having a higher priority than default.
+

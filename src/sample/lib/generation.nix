@@ -19,24 +19,30 @@ in
   /* Generate a site with a list pages
   */
   generateSite = {
-    conf
-  , pages
+    files
+  , pagesList
   , preGen ? ""
   , postGen ? ""
   }:
-    pkgs.runCommand conf.siteId {} ''
+    pkgs.runCommand "styx-site" {} ''
       mkdir -p $out
 
-      eval "${preGen}"
-
-      for file in ${conf.staticDir}/*; do
-        ln -s $file $out/
-      done
+      ${concatMapStringsSep "\n" (filesDir: ''
+      (
+        cd ${filesDir}
+        for file in ./*; do
+          if [ ! -e "$out/$file" ]; then
+            echo $file
+            ln -s "$(pwd)/$file" "$out/$file"
+          fi
+        done
+      )
+      '') files}
 
       ${concatMapStringsSep "\n" (page: ''
-        mkdir -p `dirname $out/${page.href}`
-        ln -s ${pkgs.writeText "${conf.siteId}-${replaceStrings ["/"] ["-"] page.href}" (page.layout (page.template page)) } $out/${page.href}
-      '') pages}
+        mkdir -p $(dirname $out/${page.href})
+        ln -s ${pkgs.writeText "styx-site-${replaceStrings ["/"] ["-"] page.href}" (page.layout (page.template page)) } $out/${page.href}
+      '') pagesList}
 
       eval "${postGen}"
     '';

@@ -1,5 +1,24 @@
 == Release Notes
 
-=== Styx 0.1.0 - 2016/10/7
+////
+
+=== Styx 0.2.0 - 2016/10/XX
+
+Highlights:
+
+- Live preview mode for the cli command (<<Live>>)
+- Introduction of themes (<<Themes>>)
+- Content substitutions (<<Substitutions>>)
+- Content metadata (<<Metadata>>)
+
+New features:
+
+Incompatible changes:
+
+Fixes:
+
+////
+
+=== Styx 0.1.0 - 2016/10/07
 
 Initial release of Styx.

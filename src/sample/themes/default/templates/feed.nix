@@ -11,12 +11,12 @@ page:
 
       <title>${conf.siteTitle}</title>
       <updated>${state.lastChange}</updated>
-      <generator>Styx @version@</generator>
+      <generator>Styx</generator>
       <id>${conf.siteUrl}/atom.xml</id>
       <link href="${conf.siteUrl}/atom.xml" rel="self" type="application/atom+xml"/>
       <link href="${conf.siteUrl}" rel="alternate"/>
       
-      ${mapTemplate templates.post.atomList page.posts}
+      ${mapTemplate templates.post.feed-list page.posts}
 
     </feed>
   ''

@@ -11,10 +11,6 @@ with lib;
   overrideConf = conf: override:
     conf // (filterAttrs (k: v: (hasAttr k conf) && (v != null)) override);
 
-  /* Load a template with an environment set
-  */
-  loadTemplateWithEnv = env: file: import (env.conf.templatesDir + "/${file}") env;
-
   /* Set a default layout to a page attribute set
      Does nothing if a layout is already set
   */

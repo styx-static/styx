@@ -12,12 +12,12 @@ let
     let
       data = pkgs.runCommand "data" {} ''
         mkdir $out
-        matterBlock="/{---/,/---}/p"
-        if [ "$(sed -n "$matterBlock" < ${path})" ]; then
-          sed -n "$matterBlock" < ${path} | sed '1d;$d' > $out/matter
-          sed "1,`sed -n "$matterBlock" < ${path} | wc -l`d" < ${path} > $out/source
+        metaBlock="/{---/,/---}/p"
+        if [ "$(sed -n "$metaBlock" < ${path})" ]; then
+          sed -n "$metaBlock" < ${path} | sed '1d;$d' > $out/meta
+          sed "1,`sed -n "$metaBlock" < ${path} | wc -l`d" < ${path} > $out/source
         else
-          echo "{}" > $out/matter
+          echo "{}" > $out/meta
           cp ${path} $out/source
         fi
         ${concatMapStringsSep "\n" (set:
@@ -36,9 +36,9 @@ let
       '';
       content = readFile "${data}/content";
       title   = readFile "${data}/title";
-      matter  = import   "${data}/matter";
+      meta    = import   "${data}/meta";
     in
-      { inherit content title; } // matter;
+      { inherit content title; } // meta;
 
   /* Convert a deep set to a list of sets where the key is the path
      Used to prepare substitutions

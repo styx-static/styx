@@ -12,8 +12,8 @@ The Styx provides a command line program `styx`.
 The `new` command is used to create a new Styx site.
 
 `styx new`:: Create a Styx site in "styx-site" directory in current path.
-`styx-new -o "myblog"`:: Create a Styx site in "myblog" directory in current path.
-`styx-new -o "myblog --target /tmp"`:: Create a Styx site in "myblog" directory in `/tmp`.
+`styx-new -o "myblog"`:: Create a Styx site in `myblog` directory in current path.
+`styx-new -o "myblog" --target /tmp`:: Create a Styx site in `myblog` directory in `/tmp`.
 
 === Build
 

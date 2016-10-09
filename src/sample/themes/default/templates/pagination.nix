@@ -15,6 +15,8 @@
     prevHref = if (index > 1) then "${conf.siteUrl}/${(elemAt pages (index - 2)).href}" else "#";
     nextHref = if (index < (length pages)) then "${conf.siteUrl}/${(elemAt pages (index)).href}" else "#";
   in
+
+  optionalString ((length pages) > 1)
   ''
   <nav aria-label="Page navigation">
     <ul class="pagination">
