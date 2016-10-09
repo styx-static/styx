@@ -34,6 +34,8 @@ let
 
     index   = loadTemplate "index.nix";
 
+    e404 = loadTemplate "404.nix";
+
     generic = loadTemplate "generic.nix";
 
     archive = loadTemplate "archive.nix";
@@ -90,6 +92,8 @@ let
 
     # RSS feed page
     feed = { href = "feed.xml"; template = templates.feed; posts = take 10 posts; layout = id; };
+
+    e404 = { href = "404.html"; template = templates.e404; title = "404"; };
 
     # List of posts
     # Fetch and sort the posts and drafts (only if enableDrafts is true) and set the
