@@ -85,6 +85,12 @@ current_branch(){
   git rev-parse --symbolic-full-name --abbrev-ref HEAD
 }
 
+nix_error () {
+  echo "---"
+  echo "Error: Site could not been built, fix the errors and run the command again."
+  echo "The '--show-trace' flag can be used to show debug information."
+}
+
 
 #-------------------------------
 
@@ -257,6 +263,10 @@ if [ "$action" = build ]; then
     else
       echo "Building the site..."
       path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" $target)
+      if [ $? -ne 0 ]; then
+        nix_error
+        exit 1
+      fi
       # copying the build results as normal files
       cp -L -r "$path" "$folder"
       # fixing permissions
@@ -287,6 +297,10 @@ if [ "$action" = serve ]; then
       fi
     fi
     path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}" $target)
+    if [ $? -ne 0 ]; then
+      nix_error
+      exit 1
+    fi
     if [ -n "$detachServer" ]; then
       $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
       serverPid=$!
@@ -316,6 +330,10 @@ if [ "$action" = live ]; then
     lastChange=$(last_timestamp)
     # building to result a first time
     path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
+    if [ $? -ne 0 ]; then
+      nix_error
+      exit 1
+    fi
     # start the server
     $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
     echo "Started live preview on http://$serverHost:$port"
@@ -328,17 +346,21 @@ if [ "$action" = live ]; then
         # rebuild
         echo "Change detected, rebuilding..."
         path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}")
-        # kill the server
-        echo "Restarting the server..."
-        disown "$serverPid"
-        kill -9 "$serverPid"
-        # start the server
-        $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
-        echo "Done!"
-        # updating the pid
-        serverPid=$!
-        # sleep a little to avoid chained rebuilds
-        sleep 3
+        if [ $? -ne 0 ]; then
+          echo "There were errors in site generation, server restart is skipped until the site generation success."
+        else
+          # kill the server
+          echo "Restarting the server..."
+          disown "$serverPid"
+          kill -9 "$serverPid"
+          # start the server
+          $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
+          echo "Done!"
+          # updating the pid
+          serverPid=$!
+          # sleep a little to avoid chained rebuilds
+          sleep 3
+        fi
         # update the timestamp
         lastChange=$(last_timestamp)
       fi
@@ -392,6 +414,10 @@ if [ "$action" = deploy ]; then
         # and update the feed
         echo "Building the site"
         path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}")
+        if [ $? -ne 0 ]; then
+          nix_error
+          exit 1
+        fi
         startBranch=$(current_branch)
         git checkout gh-pages
         cp -L -r "$path"/* ./
