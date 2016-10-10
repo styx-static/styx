@@ -109,6 +109,37 @@ sep
 
 #-------------------------------
 #
+# Styx preview
+#
+#-------------------------------
+
+totalTests=$(( totalTests + 1 ))
+
+echo "Testing 'styx preview':"
+
+$styx preview --target $folder --detach
+serveOk=$?
+
+# wait the server is ready
+sleep 1
+
+curl -s -o "/dev/null" http://127.0.0.1:8080
+curlOk=$?
+
+if [ $serveOk -eq 0 ] && [ $curlOk -eq 0 ]; then
+  echo "Success!"
+  successTests=$(( successTests + 1 ))
+else
+  echo "Failure"
+fi
+
+# killing the server
+pidof caddy | xargs kill -9
+
+sep
+
+#-------------------------------
+#
 # Styx serve
 #
 #-------------------------------
@@ -117,7 +148,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx serve':"
 
-$styx preview --target $folder --detach
+$styx serve --site-url "http://127.0.0.1" --target $folder --detach
 serveOk=$?
 
 # wait the server is ready
