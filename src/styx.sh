@@ -191,7 +191,7 @@ while [ "$#" -gt 0 ]; do
 	    action="serve"
       siteURL="PREVIEW"
 	    ;;
-	  build|server|deploy|live)
+	  build|serve|deploy|live)
 	    action="$i"
 	    ;;
 # Build options
