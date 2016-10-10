@@ -2,7 +2,7 @@
 
 === Pages
 
-Pages is the most basic content unit. Every content in Styx is a page (posts and drafts are a special types of pages).
+Pages are the most basic content units. Every content in Styx is a page (posts and drafts are a special types of pages).
 
 A page in Styx is an attribute set following a set of rules:
 
@@ -83,7 +83,7 @@ NOTE: The only difference between posts and drafts is the presence of the `isDra
 
 === Substitutions
 
-Subtitutions are a way to use some variables of `site,nix` in mardown files.
+Subtitutions are a way to use some variables of `site.nix` in markdown files.
 
 Substitutions are a set that must be passed to the `getPosts`,  `getDrafts` or `parsePage` arguments.
 
@@ -98,16 +98,16 @@ Substitutions are a set that must be passed to the `getPosts`,  `getDrafts` or `
   in sortPosts (map preparePosts (posts ++ drafts));
 ----
 
-<1> Creating a subtitution set containing `conf`. `{ inherit conf; }` is a shorhand for `{ conf = conf; }`.
+<1> Creating a subtitution set containing `conf`. `{ inherit conf; }` is a shorthand for `{ conf = conf; }`.
 <2> Pass the substitutions to `getPosts` argument set.
 <3> Pass the substitutions to `getDrafts` argument set.
 
 In the markdown file, substitutions are used by surround it by `@`.
 
-NOTE: It impossible to use any nix expression in the substitution.
+NOTE: It is impossible to use any nix expression in the substitution.
 
 [source, nix]
-.Using a substitution in a mardown file
+.Using a substitution in a markdown file
 ----
   Learn more in the [Styx 0.1.0 Documentation](@conf.siteUrl@/documentation-v0-1-0.html). # <1>
 ----
