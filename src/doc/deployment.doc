@@ -4,7 +4,7 @@
 
 Styx support basic deployment to GitHub pages.
 
-This is a two step process, initialization og the `gh-pages` branch and update of the `gh-branch` with the built site.
+This is a two step process, initialization of the `gh-pages` branch and update of the `gh-branch` with the built site.
 
 [source, bash]
 .Setting a Styx site for GitHub pages
