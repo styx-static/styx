@@ -32,7 +32,6 @@ in
         cd ${filesDir}
         for file in ./*; do
           if [ ! -e "$out/$file" ]; then
-            echo $file
             ln -s "$(pwd)/$file" "$out/$file"
           fi
         done

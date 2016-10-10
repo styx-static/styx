@@ -49,15 +49,17 @@ in
   fold (theme: set:
     let
       templatesDir = themesDir + "/${theme}/templates";
-      templateSet = fetchTemplateDir templatesDir;
+      templateSet  = fetchTemplateDir templatesDir;
       templatesWithEnv = mapAttrsRecursive (path: value:
         let 
           env = if hasAttrByPath path customEnvironments
                    then getAttrFromPath path customEnvironments
                    else defaultEnvironment;
-          in import value env
+          in if hasAttrByPath path set
+                then null
+                else import value env
       ) templateSet;
-    in recursiveUpdate set templatesWithEnv
-  ) {} themes;
+    in recursiveUpdate templatesWithEnv set
+  ) {} (reverseList themes);
 
 }

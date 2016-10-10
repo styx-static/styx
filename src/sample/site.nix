@@ -82,8 +82,8 @@ let
      Any template not defined in this list will use the `defaultEnvironment`
   */
   customEnvironments = {
-    # Adding navbar and feed variables to the layout template environment
-    layout = defaultEnvironment // { inherit navbar; feed = pages.feed; };
+    partials.head = defaultEnvironment // { feed = pages.feed; };
+    navbar.main = defaultEnvironment // { inherit navbar; };
   };
 
 
@@ -115,7 +115,7 @@ let
     */
     about = {
       href = "about.html";
-      template = templates.generic;
+      template = templates.generic.full;
       # setting breadcrumbs
       breadcrumbs = [ index ];
     # importing a markdown files with the `parsePage` function

@@ -8,8 +8,7 @@
      templates.navbar.main navbar
 
 */
-{ templates, lib, conf, ... }:
-navbar:
+{ templates, lib, conf, navbar, ... }:
 with lib;
 ''
 <nav class="navbar navbar-fixed-top">

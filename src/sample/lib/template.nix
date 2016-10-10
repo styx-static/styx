@@ -24,6 +24,12 @@ with lib;
   */
   isExternalHref = href: (match "^http.*" href) != null;
 
+  /* Create a generator meta tag for Styx
+  */
+  generatorMeta = ''
+    <meta name="generator" content="Styx" /> 
+  '';
+
   /* Concat strings with a new line, useful for merging templates
   */
   mapTemplate = concatMapStringsSep "\n";
