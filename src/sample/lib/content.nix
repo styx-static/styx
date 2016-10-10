@@ -113,4 +113,13 @@ rec {
   */
   sortPosts = sort (a: b: lessThan b.timestamp a.timestamp);
 
+  markdownToHtml = text:
+    let
+      data = pkgs.runCommand "data" {} ''
+        mkdir $out
+        echo -n "${text}" > $out/source
+        ${pkgs.multimarkdown}/bin/multimarkdown < $out/source > $out/content
+      '';
+    in readFile "${data}/content";
+
 }
