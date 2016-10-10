@@ -30,7 +30,8 @@ Generic options:
         --arg ARG VAL          Pass an argument ARG with the value VAL to the build and serve subcommands.
         --argstr ARG VAL       Pass an argument ARG with the value VAL as a string to the build and serve subcommands.
         --show-trace           Show debug trace messages.
-        --target DIR           Run the selected command in the DIR directory;
+        --target DIR           Run the selected command in the DIR directory.
+        --file FILE            Run the command using FILE instead of 'site.nix'.
 
 Build options:
     -o, --out                  Set the build output, "public" by default.
@@ -175,6 +176,9 @@ while [ "$#" -gt 0 ]; do
         echo "--target must be an existing directory."
         exit 1
       fi
+      ;;
+    --file)
+      siteFile=$1; shift 1
       ;;
 # Commands
     new)
