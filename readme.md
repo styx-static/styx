@@ -2,7 +2,7 @@
 
 Static site generator in Nix expression language.
 
-Styx developement version can be tested with the Nix package manager `nix-shell` command:
+Styx latest stable version can be tested with the Nix package manager `nix-shell` command:
 
 ```
 $ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
@@ -21,3 +21,8 @@ To open the latest documentation in the default browser, run the following comma
 ```
 $BROWSER $(nix-build --no-out-link https://github.com/styx-static/styx/archive/latest.tar.gz)/share/doc/styx/index.html
 ```
+
+### Links
+
+- [Official site](https://styx-static.github.io/styx-site/)
+- [Documentation](https://styx-static.github.io/styx-site/documentation.html)
