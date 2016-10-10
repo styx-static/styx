@@ -2,7 +2,7 @@
 
 lib:
 with lib;
-{
+rec {
 
   /* Generate html tag attributes
 
@@ -30,9 +30,25 @@ with lib;
     <meta name="generator" content="Styx" /> 
   '';
 
-  /* Concat strings with a new line, useful for merging templates
+  /* Concat template functions with a new line
   */
   mapTemplate = concatMapStringsSep "\n";
+
+  /* Concat template functions with a new line and pass an index
+  */
+  mapTemplateWithIndex = concatImapStringsSep "\n";
+
+  /* Modulo
+  */
+  mod = a: b: a - (b*(a / b));
+
+  /* Check if a number is odd
+  */
+  isOdd  = a: (mod a 2) == 1;
+
+  /* Check if a number is even
+  */
+  isEven = a: (mod a 2) == 0;
 
   prettyTimestamp = timestamp:
     let
