@@ -11,7 +11,7 @@
 { templates, lib, conf, navbar, ... }:
 with lib;
 ''
-<nav class="navbar navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
 
     <div class="navbar-header">
