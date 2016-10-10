@@ -1,8 +1,6 @@
 == Release Notes
 
-////
-
-=== Styx 0.2.0 - 2016/10/XX
+=== Styx 0.2.0 - 2016/10/10
 
 Highlights:
 
@@ -13,11 +11,38 @@ Highlights:
 
 New features:
 
+- cli command
+   - new `preview` subcommand to preview a site locally
+   - new `live` subcommand to preview and automatically reload changes
+   - `serve` subcommands new flags:
+      - `--detach` to launch the server in a background process
+      - `--server-host` to specify the server listening hostname
+      - `--siteUrl` to override `conf.siteUrl`
+   - new `-target` flag to specify the Styx site folder
+- content substitutions (<<Substitutions>>)
+- themes (<<Themes>>)
+- metadata (<<Metadata>>)
+- 404 error page template
+
 Incompatible changes:
 
-Fixes:
+- `default.nix` was renamed to `site.nix`
+- `site.nix` `previewMode` was renamed to `renderDrafts`
+- cli `--preview` flag has been renamed to `--drafts`
+- `lib.content`: `getPosts`, `getDrafts` and `parsePage` arguments have changed
+- `lib.generation`: `generateSite` arguments have changed
+- `lib.utils`: `loadTemplateWithEnv` function was removed
 
-////
+Bug Fixes:
+
+- nix link in the default theme layout template
+- `styx new` is working when called in empty folders
+- default theme archive title is not hardcoded
+- default them pagination is displayed only when there is more than one page
+
+This release bring many major changes that make updating from 0.1.0 non-trivial.
+
+To update, it is recommended to generate a new site, create a new theme with customized templates and static files, and update `site.nix` accordingly.
 
 === Styx 0.1.0 - 2016/10/07
 

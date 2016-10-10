@@ -4,7 +4,7 @@
 
 - [x] Test suite
 - [x] 404 page
-- [ ] Front matter / metadata
+- [x] Front matter / metadata
 
 ## Post 0.2.0
 
