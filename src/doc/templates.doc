@@ -18,7 +18,7 @@ Most of the work in template is done by manipulating text.
 
 This introduce the basics of text handling in the templates:
 
-- multi-line text, delimited by `''`.
+- single-line or multi-line text (leading spaces are stripped without changing relative line align), delimited by `''`.
 
 +
 [source, nix]
@@ -30,11 +30,11 @@ This introduce the basics of text handling in the templates:
 ''
 ----
 
-- single line text, delimited by `"`.
+- single-line or multi-line text, delimited by `"`.
 
 +
 [source, nix]
-.Multi-line text
+.Single-line text
 ----
 "Hello world!"
 ----
