@@ -22,9 +22,16 @@ let
   */
   themes = [ "default" ];
 
+  themesDir = ./themes;
+
   /* Load the configuration
+     This merge themes configuration files, ./conf.nix, and siteURL
   */
-  conf = overrideConf (import ./conf.nix) args;
+  conf = overrideConf
+    (recursiveUpdate
+      (lib.themes.loadConf { inherit themes themesDir; })
+      (import ./conf.nix))
+    args;
 
   /* Set the state
      This is required to update the feed <updated> value.
@@ -47,16 +54,14 @@ let
        };
   */
   templates = lib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments;
-    themesDir = conf.themesDir;
+    inherit themes defaultEnvironment customEnvironments themesDir;
   };
 
   /* Load the static files from active themes
      return a list of static folders
   */
   files = lib.themes.loadFiles {
-    inherit themes;
-    themesDir = conf.themesDir;
+    inherit themes themesDir;
   };
 
 
@@ -106,7 +111,7 @@ let
       template = templates.index;
       # Every attribute defined below is non standard
       inherit feed;
-      posts = take conf.postsOnIndexPage posts;
+      posts = take conf.theme.index.numberOfPosts posts;
       archivePage = head archives;
     };
 
@@ -129,7 +134,7 @@ let
       title = "Posts";
       template = templates.archive;
       items = posts;
-      itemsPerPage = conf.postsPerArchivePage;
+      itemsPerPage = conf.theme.archive.postsPerPage;
       breadcrumbs = [ index ];
     };
 

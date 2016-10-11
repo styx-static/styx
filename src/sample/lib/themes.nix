@@ -28,6 +28,44 @@ let
 in
 {
 
+  /* Load the configuration files from 'themes' lit of themes
+     This load the themes configuration in a set, splitting in two keys
+
+      - theme: set containing all the themes conf merged
+      - themes.NAME: the theme configuration as it is delcared
+
+     This theme configuration:
+
+       {
+         themes.foo = {
+           bar = "hello";
+           baz = 5; };
+       }
+
+     Will be converted to:
+
+       {
+         theme = {
+           bar = "hello";
+           baz = 5; };
+
+         themes.foo = {
+           bar = "hello";
+           baz = 5; };
+       }
+  */
+  loadConf = {
+    themes
+  , themesDir
+  }:
+  fold (theme: set:
+    let
+      themeConf = import (themesDir + "/${theme}/conf.nix");
+      themeName = head (attrNames themeConf.themes);
+    in ({ inherit themeConf; } // { theme = themeConf.themes."${themeName}"; })
+  ) {} (reverseList themes);
+
+
   /* Load template files from 'themes' list of themes
   */
   loadFiles = {

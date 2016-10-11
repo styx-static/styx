@@ -1,4 +1,4 @@
-{ conf, state, lib, templates,  ... }:
+{ conf, state, lib, templates, ... }:
 with lib;
 page:
   ''
@@ -9,7 +9,7 @@ page:
 
       <access:restriction xmlns:access="http://www.bloglines.com/about/specs/fac-1.0" relationship="deny"/>
 
-      <title>${conf.siteTitle}</title>
+      <title>${conf.theme.site.title}</title>
       <updated>${state.lastChange}</updated>
       <generator>Styx</generator>
       <id>${conf.siteUrl}/atom.xml</id>

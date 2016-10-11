@@ -6,14 +6,14 @@ with lib;
   <meta name="viewport" content="width=device-width; initial-scale=1">
   ${generatorMeta}
 
-  <title>${page.title} - ${conf.siteTitle}</title>
+  <title>${page.title} - ${conf.theme.site.title}</title>
 
   ${optionalString (feed != false) ''
   <link
       href="${conf.siteUrl}/${feed.href}"
       type="application/atom+xml"
       rel="alternate"
-      title="${conf.siteTitle}"
+      title="${conf.theme.site.title}"
       />
   ''}
 

@@ -4,7 +4,7 @@
     <div class="container wrapper">
       <div class="row">
         <div class="col-sm-4 col-xs-4">
-          <p>${conf.siteTitle}</p>
+          <p>${conf.theme.site.title}</p>
         </div>
         <div class="col-sm-4 col-xs-4">
           <ul class="list-unstyled">
@@ -12,7 +12,7 @@
           </ul>
         </div>
         <div class="col-sm-4 col-xs-4">
-          <p>${conf.siteDescription}</p>
+          <p>${conf.theme.site.description}</p>
         </div>
       </div>
     </div>
