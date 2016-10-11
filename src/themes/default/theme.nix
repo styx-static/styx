@@ -2,9 +2,8 @@
    
    This settings can be changed in the main conf.nix
 */
-let 
 
-data = {
+themes.default = {
 
   site = {
 
@@ -23,5 +22,3 @@ data = {
   archive.postsPerPage = 5;
 
 };
-
-in { themes.default = data; }

@@ -1,10 +1,11 @@
 { pkgs ? import <nixpkgs> {}
+, styxLib
 , renderDrafts ? false
 , siteUrl ? null
 , lastChange ? null
 }@args:
 
-let lib = import ./lib pkgs;
+let lib = import styxLib pkgs;
 in with lib;
 
 let
@@ -22,7 +23,9 @@ let
   */
   themes = [ "default" ];
 
-  themesDir = ./themes;
+  /* Where the themes are located
+  */
+  themesDir = ../..;
 
   /* Load the configuration
      This merge themes configuration files, ./conf.nix, and siteURL
@@ -92,10 +95,22 @@ let
   };
 
 
+/* Data
+
+   This section declare the site data
+*/
+
+  substitutions = { inherit conf; };
+
+  data = {
+    posts  = loadFolder { inherit substitutions; from = ./posts; };
+    drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
+  };
+
 /* Pages
 
    This section declare the site pages
-   Every page in this set will be generates
+   Every page in this set will be generate
 */
 
   /* Pages attribute set
@@ -124,7 +139,7 @@ let
       # setting breadcrumbs
       breadcrumbs = [ index ];
     # importing a markdown files with the `parsePage` function
-    } // (parsePage { dir = conf.pagesDir; file = "about.md"; });
+    } // (loadFile { dir = ./pages; file = "about.md"; });
 
     /* Post archives
        Example of splitting a page between a list of items
@@ -158,15 +173,14 @@ let
        template
     */
     posts = let
-      # content substitutions
-      substitutions = { inherit conf; };
-      # fetching the posts
-      posts = getPosts { inherit substitutions; from = conf.postsDir; to = "posts"; };
-      # fetching the drafts
-      drafts = optionals renderDrafts (getDrafts { inherit substitutions; from = conf.draftsDir; to = "drafts"; });
+      posts = data.posts ++ (optional renderDrafts data.drafts);
       # sort, set breadcrumbs and set a template
-      preparePosts = p: p // { template = templates.post.full; breadcrumbs = with pages; [ index (head archives) ]; };
-    in sortPosts (map preparePosts (posts ++ drafts));
+      preparePosts = p: p // {
+        template = templates.post.full;
+        breadcrumbs = with pages; [ index (head archives) ];
+        href = "posts/${p.fileData.basename}.html";
+      };
+    in sortBy "date" (map preparePosts posts);
 
   };
 
@@ -175,7 +189,7 @@ let
      This also sets the default layout.
   */
   pagesList =
-    let list = (pagesToList pages);
+    let list = pagesToList pages;
     in map (setDefaultLayout templates.layout) list;
 
 

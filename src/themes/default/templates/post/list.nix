@@ -9,7 +9,7 @@ in
       <div class="row post-title">
         <div class="col-md-12">
           <p class="text-muted time-prefix">
-            <time pubdate="pubdate" datetime="${post.timestamp}">${prettyTimestamp post.timestamp}</time>
+            <time pubdate="pubdate" datetime="${post.date}">${prettyTimestamp post.date}</time>
           </>
           <p><a href="${conf.siteUrl}/${post.href}">${draftIcon}${post.title}</a></p>
         </div>

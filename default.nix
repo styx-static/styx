@@ -19,7 +19,8 @@ stdenv.mkDerivation rec {
     install -D -m 777 styx.sh $out/bin/styx
 
     mkdir -p $out/share/styx
-    cp -r sample $out/share/styx
+    cp -r lib $out/share/styx
+    cp -r themes $out/share/styx
 
     mkdir -p $out/share/doc/styx
     asciidoctor doc/manual.doc -o $out/share/doc/styx/index.html

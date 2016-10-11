@@ -106,15 +106,17 @@ origArgs=("$@")
 # action to execute
 action=
 # directory of this script
-dir="$(dirname "${BASH_SOURCE[0]}")"
+dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx share directory
-share="$dir/../share/styx"
+share=$(realpath "$dir/../share/styx")
+# styx share directory
+styxLib="$share/lib"
 # debug mode
 debug=
 # list of commands that will run
 cmd=()
 # extra arguments to be appended to the nix-build command
-extraFlags=()
+extraFlags=("--argstr" "styxLib" "$styxLib")
 # main site file
 siteFile="site.nix"
 
@@ -246,7 +248,7 @@ if [ "$action" = new ]; then
     exit 1
   else
     mkdir "$folder"
-    cp -r $share/sample/* "$folder/"
+    cp -r $share/themes "$folder/"
     chmod -R u+rw "$folder"
     echo -e "New styx site installed in '$folder'."
     exit 0

@@ -60,7 +60,7 @@ in
   }:
   fold (theme: set:
     let
-      themeConf = import (themesDir + "/${theme}/conf.nix");
+      themeConf = import (themesDir + "/${theme}/theme.nix");
       themeName = head (attrNames themeConf.themes);
     in ({ inherit themeConf; } // { theme = themeConf.themes."${themeName}"; })
   ) {} (reverseList themes);
