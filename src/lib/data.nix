@@ -140,7 +140,11 @@ rec {
 
   /* Sort a list of posts chronologically
   */
-  sortBy = attribute: sort (a: b: lessThan b."${attribute}" a."${attribute}");
+  sortBy = attribute: order: 
+    sort (a: b: 
+           if order == "asc" then a."${attribute}" < b."${attribute}"
+      else if order == "dsc" then a."${attribute}" > b."${attribute}"
+      else    abort "Sort order must be 'asc' or 'dsc'");
 
   /* Convert a markdown string to html
   */

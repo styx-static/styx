@@ -3,6 +3,8 @@
    This settings can be changed in the main conf.nix
 */
 
+{
+
 themes.default = {
 
   site = {
@@ -22,3 +24,5 @@ themes.default = {
   archive.postsPerPage = 5;
 
 };
+
+}

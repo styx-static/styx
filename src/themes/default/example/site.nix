@@ -5,6 +5,9 @@
 , lastChange ? null
 }@args:
 
+# This is for quick testing
+# Do not forget to restore to styxLib before oush / release
+# let lib = import ../../../lib pkgs;
 let lib = import styxLib pkgs;
 in with lib;
 
@@ -30,11 +33,12 @@ let
   /* Load the configuration
      This merge themes configuration files, ./conf.nix, and siteURL
   */
-  conf = overrideConf
-    (recursiveUpdate
-      (lib.themes.loadConf { inherit themes themesDir; })
-      (import ./conf.nix))
-    args;
+  conf = let
+    conf       = import ./conf.nix;
+    themesConf = lib.themes.loadConf { inherit themes themesDir; };
+    mergedConf = recursiveUpdate themesConf conf;
+  in
+    overrideConf mergedConf args;
 
   /* Set the state
      This is required to update the feed <updated> value.
@@ -77,7 +81,7 @@ let
   /* Default template environment
      This should not require change
   */
-  defaultEnvironment = { inherit conf state lib templates; };
+  defaultEnvironment = { inherit conf state lib templates data; };
 
   /* Defining a navbar for a custom template environment
      This Navbar contains the first archive page and the about page
@@ -91,13 +95,13 @@ let
   */
   customEnvironments = {
     partials.head = defaultEnvironment // { feed = pages.feed; };
-    navbar.main = defaultEnvironment // { inherit navbar; };
+    #navbar.main = defaultEnvironment // { inherit navbar; };
   };
 
 
 /* Data
 
-   This section declare the site data
+   This section declare the data used in the site
 */
 
   substitutions = { inherit conf; };
@@ -105,6 +109,7 @@ let
   data = {
     posts  = loadFolder { inherit substitutions; from = ./posts; };
     drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
+    navbar = [ (head pages.archives) pages.about ];
   };
 
 /* Pages
@@ -139,7 +144,7 @@ let
       # setting breadcrumbs
       breadcrumbs = [ index ];
     # importing a markdown files with the `parsePage` function
-    } // (loadFile { dir = ./pages; file = "about.md"; });
+    } // (lib.data.loadFile { dir = ./pages; file = "about.md"; });
 
     /* Post archives
        Example of splitting a page between a list of items
@@ -180,7 +185,7 @@ let
         breadcrumbs = with pages; [ index (head archives) ];
         href = "posts/${p.fileData.basename}.html";
       };
-    in sortBy "date" (map preparePosts posts);
+    in sortBy "date" "dsc" (map preparePosts posts);
 
   };
 
@@ -190,7 +195,15 @@ let
   */
   pagesList =
     let list = pagesToList pages;
-    in map (setDefaultLayout templates.layout) list;
+        taxonomies = mkTaxonomyPages {
+          pages = pages.posts;
+          taxonomies = [ "tags" "categories" ];
+          taxonomyTemplate = templates.taxonomy;
+          termTemplate = templates.term;
+        };
+
+    in (map (setDefaultLayout templates.layout) (list ++ taxonomies));
+
 
 
 /* Site rendering
@@ -198,4 +211,4 @@ let
    This section render the site, for custom needs it is possible to use the `preGen` and `postGen` hooks
 */
 
-in generateSite { inherit files pagesList; }
+in (generateSite { inherit files pagesList; })

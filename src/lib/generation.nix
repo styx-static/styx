@@ -14,7 +14,7 @@ let
 
 in
 
-{
+rec {
 
   /* Generate a site with a list pages
   */

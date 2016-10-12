@@ -8,7 +8,7 @@
      templates.navbar.main navbar
 
 */
-{ templates, lib, conf, navbar, ... }:
+{ templates, lib, conf, data, ... }:
 with lib;
 ''
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -29,7 +29,7 @@ with lib;
         ${mapTemplate (item:
         ''
           <li><a ${htmlAttr "href" (if (isExternalHref item.href) then "${item.href}" else "${conf.siteUrl}/${item.href}")}>${item.title}</a></li>
-        '') navbar}
+        '') data.navbar}
       </ul>
     </div>
 
