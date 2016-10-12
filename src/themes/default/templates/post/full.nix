@@ -8,7 +8,7 @@ let
 
       <header class="post-header">
         <div class="text-center">
-          <time pubdate="pubdate" datetime="${post.date}">${draftIcon}${prettyTimestamp post.date}</time>
+          <time pubdate="pubdate" datetime="${post.date}">${draftIcon}${with (parseDate post.date); "${D} ${b} ${Y}"}</time>
         </div>
       </header>
 

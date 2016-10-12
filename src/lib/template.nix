@@ -50,26 +50,53 @@ rec {
   */
   isEven = a: (mod a 2) == 0;
 
-  prettyTimestamp = timestamp:
-    let
-      year   = substring 0 4 timestamp;
-      month' = substring 5 2 timestamp;
-      day    = substring 8 2 timestamp;
-      month  =
-             if month' == "01" then "JAN"
-        else if month' == "02" then "FEB"
-        else if month' == "03" then "MAR"
-        else if month' == "04" then "APR"
-        else if month' == "05" then "MAY"
-        else if month' == "06" then "JUN"
-        else if month' == "07" then "JUL"
-        else if month' == "08" then "AUG"
-        else if month' == "09" then "SEP"
-        else if month' == "10" then "OCT"
-        else if month' == "11" then "NOV"
-        else if month' == "12" then "DEC"
-        else abort "Unknown month (${month'}) for date (${timestamp}).";
-    in
-      "${day} ${month} ${year}";
+  /* Date parsing
+
+     Example
+
+       with (parseDate post.date); "${D} ${b} ${Y}"
+
+  */
+  parseDate = date: let
+    year   = substring 0 4 date;
+    month  = substring 5 2 date;
+    day    = substring 8 2 date;
+    monthConv = {
+      "01" = { b = "Jan"; B = "January"; };
+      "02" = { b = "Feb"; B = "February"; };
+      "03" = { b = "Mar"; B = "March"; };
+      "04" = { b = "Apr"; B = "April"; };
+      "05" = { b = "May"; B = "May"; };
+      "06" = { b = "Jun"; B = "June"; };
+      "07" = { b = "Jul"; B = "July"; };
+      "08" = { b = "Aug"; B = "August"; };
+      "09" = { b = "Sep"; B = "September"; };
+      "10" = { b = "Oct"; B = "October"; };
+      "11" = { b = "Nov"; B = "November"; };
+      "12" = { b = "Dec"; B = "December"; };
+    };
+    doNotPad = x: let
+      m = builtins.match "^0+([0-9]+)$" x;
+    in if m != null
+          then elemAt m 0
+          else x;
+  in rec {
+    # year
+    YYYY = year;
+    YY   = substring 2 4 year;
+    Y    = YYYY;
+    y    = YY;
+    # month
+    MM   = month;
+    M    = doNotPad MM;
+    m    = MM;
+    m-   = M;
+    b    = monthConv."${MM}".b;
+    B    = monthConv."${MM}".B;
+    # day
+    DD   = day;
+    D    = doNotPad DD;
+    d-   = D;
+  };
 
 }
