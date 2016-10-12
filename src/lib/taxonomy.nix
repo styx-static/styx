@@ -47,4 +47,11 @@ rec {
       ) data);
   in (termPages ++ taxonomyPages);
 
+  /* sort terms by number of values
+  */
+  sortTerms = sort (a: b:
+    let valuesNb = x: length (proplistLib.propValue x);
+    in valuesNb a > valuesNb b
+  );
+
 }

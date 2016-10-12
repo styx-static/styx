@@ -12,7 +12,7 @@ let content =
     in
     ''
       <li><a href="${conf.siteUrl}/${page.taxonomy}/${term}/">${term}</a>: ${toString (length values)}</li>
-    '') page.terms}
+    '') (sortTerms page.terms)}
     </ul>
   </div>
 '';
