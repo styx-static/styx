@@ -7,7 +7,7 @@ let
 in
 rec {
 
-  /* create a taxonomy data structure
+  /* Generate a taxonomy data structure
   */
   mkTaxonomyData = { pages, taxonomies }:
    fold (taxonomy: set:
@@ -25,17 +25,16 @@ rec {
      ) set (filter (page: hasAttr taxonomy page) pages)
    ) {} taxonomies;
 
-  /* create taxonomy pages
+  /* Generate taxonomy pages attribute sets
   */
-  mkTaxonomyPages = { pages, taxonomies, taxonomyTemplate, termTemplate }:
+  mkTaxonomyPages = { data, taxonomyTemplate, termTemplate }:
     let
-      taxonomyData = mkTaxonomyData { inherit pages taxonomies; };
       taxonomyPages = mapAttrsToList (taxonomy: terms:
         { inherit terms taxonomy;
           href = "${taxonomy}/index.html";
           template = taxonomyTemplate;
           title = taxonomy; }
-      ) taxonomyData; 
+      ) data; 
       termPages = flatten (mapAttrsToList (taxonomy: terms:
         map (term:
           { inherit taxonomy;
@@ -45,7 +44,7 @@ rec {
             term     = proplistLib.propKey   term;
             values   = proplistLib.propValue term; }
         ) terms
-      ) taxonomyData);
+      ) data);
   in (termPages ++ taxonomyPages);
 
 }

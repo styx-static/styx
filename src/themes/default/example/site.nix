@@ -93,6 +93,8 @@ let
     # loading a list of contents and adding attributes
     drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
     navbar = [ (head pages.archives) pages.about ];
+    # creating taxonomies
+    taxonomies = mkTaxonomyData { pages = pages.posts; taxonomies = [ "tags" "categories" ]; };
   };
 
 
@@ -171,8 +173,7 @@ let
     /* Generate taxonomy pages for posts tags and categories
     */
     taxonomies = mkTaxonomyPages {
-      pages = pages.posts;
-      taxonomies = [ "tags" "categories" ];
+      data = data.taxonomies;
       taxonomyTemplate = templates.taxonomy.full;
       termTemplate = templates.taxonomy.term.full;
     };
