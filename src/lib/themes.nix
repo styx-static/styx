@@ -62,8 +62,8 @@ in
     let
       themeConf = import (themesDir + "/${theme}/theme.nix");
       themeName = head (attrNames themeConf.themes);
-    in ({ inherit themeConf; } // { theme = themeConf.themes."${themeName}"; })
-  ) {} (reverseList themes);
+    in recursiveUpdate set ({ inherit themeConf; } // { theme = themeConf.themes."${themeName}"; })
+  ) {} themes;
 
 
   /* Load template files from 'themes' list of themes

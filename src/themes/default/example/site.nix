@@ -94,8 +94,6 @@ let
       # include drafts only when renderDrafts is true
       draftsList = optionals renderDrafts (loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
-    # loading a list of contents and adding attributes
-    drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
     # Navbar data
     navbar = [ pages.about { title = "RSS"; href = "${conf.siteUrl}/${pages.feed.href}"; } ];
     # content taxonomies
@@ -187,4 +185,4 @@ let
 
 -----------------------------------------------------------------------------*/
 
-in (generateSite { inherit files pagesList; })
+in generateSite { inherit files pagesList; }
