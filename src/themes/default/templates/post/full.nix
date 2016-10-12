@@ -12,6 +12,9 @@ let
         </div>
       </header>
 
+      ${templates.taxonomy.inline { taxonomy = "tags"; page = post; }}
+      ${templates.taxonomy.inline { taxonomy = "categories"; page = post; }}
+
       <article class="post-content">
         ${post.content}
       </article>

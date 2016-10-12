@@ -21,7 +21,7 @@ with lib;
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      ${templates.navbar.brand}
+      ${templates.partials.navbar.brand}
     </div>
 
     <div class="collapse navbar-collapse" id="navbar">

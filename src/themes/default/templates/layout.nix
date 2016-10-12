@@ -5,29 +5,29 @@
 
 page:
 with lib;
-  ''
-    <!DOCTYPE html>
-    <html>
-  
-    <head>
-      ${templates.partials.head page}
-    </head>
-  
-    <body>
-  
-      ${templates.navbar.main}
+''
+  <!DOCTYPE html>
+  <html>
 
-      <div class="page-content">
-        <div class="container wrapper">
-          ${templates.breadcrumbs page}
-          ${page.content}
-        </div>
+  <head>
+    ${templates.partials.head page}
+  </head>
+
+  <body>
+
+    ${templates.partials.navbar.main}
+
+    <div class="page-content">
+      <div class="container wrapper">
+        ${templates.partials.breadcrumbs page}
+        ${page.content}
       </div>
+    </div>
 
-      <footer>
-        ${templates.partials.footer}
-      </footer>
-  
-    </body>
-    </html>
-  ''
+    <footer>
+      ${templates.partials.footer}
+    </footer>
+
+  </body>
+  </html>
+''

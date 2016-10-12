@@ -13,7 +13,7 @@ let
           </ul>
         </div>
       </div>
-      ${templates.pagination { pages = page.pages; index = page.index; }}
+      ${templates.partials.pagination { pages = page.pages; index = page.index; }}
     '';
 in
  page // { inherit content; }

@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------
+   Init
+
+   Initialization of Styx, should not be edited
+-----------------------------------------------------------------------------*/
+
 { pkgs ? import <nixpkgs> {}
 , styxLib
 , renderDrafts ? false
@@ -5,33 +11,15 @@
 , lastChange ? null
 }@args:
 
-# This is for quick testing
-# Do not forget to restore to styxLib before oush / release
-# let lib = import ../../../lib pkgs;
-let lib = import styxLib pkgs;
+# TODO This is for quick testing
+# TODO Do not forget to restore to styxLib before push / release
+let lib = import ../../../lib pkgs;
+#let lib = import styxLib pkgs;
 in with lib;
 
 let
 
-
-/* Basic setup
-
-   This section is boilerplate code responsible for basic setup
-*/
-
-  /* Themes to use.
-     Themes are defined in the conf.themesDir directory and provide templates
-     and static files.
-     Themes at the beginning of the list have higher priority.
-  */
-  themes = [ "default" ];
-
-  /* Where the themes are located
-  */
-  themesDir = ../..;
-
-  /* Load the configuration
-     This merge themes configuration files, ./conf.nix, and siteURL
+  /* Configuration loading
   */
   conf = let
     conf       = import ./conf.nix;
@@ -40,86 +28,80 @@ let
   in
     overrideConf mergedConf args;
 
-  /* Set the state
-     This is required to update the feed <updated> value.
+  /* Site state
   */
   state = { inherit lastChange; };
 
-  /* Load templates from active themes
-     templates are a set mimicking the themes template folder structure
-     which value is the template function partially evaluated with the
-     template environment.
-
-     Example:
-
-       {
-         layout = TEMPLATE_FN;
-         navbar = {
-           main  = TEMPLATE_FN;
-           brand = TEMPLATE_FN;
-         }
-       };
+  /* Load themes templates
   */
   templates = lib.themes.loadTemplates {
     inherit themes defaultEnvironment customEnvironments themesDir;
   };
 
-  /* Load the static files from active themes
-     return a list of static folders
+  /* Load themes static files
   */
   files = lib.themes.loadFiles {
     inherit themes themesDir;
   };
 
 
-/* Templates
+/*-----------------------------------------------------------------------------
+   Themes setup
 
-   This section declare template environments
-   Extensions of template environments and their related code is declared here
-*/
+-----------------------------------------------------------------------------*/
+
+  /* Themes used
+  */
+  themes = [ "default" ];
+
+  /* Themes location
+  */
+  themesDir = ../..;
+
+
+/*-----------------------------------------------------------------------------
+   Template enviroments
+
+-----------------------------------------------------------------------------*/
+
 
   /* Default template environment
-     This should not require change
   */
   defaultEnvironment = { inherit conf state lib templates data; };
 
-  /* Defining a navbar for a custom template environment
-     This Navbar contains the first archive page and the about page
-  */
-  navbar = [ (head pages.archives) pages.about ];
-
   /* Custom environments for specific templates
-     customEnvironments is a set that mimic the templates set with the value
-     being the template environment that the template will use.
-     Any template not defined in this list will use the `defaultEnvironment`
   */
   customEnvironments = {
     partials.head = defaultEnvironment // { feed = pages.feed; };
-    #navbar.main = defaultEnvironment // { inherit navbar; };
   };
 
 
-/* Data
+/*-----------------------------------------------------------------------------
+   Data
 
-   This section declare the data used in the site
-*/
+   This section declares the data used by the site
+   the data set is included in the template environment
+-----------------------------------------------------------------------------*/
 
   substitutions = { inherit conf; };
 
   data = {
+    # loading a single page
+    about  = loadFile { dir = ./pages; file = "about.md"; };
+    # loading a list of contents
     posts  = loadFolder { inherit substitutions; from = ./posts; };
+    # loading a list of contents and adding attributes
     drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
     navbar = [ (head pages.archives) pages.about ];
   };
 
-/* Pages
 
-   This section declare the site pages
-   Every page in this set will be generate
-*/
+/*-----------------------------------------------------------------------------
+   Pages
 
-  /* Pages attribute set
-  */
+   This section declares the pages that will be generated
+-----------------------------------------------------------------------------*/
+
   pages = rec {
 
     /* Index page
@@ -136,15 +118,14 @@ let
     };
 
     /* About page
-       Example of importing content from a markdown file
+       Example of generating a page from imported data
     */
     about = {
       href = "about.html";
       template = templates.generic.full;
       # setting breadcrumbs
       breadcrumbs = [ index ];
-    # importing a markdown files with the `parsePage` function
-    } // (lib.data.loadFile { dir = ./pages; file = "about.md"; });
+    } // data.about;
 
     /* Post archives
        Example of splitting a page between a list of items
@@ -155,7 +136,6 @@ let
       template = templates.archive;
       items = posts;
       itemsPerPage = conf.theme.archive.postsPerPage;
-      breadcrumbs = [ index ];
     };
 
     /* RSS feed page
@@ -173,42 +153,48 @@ let
     */
     e404 = { href = "404.html"; template = templates.e404; title = "404"; };
 
-    /* Posts pages (as a lit of page attribute sets)
-       Fetch and sort the posts and drafts (only if renderDrafts is true) and set the
-       template
+    /* Posts pages (as a list of pages)
+       Includes the drafts if renderDrafts is true
     */
     posts = let
       posts = data.posts ++ (optional renderDrafts data.drafts);
-      # sort, set breadcrumbs and set a template
-      preparePosts = p: p // {
+      # extend a post attribute set
+      extendPosts = post: post // {
         template = templates.post.full;
         breadcrumbs = with pages; [ index (head archives) ];
-        href = "posts/${p.fileData.basename}.html";
+        href = "posts/${post.fileData.basename}.html";
       };
-    in sortBy "date" "dsc" (map preparePosts posts);
+      postPages = map extendPosts posts;
+    in sortBy "date" "dsc" postPages;
+
+
+    /* Generate taxonomy pages for posts tags and categories
+    */
+    taxonomies = mkTaxonomyPages {
+      pages = pages.posts;
+      taxonomies = [ "tags" "categories" ];
+      taxonomyTemplate = templates.taxonomy.full;
+      termTemplate = templates.taxonomy.term.full;
+    };
 
   };
 
-  /* Converts the page attribute set to a list of page suitable for
-     `generateSite` function.
-     This also sets the default layout.
-  */
-  pagesList =
-    let list = pagesToList pages;
-        taxonomies = mkTaxonomyPages {
-          pages = pages.posts;
-          taxonomies = [ "tags" "categories" ];
-          taxonomyTemplate = templates.taxonomy;
-          termTemplate = templates.term;
-        };
 
-    in (map (setDefaultLayout templates.layout) (list ++ taxonomies));
+/*-----------------------------------------------------------------------------
+   generateSite arguments preparation
+
+-----------------------------------------------------------------------------*/
+
+  pagesList = let
+    # converting pages attribute set to a list
+    list = pagesToList pages;
+    # setting a layout to pages without one
+    in map (setDefaultLayout templates.layout) list;
 
 
+/*-----------------------------------------------------------------------------
+   Site rendering
 
-/* Site rendering
-
-   This section render the site, for custom needs it is possible to use the `preGen` and `postGen` hooks
-*/
+-----------------------------------------------------------------------------*/
 
 in (generateSite { inherit files pagesList; })
