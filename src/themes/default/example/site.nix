@@ -89,12 +89,15 @@ let
     # loading a single page
     about  = loadFile { dir = ./pages; file = "about.md"; };
     # loading a list of contents
-    posts  = loadFolder { inherit substitutions; from = ./posts; };
+    posts  = let
+      postsList = loadFolder { inherit substitutions; from = ./posts; };
+      draftsList = optionals renderDrafts (loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; });
+    in sortBy "date" "dsc" (postsList ++ draftsList);
     # loading a list of contents and adding attributes
     drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
     navbar = [ (head pages.archives) pages.about ];
     # creating taxonomies
-    taxonomies = mkTaxonomyData { pages = pages.posts; taxonomies = [ "tags" "categories" ]; };
+    taxonomies = mkTaxonomyData { pages = pages.posts; taxonomies = [ "tags" "level" ]; };
   };
 
 
@@ -159,16 +162,13 @@ let
        Includes the drafts if renderDrafts is true
     */
     posts = let
-      posts = data.posts ++ (optional renderDrafts data.drafts);
       # extend a post attribute set
       extendPosts = post: post // {
         template = templates.post.full;
         breadcrumbs = with pages; [ index (head archives) ];
         href = "posts/${post.fileData.basename}.html";
       };
-      postPages = map extendPosts posts;
-    in sortBy "date" "dsc" postPages;
-
+    in map extendPosts data.posts;
 
     /* Generate taxonomy pages for posts tags and categories
     */
