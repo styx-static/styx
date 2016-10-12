@@ -55,19 +55,62 @@ rec {
          (y: x: if isList y then x ++ y else x ++ [y])
          [] pages';
 
-  /* Split a page in multiple pages with a list of itemsPerPage items
-     Return a list of pages
+  /* Split a list of items between multiple pages
+     return a list of pages
+
+     Example:
+
+       index = mkSplitCustom {
+         head = {
+           title    = "Home";
+           href     = "index.html";
+           itemsNb  = 1;
+         };
+         tail = {
+           title    = "Archives";
+           baseHref = "archive";
+           itemsNb  = 2;
+         };
+         template = templates.index;
+         items = posts;
+       };
+
   */
-  splitPage = { baseHref, items, template, itemsPerPage, ... }@args:
+  mkSplitCustom = { head, tail, items, ... }@args:
     let
-      itemsList = chunksOf itemsPerPage items;
-      pages = imap (i: items: {
-        inherit template items;
-        href = if i == 1 then "${baseHref}.html"
-               else "${baseHref}-${toString i}.html";
-        index = i;
-      } // (removeAttrs args ["baseHref" "items" "template" "itemsPerPage"])
+      extraArgs = removeAttrs args [ "head" "tail" "items" ];
+      itemsList = [ (take head.itemsNb items) ] ++ (chunksOf tail.itemsNb (drop head.itemsNb items));
+      pages = imap (i: items:
+        { inherit items; index = i; }
+        // extraArgs
+        // (if i ==1
+               then head
+               else (removeAttrs tail [ "baseHref" ]) // { href = "${tail.baseHref}-${toString i}.html"; })
       ) itemsList;
     in map (p: p // { inherit pages; }) pages;
+
+  /* Split a list of items between multiple pages, mkSplitCustom simple version
+     return a list of pages
+
+     Example usage:
+
+       index = mkSplit {
+         title = "Home";
+         baseHref = "index";
+         itemsPerPage = 1;
+         template = templates.index;
+         items = posts;
+       };
+
+  */
+  mkSplit = { baseHref, itemsPerPage, items, ... }@args:
+    let
+      extraArgs = removeAttrs args [ "baseHref" "itemsPerPage" "items" ];
+      set = { itemsNb = itemsPerPage; };
+    in mkSplitCustom ({
+      inherit items;
+      head = set // { href = "${baseHref}.html"; };
+      tail = set // { inherit baseHref; };
+    } // extraArgs);
 
 }

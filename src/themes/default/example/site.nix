@@ -80,7 +80,7 @@ let
    Data
 
    This section declares the data used by the site
-   the data set is included in the template environment
+   the data set is included in the default template environment
 -----------------------------------------------------------------------------*/
 
   substitutions = { inherit conf; };
@@ -91,12 +91,14 @@ let
     # loading a list of contents
     posts  = let
       postsList = loadFolder { inherit substitutions; from = ./posts; };
+      # include drafts only when renderDrafts is true
       draftsList = optionals renderDrafts (loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
     # loading a list of contents and adding attributes
     drafts = loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; };
-    navbar = [ (head pages.archives) pages.about ];
-    # creating taxonomies
+    # Navbar data
+    navbar = [ pages.about { title = "RSS"; href = "${conf.siteUrl}/${pages.feed.href}"; } ];
+    # content taxonomies
     taxonomies = mkTaxonomyData { pages = pages.posts; taxonomies = [ "tags" "level" ]; };
   };
 
@@ -110,16 +112,15 @@ let
   pages = rec {
 
     /* Index page
-       Example of extending a page attribute set
+       Splitting a list of items through multiple pages
+       For more complex needs, mkSplitCustom is available
     */
-    index = {
+    index = mkSplit {
       title = "Home";
-      href = "index.html";
+      baseHref = "index";
+      itemsPerPage = conf.theme.index.itemsPerPage;
       template = templates.index;
-      # Every attribute defined below is non standard
-      inherit feed;
-      posts = take conf.theme.index.numberOfPosts posts;
-      archivePage = head archives;
+      items = posts;
     };
 
     /* About page
@@ -129,28 +130,17 @@ let
       href = "about.html";
       template = templates.generic.full;
       # setting breadcrumbs
-      breadcrumbs = [ index ];
+      breadcrumbs = [ (head index) ];
     } // data.about;
-
-    /* Post archives
-       Example of splitting a page between a list of items
-    */
-    archives = splitPage {
-      baseHref = "archives/posts";
-      title = "Posts";
-      template = templates.archive;
-      items = posts;
-      itemsPerPage = conf.theme.archive.postsPerPage;
-    };
 
     /* RSS feed page
     */
     feed = {
       href = "feed.xml";
       template = templates.feed;
-      # Showing only the last 10 posts in the feed
+      # Show the 10 most recent posts
       posts = take 10 posts;
-      # The feed page doesn't need a layout
+      # Bypassing the layout
       layout = id;
     };
 
@@ -159,18 +149,17 @@ let
     e404 = { href = "404.html"; template = templates.e404; title = "404"; };
 
     /* Posts pages (as a list of pages)
-       Includes the drafts if renderDrafts is true
     */
     posts = let
       # extend a post attribute set
       extendPosts = post: post // {
         template = templates.post.full;
-        breadcrumbs = with pages; [ index (head archives) ];
+        breadcrumbs = with pages; [ (head index) ];
         href = "posts/${post.fileData.basename}.html";
       };
     in map extendPosts data.posts;
 
-    /* Generate taxonomy pages for posts tags and categories
+    /* Generate taxonomy pages
     */
     taxonomies = mkTaxonomyPages {
       data = data.taxonomies;

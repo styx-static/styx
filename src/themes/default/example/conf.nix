@@ -8,4 +8,6 @@
     # Example, changing the default theme site.title setting
     site.title = "Styx Site";
   };
+
+  postsPerPage = 1;
 }

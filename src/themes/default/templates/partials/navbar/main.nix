@@ -25,7 +25,7 @@ with lib;
     </div>
 
     <div class="collapse navbar-collapse" id="navbar">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav navbar-right">
         ${mapTemplate (item:
         ''
           <li><a ${htmlAttr "href" (if (isExternalHref item.href) then "${item.href}" else "${conf.siteUrl}/${item.href}")}>${item.title}</a></li>
