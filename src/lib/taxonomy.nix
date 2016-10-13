@@ -3,46 +3,52 @@
 lib:
 with lib;
 let
-  proplistLib = import ./proplist.nix lib;
+  plib = import ./proplist.nix lib;
 in
 rec {
 
   /* Generate a taxonomy data structure
   */
   mkTaxonomyData = { pages, taxonomies }:
-   fold (taxonomy: set:
-     fold (page: set:
-       fold (term: set: let 
-         taxonomySet = 
-           if hasAttr taxonomy set
-              then set
-              else set // { "${taxonomy}" = []; };
-         proplist = (getAttrFromPath [ taxonomy ] taxonomySet);
-         prop = { "${term}" = [ page ]; };
-       in 
-         taxonomySet // { "${taxonomy}" = proplistLib.merge proplist prop; } 
-       ) set page."${taxonomy}"
-     ) set (filter (page: hasAttr taxonomy page) pages)
-   ) {} taxonomies;
+   let
+     rawTaxonomy =
+       fold (taxonomy: plist:
+         fold (page: plist:
+           fold (term: plist:
+             plist ++ [ { "${taxonomy}" = [ { "${term}" = [ page ]; } ]; } ]
+           ) plist page."${taxonomy}"
+         ) plist (filter (page: hasAttr taxonomy page) pages)
+       ) [] taxonomies;
+     semiCleanTaxonomy = plib.flatten rawTaxonomy;
+     cleanTaxonomy = map (pl:
+       { "${plib.propKey pl}" = plib.flatten (plib.propValue pl); }
+     ) semiCleanTaxonomy;
+   in cleanTaxonomy;
 
   /* Generate taxonomy pages attribute sets
   */
   mkTaxonomyPages = { data, taxonomyTemplate, termTemplate }:
     let
-      taxonomyPages = mapAttrsToList (taxonomy: terms:
+      taxonomyPages = map (plist:
+        let taxonomy = plib.propKey   plist;
+            terms    = plib.propValue plist;
+        in
         { inherit terms taxonomy;
           href = "${taxonomy}/index.html";
           template = taxonomyTemplate;
           title = taxonomy; }
       ) data; 
-      termPages = flatten (mapAttrsToList (taxonomy: terms:
+      termPages = flatten (map (plist:
+        let taxonomy = plib.propKey   plist;
+            terms    = plib.propValue plist;
+        in
         map (term:
           { inherit taxonomy;
-            href     = "${taxonomy}/${proplistLib.propKey term}/index.html";
+            href     = "${taxonomy}/${plib.propKey term}/index.html";
             template = termTemplate;
-            title    = proplistLib.propKey   term;
-            term     = proplistLib.propKey   term;
-            values   = proplistLib.propValue term; }
+            title    = plib.propKey   term;
+            term     = plib.propKey   term;
+            values   = plib.propValue term; }
         ) terms
       ) data);
   in (termPages ++ taxonomyPages);
@@ -50,8 +56,11 @@ rec {
   /* sort terms by number of values
   */
   sortTerms = sort (a: b:
-    let valuesNb = x: length (proplistLib.propValue x);
-    in valuesNb a > valuesNb b
+    valuesNb a > valuesNb b
   );
+
+  /* Number of values a term holds
+  */
+  valuesNb = x: length (plib.propValue x);
 
 }

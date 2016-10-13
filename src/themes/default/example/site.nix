@@ -95,7 +95,11 @@ let
       draftsList = optionals renderDrafts (loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
     # Navbar data
-    navbar = [ pages.about { title = "RSS"; href = "${conf.siteUrl}/${pages.feed.href}"; } ];
+    navbar = [
+      pages.about
+      { title = "RSS";  href = "${conf.siteUrl}/${pages.feed.href}"; }
+      { title = "Styx"; href = "https://styx-static.github.io/styx-site/"; }
+    ];
     # content taxonomies
     taxonomies = mkTaxonomyData { pages = pages.posts; taxonomies = [ "tags" "level" ]; };
   };

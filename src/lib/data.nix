@@ -23,21 +23,26 @@ let
     let
       path = "${fileData.dir + "/${fileData.name}"}";
       data = pkgs.runCommand "data" {} ''
+        # metablock separator
         metaBlock="/{---/,/---}/p"
 
         mkdir $out
 
+        # fetching metablock
         if [ "$(sed -n "$metaBlock" < ${path})" ]; then
-          sed -n "$metaBlock" < ${path} | sed '1d;$d' > $out/meta
+          echo "{" > $out/meta
+          sed -n "$metaBlock" < ${path} | sed '1d;$d' >> $out/meta
+          echo "}" >> $out/meta
           sed "1,`sed -n "$metaBlock" < ${path} | wc -l`d" < ${path} > $out/source
         else
           echo "{}" > $out/meta
           cp ${path} $out/source
         fi
 
+        # substitutions
         ${concatMapStringsSep "\n" (set:
           let
-            key = head (attrNames set);
+            key   = head (attrNames  set);
             value = head (attrValues set);
           in
             ''
@@ -46,6 +51,7 @@ let
             ''
         ) (setToList substitutions)}
 
+        # Converting markup files
         ${if (elem fileData.ext markdownExt) then '' 
           ${pkgs.multimarkdown}/bin/multimarkdown < $out/source > $out/content
           ${pkgs.xidel}/bin/xidel $out/content -e "//h1[1]/node()" -q > $out/title

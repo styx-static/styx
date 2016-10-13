@@ -1,19 +1,40 @@
-# Page and site generation functions
+/* library to deal with properties (single key attribute set), and property lists
+
+   Property example:
+
+     { foo = "bar"; }
+
+   Property list example:
+
+     [ { foo = "bar"; } { baz = "buz"; } ]
+*/
 
 lib:
 with lib;
 
 rec {
 
-  /* get value from a proplist key
+  /* get a value from a property in a property list by the key name
   */
   getValue = key: list: head (catAttrs key list);
 
-  /* check if a key is defined
+  /* get a property from a property list by the key name
+  */
+  getProp = key: list: head (filter (x: (propKey x) == key) list);
+
+  getProps = key: list: filter (x: (propKey x) == key) list;
+
+  /* return a property list where the property with key 'key' has been removed
+  */
+  removeProp = key: list: filter (p: (propKey p) != key) list;
+
+  /* Check if a property with a key exists in a property list
   */
   isDefined = key: list:
     let keys = map (p: (head (attrNames p))) list;
-  in elem key keys;
+  in if (length list) > 0
+        then elem key keys
+        else false;
 
   /* get key from a property
   */
@@ -23,17 +44,14 @@ rec {
   */
   propValue = prop: head (attrValues prop);
 
-  /* merge a property in property list
+  /* flatten a property list that which values are lists
   */
-  merge = proplist: prop:
-    let
-      key = propKey prop;
-    in
-    if isDefined key proplist
-       then let
-              newProp = { "${key}" = (getValue key proplist) ++ prop."${key}"; };
-              oldProps = (filter (i: builtins.attrNames i != [ key ]) proplist);
-            in oldProps ++ [ newProp ]
-       else proplist ++ [ prop ];
+  flatten = plist:
+    fold (p: acc:
+      let k = propKey p;
+      in if isDefined k acc
+         then [ { "${k}" = (propValue p) ++ (getValue k acc); } ] ++ (removeProp k acc)
+         else [ p ] ++ acc
+    ) [] plist;
 
 }
