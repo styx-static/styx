@@ -5,7 +5,7 @@ with lib;
 
 let
 
-  /* The supported content types
+  /* Supported content types
   */
   supportedFiles = nixExt ++ markdownExt;
 
@@ -25,18 +25,42 @@ let
       data = pkgs.runCommand "data" {} ''
         # metablock separator
         metaBlock="/{---/,/---}/p"
+        # pageSeparator
+        pageSep="<<<"
+        # intro separator
+        introSep=">>>"
 
         mkdir $out
 
-        # fetching metablock
-        if [ "$(sed -n "$metaBlock" < ${path})" ]; then
+        # initializing files
+        cp ${path} $out/source
+        chmod u+rw $out/source
+        touch $out/intro
+        touch $out/title
+        touch $out/content
+        echo "{}" > $out/meta
+        mkdir $out/subpages
+
+        # metadata
+        if [ "$(sed -n "$metaBlock" < $out/source)" ]; then
           echo "{" > $out/meta
-          sed -n "$metaBlock" < ${path} | sed '1d;$d' >> $out/meta
+          sed -n "$metaBlock" < $out/source | sed '1d;$d' >> $out/meta
           echo "}" >> $out/meta
-          sed "1,`sed -n "$metaBlock" < ${path} | wc -l`d" < ${path} > $out/source
-        else
-          echo "{}" > $out/meta
-          cp ${path} $out/source
+          sed -i "1,$(cat $out/meta | wc -l)d" $out/source
+        fi
+
+        # intro
+        if [ "$(grep -Fx "$introSep" $out/source)" ]; then
+          csplit -s -f intro $out/source "/^>>>$/"
+          cp intro00 $out/intro
+          sed -i "/$introSep/d" $out/source
+        fi
+
+        # subpages
+        if [ "$(grep -Fx "$pageSep" $out/source)" ]; then
+          csplit --suppress-matched -s -f subpage $out/source  "/^$pageSep/" '{*}'
+          cp subpage* $out/subpages
+          sed -i "/$pageSep/d" $out/source
         fi
 
         # substitutions
@@ -45,20 +69,28 @@ let
             key   = head (attrNames  set);
             value = head (attrValues set);
           in
-            ''
-              substituteInPlace $out/source \
-                --subst-var-by ${key} ${value}
-            ''
+          ''
+            substituteInPlace $out/source \
+              --subst-var-by ${key} ${value}
+          ''
         ) (setToList substitutions)}
 
+
         # Converting markup files
-        ${if (elem fileData.ext markdownExt) then '' 
+        ${optionalString (elem fileData.ext markdownExt) '' 
           ${pkgs.multimarkdown}/bin/multimarkdown < $out/source > $out/content
+
+          # intro
+          cp $out/intro tmp; ${pkgs.multimarkdown}/bin/multimarkdown < tmp > $out/intro
+
+          # subpages
+          for file in $out/subpages/*; do
+            cp $file tmp; ${pkgs.multimarkdown}/bin/multimarkdown < tmp > $file
+          done
+
+          # title
           ${pkgs.xidel}/bin/xidel $out/content -e "//h1[1]/node()" -q > $out/title
           echo -n `tr -d '\n' < $out/title` > $out/title
-          '' else ''
-          touch $out/content
-          touch $out/title
         ''}
       '';
       content = let
@@ -67,9 +99,21 @@ let
       title = let
           rawContent = readFile "${data}/title";
         in if rawContent == "" then {} else { title = rawContent; };
-      meta = import   "${data}/meta";
+      intro = let
+          rawContent = readFile "${data}/intro";
+        in if rawContent == "" then {} else { intro = rawContent; };
+      subpages = let
+          dir = "${data}/subpages";
+          subpages = mapAttrsToList (k: v:
+            readFile "${dir}/${k}"
+          ) (readDir dir);
+        in if subpages != []
+              then { inherit subpages; }
+              else { };
+
+      meta = import "${data}/meta";
     in
-      content // title // meta;
+      content // title // intro // meta // subpages;
 
   /* Get data from a file
   */
@@ -102,7 +146,7 @@ let
       ) (attrNames set);
     in flatten (f [] s);
 
-  /* Get a list of data files from a folder
+  /* Get a list of files data from a folder
      Ignore unsupported files type
 
      Return example
@@ -144,7 +188,7 @@ rec {
     in
       (parseFile { inherit substitutions fileData; }) // extraAttrs;
 
-  /* Sort a list of posts chronologically
+  /* Sort a list of pages chronologically
   */
   sortBy = attribute: order: 
     sort (a: b: 

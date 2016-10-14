@@ -235,6 +235,12 @@ while [ "$#" -gt 0 ]; do
 done
 
 
+if [ ! "$action" ]; then
+  echo "Error: no command specified."
+  echo "Use one of 'new', 'build', 'serve', 'preview', 'deploy'"
+  exit 1;
+fi
+
 #-------------------------------
 
 # New

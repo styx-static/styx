@@ -9,5 +9,4 @@
     site.title = "Styx Site";
   };
 
-  postsPerPage = 1;
 }

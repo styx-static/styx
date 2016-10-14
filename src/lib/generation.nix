@@ -137,4 +137,44 @@ rec {
       tail = set // { inherit baseHref; };
     } // extraArgs);
 
+  /* Split a page with subpages into multiple pages attribute sets
+  */
+  mkMultipages = { page, template, baseHref, output ? "all", ... }@args:
+    let
+      extraArgs = removeAttrs args [ "page" "template" "baseHref" "output" ];
+      pages = imap (index: subpage:
+        page // extraArgs // 
+        { inherit index template;
+          href = if index == 1 
+                 then "${baseHref}.html"
+                 else "${baseHref}-${toString index}.html";
+          content = subpage; }
+        ) page.subpages;
+      pages' = map (p: p // { inherit pages; }) pages;
+    in      if output == "all" then pages
+       else if output == "index" then head pages'
+       else if output == "subpages" then tail pages'
+       else abort "mkMultipage output must be 'all', 'index' or 'subpages'";
+
+  mkPageList = { dataList, hrefPrefix ? "", template, multipageTemplate ? null, ... }@args:
+    let
+      extraArgs = removeAttrs args [ "dataList" "template" "hrefPrefix" "template" "multipageTemplate" ];
+      mkPage = page: let
+        page' =
+          if page ? subpages
+             then mkMultipages (extraArgs // {
+               inherit page;
+               output = "index";
+               baseHref = "${hrefPrefix}${page.fileData.basename}";
+               template = if multipageTemplate != null
+                             then multipageTemplate
+                             else template;
+             })
+             else page;
+        in extraArgs // {
+             inherit template;
+             href = "${hrefPrefix}${page.fileData.basename}.html";
+            } // page';
+    in map mkPage dataList;
+
 }

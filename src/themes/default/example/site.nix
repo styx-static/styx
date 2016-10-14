@@ -111,6 +111,7 @@ let
    This section declares the pages that will be generated
 -----------------------------------------------------------------------------*/
 
+
   pages = rec {
 
     /* Index page
@@ -151,15 +152,34 @@ let
     e404 = { href = "404.html"; template = templates.e404; title = "404"; };
 
     /* Posts pages (as a list of pages)
+
+       mkPageList is a convenience function to generate a list of page from a
+       list of data
     */
-    posts = let
-      # extend a post attribute set
-      extendPosts = post: post // {
-        template = templates.post.full;
-        breadcrumbs = with pages; [ (head index) ];
-        href = "posts/${post.fileData.basename}.html";
+    posts = mkPageList {
+      dataList = data.posts;
+      template = templates.post.full;
+      multipageTemplate = templates.post.full-multipage;
+      hrefPrefix = "posts/";
+      breadcrumbs = [ (head pages.index) ];
+    };
+
+    /* This generate the subpages of multi-pages posts
+
+       subpages are not included in posts because we do not want to have the
+       subpages in the rss feed or posts list
+    */
+    postsSubpages = let
+      multipagePosts = filter (p: (p ? subpages)) data.posts;
+      generateSubpages = page: 
+        mkMultipages {
+          inherit page;
+          template = templates.post.full-multipage;
+          baseHref = "posts/${page.fileData.basename}";
+          output   = "subpages";
+          breadcrumbs = [ (head pages.index) ];
       };
-    in map extendPosts data.posts;
+    in flatten (map generateSubpages multipagePosts);
 
     /* Generate taxonomy pages
     */

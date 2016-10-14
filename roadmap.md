@@ -6,6 +6,8 @@
 - [x] taxonomies
 - [x] Add a way to upgrade versions (lib and themes)
 - [x] Saas / less css preprocessing
+- [x] Manual summary (with `>>>`)
+- [x] Multi-pages pages (with `<<<`)
 - [ ] polishing default theme (something like https://github.com/appernetic/hugo-bootstrap-premium could be nice)
 - [ ] make sample content act like a lightweight documentation (How drafts woks, quickstart, themes)
 - [ ] Update documentation...
@@ -15,6 +17,4 @@
 
 - [ ] Linkcheck functionality
 - [ ] Syntax highlighting
-- [ ] Automatic summary (Taking the X first words of a post)
-- [ ] Manual summary (With a custom separator)
 - [ ] Support content format other than markdown

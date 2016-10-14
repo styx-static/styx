@@ -1,11 +1,9 @@
 {---
-{
-  tags = [ "gram" "am" ];
-  categories = [ "pomme" ];
-}
+  tags = [ "themes" "styx" ];
+  level = [ "beginner" ];
 ---}
 
-# Welcome to Styx
+# Using themes
 
 You'll find this post in your `posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `styx serve`, which launches a web server.
 
