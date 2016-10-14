@@ -1,6 +1,8 @@
 # Agency theme
 
-This is a port to the agency theme fr Styx.
+This is a port of the [agency](https://github.com/digitalcraftsman/hugo-agency-theme) theme for Styx.
+
+Originally made by [digitalcraftsman](https://github.com/digitalcraftsman).
 
 [Original theme](https://github.com/digitalcraftsman/hugo-agency-theme)
 
@@ -8,4 +10,22 @@ This is a port to the agency theme fr Styx.
 
 ---
 
-Alpha state, Details to come.
+Most of the theme can be configured with the configuration interface defined in `theme.nix`.
+
+For example, to change the title in the navigation:
+
+```
+{
+  theme.site.title = "My Agency";
+
+}
+```
+
+---
+
+## Acknowledgements 
+
+Thanks to
+
+- [David Miller](https://github.com/davidtmiller) for creating this theme
+- [digitalcraftsman](https://github.com/digitalcraftsman) for porting the theme to hugo
