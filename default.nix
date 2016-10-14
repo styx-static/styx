@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out/share/styx
     cp -r lib $out/share/styx
-    cp -r themes $out/share/styx
+    cp -r scaffold $out/share/styx
 
     mkdir -p $out/share/doc/styx
     asciidoctor doc/manual.doc -o $out/share/doc/styx/index.html

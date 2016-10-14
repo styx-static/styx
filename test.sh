@@ -13,7 +13,8 @@ target=/tmp
 name="styx-test"
 folder="$target/$name"
 # The theme to test
-sitePath="$folder/themes/default/example"
+themeRepo=https://github.com/styx-static/styx-theme-showcase.git
+theme=showcase
 totalTests=0
 successTests=0
 cleanup=0
@@ -81,6 +82,14 @@ else
   echo "Could not create the Styx site, exiting test suite."
   exit 1
 fi
+
+sep
+
+echo "Getting '$theme' theme"
+
+git clone $themeRepo "$target/$name/themes/$theme"
+
+sitePath="$target/$name/themes/$theme/example"
 
 sep
 

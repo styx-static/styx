@@ -254,9 +254,10 @@ if [ "$action" = new ]; then
     exit 1
   else
     mkdir "$folder"
-    cp -r $share/themes "$folder/"
+    mkdir $folder/{themes,data}
+    cp -r "$share/scaffold/new/conf.nix" "$folder/"
     chmod -R u+rw "$folder"
-    echo -e "New styx site installed in '$folder'."
+    echo -e "Styx site initialized in '$folder'."
     exit 0
   fi
 fi
