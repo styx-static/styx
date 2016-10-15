@@ -1,0 +1,365 @@
+== Basics
+
+Styx is using the Nix expression language.
+The Nix expression language is a lazy evaluated functional language with unconventional semantics. +
+It is recommended to read the link:http://nixos.org/nix/manual/#ch-expression-language[Nix expression language chapter] of the Nix manual to get more familiar with it.
+
+=== Hello world!
+
+Let's look at a very basic example of a styx site.
+
+[source, nix]
+.Hello world!
+----
+{ pkgs ? import <nixpkgs> {} # <1>
+, styxLib }: # <2>
+
+let # <3>
+
+  lib = import styxLib pkgs; # <4>
+
+  index = { # <5>
+    layout = template: "<html><body>${template}</body></html>"; # <6>
+    template = p: p.content; # <7>
+    content = "<h1>Hello world!</h1>"; # <8>
+    href = "index.html"; # <9>
+  }; # <10>
+
+in # <11>
+  lib.generateSite { pagesList = [ index ]; } # <12>
+----
+
+<1> `site.nix` is a function written in the nix language. Nix functions have `{ arg1 ? default, arg2, ..., argN }: body` pattern.
+So this line says that the function take a `pkgs` argument that defaults to `import <nixpkgs> {}`.
+<2> The function take a second argument, `styxLib`. This argument must be provided as it has no default. `styxLib` is the styx library and is automatically passed by the `styx` command.
+<3> `let` is a special construction to declare local variables, a `let` block must finish by a `in`. `let a = 1; b = 2; in a + b` is a basic example of using `let`.
+<4> This declare a `lib` variable that holds the styx library. `import` is used to importing a file. `styxLib` is a function and require `pkgs` as a parameter. +
+An easier way to write this would be `(import styxLib) pkgs`, importing the `styxLib` and passing `pkgs` as a parameter.
+<5> This declare an `index` variable as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
+<6> To generate a page, styx requires a few attributes set, namely `layout`, `template` and `href`. This line declares the `layout` attribute that is a function that take the `template` attribute and return the page source. +
+`template:` is different from the first point function head, this function use a simple parameter (Point one was using an attribute set parameter).
+<7> This declare a `template` attribute. `template` is a function that takes the page attribute set, `index` in this case as a parameter and generate a result that will be passed to the `layout` function.
+<8> This declare a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
+<9> This declare a `href` attribute. The `href` attribute is used to specify the path of the page to be generated.
+<10> Closing the `index` page attribute set.
+<11> The `in` mark the end of the `let` declaration, this means `lib` and `index` will be available in the next expression.
+<12> This generate the site by using the library `generateSite` function, its paramter is an attribute set with the argument `pagesList` being a list of the single `index` page.
+
+Everything is ready, the "Hello world!" site preview can be generated.
+
+[source, shell]
+.Generating a preview of the "Hello world!" site
+----
+$ styx preview
+----
+
+NOTE: `import <nixpkgs> {}` is a way to import the system nixpkgs (nix package manager package set). So by default, a styx site will use the system `nixpkgs`.
+
+TIP: Even if this is a simple example, nix language semantics can be confusing. In a nutshell to build a site, `generateSite` evaluates `page.layout (page.template page)` and output the result in `page.href` for every page in `pagesList`. +
+That is the reason `layout`, `template` and `href` are required attributes of a page set.
+
+NOTE: Nix expression language is lazily evaluated, so infinite data structures are not a problem (unless some code try to evaluate them).
+
+=== Structure
+
+In its simplest form, styx just needs a `site.nix` to generate a site like presented in the "Hello world" example. 
+
+But the `styx new` command will generate a few more files for convenience.
+
+[source]
+----
+├── conf.nix # <1>
+├── site.nix # <2>
+├── data/ # <3>
+└── themes/ # <4>
+----
+
+<1> `conf.nix` is the main configuration, see <<Configuration>> for details.
+<2> `site.nix` is the main file for site generation, see <<sitenix>> for details.
+<3> `data/` is an empty directory meant to hold site data.
+<4> `themes/` is an empty directory meant to hold site themes.
+
+NOTE: The file structure of styx is totally free and can be changed at will. +
+It is even possible to change the name of `site.nix`. In that case the `--file` flag of the styx command can be used to specify the file name.
+
+
+=== site.nix
+
+The `site.nix` used in the "Hello world!" example contains only enough code to generate a page. It is likely that a `site.nix` to generate a normal site will be more complicated.
+
+The extreme case is the `showcase` theme example site `site.nix` that use every feature available.
+
+It is best practice to divide `site.nix` in multiple sections, with each section handling a particular topic. +
+It is common to use the following sections:
+
+- Init
+- Themes
+- Template environments
+- Data
+- Pages
+- Arguments preparation
+- `generateSite`
+
+==== site.nix in a nutshell
+
+====
+`site.nix` is a function:
+
+- taking at least the styx library as an argument.
+- returning the `generateSite` function.
+====
+
+====
+`generateSite` is a function:
+
+- taking at least the list of pages to generate as an argument.
+- that evaluate each page with `page.layout (page.template page)` and output the result in `page.href`.
+- returning a generated static site.
+====
+
+====
+Everything that is between the top function head and `generateSite` is meant to prepare the arguments for `generateSite`.
+====
+
+==== Init
+
+This section is the basic setup of styx, it should not be changed and used as is for most setups.
+
+[source, nix]
+.Standard Init section
+----
+/*-----------------------------------------------------------------------------
+   Init
+
+   Initialization of Styx, should not be edited
+-----------------------------------------------------------------------------*/
+
+{ pkgs ? import <nixpkgs> {}
+, styxLib
+, renderDrafts ? false
+, siteUrl ? null
+, lastChange ? null
+}@args:
+
+let lib = import styxLib pkgs;
+in with lib;
+
+let
+
+  /* Configuration loading
+  */
+  conf = let # <1>
+    conf       = import ./conf.nix;
+    themesConf = lib.themes.loadConf { inherit themes themesDir; };
+    mergedConf = recursiveUpdate themesConf conf;
+  in
+    overrideConf mergedConf args;
+
+  /* Site state
+  */
+  state = { inherit lastChange; };
+
+  /* Load themes templates
+  */
+  templates = lib.themes.loadTemplates {
+    inherit themes defaultEnvironment customEnvironments themesDir;
+  };
+
+  /* Load themes static files
+  */
+  files = lib.themes.loadFiles {
+    inherit themes themesDir;
+  };
+----
+
+The snippet is pretty self-speaking.
+
+<1> This loads the `conf.nix` file and merges it with theme configuration and main function argument `siteUrl` 
+
+
+==== Themes
+
+This section is where used themes are declared. Themes are a central concept in styx and provide ways to manage site assets in a very flexible manner.
+
+[source, nix]
+.Standard themes section
+----
+/*-----------------------------------------------------------------------------
+   Themes setup
+
+-----------------------------------------------------------------------------*/
+
+  /* Themes location
+  */
+  themesDir = ./themes; # <1>
+
+  /* Themes used
+  */
+  themes = [ "showcase" ]; # <2>
+----
+
+<1> `themesDir` should be set relatively to `site.nix`, that is the reason `themesDir` is set it to `../..` in themes example site.
+<2> `themes` is a list so it is possible to set multiple themes at the same time. Themes at the beginning of the list have a higher priority.
+
+NOTE: Styx tries to be as explicit as possible. `themes` and `themesDir` are not hardcoded names but just conventions and can be changed if the Init section is updated accordingly.
+
+
+==== Template environments
+
+Template environments design the set of variables available in the templates.
+
+There are two types of environment:
+
+- Default: It is the environment used in every template that do not have a custom environment
+- Custom: Custom environment for a specific template
+
+Normal sites should not require custom environments, but they can become useful in more complex setups.
+
+[source, nix]
+.Standard template environments section
+----
+/*-----------------------------------------------------------------------------
+   Template environments
+
+-----------------------------------------------------------------------------*/
+
+
+  /* Default template environment
+  */
+  defaultEnvironment = { inherit conf state lib templates data; }; # <1>
+
+  /* Custom environments for specific templates
+  */
+  customEnvironments = {}; # <2>
+----
+
+<1> This declare the default environment thet should feed most of needs.
+<2> Custom template environments are detailed in the template section.
+
+NOTE: `defaultEnvironment` refers to not yet declared variables, but it is not a problem as the let block allows to access any variable declared or that will be declared in it.
+
+==== Data
+
+The data section is responsible for loading data used in the site. +
+When used, content substitutions should also declared in this section.
+
+The <<Data>> section explains in detail how to manage data.
+
+[source, nix]
+.Standard data section 
+----
+/*-----------------------------------------------------------------------------
+   Data
+
+   This section declares the data used by the site
+   the data set is included in the default template environment
+-----------------------------------------------------------------------------*/
+
+  data = {
+    about  = loadFile { dir = ./pages; file = "about.md"; }; # <1>
+  };
+----
+
+<1> Example of loading a markdown file with the `loadFile` function.
+
+==== Pages
+
+The pages section is used to declare the pages generated by `generateSite`. +
+Even if `generateSite` expects a page list, it is usually declared as an attribute set for convenience.
+
+There are multiple functions available to generate different type of pages, but a page is ultimately an attribute set with at least the `layout`, `template` and `href` attribute defined.
+
+The <<Pages>> section explains in detail how to create pages.
+
+[source, nix]
+.Standard pages section
+----
+/*-----------------------------------------------------------------------------
+   Pages
+
+   This section declares the pages that will be generated
+-----------------------------------------------------------------------------*/
+
+  pages = {
+
+    about = {
+      href = "about.html";
+      template = templates.generic.full;
+    } // data.about; # <1>
+
+  };
+----
+
+<1> `//` is the operator to merge attribute sets, this merge the `data.about` set attributes in the `pages.about` attribute set.
+
+NOTE: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "arguments preparation" section. +
+Only pages that use a different layout explicitly declares it in `pages`.
+
+==== Argument preparation
+
+This is the last part before generating the site. The only purpose of this section is to prepare the `generateSite` function arguments.
+
+[source, nix]
+.Standard argument preparation section
+----
+/*-----------------------------------------------------------------------------
+   generateSite arguments preparation
+
+-----------------------------------------------------------------------------*/
+
+  pagesList = let
+    # converting pages attribute set to a list
+    list = pagesToList pages;
+    # setting a default layout
+    in map (setDefaultLayout templates.layout) list;
+----
+
+This section just turns the `pages` attribute set into a list of pages, and set a default `layout` to pages that did not declare one.
+
+
+==== generateSite
+
+This is the final part and shortest section of `site.nix`. This section is just a call to `generateSite`.
+
+[source, nix]
+.Standard generateSite section
+----
+/*-----------------------------------------------------------------------------
+   Site rendering
+
+-----------------------------------------------------------------------------*/
+
+in generateSite { inherit files pagesList; }
+----
+
+NOTE: `files` is automatically generated in the init section with the enabled themes.
+
+NOTE: `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
+
+
+=== Configuration
+
+Styx is configured with the `conf.nix` file present in the site root directory.
+
+This files consists in an attribute set defining configuration options, and custom attributes can be added at will.
+
+The main configuration is made through themes via the `theme` attribute. Every theme defines some set of configuration that can be override in `conf.nix` `theme` attribute.
+
+`siteUrl` is the only required field, and must not end with a slash.
+
+[source, nix]
+.Standard conf.nix
+----
+{
+  # URL of the site, must be set to the url of the domain the site will be deployed
+  siteUrl = "http://yourdomain.com";
+
+  # Theme specific settings
+  # it is possible to override any of the theme configuration settings in the 'theme' set
+  theme = {
+    # Changing the theme site.title setting
+    site.title = "Styx Site";
+  };
+}
+----
+

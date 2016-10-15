@@ -11,16 +11,20 @@ with lib;
   overrideConf = conf: override:
     conf // (filterAttrs (k: v: (hasAttr k conf) && (v != null)) override);
 
-  /* Set a default layout to a page attribute set
-     Does nothing if a layout is already set
-  */
-  setDefaultLayout = layout: page:
-    if page ? layout
-       then page
-       else page // {  inherit layout; };
+  chunksOf = k:
+    let f = ys: xs:
+        if xs == []
+           then ys
+           else f (ys ++ [(take k xs)]) (drop k xs);
+    in f [];
 
-  /* Attach a template to a page attribute set
+  /* Sort a list attribute sets by an attribute value
   */
-  setTemplate = template: page: page // { inherit template; };
+  sortBy = attribute: order: 
+    sort (a: b: 
+           if order == "asc" then a."${attribute}" < b."${attribute}"
+      else if order == "dsc" then a."${attribute}" > b."${attribute}"
+      else    abort "Sort order must be 'asc' or 'dsc'");
+
 
 }

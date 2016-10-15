@@ -1,0 +1,46 @@
+== Library
+
+The library contains various functions that are used through `site.nix` and templates.
+The functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy way.
+
+include::library/themes.adoc[]
+
+include::library/template.adoc[]
+
+include::library/data.adoc[]
+
+include::library/pages.adoc[]
+
+include::library/generation.adoc[]
+
+include::library/utils.adoc[]
+
+include::library/proplist.adoc[]
+
+include::library/nixpkgs.adoc[]
+
+////
+
+
+Function template
+
+---
+
+[[lib.]]
+==== 
+
+Description::: description
+Parameter Type::: Attribute set | Standard
+Parameters:::
+  * `arg`: description
+Return::: description
+Example:::
+
++
+[source, nix]
+----
+----
+
+---
+
+////

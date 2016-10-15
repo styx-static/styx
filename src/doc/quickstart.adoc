@@ -1,0 +1,21 @@
+== Quick Start
+
+The Styx showcase site can be created and locally served with the following set of commands:
+
+[source, bash]
+----
+$ styx new styx-showcase # <1>
+$ cd styx-showcase # <2>
+$ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase # <3>
+$ styx preview --target themes/showcase/example # <4>
+----
+
+<1> Initialize a new styx site in the `styx-showcase` directory.
+<2> Enter the `styx-showcase` directory.
+<3> Download the `styx-showcase` theme in the `themes` directory.
+<4> Launch a local server to preview the site.
+
+The `styx-showcase` example site will be accessible at link:http://127.0.0.1:8080[http://127.0.0.1:8080]. Check the posts as they provide some information about how styx works.
+
+The `styx-showcase` main file, `site.nix` is quite complex as most of the styx features are used in it. It is recommended to start by reading the <<sitenix,site.nix>> section to get familiar on how `site.nix` works.
+

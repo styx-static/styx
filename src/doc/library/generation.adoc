@@ -1,0 +1,51 @@
+=== Generation
+
+The generation namespace contains functions related to the site generation.
+
+:sectnums!:
+
+---
+
+[[lib.generation.generateSite]]
+==== generateSite
+
+Description::: Generate a static site.
+Parameter Type::: Attribute Set
+Parameters:::
+  * `pagesList`: A list of page attribute sets to generate.
+  * `files` (optional): A list of folders. All the contents of the folders in this list will be copied to the generated site root.
+  * `enablePreprocessors` (optional): If set to `true`, `generateSite` will convert sass, scss and less css files to css. `false` by default.
+  * `preGen` (optional): A list of shell commands to run before the site is generated as a string or multiline string.
+  * `postGen` (optional): A list of shell commands to run after the site is generated as a string or multiline string.
+Return::: The generated static site.
+Example:::
+
++
+[source, nix]
+----
+generateSite { pagesList = [ pages.index ]; }
+----
+
+---
+
+[[lib.generation.pagesToList]]
+==== pagesToList
+
+Description::: Convert the `pages` attribute set to a list of pages attribute sets.
+Parameter Type::: Standard
+Parameters:::
+  * `pages`: The `pages` attribute set.
+Return::: A list of pages attribute sets.
+Example:::
+
++
+[source, nix]
+----
+pagesList = pagesToList pages;
+----
+
+---
+
+:sectnums:
+
+

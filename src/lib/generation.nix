@@ -2,24 +2,14 @@
 
 lib: pkgs:
 with lib;
-
-let
-
-  chunksOf = k:
-    let f = ys: xs:
-        if xs == []
-           then ys
-           else f (ys ++ [(take k xs)]) (drop k xs);
-    in f [];
-
-in
+with import ./utils.nix lib;
 
 rec {
 
   /* Generate a site with a list pages
   */
   generateSite = {
-    files
+    files ? []
   , pagesList
   , preGen  ? ""
   , postGen ? ""
@@ -78,103 +68,5 @@ rec {
     in fold
          (y: x: if isList y then x ++ y else x ++ [y])
          [] pages';
-
-  /* Split a list of items between multiple pages
-     return a list of pages
-
-     Example:
-
-       index = mkSplitCustom {
-         head = {
-           title    = "Home";
-           href     = "index.html";
-           itemsNb  = 1;
-         };
-         tail = {
-           title    = "Archives";
-           baseHref = "archive";
-           itemsNb  = 2;
-         };
-         template = templates.index;
-         items = posts;
-       };
-
-  */
-  mkSplitCustom = { head, tail, items, ... }@args:
-    let
-      extraArgs = removeAttrs args [ "head" "tail" "items" ];
-      itemsList = [ (take head.itemsNb items) ] ++ (chunksOf tail.itemsNb (drop head.itemsNb items));
-      pages = imap (i: items:
-        { inherit items; index = i; }
-        // extraArgs
-        // (if i ==1
-               then head
-               else (removeAttrs tail [ "baseHref" ]) // { href = "${tail.baseHref}-${toString i}.html"; })
-      ) itemsList;
-    in map (p: p // { inherit pages; }) pages;
-
-  /* Split a list of items between multiple pages, mkSplitCustom simple version
-     return a list of pages
-
-     Example usage:
-
-       index = mkSplit {
-         title = "Home";
-         baseHref = "index";
-         itemsPerPage = 1;
-         template = templates.index;
-         items = posts;
-       };
-
-  */
-  mkSplit = { baseHref, itemsPerPage, items, ... }@args:
-    let
-      extraArgs = removeAttrs args [ "baseHref" "itemsPerPage" "items" ];
-      set = { itemsNb = itemsPerPage; };
-    in mkSplitCustom ({
-      inherit items;
-      head = set // { href = "${baseHref}.html"; };
-      tail = set // { inherit baseHref; };
-    } // extraArgs);
-
-  /* Split a page with subpages into multiple pages attribute sets
-  */
-  mkMultipages = { page, template, baseHref, output ? "all", ... }@args:
-    let
-      extraArgs = removeAttrs args [ "page" "template" "baseHref" "output" ];
-      pages = imap (index: subpage:
-        page // extraArgs // 
-        { inherit index template;
-          href = if index == 1 
-                 then "${baseHref}.html"
-                 else "${baseHref}-${toString index}.html";
-          content = subpage; }
-        ) page.subpages;
-      pages' = map (p: p // { inherit pages; }) pages;
-    in      if output == "all" then pages
-       else if output == "index" then head pages'
-       else if output == "subpages" then tail pages'
-       else abort "mkMultipage output must be 'all', 'index' or 'subpages'";
-
-  mkPageList = { dataList, hrefPrefix ? "", template, multipageTemplate ? null, ... }@args:
-    let
-      extraArgs = removeAttrs args [ "dataList" "template" "hrefPrefix" "template" "multipageTemplate" ];
-      mkPage = page: let
-        page' =
-          if page ? subpages
-             then mkMultipages (extraArgs // {
-               inherit page;
-               output = "index";
-               baseHref = "${hrefPrefix}${page.fileData.basename}";
-               template = if multipageTemplate != null
-                             then multipageTemplate
-                             else template;
-             })
-             else page;
-        in extraArgs // {
-             inherit template;
-             href = "${hrefPrefix}${page.fileData.basename}.html";
-            } // page';
-    in map mkPage dataList;
 
 }

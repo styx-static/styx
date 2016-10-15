@@ -5,16 +5,16 @@ let
 
   # Styx lib
   data       = import ./data.nix nixLib pkgs;
+  pages      = import ./pages.nix nixLib;
   generation = import ./generation.nix nixLib pkgs;
   template   = import ./template.nix nixLib;
   themes     = import ./themes.nix nixLib;
   utils      = import ./utils.nix nixLib;
   proplist   = import ./proplist.nix nixLib;
-  taxonomy   = import ./taxonomy.nix nixLib;
 
 in
   {
-    inherit nixLib data generation template themes utils proplist taxonomy;
+    inherit nixLib data generation template themes utils proplist pages;
   }
   // nixLib
-  // data // generation // template // themes // utils // taxonomy
+  // data // generation // template // themes // utils // pages

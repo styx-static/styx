@@ -1,0 +1,41 @@
+= Styx manual
+:revnumber: @version@
+:description: Styx static site generator documentation
+:toc: left
+:toclevels: 2
+:icons: font
+:sectnums:
+:sectanchors:
+:nofooter:
+:experimental:
+
+////
+
+Files should be split in multiple includes when they are too large
+
+////
+
+include::introduction.adoc[]
+
+include::installation.adoc[]
+
+include::quickstart.adoc[]
+
+include::basics.adoc[]
+
+include::cli.adoc[]
+
+include::themes.adoc[]
+
+include::data.adoc[]
+
+include::pages.adoc[]
+
+include::generation.adoc[]
+
+include::deployment.adoc[]
+
+include::library.adoc[]
+
+include::release-notes.adoc[]
+

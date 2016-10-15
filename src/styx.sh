@@ -16,8 +16,8 @@ Usage:
   styx <subcommand> options
 
 Subcommands:
-    new FOLDER                 Create a new Styx site in FOLDER.
-    build                      Build the site in the "public" or "--out" folder.
+    new DIR                    Create a new Styx site in DIR.
+    build                      Build the site in the "public", can be chnged with the '--output' flag.
     preview                    Build the site and serve it locally, shortcut for 'styx serve --site-url "http://HOST:PORT"'.
                                This override the configuration file 'siteUrl' to not break links.
     live                       Similar to preview, but automatically rebuild the site on changes.
@@ -34,7 +34,7 @@ Generic options:
         --file FILE            Run the command using FILE instead of 'site.nix'.
 
 Build options:
-    -o, --out                  Set the build output, "public" by default.
+        --output               Set the build output, "public" by default.
         --drafts               Process and render drafts.
 
 Serve options:
@@ -200,7 +200,7 @@ while [ "$#" -gt 0 ]; do
     --drafts)
       extraFlags+=(--arg renderDrafts true)
       ;;
-	  -o|--output)
+	  --output)
 	    output="$1"; shift 1
 	    ;;
 # Serve options
@@ -248,16 +248,16 @@ fi
 #-------------------------------
 
 if [ "$action" = new ]; then
-  folder="$target/$name"
-  if [ -d "$folder" ]; then
-    echo "'$folder' directory exists"
+  dir="$target/$name"
+  if [ -d "$dir" ]; then
+    echo "'$dir' directory exists"
     exit 1
   else
-    mkdir "$folder"
-    mkdir $folder/{themes,data}
-    cp -r "$share/scaffold/new/conf.nix" "$folder/"
-    chmod -R u+rw "$folder"
-    echo -e "Styx site initialized in '$folder'."
+    mkdir "$dir"
+    mkdir $dir/{themes,data}
+    cp -r "$share/scaffold/new/conf.nix" "$dir/"
+    chmod -R u+rw "$dir"
+    echo -e "Styx site initialized in '$dir'."
     exit 0
   fi
 fi
@@ -270,10 +270,10 @@ fi
 #-------------------------------
 
 if [ "$action" = build ]; then
-  folder="$target/$output"
+  dir="$target/$output"
   if [ -f "$target/$siteFile" ]; then
-    if [ -d $folder ]; then
-      echo "'$folder' folder already exists, doing nothing."
+    if [ -d $dir ]; then
+      echo "'$dir' directory already exists, doing nothing."
       exit 1
     else
       echo "Building the site..."
@@ -283,10 +283,10 @@ if [ "$action" = build ]; then
         exit 1
       fi
       # copying the build results as normal files
-      cp -L -r "$path" "$folder"
+      cp -L -r "$path" "$dir"
       # fixing permissions
-      chmod u+rw -R "$folder"
-      echo "Generated site in '$folder'"
+      chmod u+rw -R "$sir"
+      echo "Generated site in '$dir'"
       exit 0
     fi
   else

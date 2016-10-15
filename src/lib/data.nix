@@ -2,25 +2,39 @@
 
 lib: pkgs:
 with lib;
+let
+  plib = import ./proplist.nix lib;
+in
 
 let
 
   /* Supported content types
   */
-  supportedFiles = nixExt ++ markdownExt;
+  supportedFiles = flatten (attrValues ext);
 
-  nixExt = [ "nix" ];
-  markdownExt = [ "md" "markdown" ];
+  ext = {
+    # markups
+    asciidoc = [ "asciidoc" "adoc" ];
+    markdown = [ "markdown" "mdown" "md" ];
+    # other
+    nix      = [ "nix" ];
+  };
 
-  /* Add more when we support more markups types
+  markupExts = ext.asciidoc ++ ext.markdown;
+
+  /* Convert commands
   */
-  markupExt = markdownExt;
+  commands = {
+    asciidoc = "${pkgs.asciidoctor}/bin/asciidoctor -s -a showtitle -o-";
+    markdown = "${pkgs.multimarkdown}/bin/multimarkdown";
+  };
 
   /* Parse a markup file to an attribute set
      Extract what it can
   */
   parseMarkupFile = { fileData, substitutions }:
     let
+      markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
       path = "${fileData.dir + "/${fileData.name}"}";
       data = pkgs.runCommand "data" {} ''
         # metablock separator
@@ -49,20 +63,6 @@ let
           sed -i "1,$(cat $out/meta | wc -l)d" $out/source
         fi
 
-        # intro
-        if [ "$(grep -Fx "$introSep" $out/source)" ]; then
-          csplit -s -f intro $out/source "/^>>>$/"
-          cp intro00 $out/intro
-          sed -i "/$introSep/d" $out/source
-        fi
-
-        # subpages
-        if [ "$(grep -Fx "$pageSep" $out/source)" ]; then
-          csplit --suppress-matched -s -f subpage $out/source  "/^$pageSep/" '{*}'
-          cp subpage* $out/subpages
-          sed -i "/$pageSep/d" $out/source
-        fi
-
         # substitutions
         ${concatMapStringsSep "\n" (set:
           let
@@ -75,23 +75,34 @@ let
           ''
         ) (setToList substitutions)}
 
+        # intro
+        if [ "$(grep -Fx "$introSep" $out/source)" ]; then
+          csplit -s -f intro $out/source "/^$introSep$/"
+          cp intro00 $out/intro
+          sed -i "/$introSep/d" $out/source
+        fi
+
+        # subpages
+        if [ "$(grep -Fx "$pageSep" $out/source)" ]; then
+          csplit --suppress-matched -s -f subpage $out/source  "/^$pageSep/" '{*}'
+          cp subpage* $out/subpages
+          sed -i "/$pageSep/d" $out/source
+        fi
 
         # Converting markup files
-        ${optionalString (elem fileData.ext markdownExt) '' 
-          ${pkgs.multimarkdown}/bin/multimarkdown < $out/source > $out/content
+        ${commands."${markupType}"} $out/source > $out/content
 
-          # intro
-          cp $out/intro tmp; ${pkgs.multimarkdown}/bin/multimarkdown < tmp > $out/intro
+        # intro
+        cp $out/intro tmp; ${commands."${markupType}"} tmp > $out/intro
 
-          # subpages
-          for file in $out/subpages/*; do
-            cp $file tmp; ${pkgs.multimarkdown}/bin/multimarkdown < tmp > $file
-          done
+        # subpages
+        for file in $out/subpages/*; do
+          cp $file tmp; ${commands."${markupType}"} tmp > $file
+        done
 
-          # title
-          ${pkgs.xidel}/bin/xidel $out/content -e "//h1[1]/node()" -q > $out/title
-          echo -n `tr -d '\n' < $out/title` > $out/title
-        ''}
+        # title
+        ${pkgs.xidel}/bin/xidel $out/content -e "//h1[1]/node()" -q > $out/title
+        echo -n `tr -d '\n' < $out/title` > $out/title
       '';
       content = let
           rawContent = readFile "${data}/content";
@@ -119,12 +130,13 @@ let
   */
   parseFile = { fileData, substitutions }@args:
     let
-      m = match "^(....-..-..)-(.*)" fileData.basename;
+      # TODO make this regex stricter
+      m    = match "^(....-..-..)-(.*)" fileData.basename;
       date = if m != null then { date = (elemAt m 0); } else {};
       path = "${fileData.dir + "/${fileData.name}"}";
-      data = if elem fileData.ext markupExt then parseMarkupFile args
-             else if fileData.ext == "nix" then import path
-             else trace "Error: this should never happen.";
+      data =      if elem fileData.ext markupExts then parseMarkupFile args
+             else if elem fileData.ext ext.nix    then import path
+             else    abort "Error: this should never happen.";
     in
       { inherit fileData; } // date // data;
 
@@ -146,7 +158,7 @@ let
       ) (attrNames set);
     in flatten (f [] s);
 
-  /* Get a list of files data from a folder
+  /* Get a list of files data from a directory
      Ignore unsupported files type
 
      Return example
@@ -163,16 +175,25 @@ let
         in
         if (v == "regular") && (m != null) && (elem ext supportedFiles)
            then { inherit basename ext; dir = from; name = k; }
-           else trace "File '${k}' is not a supported file and will be ignored." null
+           else trace "Warning: File '${k}' is not in a supported file format and will be ignored." null
       ) (readDir from);
     in filter (x: x != null) fileList;
+
+  markupToHtml = markup: text:
+    let
+      data = pkgs.runCommand "data" {} ''
+        mkdir $out
+        echo -n "${text}" > $out/source
+        ${commands."${markup}"} $out/source > $out/content
+      '';
+    in readFile "${data}/content";
 
 in
 rec {
 
-  /* load the data files from a folder that styx can handle
+  /* load the data files from a directory that styx can handle
   */
-  loadFolder = { from, substitutions ? {}, extraAttrs ? {} }:
+  loadDir = { from, substitutions ? {}, extraAttrs ? {} }:
     map (fileData:
       (parseFile { inherit fileData substitutions; }) // extraAttrs
     ) (getFiles from);
@@ -188,23 +209,40 @@ rec {
     in
       (parseFile { inherit substitutions fileData; }) // extraAttrs;
 
-  /* Sort a list of pages chronologically
-  */
-  sortBy = attribute: order: 
-    sort (a: b: 
-           if order == "asc" then a."${attribute}" < b."${attribute}"
-      else if order == "dsc" then a."${attribute}" > b."${attribute}"
-      else    abort "Sort order must be 'asc' or 'dsc'");
-
   /* Convert a markdown string to html
   */
-  markdownToHtml = text:
-    let
-      data = pkgs.runCommand "data" {} ''
-        mkdir $out
-        echo -n "${text}" > $out/source
-        ${pkgs.multimarkdown}/bin/multimarkdown < $out/source > $out/content
-      '';
-    in readFile "${data}/content";
+  markdownToHtml = markupToHtml "markdown";
+
+  /* Convert an asciidoc string to html
+  */
+  asciidocToHtml = markupToHtml "asciidoc";
+
+  /* Generate a taxonomy data structure
+  */
+  mkTaxonomyData = { data, taxonomies }:
+   let
+     rawTaxonomy =
+       fold (taxonomy: plist:
+         fold (set: plist:
+           fold (term: plist:
+             plist ++ [ { "${taxonomy}" = [ { "${term}" = [ set ]; } ]; } ]
+           ) plist set."${taxonomy}"
+         ) plist (filter (d: hasAttr taxonomy d) data)
+       ) [] taxonomies;
+     semiCleanTaxonomy = plib.flatten rawTaxonomy;
+     cleanTaxonomy = map (pl:
+       { "${plib.propKey pl}" = plib.flatten (plib.propValue pl); }
+     ) semiCleanTaxonomy;
+   in cleanTaxonomy;
+
+  /* sort terms by number of values
+  */
+  sortTerms = sort (a: b:
+    valuesNb a > valuesNb b
+  );
+
+  /* Number of values a term holds
+  */
+  valuesNb = term: length (plib.propValue term);
 
 }

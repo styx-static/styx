@@ -12,15 +12,15 @@ The Styx provides a command line program `styx`.
 The `new` command is used to create a new Styx site.
 
 `styx new`:: Create a Styx site in "styx-site" directory in current path.
-`styx-new -o "myblog"`:: Create a Styx site in `myblog` directory in current path.
-`styx-new -o "myblog" --target /tmp`:: Create a Styx site in `myblog` directory in `/tmp`.
+`styx new myblog`:: Create a Styx site in `myblog` directory in current path.
+`styx new myblog --target /tmp`:: Create a Styx site in `myblog` directory in `/tmp`.
 
 === Build
 
 The `build` command is used to build a Styx site. It must be used in a Styx site root file.
 
-`styx build`:: Build the Styx site and write the output in the `public` folder.
-`styx build -o FOLDER`:: Build the nix site and write the output in the `FOLDER` folder.
+`styx build`:: Build the Styx site and write the output in the `public` directory.
+`styx build --output DIR`:: Build the nix site and write the output in the `DIR` directory.
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `build` command.
 
@@ -34,6 +34,8 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 `styx preview --port 9090`:: Start a preview server on 127.0.0.1:9090.
 `styx preview --port 9090 --drafts`:: Start a preview server on 127.0.0.1:9090 with drafts rendered.
 
+NOTE: Drafts are rendered only if the related logic is present in `site.nix`. The `--drafts` flag just make styx pass `renderDrafts` as `true` to `site.nix`.
+
 === Live
 
 The `live` is similar to preview, with the unique difference that site is automatically rebuilt when a change is made.
@@ -44,7 +46,9 @@ The live mode should be quitted by pressing kbd:[q].
 `styx preview --port 9090`:: Start a live preview server on 127.0.0.1:9090.
 `styx preview --port 9090 --drafts`:: Start a live preview server on 127.0.0.1:9090 with drafts rendered.
 
-WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibility that the server process will stay alive in backgroud. The server process can be found by running `ps aux | grep caddy` and killed with the `kill` command.
+NOTE: The `live` mode does not automatically reload the browser.
+
+WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibility that the server process will stay alive in background. The server process can be found by running `ps aux | grep caddy` and killed with the `kill` command.
 
 === Serve
 
@@ -57,9 +61,12 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `serve` command.
 
+NOTE: Styx use the link:https://caddyserver.com/[caddy server], even if it is performant server, `styx serve` launchs it without any special settings. +
+For production environments it is recommended to use a carefully configured server over `styx serve`.
+
 === Deploy
 
-The`deploy` command is used to deploy A styx site on a remote server.
+The `deploy` command is used to deploy A styx site on a remote server.
 Currently only GitHub pages are supported.
 
 For more details see the <<Deployment>> section.

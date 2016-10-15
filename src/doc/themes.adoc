@@ -1,0 +1,378 @@
+== Themes
+
+Themes are a central concept in styx and are used to manage a site assets , namely files and templates.
+They also provide a configuration interface.
+
+Themes also can be combined to offer modularity and easiness of upgrade.
+
+=== Getting themes
+
+There are a few official themes for styx:
+
+- link:https://github.com/styx-static/styx-theme-showcase[Showcase]: A theme that show most of styx functionalities and provides many templates.
+- link:https://github.com/styx-static/styx-theme-hyde[Hyde]: A port of the link:https://github.com/poole/hyde[Jekyll Hyde theme] to styx. Hyde is a simple and beautiful blog theme.
+- link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites.
+
+Themes should be installed in the `themes` directory. Using `git` is the recommended way.
+
+[source, shell]
+.Installing the showcase theme via git
+----
+$ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase
+----
+
+=== Structure
+
+Themes are usually stored in the `themes` directory, but this can be changed in `site.nix`.
+
+Every theme is stored in its own directory, and themes are expected to follow a certain structure.
+
+[source, shell]
+.Anatomy of a Styx theme
+-----
+themes
+└── NAME # <1>
+    ├── theme.nix # <2>
+    ├── files # <3>
+    └── templates # <4>
+-----
+
+<1> Name of the theme. The name should be a valid directory name.
+<2> `theme.nix` defines the theme configuration options, this is file is required and must be named `theme.nix`.
+<3> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site.
+<4> `templates` is a directory storing all the templates files.
+
+NOTE: Themes structure is one of the few part using implicit settings in styx.
+
+=== theme.nix
+
+`theme.nix` defines the theme configuration interface. It is defined as an attribute set.
+
+It is a simple attribute set that defines the theme configuration options with some default values.
+
+[source, nix]
+.Example of a theme.nix
+----
+{
+  site = {
+    title = "The Agency";
+    author = "Your name";
+    description = "Your description";
+  };
+}
+----
+
+====
+`theme.nix` attribute set will be merged in `site.nix` `conf` variable in two attributes:
+
+- `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`.
+Templates that access themes configuration should use `conf.theme`.
+- `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration and will not be overriden by default.
+====
+
+=== Files
+
+The file directory holds the static files of the theme. Every file in in this directory will be copied in the generated site.
+
+NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site.
+
+==== Special files
+
+Styx can automatically convert css preprocessor files like `sass`, `scss` and `less` to css during site generation.
+
+This feature is disabled by default and should be enabled if required, for details see the <<lib.generation.generateSite,generateSite function documentation>>.
+
+=== Templates
+
+Every template in the `templates` will be accessible by its file basename in the `templates` attribute set.
+Directories are converted to nested sets.
+
+[source, shell]
+.Example of a template directory structure
+-----
+├── archive.nix
+└── post
+    ├── full.nix
+    └── list.nix
+-----
+
+[source, nix]
+.Generated attribute set
+-----
+templates = {
+  archive = <<lambda>>;
+  posts = {
+    full = <<lambda>>;
+    list = <<lambda>>;
+  };
+};
+-----
+
+NOTE: the `\<<lambda>>` notation is borrowed from the `nix-repl` tool, and means a non fully evaluated function. +
+The nix language is functional, and it allows to partially apply functions and to pass function as argument to other functions.
+
+'''
+
+Styx templates are functions that return text or page attribute sets when fully evaluated.
+
+Templates are divided in two types:
+
+- Layout templates, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
+- Normal templates, responsible for preparing a page for the layout template, this kind of templates usually return a page attribute set.
+- Partial templates, responsible for rendering a part of a layout or a normal template. 
+
+The normal template evaluation flow is:
+
+- The normal template evaluate the page attribute set and generates a partial result that is stored in the page attribute set `content` key.
+- The layout template evaluate the page attribute set returned by the partial template and produce the final source of the page.
+
+==== Text handling basics
+
+Most of the work in template is done by manipulating text.
+
+This introduce the basics of text handling in the templates:
+
+- single-line or multi-line text (leading spaces are stripped without changing relative line align), delimited by `''`.
+
++
+[source, nix]
+.Multi-line text
+----
+''
+  Hello world!
+  Hello Styx!
+''
+----
+
+- single-line or multi-line text, delimited by `"`.
+
++
+[source, nix]
+.Single-line text
+----
+"Hello world!"
+----
+
+Nix expressions can be included in text in enclosed in `${...}`.
+
+[source, nix]
+.Expression antiquotation
+----
+let name = "world"; in
+"Hello ${name}!"
+----
+
+==== Layout templates
+
+The layout template is responsible for rendering the final source of the page.
+The layout template function usually takes a template environment, and a page attribute set with a `content`. (There are exceptions)
+
+In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag.
+
+[source, nix]
+.Layout template example
+----
+env:
+page:
+''
+  <html>
+    ...
+  <body>
+    ...
+    ${page.content}
+    ...
+  </body>
+  </html>
+''
+----
+
+TIP: Layout templates are just functions, in case the partial template return the full page source like in the rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent and return the `template` result.
+
+
+==== Normal templates
+
+Normal templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
+The normal template should set or update the `content` attribute of the page attribute set so the layout template can render the final source.
+
+Normal templates can also add other attributes to the page attribute to fit any special need.
+
+[source, nix]
+.Example of a partial template
+----
+{ templates, ... }:
+page:
+let
+  content =
+    ''
+      <h1>${page.title}</h1>
+    '';
+in
+  page // { inherit content; }
+----
+
+NOTE: In some cases, it is useful to have the partial template to return the final source of the page.
+By setting the page `layout` to the `id` function, it is possible to bypass the layout template and have the partial template result being the final source source of the page.
+
+==== Partial templates
+
+Partials templates are template that that are used in normal or layout templates.
+
+Partial templates can take arguments and be used to with `mapTemplate` to apply a template to a list of content, or just used as includes.
+
+==== Template environment
+
+The template environment is the first parameter to every template function.
+
+It is automatically added when the templates are loaded from a theme.
+
+The default template environment consists in:
+
+- `conf`: The configuration attribute set.
+- `lib`: The library attribute set, it contains Styx and nixpkgs functions.
+- `state`: The state attribute set, by default it only holds the timestamp of the generation.
+- `templates`: The templates attribute set.
+- `data`: The data attribute set.
+
+It is possible to extend the default template environment to fit custom needs.
+
+It is possible to set a specific template environment to a specific template by declaring it in the `customTemplateEnvironments` set.
+
+[source, nix]
+.Setting custom template environments
+----
+  customEnvironments = {
+    layout = defaultEnvironment // { feed = pages.feed; }; # <1>
+  };
+----
+
+<1> The environment passed to the `layout` template is the default environment extended with a `feed` variables.
+
+
+==== Template environment in templates
+
+There are two ways of writing the `environment` in the template, as a set or as a deconstructed set.
+
+[source, nix]
+.Environment as a variable
+----
+environment: # <1>
+page:
+''
+  ${environment.conf.siteTitle}
+''
+----
+
+<1> `environment` is used as a set, and its key can be accessed with `.`.
+
+[source, nix]
+.Environment as a deconstructed set
+----
+{ conf, lib, ... }: # <1>
+page: # <1>
+''
+  ${conf.siteTitle}
+''
+----
+
+<1> environment is deconstructed in its keys values. The last `...` means all others keys and is required if the set contains more keys than the keys deconstructed.
+
+
+==== Calling templates in templates
+
+It is possible to call templates in a template by accessing to the `templates` attribute of the template generic environment.
+
+[source, nix]
+.Calling a template in a template
+----
+{ templates, ... }:
+page:
+''
+  ${templates.foo}
+''
+----
+
+NOTE: When templates are loaded, they will automatically receive the template environment as a parameter, this will partially evaluate the template function. This means that the template function will be become a single argument function (`page`).
+
+WARNING: Trying to call the current template will trigger an infinite loop and make the site generation fail.
+
+==== Applying templates to multiple contents
+
+The `mapTemplate` function can be used to map a template to a list of contents.
+
+[source, nix]
+.Applying a template to multiple contents
+----
+{ templates, ... }:
+page:
+''
+  ${mapTemplate templates.post.list page.posts}
+''
+----
+
+
+=== Themes in site.nix
+
+Themes are declared as a list in the `themes` variable.
+
+[source, shell]
+.Declaring used themes
+-----
+  themes = [ "default" ]; # <1>
+-----
+
+<1> The `themes` variable is a list of theme names, it is possible to set multiple themes. In that cases, themes at the head of the list have a higher priority.
+
+Themes related files are automatically loaded in `site.nix` via the `lib.themes.loadTemplates` and `lib.themes.loadFiles` functions.
+
+[source, shell]
+.Loading theme related files
+----
+  templates = lib.themes.loadTemplates { # <1>
+    inherit themes defaultEnvironment customEnvironments;
+    themesDir = conf.themesDir;
+  };
+
+  files = lib.themes.loadFiles { # <2>
+    inherit themes;
+    themesDir = conf.themesDir;
+  };
+
+  themes = [ "default" ];
+----
+
+<1> Load themes templates. See <<themes.loadFiles,loadFiles>> for details.
+<2> Load themes files. See <<themes.loadTemplates,loadTemplates>> for details.
+
+
+=== Combining Themes
+
+In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the one from the first theme to declare it will be used.
+
+This allows to "extends" themes without modifying them.
+
+For example, to use the default theme but only change the `layout` template. It is possible to create a new theme, and copy the `layout.nix` template in the new theme `templates` directory and change only this file.
+
+[source, bash]
+.Creating a new foo theme
+----
+$ mkdir themes/foo # <1>
+$ mkdir themes/foo/{templates,files} # <2>
+$ cp themes/{default,foo}/templates/layout.nix # <3>
+----
+
+<1> Create the theme directory.
+<2> Create the theme required directories.
+<3> Copying `default` theme `layout.nix` to `foo` theme.
+
+After a new theme has been created, it must be load in the `site.nix` to be used.
+
+[source, nix]
+.Using foo and default themes in `site.nix`
+----
+  themes = [ "foo" "default" ]; #<1>
+----
+
+<1> This will use foo and default theme, with foo having a higher priority than default.
+
+TIP: Combining themes is the recommended way to extend an existing theme as it make upgrades easier.
+

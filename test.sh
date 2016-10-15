@@ -11,7 +11,7 @@
 
 target=/tmp
 name="styx-test"
-folder="$target/$name"
+dir="$target/$name"
 # The theme to test
 themeRepo=https://github.com/styx-static/styx-theme-showcase.git
 theme=showcase
@@ -187,7 +187,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx deploy --init-gh-pages':"
 
-# Making a git repository in the test folder
+# Making a git repository in the test directory
 (
   cd $sitePath
   git init
@@ -229,8 +229,8 @@ sep
 
 if [ $cleanup -eq 1 ]; then
   echo "Cleaning up:"
-  if [ -e $folder ] && [ -d $folder ]; then
-    rm -fr "$folder"
+  if [ -e $dir ] && [ -d $dir ]; then
+    rm -fr "$dir"
   fi
   sep
 fi

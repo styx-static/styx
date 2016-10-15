@@ -5,15 +5,15 @@ Refer to the link:http://nixos.org/nix/manual/#chap-installation[Nix installatio
 
 It is possible to install Nix with the following command:
 
-[source, bash]
+[source, shell]
 ----
-$ nix-env -i https://github.com/ericsagnes/styx/archive/latest.tar.gz
+$ nix-env -i https://github.com/styx-static/styx/archive/latest.tar.gz
 ----
 
 To only test Styx, it is recommended to use the `nix-shell` command to start a temporary environment including Styx:
 
-[source, bash]
+[source, shell]
 ----
-$ nix-shell -p `nix-build https://github.com/ericsagnes/styx/archive/latest.tar.gz`
+$ nix-shell -p `nix-build https://github.com/styx-static/styx/archive/latest.tar.gz`
 ----
 

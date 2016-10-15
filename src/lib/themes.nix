@@ -61,8 +61,7 @@ in
   fold (theme: set:
     let
       themeConf = import (themesDir + "/${theme}/theme.nix");
-      themeName = head (attrNames themeConf.themes);
-    in recursiveUpdate set ({ inherit themeConf; } // { theme = themeConf.themes."${themeName}"; })
+    in recursiveUpdate set ({ themes."${theme}" = themeConf; theme = themeConf; })
   ) {} themes;
 
 

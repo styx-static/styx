@@ -1,0 +1,84 @@
+=== Utils
+
+The utils namespace contains generic functions that do not fit in other namespaces.
+
+:sectnums!:
+
+---
+
+[[lib.utils.overrideConf]]
+==== overrideConf
+
+Description::: Override the conf attribute set with another attribute set.
+Parameter Type::: Standard
+Parameters:::
+  * `conf`: The `conf` attribute set.
+  * `override`: The attribute set to override `conf` with.
+Return::: The attribute set with `conf` and `override` merged.
+Example:::
+
++
+[source, nix]
+----
+overrideConf mergedConf args
+----
+
+NOTE: This is similar to the nixpkgs `recursiveUpdate` function, with the only difference that keys that do not exist in `conf` are ingnored.
+
+---
+
+[[lib.utils.chunksOf]]
+==== chunksOf
+
+Description::: Split a list in lists multiple lists of `n` items.
+Parameter Type::: Standard
+Parameters:::
+  * `n`: The number of items per list.
+  * `list`: the list to split.
+Return::: A list of lists.
+Example:::
+
++
+[source, nix]
+----
+chunksOf 2 [ 1 2 3 4 5 ]
+----
+
++
+[source, nix]
+.Results in
+----
+[ [ 1 2 ] [ 3 4] [ 5 ] ]
+----
+
+---
+
+[[lib.utils.sortBy]]
+==== sortBy
+
+Description::: Sort a list of attribute sets by an attribute value.
+Parameter Type::: Standard
+Parameters:::
+  * `attribute`: The attribute to use for sorting.
+  * `order`: `asc` for ascding order, or `dsc` for descending order.
+  * `list`: the list of attribute sets to sort.
+Return::: The sorted list of attribute sets.
+Example:::
+
++
+[source, nix]
+----
+sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
+----
+
++
+[source, nix]
+.Results in
+----
+[ { priority = 2; } { priority = 5; } ]
+----
+
+---
+
+
+:sectnums:

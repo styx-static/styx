@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     cp -r scaffold $out/share/styx
 
     mkdir -p $out/share/doc/styx
-    asciidoctor doc/manual.doc -o $out/share/doc/styx/index.html
+    asciidoctor doc/manual.adoc -o $out/share/doc/styx/index.html
 
     substituteAllInPlace $out/bin/styx
     substituteAllInPlace $out/share/doc/styx/index.html

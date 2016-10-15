@@ -1,0 +1,73 @@
+=== Themes
+
+This namespace contains functions related to themes.
+
+:sectnums!:
+
+---
+
+[[lib.themes.loadConf]]
+==== loadConf
+
+Description::: Load themes configuration.
+Parameter Type::: Attribute set
+Parameters:::
+  * `themes`: A list of themes names to load configuration from.
+  * `themesDir`: Directory where the themes are stored.
+Return::: A configuration attribute set with the `theme` and `themes` attributes. +
+`theme` is the merged themes configuration, and `themes.THEME` holds the per theme configuration.
+Example:::
+
++
+[source, nix]
+----
+themesConf = lib.themes.loadConf { inherit themes themesDir; };
+----
+
+---
+
+[[lib.themes.loadFiles]]
+==== loadFiles 
+
+Description::: Load themes static files.
+Parameter Type::: Attribute set
+Parameters:::
+  * `themes`: A list of themes names to load configuration from.
+  * `themesDir`: Directory where the themes are stored.
+Return::: A list of directory paths. 
+Example:::
+
++
+[source, nix]
+----
+files = lib.themes.loadFiles {
+  inherit themes themesDir;
+};
+----
+
+---
+
+[[lib.themes.loadTemplates]]
+==== loadTemplates 
+
+Description::: Load themes templates.
+Parameter Type::: Attribute Set
+Parameters:::
+  * `themes`: A list of themes names to load configuration from.
+  * `themesDir`: Directory where the themes are stored.
+  * `defaultEnvironment`: The default template environment.
+  * `customEnvironments`: (optional) A set which attributea are template paths and the values template environments.
+Return::: An attribute set containing all the themes template with their environment applied. 
+Example:::
+
++
+[source, nix]
+----
+templates = lib.themes.loadTemplates {
+  inherit themes defaultEnvironment customEnvironments themesDir;
+};
+----
+
+---
+
+:sectnums:

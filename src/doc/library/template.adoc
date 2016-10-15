@@ -1,0 +1,254 @@
+=== Template
+
+The template namspace contains functions useful in templates.
+
+:sectnums!:
+
+---
+
+[[lib.template.htmlAttr]]
+==== htmlAttr
+
+Description::: Create html tag attributes.
+Parameter Type::: Standard
+Parameters:::
+  * `attrName`: Tag attribute to generate.
+  * `value`: Value of the attribute to generate, can be a string or a list of strings.
+Return::: A string of the attribute.
+Example:::
+
++
+[source, nix]
+----
+htmlAttr "class" [ "foo" "bar" ]
+----
+
++
+[source, text]
+.Results in
+----
+class="foo bar"
+----
+
+---
+
+[[lib.template.isExternalHref]]
+==== isExternalHref
+
+Description::: Checks whether a strings starts with `http`.
+Parameter Type::: Standard
+Parameters:::
+  * `href`: The href to check.
+Return::: `true` if `href` starts with `http`, false if not.
+Example:::
+
++
+[source, nix]
+----
+isExternalHref item.href
+----
+
+---
+
+[[lib.template.generatorMeta]]
+==== generatorMeta
+
+Description::: Generate a meta generator tag for Styx.
+Return::: `<meta name="generator" content="Styx" />`
+Example:::
+
++
+[source, nix]
+----
+generatorMeta
+----
+
+---
+
+[[lib.template.mapTemplate]]
+==== mapTemplate
+
+Description::: Map a template function to a list of items and returns the result as a string.
+Parameter Type::: Standard
+Parameters:::
+  * `templateFunction`: A template or a function that take a single argument and returns a string.
+  * `items`: A list of items to apply the template to.
+Return::: The result of the template applied to every item as a string.
+Example:::
+
++
+[source, nix]
+----
+mapTemplate templates.post.list page.items
+----
+
+[TIP]
+====
+`mapTemplate` can and is often used with functions that acts like a template.
+
+[source, nix]
+.Using a function with mapTemplate
+----
+mapTemplate (i: "<li>${i}</li>") [ "foo" "bar" ]
+----
+
+[source, html]
+.Results in
+----
+<li>foo</li>
+<li>bar</li>
+----
+====
+
+---
+
+[[lib.template.mapTemplateWithIndex]]
+==== mapTemplateWithIndex
+
+Description::: Similar to `mapTemplate` but pass an parameter to the template function that corresponds to the index of the item.
+Parameter Type::: Standard
+Parameters:::
+  * `templateFunction`: A template or a function that take the index and the item and returns a string.
+  * `items`: A list of items to apply the template to.
+Return::: The result of the template applied to every item as a string.
+Example:::
+
++
+[source, nix]
+----
+mapTemplateiWithIndex (index: item:
+  "<li>${index} - ${item}</li>"
+) [ "foo" "bar" ]
+----
+
++
+[source, html]
+.Results in
+----
+<li>1 - foo</li>
+<li>2 - bar</li>
+----
+
+---
+
+[[lib.template.mod]]
+==== mod
+
+Description::: Returns the modulo of a number.
+Parameter Type::: Standard
+Parameters:::
+  * `dividend`: The dividend of the modulo.
+  * `divisor`: The divisor of the modulo.
+Return::: The modulo.
+Example:::
+
++
+[source, nix]
+----
+mod 3 2
+----
+
++
+[source, text]
+.Results in
+----
+1
+----
+
+---
+
+[[lib.template.isEven]]
+==== isEven
+
+Description::: Check if a number is even.
+Parameter Type::: Standard
+Parameters:::
+  * `number`: The number to check.
+Return::: `true` if `number` is even, `false` if not.
+Example:::
+
++
+[source, nix]
+----
+isEven 2
+----
+
++
+[source, nix]
+.Results in
+----
+true
+----
+
+---
+
+[[lib.template.isOdd]]
+==== isOdd
+
+Description::: Check if a number is odd.
+Parameter Type::: Standard
+Parameters:::
+  * `number`: The number to check.
+Return::: `true` if `number` is odd, `false` if not.
+Example:::
+
++
+[source, nix]
+----
+isOdd 2
+----
+
++
+[source, nix]
+.Results in
+----
+false
+----
+
+---
+
+[[lib.template.parseDate]]
+==== parseDate
+
+Description::: Parse a date.
+Parameter Type::: Standard
+Parameters:::
+  * `date`: A date in the format `YYYY-MM-DD`, e.g. `2012-12-21`.
+Return::: An attribute set containing date parts.
+  
+Example:::
+
++
+[source, nix]
+----
+with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
+----
+
++
+[source, nix]
+.Results in
+----
+21 Dec 2012
+----
+
+====
+`parseDate` returns a set with the following attributes:
+
+`YYYY`:: The year in 4 digit format (2012).
+`YY`:: The year in 2 digit format (12).
+`Y`:: Alias to `YYYY`.
+`y`:: Alias to `YY`.
+`MM`:: The month in 2 digit format (12, 01).
+`M`:: The month number (12 ,1).
+`m`:: Alias to `MM`.
+`m-`:: Alias to `M`.
+`B`:: Month in text format (December, January).
+`b`:: Month in short text format (Dec, Jan).
+`DD`:: Day of the month in 2 digit format (01, 31).
+`D`:: Day of the month (1, 31).
+`d-`:: Alias to `D`.
+====
+
+---
+
+:sectnums:

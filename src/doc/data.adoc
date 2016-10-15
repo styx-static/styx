@@ -1,0 +1,291 @@
+== Data
+
+Data refers to the data fetched or declared in the data section of `site.nix`.
+
+Data gets included in the default template environment and can also be used in the pages section of `site.nix` to attach data to pages.
+
+=== Creating data
+
+Data can be created by directly defining a nix data structure. +
+An example of such usage is the navbar items that are declared as a list of attributes sets.
+
+[source, nix]
+.Creating navbar data
+----
+  data.navbar = [ pages.about pages.contact ];
+----
+
+=== Importing data
+
+The styx data sub-library provides functions two functions to import  markup data:
+
+- `loadFile`: load a single data file and return it as an attribute set.
+- `loadDir`: to load all the files in a directory and return them as a list of attributes set.
+
+The data loading functions return a set per file loaded and do a few things:
+
+* A `fileData` field is added that contains the file data as an attribute set with the following keys:
+** `basename`: The base name of the file.
+** `ext`: The extension of the file.
+** `dir`: The directory of the file.
+** `name`: The name of the file, `basename` and `ext` field combined with a `.`.
+* Metadada is automatically parsed and merged to the set.
+* Substitutions are automatically performed.
+* Data with introduction gain a `intro` attribute containing the introduction.
+* Multipages data gain a `subpages` attribute, a list containing each page content.
+* Converted markup is inserted in a `content` attribute.
+* The text of the first `h1` title will be inserted in a `title` attribute.
+* If the file basename begins in a `YYYY-MM-DD` format, this value will be inserted in a `date` attribute.
+
+NOTE: Nix data should be imported with the `import` function, and return the data in the nix file as it is.
+
+=== Formats
+
+This section present the data file formats supported by styx.
+
+==== Asciidoc
+
+link:https://en.wikipedia.org/wiki/AsciiDoc[AsciiDoc] is a simple but complete markup language.
+
+It is the format of choice for complex posts or pages as it has more functionalities than markdown.
+
+[source,asciidoc]
+.AsciiDoc example
+----
+= Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
+----
+
+The converted html will be in the `content` attribute of the data attribute set.
+
+TIP: It is possible to add extra data to an asciidoc file by using <<Metadata>>.
+
+NOTE: link:http://asciidoctor.org/[Asciidoctor] is used to convert asciidoc.
+
+==== Markdown
+
+link:https://en.wikipedia.org/wiki/Markdown[Markdown] is a lightweight markup language.
+
+It is the format of choice for posts or pages as it allows to write content in a simple manner.
+
+[source,markdown]
+.Markdown example
+----
+# Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
+----
+
+The converted html will be in the `content` attribute of the data attribute set.
+
+TIP: It is possible to add extra data to a markdown file by using <<Metadata>>.
+
+NOTE: link:http://fletcherpenney.net/multimarkdown/[MultiMarkdown] is used to convert markdown.
+
+==== Nix
+
+Nix expression language is the language used in `site.nix` and in every template.
+
+It is a simple functional language and fits well data that has multiple fields.
+
+[source,markdown]
+.Nix data
+----
+[
+  { name = "Alice"; interests = [ "science" "writing" ]; }
+  { name = "Bob";   interests = [ "sports" "reading" ]; }
+]
+----
+
+====
+Markup with metadata and nix data structures can be considered equivalent as it is possible to declare fields in nix data as markdown text, and markdown can declare nix fields as metadata.
+
+Which one to choose is really a matter of choice but:
+
+- Nix is well suited for complex data structures with multiple fields.
+- Markup is well suited do content centric data.
+====
+
+=== Metadata
+
+Metadata is the way to attach Nix data to markup files.
+
+A metadata block is a Nix attribute set which opening is `{---` and closing `---}`. +
+
+[source,markdown]
+.Adding metadata to a markdown file
+----
+{---
+  date = "2016-10-10";
+  tags = [ "foo" "bar" ];
+---}
+
+# Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
+----
+
+Metadata attributes will automatically be added to the data attribute set.
+
+=== Substitutions
+
+Subtitutions are a way to use some variables in markup files.
+
+Substitutions are a set that is passed to the `loadFile` or `loadDir` functions arguments.
+
+[source, nix]
+.Adding conf substitutions
+----
+  data.posts = loadDir { substitutions = { inherit conf; }; from = ./posts; };
+----
+
+In the markup file, substitutions are used by surround the variable name with `@`.
+
+NOTE: It is impossible to use any nix expression in the substitution.
+
+[source, nix]
+.Using a substitution in a markdown file
+----
+  Learn more in the [Styx 0.1.0 Documentation](@conf.siteUrl@/documentation-v0-1-0.html).
+----
+
+
+=== Introduction
+
+It is possible to declare a section on an imported markup file as the introduction.
+
+Introduction and main contents are separated by `>>>`, content prior the separator will be inserted in an `intro` field. +
+
+[source,markdown]
+.Adding an introduction to a markdown file
+----
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+>>>
+
+# Lorem ipsum
+
+Mauris quis dolor nec est accumsan dictum eu ut nulla. Sed ut tempus quam, vel bibendum lacus. Nulla vestibulum velit sed ipsum tincidunt maximus.
+----
+
+NOTE: `intro` field contents are included in the `content` field.
+
+=== Multipage data
+
+It is possible to split in markup file in many subpages by using the `<<<` separator.
+
+[source,markdown]
+.Splitting a markdown file in 3 pages
+----
+# Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
+
+<<<
+
+# Cras malesuada metus
+
+Cras malesuada metus quis mi pulvinar faucibus. Vivamus suscipit est ante, ut auctor tortor semper nec. 
+
+<<<
+
+# Phasellus consequat
+
+Phasellus consequat a nibh sit amet ultricies. Quisque feugiat justo eu condimentum convallis.
+----
+
+The resulting data set will have an extra `subpages` field that will hold the list of subpages content.
+
+NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute sets is handled by the pages section. +
+For example, the `mkPagesList` or `generateSubpages` function can generate pages from a multipage data set.
+
+=== Taxonomies
+
+==== Overview
+
+Taxonomies are a way to group and structure data.
+
+Styx taxonomies are a two layers grouping system. +
+The taxonomy layer group the content declaring a specific data attribute, and the term layer group the contents in the taxonomy depending of the values set to that specific attribute.
+
+A common example of taxonomy is tags, `tags` will be the taxonomy and `sports` or `technology` will be the terms.
+
+Taxonomy are organized in the following structure:
+
+* Taxonomy: Name of the grouping characteristic, for example `tags`.
+* Term: Groups in the taxonomy, for `tags` it will the values tags can take, for example `sports` or `technology`.
+* Values: Objects grouped by a taxonomy term, for example all the posts with the `technology` tag.
+
+
+==== Creating a taxonomy data structure
+
+A taxonomy data structure is created with the `mkTaxonomyData` function. +
+This function take a set parameter with two required attributes `pages` and `taxonomies`.
+
+`taxonomies`:: A list of taxonomy fields to look for into `pages`.
+`pages`:: The list of pages to where the `taxonomy` field will be looked for.
+
+[source, nix]
+.Creating a taxonomy structure 
+----
+  data.taxonomies = mkTaxonomyData {
+                      data = pages.posts;
+                      taxonomies = [ "tags" "categories" ];
+                    };
+----
+
+This will generate a taxonomy data structure where:
+
+* `tags` and `categories` are taxonomies.
+* terms would be all the values of `tags` or `categories` set in `pages.posts`.
+* values would be all the pages in the `pages.posts` declaring `tags` or `categories`.
+
+Then, the taxonomy related pages can be generated in the page section using the `mkTaxonomyPages` function.
+
+TIP: This example use `pages` and not `data` attribute set, because data attribute sets do not have a `href` field and it is impossible to generate links to them. +
+Using data attribute sets such as `data.posts` would make it impossible to generate pages from the taxonomy with `mkTaxonomyPages`.
+
+====
+The taxonomy data structure uses property lists, lists of attribute sets with a single key, for easier data manipulation.
+
+.Taxonomy data structure
+----
+[
+  {
+    TAXONOMY1 = [
+      { TERM1 = [ VALUE1 VALUE2 ... ]; }
+      { TERM2 = [  ... ]; }
+      ...
+    ];
+  }
+  {
+    TAXONOMY2 = [
+      { TERM1 = [ VALUE1 VALUE2 ... ]; }
+      { TERM2 = [  ... ]; }
+      ...
+    ];
+  }
+]
+----
+====
+
+==== Adding taxonomy to data
+
+Adding taxonomy fields to a content consists in adding a metadata attribute with taxonomy name containing a list of terms to it.
+
+[source,markdown]
+.Setting tags to a markdown file
+----
+{---
+  tags = [ "foo" "bar" ];
+---}
+
+# Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
+----
+
+
+IMPORTANT: Terms must be a list of strings.
+

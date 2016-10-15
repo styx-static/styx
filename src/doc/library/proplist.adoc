@@ -1,0 +1,209 @@
+=== Proplist
+
+The proplist namespace contains functions to manipulate property lists, list of attribute set with only one attribute.
+
+Property lists are used in the taxonomy data structure.
+
+[source, nix]
+.Example of a property list
+----
+[ { name = "Alice"; } { age = 26; } ]
+----
+
+WARNING: The `proplist` functions are not in the top-level because some of the functions names clash with default functions. +
+To use `proplist` functions it is required to add the namespace, for example `proplist.getValue p`.
+
+:sectnums!:
+
+---
+
+[[lib.proplist.propValue]]
+==== propValue
+
+Description:: Get the value of a property.
+Parameter Type:: Standard
+Parameters::
+  * `property`: A property.
+Return:: The value of the property.
+Example::
+
++
+[source, nix]
+----
+proplist.propValue { name = "Alice"; }
+----
+
++
+[source, nix]
+.Results in
+----
+Alice
+----
+
+---
+
+[[lib.proplist.propKey]]
+==== propValue
+
+Description:: Get the key of a property.
+Parameter Type:: Standard
+Parameters::
+  * `property`: A property.
+Return:: The value of the key.
+Example::
+
++
+[source, nix]
+----
+proplist.propValue { name = "Alice"; }
+----
+
++
+[source, nix]
+.Results in
+----
+name
+----
+
+---
+
+[[lib.proplist.isDefined]]
+==== isDefined
+
+Description:: Check if a property list has a property with a specific attribute.
+Parameter Type:: Standard
+Parameters::
+  * `attribute`: The attribute name.
+  * `list`: The property list.
+Return:: `true` is the property exists, `false` if not.
+Example::
+
++
+[source, nix]
+----
+proplist.isDefined "name" [ { name = "Alice"; } { age = 26; } ]
+----
+
++
+[source, nix]
+.Results in
+----
+true
+----
+
+---
+
+[[lib.proplist.getValue]]
+==== getValue
+
+Description:: Get a value from in a property list from an attribute name.
+Parameter Type:: Standard
+Parameters::
+  * `attribute`: The attribute name.
+  * `list`: The property list.
+Return:: The property value.
+Example::
+
++
+[source, nix]
+----
+proplist.getValue "name" [ { name = "Alice"; } { age = 26; } ]
+----
+
++
+[source, nix]
+.Results in
+----
+Alice
+----
+
+CAUTION: `getValue` will trigger an error if there is no property with the `attribute` in the list. +
+`proplist.isDefined` function should be used before `proplist.getValue` to be sure the list has the `attribute`.
+
+---
+
+[[lib.proplist.getProp]]
+==== getProp
+
+Description:: Get a property from a property list by the attribute name.
+Parameter Type:: Standard
+Parameters::
+  * `attribute`: The attribute name.
+  * `list`: The property list.
+Return:: The property.
+Example::
+
++
+[source, nix]
+----
+proplist.getProp "name" [ { name = "Alice"; } { age = 26; } ]
+----
+
++
+[source, nix]
+.Results in
+----
+{ name = "Alice"; }
+----
+
+CAUTION: `getProp` will trigger an error if there is no property with the `attribute` in the list. +
+`proplist.isDefined` function should be used before `proplist.getProp` to be sure the list has the `attribute`.
+
+---
+
+[[lib.proplist.removeProp]]
+==== removeProp
+
+Description:: Remove a property from a property list having a specific attribute name.
+Parameter Type:: Standard
+Parameters::
+  * `attribute`: The attribute name.
+  * `list`: The property list.
+Return:: The property list with the property removed.
+Example::
+
++
+[source, nix]
+----
+proplist.removeProp "name" [ { name = "Alice"; } { age = 26; } ]
+----
+
++
+[source, nix]
+.Results in
+----
+{ age = 26; }
+----
+
+CAUTION: `removeProp` will trigger an error if there is no property with the `attribute` in the list. +
+`proplist.isDefined` function should be used before `proplist.removeProp` to be sure the list has the `attribute`.
+
+---
+
+[[lib.proplist.flatten]]
+==== flatten
+
+Description:: Flatten a property list where multiple attributes with the same attribute are defined. Works only with property lists where the value is a list.
+Parameter Type:: Standard
+Parameters::
+  * `list`: The property list to flatten.
+Return:: The flattened property list.
+Example::
+
++
+[source, nix]
+----
+proplist.flatten [ { tags = [ "sports" "technology" ]; } { tags = [ "food" "trip" ]; } ]
+----
+
++
+[source, nix]
+.Results in
+----
+[ { tags = [ "sports" "technology" "food" "trip" ]; } ]
+----
+
+---
+
+:sectnums:
+
