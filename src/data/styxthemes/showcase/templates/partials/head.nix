@@ -1,4 +1,4 @@
-{ conf, feed, lib, templates, ... }:
+{ conf, lib, templates, pages, ... }:
 page:
 with lib;
 ''
@@ -8,9 +8,9 @@ with lib;
 
   <title>${page.title} - ${conf.theme.site.title}</title>
 
-  ${optionalString (feed != false) ''
+  ${optionalString (pages ? feed) ''
   <link
-      href="${conf.siteUrl}/${feed.href}"
+      href="${conf.siteUrl}/${pages.feed.href}"
       type="application/atom+xml"
       rel="alternate"
       title="${conf.theme.site.title}"
@@ -19,17 +19,16 @@ with lib;
 
   <link
       rel="stylesheet"
+      type="text/css"
       href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-
-  <script
-    src="https://code.jquery.com/jquery-3.1.1.min.js"
-    crossorigin="anonymous"></script>
-
-  <script
-    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-    crossorigin="anonymous"></script>
 
   <link
       rel="stylesheet"
-      href="${conf.siteUrl}/style.css">
+      type="text/css"
+      href="${conf.siteUrl}/font-awesome/css/font-awesome.min.css">
+
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="${conf.siteUrl}/css/style.css">
 ''

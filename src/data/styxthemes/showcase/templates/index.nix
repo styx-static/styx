@@ -5,15 +5,14 @@ page:
 let
   content = 
     ''
-      <div class="row">
-        <div class="col-md-9">
-          <h1>${page.title}${optionalString (page.index > 1) " - ${toString page.index}"}</h1>
-          <ul class="list-unstyled past-issues">
-            ${mapTemplate templates.post.list page.items}
-          </ul>
-        </div>
-        ${templates.partials.sidebar}
-      </div>
+      <h1>${page.title}</h1>
+      <ul class="list-unstyled">
+        ${mapTemplateWithIndex (index: item: ''
+          ${templates.post.preview item}
+          ${optionalString (isEven index) templates.partials.clearfix}
+        '')page.items}
+      </ul>
+      ${templates.partials.clearfix}
       ${templates.partials.pagination { pages = page.pages; index = page.index; }}
     '';
 in

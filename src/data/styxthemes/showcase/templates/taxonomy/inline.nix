@@ -4,12 +4,16 @@
 
    tags: foo bar
 */
-{ conf, lib, ... }:
-{ taxonomy, page }:
+{ conf, lib, templates, ... }:
+{ taxonomy, page, title ? null, sep ? " " }:
 with lib;
 optionalString (hasAttr taxonomy page)
 ''
-  <p>${taxonomy}: ${mapTemplate (term: ''
-    <a href="${conf.siteUrl}/${taxonomy}/${term}/">${term}</a> 
+  <p>
+    ${if (title != null)
+         then title
+         else "${taxonomy}: "}
+    ${concatMapStringsSep sep (term: ''
+      <a href="${conf.siteUrl}/${taxonomy}/${term}/">${term}</a> 
   '') page."${taxonomy}"}</p>
 ''

@@ -1,0 +1,116 @@
+.site-header {
+    border-top: 5px solid #424242;
+    border-bottom: 1px solid #e8e8e8;
+    min-height: 56px;
+    margin-bottom: 30px;
+    position: relative;
+}
+.site-title {
+    font-size: 36px;
+    font-weight: bold;
+    line-height: 64px;
+    letter-spacing: -1px;
+    margin-bottom: 0;
+}
+body{
+  padding-top: 50px;
+}
+body>footer {
+    border-top: 1px solid #e8e8e8;
+    padding: 2em 0;
+}
+article .banner {
+    display: block;
+    height: 7em;
+    background-image: url("@siteUrl@/post-banners/abstract.png");
+    background-position: center center;
+}
+article.full .banner {
+    height: 12em;
+}
+
+article.preview {
+  font-size:1.1em;
+  padding:.5em;
+}
+article .meta p{
+  margin:0;
+}
+
+article.full header h1{
+  margin: .3em 0 0 0;
+}
+
+article.full .meta{
+  text-align: right;
+  padding:.4em 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: .4em;
+}
+
+article.full .content{
+  margin:1.2em;
+}
+
+article.preview header {
+  font-size: 1.4em;
+  font-weight: bold;
+  padding:0.1em 0;
+}
+.page-content{
+  padding: 2em 0;
+}
+.page-content h1 {
+   margin:0 0 .5em 0;
+   padding:0 0 .3em 0;
+   border-bottom:1px solid #ccc;
+   color: #333;
+   text-align: center;
+   font-size:2.3em;
+}
+
+
+.sidebar h2 {
+   margin:0 0 .5em 0;
+   padding:0 0 .3em 0;
+   border-bottom:1px solid #ccc;
+   color: #333;
+   text-align:center;
+   font-size: 1.5em;
+   text-transform: uppercase;
+}
+
+.sidebar > section{
+  margin-bottom: 2em;
+}
+
+.sidebar section.taxonomy header {
+   text-transform: uppercase;
+}
+
+nav.pagination {
+  text-align: center;
+  display: block;
+}
+
+article.full figure{
+  max-width: 100%;
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+article.full img{
+  padding: 2px;
+  border: 1px solid #ccc;
+  max-width: 100%;
+}
+
+article.full div.imageblock{
+  text-align:center;
+  margin-bottom: 1em;
+}
+
+article.full div.imageblock div.content {
+  margin: 0;
+}
+

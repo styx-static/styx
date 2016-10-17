@@ -1,6 +1,7 @@
-{ conf, ... }:
+{ conf, lib, ... }:
+  with lib;
   ''
   <a class="navbar-brand" href="${conf.siteUrl}">
-    ${conf.theme.site.title}
+    ${attrByPath [ "theme" "navbar" "brand" ] conf.theme.site.title conf}
   </a>
   ''
