@@ -14,7 +14,6 @@ Parameter Type::: Attribute Set
 Parameters:::
   * `from`: The directory as a nix path.
   * `substitutions` (optional): A substitution set.
-  * `extraAttrs` (optional): Extra attributes to add to every loaded data set as an attribute set.
 Return::: A list of data sets.
 Example:::
 
@@ -22,10 +21,24 @@ Example:::
 [source, nix]
 ----
 data.drafts = loadDir {
-  from = ./drafts;
+  dir = ./drafts;
   extraAttrs = { isDraft = true; };
 });
 ----
+
+[TIP]
+====
+Any extra arguments to `loadDir` will be forwarded to every generated data set.
+
+[source, nix]
+.Setting isDraft to every file in a folder
+----
+data.drafts = loadDir {
+  dir = ./drafts;
+  isDraft = true;
+};
+----
+====
 
 NOTE: `loadDir` will print a warning for every file in the directory it cannot import.
 
@@ -40,7 +53,6 @@ Parameters:::
   * `dir`: The directory as a nix path.
   * `path`: The file name to load as a string.
   * `substitutions` (optional): A substitution set.
-  * `extraAttrs` (optional): Extra attributes to add to every loaded data set as an attribute set.
 Return::: The loaded file data set.
 Example:::
 
@@ -52,6 +64,22 @@ data.about = loadFile {
   file = "about.md";
 };
 ----
+
+[TIP]
+====
+Any extra arguments to `loadFile` will be forwarded to the generated data set.
+
+[source, nix]
+.Setting isDraft to a file
+----
+data.drafts = loadFile {
+  dir = ./drafts;
+  file = "file.md";
+  isDraft = true;
+};
+----
+====
+
 
 ---
 

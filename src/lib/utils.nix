@@ -11,6 +11,8 @@ with lib;
   overrideConf = conf: override:
     conf // (filterAttrs (k: v: (hasAttr k conf) && (v != null)) override);
 
+  /* split a list in multiple lists of k size
+  */
   chunksOf = k:
     let f = ys: xs:
         if xs == []

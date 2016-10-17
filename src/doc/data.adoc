@@ -34,7 +34,6 @@ The data loading functions return a set per file loaded and do a few things:
 * Data with introduction gain a `intro` attribute containing the introduction.
 * Multipages data gain a `subpages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
-* The text of the first `h1` title will be inserted in a `title` attribute.
 * If the file basename begins in a `YYYY-MM-DD` format, this value will be inserted in a `date` attribute.
 
 NOTE: Nix data should be imported with the `import` function, and return the data in the nix file as it is.

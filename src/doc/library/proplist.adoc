@@ -10,9 +10,6 @@ Property lists are used in the taxonomy data structure.
 [ { name = "Alice"; } { age = 26; } ]
 ----
 
-WARNING: The `proplist` functions are not in the top-level because some of the functions names clash with default functions. +
-To use `proplist` functions it is required to add the namespace, for example `proplist.getValue p`.
-
 :sectnums!:
 
 ---
@@ -30,7 +27,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.propValue { name = "Alice"; }
+propValue { name = "Alice"; }
 ----
 
 +
@@ -55,7 +52,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.propValue { name = "Alice"; }
+propValue { name = "Alice"; }
 ----
 
 +
@@ -81,7 +78,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.isDefined "name" [ { name = "Alice"; } { age = 26; } ]
+isDefined "name" [ { name = "Alice"; } { age = 26; } ]
 ----
 
 +
@@ -107,7 +104,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.getValue "name" [ { name = "Alice"; } { age = 26; } ]
+getValue "name" [ { name = "Alice"; } { age = 26; } ]
 ----
 
 +
@@ -118,7 +115,7 @@ Alice
 ----
 
 CAUTION: `getValue` will trigger an error if there is no property with the `attribute` in the list. +
-`proplist.isDefined` function should be used before `proplist.getValue` to be sure the list has the `attribute`.
+`isDefined` function should be used before `getValue` to be sure the list has the `attribute`.
 
 ---
 
@@ -136,7 +133,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.getProp "name" [ { name = "Alice"; } { age = 26; } ]
+getProp "name" [ { name = "Alice"; } { age = 26; } ]
 ----
 
 +
@@ -147,7 +144,7 @@ proplist.getProp "name" [ { name = "Alice"; } { age = 26; } ]
 ----
 
 CAUTION: `getProp` will trigger an error if there is no property with the `attribute` in the list. +
-`proplist.isDefined` function should be used before `proplist.getProp` to be sure the list has the `attribute`.
+`isDefined` function should be used before `getProp` to be sure the list has the `attribute`.
 
 ---
 
@@ -165,7 +162,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.removeProp "name" [ { name = "Alice"; } { age = 26; } ]
+removeProp "name" [ { name = "Alice"; } { age = 26; } ]
 ----
 
 +
@@ -176,12 +173,12 @@ proplist.removeProp "name" [ { name = "Alice"; } { age = 26; } ]
 ----
 
 CAUTION: `removeProp` will trigger an error if there is no property with the `attribute` in the list. +
-`proplist.isDefined` function should be used before `proplist.removeProp` to be sure the list has the `attribute`.
+`isDefined` function should be used before `removeProp` to be sure the list has the `attribute`.
 
 ---
 
-[[lib.proplist.flatten]]
-==== flatten
+[[lib.proplist.propFlatten]]
+==== propFlatten
 
 Description:: Flatten a property list where multiple attributes with the same attribute are defined. Works only with property lists where the value is a list.
 Parameter Type:: Standard
@@ -193,7 +190,7 @@ Example::
 +
 [source, nix]
 ----
-proplist.flatten [ { tags = [ "sports" "technology" ]; } { tags = [ "food" "trip" ]; } ]
+propFlatten [ { tags = [ "sports" "technology" ]; } { tags = [ "food" "trip" ]; } ]
 ----
 
 +
@@ -201,6 +198,32 @@ proplist.flatten [ { tags = [ "sports" "technology" ]; } { tags = [ "food" "trip
 .Results in
 ----
 [ { tags = [ "sports" "technology" "food" "trip" ]; } ]
+----
+
+---
+
+[[lib.proplist.propMap]]
+==== propMap
+
+Description:: Map through a property list.
+Parameter Type:: Standard
+Parameters::
+  * `f`: A function to apply to the property list.
+  * `list`: The property list to map through.
+Return:: A list..
+Example::
+
++
+[source, nix]
+----
+propMap (p: v: "${p}: ${v}") [ { name = "Alice"; } { age = 26; } ] 
+----
+
++
+[source, nix]
+.Results in
+----
+[ "name: Alice" "age: 26" ]
 ----
 
 ---

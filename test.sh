@@ -73,7 +73,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx new':"
 
-$styx new $name --target $target
+$styx new site $name --in $target
 
 if [ $? -eq 0 ]; then
   echo "Success!"
@@ -84,6 +84,12 @@ else
 fi
 
 sep
+
+#-------------------------------
+#
+# Getting themes
+#
+#-------------------------------
 
 echo "Getting '$theme' theme"
 
@@ -103,7 +109,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx build':"
 
-$styx build --target $sitePath
+$styx build --in $sitePath
 
 if [ $? -eq 0 ]; then
   echo "Success!"
@@ -125,7 +131,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx preview':"
 
-$styx preview --target $sitePath --detach
+$styx preview --in $sitePath --detach
 serveOk=$?
 
 # wait the server is ready
@@ -156,7 +162,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx serve':"
 
-$styx serve --site-url "http://127.0.0.1" --target $sitePath --detach
+$styx serve --site-url "http://127.0.0.1" --in $sitePath --detach
 serveOk=$?
 
 # wait the server is ready
@@ -195,7 +201,7 @@ echo "Testing 'styx deploy --init-gh-pages':"
   git commit -m "init"
 )
 
-$styx deploy --init-gh-pages --target $sitePath
+$styx deploy --init-gh-pages --in $sitePath
 
 if [ $? -eq 0 ]; then
   echo "Success!"
@@ -210,7 +216,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx deploy --gh-pages':"
 
-$styx deploy --gh-pages --target $sitePath
+$styx deploy --gh-pages --in $sitePath
 
 if [ $? -eq 0 ]; then
   echo "Success!"

@@ -16,7 +16,8 @@ Usage:
   styx <subcommand> options
 
 Subcommands:
-    new DIR                    Create a new Styx site in DIR.
+    new site DIR               Create a new Styx site in DIR.
+    new theme NAME             Create a new theme NAME in themes.
     build                      Build the site in the "public", can be chnged with the '--output' flag.
     preview                    Build the site and serve it locally, shortcut for 'styx serve --site-url "http://HOST:PORT"'.
                                This override the configuration file 'siteUrl' to not break links.
@@ -30,7 +31,7 @@ Generic options:
         --arg ARG VAL          Pass an argument ARG with the value VAL to the build and serve subcommands.
         --argstr ARG VAL       Pass an argument ARG with the value VAL as a string to the build and serve subcommands.
         --show-trace           Show debug trace messages.
-        --target DIR           Run the selected command in the DIR directory.
+        --in DIR               Run the selected command in the DIR directory.
         --file FILE            Run the command using FILE instead of 'site.nix'.
 
 Build options:
@@ -56,29 +57,13 @@ EOF
 
 # last changed timestamp
 last_timestamp() {
-  find $target ! -path '*.git/*' ! -name '*.swp' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
+  find $1 ! -path '*.git/*' ! -name '*.swp' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
 }
 
 # last changed date
 last_change() {
   lastTimestamp=$(last_timestamp)
   date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ
-}
-
-# print a list of commands
-print_commands(){
-  echo -e "DEBUG MODE:\n\n---\n"
-  for i in "${cmd[@]}"; do
-    echo $i
-  done
-  echo -e "\n---\n"
-}
-
-# run a list of commands
-run_commands(){
-  for i in "${cmd[@]}"; do
-    eval $i
-  done
 }
 
 # current branch name
@@ -90,8 +75,29 @@ nix_error () {
   echo "---"
   echo "Error: Site could not been built, fix the errors and run the command again."
   echo "The '--show-trace' flag can be used to show debug information."
+  exit 1
 }
 
+check_dir () {
+  if [ -d "$1" ]; then
+    echo $2
+    exit 1
+  fi
+}
+
+check_styx () {
+  if [ ! -f "$1/$2" ]; then
+    echo "Error: No '$2' in '$1'"
+    exit 1
+  fi
+}
+
+check_git () {
+  if [ ! -d "$1/.git" ]; then
+    echo "Error: '$1' is not a  git repository."
+    exit 1
+  fi
+}
 
 #-------------------------------
 
@@ -109,21 +115,26 @@ action=
 dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx share directory
 share=$(realpath "$dir/../share/styx")
-# styx share directory
+# styx lib directory
 styxLib="$share/lib"
 # debug mode
 debug=
-# list of commands that will run
-cmd=()
 # extra arguments to be appended to the nix-build command
 extraFlags=("--argstr" "styxLib" "$styxLib")
 # main site file
 siteFile="site.nix"
 
+# default new-theme name
+themeName=
+
+newCommands=("site" "theme")
+
 # name of the created site for the new action
-name="styx-site"
-# target directory
-target=$(pwd)
+name=
+# where to run the command
+in=
+# current dir
+curDir=$(pwd)
 
 # output for the build action
 output="public"
@@ -171,11 +182,11 @@ while [ "$#" -gt 0 ]; do
     --show-trace|--quiet|--verbose)
       extraFlags+=("$i")
       ;;
-    --target)
+    --in)
       if [ -e $1 ] && [ -d $1 ]; then
-        target=$1; shift 1
+        in=$1; shift 1
       else
-        echo "--target must be an existing directory."
+        echo "--in must be an existing directory."
         exit 1
       fi
       ;;
@@ -185,8 +196,19 @@ while [ "$#" -gt 0 ]; do
 # Commands
     new)
       action="$i"
+      if [ -n "$1" ] && [[ " ${newCommands[@]} " =~ " $1" ]]; then
+        newCommand="$1"; shift 1
+      else
+        commands=$(printf ", %s" "${newCommands[@]}")
+        echo "Error: new subcommand must one of:${commands:1}."
+        exit 1
+      fi
+
       if [ -n "$1" ] && [[ $1 != -*  ]]; then
         name="$1"; shift 1
+      else
+        echo "A name must be provided to 'styx new '$newCommand'"
+        exit 1
       fi
       ;;
 	  preview)
@@ -238,28 +260,46 @@ done
 if [ ! "$action" ]; then
   echo "Error: no command specified."
   echo "Use one of 'new', 'build', 'serve', 'preview', 'deploy'"
-  exit 1;
+  exit 1
 fi
 
-#-------------------------------
+if [ -z "$in" ]; then
+  in=$curDir
+fi
 
+
+#-------------------------------
+#
 # New
-
+#
 #-------------------------------
 
-if [ "$action" = new ]; then
-  dir="$target/$name"
-  if [ -d "$dir" ]; then
-    echo "'$dir' directory exists"
-    exit 1
-  else
-    mkdir "$dir"
-    mkdir $dir/{themes,data}
-    cp -r "$share/scaffold/new/conf.nix" "$dir/"
-    chmod -R u+rw "$dir"
-    echo -e "Styx site initialized in '$dir'."
-    exit 0
-  fi
+if [ "$action" = new ] && [ "$newCommand" = site ]; then
+  target="$in/$name"
+  check_dir $target "Error: Cannot create a new site in '$target', directory exists."
+  mkdir "$target"
+  mkdir $target/{themes,data}
+  cp -r "$share/scaffold/new/conf.nix" "$target/"
+  chmod -R u+rw "$target"
+  echo "Styx site initialized in '$target'."
+  exit 0
+fi
+
+
+#-------------------------------
+#
+# New-theme
+#
+#-------------------------------
+
+if [ "$action" = new ] && [ "$newCommand" = theme ]; then
+  target="$in/$name"
+  check_dir $target "Error: Cannot create a new theme in '$target', directory exists."
+  mkdir "$target"
+  mkdir $target/{templates,files}
+  echo -e "{\n}" > "$target/theme.nix"
+  echo "Styx theme initialized in '$target'."
+  exit 0
 fi
 
 
@@ -270,29 +310,19 @@ fi
 #-------------------------------
 
 if [ "$action" = build ]; then
-  dir="$target/$output"
-  if [ -f "$target/$siteFile" ]; then
-    if [ -d $dir ]; then
-      echo "'$dir' directory already exists, doing nothing."
-      exit 1
-    else
-      echo "Building the site..."
-      path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" "$target/$siteFile")
-      if [ $? -ne 0 ]; then
-        nix_error
-        exit 1
-      fi
-      # copying the build results as normal files
-      cp -L -r "$path" "$dir"
-      # fixing permissions
-      chmod u+rw -R "$sir"
-      echo "Generated site in '$dir'"
-      exit 0
-    fi
-  else
-    echo "Error: No '$siteFile' in '$target'"
-    exit 1
+  target="$in/$output"
+  check_styx $in $siteFile
+  check_dir $target "Error: output directory '$dir' already exists, doing nothing."
+  echo "Building the site..."
+  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
+  if [ $? -ne 0 ]; then
+    nix_error
   fi
+  cp -L -r "$path" "$target"
+  # fixing permissions
+  chmod u+rw -R "$target"
+  echo "Generated site in '$target'"
+  exit 0
 fi
 
 
@@ -303,32 +333,27 @@ fi
 #-------------------------------
 
 if [ "$action" = serve ]; then
-  if [ -f "$target/$siteFile" ]; then
-    siteUrlFlag=
-    if [ -n "$siteURL" ]; then
-      if [ "$siteURL" = "PREVIEW" ]; then
-        siteUrlFlag="--argstr siteUrl http://$serverHost:$port"
-      else
-        siteUrlFlag="--argstr siteUrl $siteURL"
-      fi
-    fi
-    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}" "$target/$siteFile")
-    if [ $? -ne 0 ]; then
-      nix_error
-      exit 1
-    fi
-    if [ -n "$detachServer" ]; then
-      $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
-      serverPid=$!
-      echo "server listening on http://$serverHost:$port with pid ${serverPid}"
+  check_styx $in $siteFile
+  siteUrlFlag=
+  if [ -n "$siteURL" ]; then
+    if [ "$siteURL" = "PREVIEW" ]; then
+      siteUrlFlag="--argstr siteUrl http://$serverHost:$port"
     else
-      echo "server listening on http://$serverHost:$port"
-      echo "press Ctrl+C to stop"
-      $($server --root "$path" --host "$serverHost" --port "$port")
+      siteUrlFlag="--argstr siteUrl $siteURL"
     fi
+  fi
+  path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}" "$in/$siteFile")
+  if [ $? -ne 0 ]; then
+    nix_error
+  fi
+  if [ -n "$detachServer" ]; then
+    $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
+    serverPid=$!
+    echo "server listening on http://$serverHost:$port with pid ${serverPid}"
   else
-    echo "Error: No '$siteFile' in '$target'"
-    exit 1
+    echo "server listening on http://$serverHost:$port"
+    echo "press Ctrl+C to stop"
+    $($server --root "$path" --host "$serverHost" --port "$port")
   fi
 fi
 
@@ -341,59 +366,53 @@ fi
 
 if [ "$action" = live ]; then
   serverPid=
-  if [ -f "$target/$siteFile" ]; then
-    # get last change
-    lastChange=$(last_timestamp)
-    # building to result a first time
-    path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$target/$siteFile")
-    if [ $? -ne 0 ]; then
-      nix_error
-      exit 1
-    fi
-    # start the server
-    $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
-    echo "Started live preview on http://$serverHost:$port"
-    echo "Press q to quit"
-    # saving the pid
-    serverPid=$!
-    while true; do
-      curLastChange=$(last_timestamp)
-      if [ "$curLastChange" -gt "$lastChange" ]; then
-        # rebuild
-        echo "Change detected, rebuilding..."
-        path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$target/$siteFile")
-        if [ $? -ne 0 ]; then
-          echo "There were errors in site generation, server restart is skipped until the site generation success."
-        else
-          # kill the server
-          echo "Restarting the server..."
-          disown "$serverPid"
-          kill -9 "$serverPid"
-          # start the server
-          $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
-          echo "Done!"
-          # updating the pid
-          serverPid=$!
-          # sleep a little to avoid chained rebuilds
-          sleep 3
-        fi
-        # update the timestamp
-        lastChange=$(last_timestamp)
-      fi
-      read -t 1 -N 1 input
-      if [[ $input = "q" ]] || [[ $input = "Q" ]]; then
+  check_styx $in $siteFile
+  # get last change
+  lastChange=$(last_timestamp)
+  # building to result a first time
+  path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
+  if [ $? -ne 0 ]; then
+    nix_error
+  fi
+  # start the server
+  $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
+  echo "Started live preview on http://$serverHost:$port"
+  echo "Press q to quit"
+  # saving the pid
+  serverPid=$!
+  while true; do
+    curLastChange=$(last_timestamp)
+    if [ "$curLastChange" -gt "$lastChange" ]; then
+      # rebuild
+      echo "Change detected, rebuilding..."
+      path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
+      if [ $? -ne 0 ]; then
+        echo "There were errors in site generation, server restart is skipped until the site generation success."
+      else
+        # kill the server
+        echo "Restarting the server..."
         disown "$serverPid"
         kill -9 "$serverPid"
-        echo -e "\rBye!"
-        echo
-        break
-        exit 0
+        # start the server
+        $server --root "$path" --host "$serverHost" --port "$port" >/dev/null &
+        echo "Done!"
+        # updating the pid
+        serverPid=$!
+        # sleep a little to avoid chained rebuilds
+        sleep 3
       fi
-    done
-  else
-    echo "Error: No '$siteFile' in '$target'"
-    exit 1
-  fi
+      # update the timestamp
+      lastChange=$(last_timestamp)
+    fi
+    read -t 1 -N 1 input
+    if [[ $input = "q" ]] || [[ $input = "Q" ]]; then
+      disown "$serverPid"
+      kill -9 "$serverPid"
+      echo -e "\rBye!\n"
+      break
+      exit 0
+    fi
+  done
 fi
 
 
@@ -404,61 +423,50 @@ fi
 #-------------------------------
 
 if [ "$action" = deploy ]; then
-  if [ -f "$target/$siteFile" ]; then
-    if [ "$deployAction" == "init-gh-pages" ]; then
-      if [ -d "$target/.git" ]; then
-        (
-          cd $target
-          startBranch=$(current_branch)
-          git checkout --orphan gh-pages
-          git rm -rf .
-          touch .styx
-          git add .styx
-          git commit -m "initialized gh-pages branch"
-          git checkout "$startBranch"
-        )
-        echo "Successfully created the 'gh-pages' branch."
-        echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
-        exit 0
-      else
-        echo "Error: '$target' is not a  git repository."
+  check_styx $in $siteFile
+  if [ "$deployAction" == "init-gh-pages" ]; then
+    check_git $in
+    (
+      cd $in
+      startBranch=$(current_branch)
+      git checkout --orphan gh-pages
+      git rm -rf .
+      touch .styx
+      git add .styx
+      git commit -m "initialized gh-pages branch"
+      git checkout "$startBranch"
+    )
+    echo "Successfully created the 'gh-pages' branch."
+    echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
+    exit 0
+  elif [ "$deployAction" == "gh-pages" ]; then
+    check_git $in
+    (
+    cd $in
+    if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
+      # Everytime a checkout is done, files atime and ctime are modified
+      # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
+      # and update the feed
+      echo "Building the site"
+      path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" "$in/$siteFile")
+      if [ $? -ne 0 ]; then
+        nix_error
         exit 1
       fi
-    elif [ "$deployAction" == "gh-pages" ]; then
-      if [ -d "$target/.git" ]; then (
-        cd $target
-        if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
-          # Everytime a checkout is done, files atime and ctime are modified
-          # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
-          # and update the feed
-          echo "Building the site"
-          path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" "$target/$siteFile")
-          if [ $? -ne 0 ]; then
-            nix_error
-            exit 1
-          fi
-          startBranch=$(current_branch)
-          git checkout gh-pages
-          cp -L -r "$path"/* ./
-          chmod u+rw -R ./
-          git add .
-          git commit -m "Styx update - $(git rev-parse --short HEAD)"
-          git checkout "$startBranch"
-          echo "Successfully updated the gh-pages branch."
-          echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
-          exit 0
-        else
-          echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
-          exit 1
-        fi
-      )
-      else
-        echo "Error: '$target' is not a  git repository."
-        exit 1
-      fi
+      startBranch=$(current_branch)
+      git checkout gh-pages
+      cp -L -r "$path"/* ./
+      chmod u+rw -R ./
+      git add .
+      git commit -m "Styx update - $(git rev-parse --short HEAD)"
+      git checkout "$startBranch"
+      echo "Successfully updated the gh-pages branch."
+      echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
+      exit 0
+    else
+      echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
+      exit 1
     fi
-  else
-    echo "Error: No '$siteFile' in '$target'"
-    exit 1
+    )
   fi
 fi

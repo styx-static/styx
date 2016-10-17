@@ -3,9 +3,7 @@
 lib:
 with lib;
 with import ./utils.nix lib;
-let
-  plib = import ./proplist.nix lib;
-in
+with import ./proplist.nix lib;
 
 rec {
 
@@ -85,6 +83,8 @@ rec {
        else if output == "tail" then tail pages'
        else abort "mkMultipage output must be 'all', 'head' or 'tail'";
 
+  /* Make a list of pages, automatically deal with multipages
+  */
   mkPageList = { data, hrefPrefix ? "", multipageTemplate ? null, ... }@args:
     let
       extraArgs = removeAttrs args [ "data" "hrefPrefix" "multipageTemplate" ];
@@ -128,8 +128,8 @@ rec {
   }:
     let
       taxonomyPages = map (plist:
-        let taxonomy = plib.propKey   plist;
-            terms    = plib.propValue plist;
+        let taxonomy = propKey   plist;
+            terms    = propValue plist;
         in
         { inherit terms taxonomy;
           href = taxonomyHrefFun taxonomy;
@@ -137,16 +137,16 @@ rec {
           title = taxonomy; }
       ) data; 
       termPages = flatten (map (plist:
-        let taxonomy = plib.propKey   plist;
-            terms    = plib.propValue plist;
+        let taxonomy = propKey   plist;
+            terms    = propValue plist;
         in
         map (term:
           { inherit taxonomy;
-            href     = termHrefFun taxonomy (plib.propKey term);
+            href     = termHrefFun taxonomy (propKey term);
             template = termTemplate;
-            title    = plib.propKey   term;
-            term     = plib.propKey   term;
-            values   = plib.propValue term; }
+            title    = propKey   term;
+            term     = propKey   term;
+            values   = propValue term; }
         ) terms
       ) data);
   in (termPages ++ taxonomyPages);

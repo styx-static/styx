@@ -42,9 +42,14 @@ rec {
   */
   removeProp = key: list: filter (p: (propKey p) != key) list;
 
+  /* map for property lists
+  */
+  propMap = f: list:
+    map (p: f (propKey p) (propValue p)) list;
+
   /* flatten a property list that which values are lists
   */
-  flatten = plist:
+  propFlatten = plist:
     fold (p: acc:
       let k = propKey p;
       in if isDefined k acc

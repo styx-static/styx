@@ -17,4 +17,4 @@ in
     inherit nixLib data generation template themes utils proplist pages;
   }
   // nixLib
-  // data // generation // template // themes // utils // pages
+  // data // generation // template // themes // utils // proplist // pages

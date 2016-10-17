@@ -2,9 +2,7 @@
 
 lib: pkgs:
 with lib;
-let
-  plib = import ./proplist.nix lib;
-in
+with (import ./proplist.nix lib);
 
 let
 
@@ -50,7 +48,6 @@ let
         cp ${path} $out/source
         chmod u+rw $out/source
         touch $out/intro
-        touch $out/title
         touch $out/content
         echo "{}" > $out/meta
         mkdir $out/subpages
@@ -93,23 +90,16 @@ let
         ${commands."${markupType}"} $out/source > $out/content
 
         # intro
-        cp $out/intro tmp; ${commands."${markupType}"} tmp > $out/intro
+        cp $out/intro tmp; ${commands."${markupType}"} tmp | tr -d '\n' > $out/intro
 
         # subpages
         for file in $out/subpages/*; do
           cp $file tmp; ${commands."${markupType}"} tmp > $file
         done
-
-        # title
-        ${pkgs.xidel}/bin/xidel $out/content -e "//h1[1]/node()" -q > $out/title
-        echo -n `tr -d '\n' < $out/title` > $out/title
       '';
       content = let
           rawContent = readFile "${data}/content";
         in if rawContent == "" then {} else { content = rawContent; } ;
-      title = let
-          rawContent = readFile "${data}/title";
-        in if rawContent == "" then {} else { title = rawContent; };
       intro = let
           rawContent = readFile "${data}/intro";
         in if rawContent == "" then {} else { intro = rawContent; };
@@ -124,7 +114,7 @@ let
 
       meta = import "${data}/meta";
     in
-      content // title // intro // meta // subpages;
+      content // intro // meta // subpages;
 
   /* Get data from a file
   */
@@ -193,21 +183,24 @@ rec {
 
   /* load the data files from a directory that styx can handle
   */
-  loadDir = { from, substitutions ? {}, extraAttrs ? {} }:
+  loadDir = { dir, substitutions ? {}, ... }@args:
+    let extraArgs = removeAttrs args [ "dir" "substitutions" ];
+    in
     map (fileData:
-      (parseFile { inherit fileData substitutions; }) // extraAttrs
-    ) (getFiles from);
+      (parseFile { inherit fileData substitutions; }) // extraArgs
+    ) (getFiles dir);
 
   /* load a data file
   */
-  loadFile = { dir, file, substitutions ? {}, extraAttrs ? {} }:
+  loadFile = { dir, file, substitutions ? {}, ... }@args:
     let
+      extraArgs = removeAttrs args [ "dir" "file" "substitutions" ];
       m = match "^(.*)\\.([^.]+)$" file;
       basename = elemAt m 0;
       ext = elemAt m 1;
       fileData = { inherit dir basename ext; name = file; };
     in
-      (parseFile { inherit substitutions fileData; }) // extraAttrs;
+      (parseFile { inherit substitutions fileData; }) // extraArgs;
 
   /* Convert a markdown string to html
   */
@@ -229,9 +222,9 @@ rec {
            ) plist set."${taxonomy}"
          ) plist (filter (d: hasAttr taxonomy d) data)
        ) [] taxonomies;
-     semiCleanTaxonomy = plib.flatten rawTaxonomy;
+     semiCleanTaxonomy = propFlatten rawTaxonomy;
      cleanTaxonomy = map (pl:
-       { "${plib.propKey pl}" = plib.flatten (plib.propValue pl); }
+       { "${propKey pl}" = propFlatten (propValue pl); }
      ) semiCleanTaxonomy;
    in cleanTaxonomy;
 
@@ -243,6 +236,11 @@ rec {
 
   /* Number of values a term holds
   */
-  valuesNb = term: length (plib.propValue term);
+  valuesNb = term: length (propValue term);
+
+  /* Group a set of data in a property list with a function
+  */
+  groupBy = list: f:
+    propFlatten (map (d: { "${f d}" = [ d ]; } ) list);
 
 }
