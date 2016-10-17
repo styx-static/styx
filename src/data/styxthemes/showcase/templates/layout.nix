@@ -1,13 +1,9 @@
-{ conf, lib, templates
-, navbar ? false
-, feed ? false
-, ... }:
-
+{ conf, lib, templates, ... }:
 page:
 with lib;
 ''
   <!DOCTYPE html>
-  <html>
+  <html ${optionalString (conf.theme.site ? languageCode) htmlAttr "lang" conf.theme.site.languageCode}>
 
   <head>
     ${templates.partials.head page}
@@ -19,15 +15,21 @@ with lib;
 
     <div class="page-content">
       <div class="container wrapper">
-        ${templates.partials.breadcrumbs page}
-        ${page.content}
+        <div class="row">
+          <div class="col-md-9">
+            ${templates.partials.breadcrumbs page}
+            ${page.content}
+          </div>
+          <div class="col-md-3">
+            ${templates.partials.sidebar}
+          </div>
+        </div>
       </div>
     </div>
 
-    <footer>
-      ${templates.partials.footer}
-    </footer>
+    ${templates.partials.footer}
 
+    ${templates.partials.js}
   </body>
   </html>
 ''

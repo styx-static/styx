@@ -6,6 +6,6 @@
   # it is possible to override any of the theme configuration settings in the 'theme' set
   theme = {
     # Changing the theme site.title setting
-    site.title = "Styx Site";
+    #site.title = "Styx Site";
   };
 }

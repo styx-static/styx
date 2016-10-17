@@ -1,12 +1,4 @@
-/* NavBar template, take one parameter:
-
-   - navbar: A list of pages to include in the NavBar. (Pages must have a `title` attribute set)
-   - index: The current page index
-
-   Usage example in the base template function:
-
-     templates.navbar.main navbar
-
+/* NavBar template, generate a navbar from data.navbar
 */
 { templates, lib, conf, data, ... }:
 with lib;
@@ -25,12 +17,14 @@ with lib;
     </div>
 
     <div class="collapse navbar-collapse" id="navbar">
+      ${optionalString (data ? navbar) ''
       <ul class="nav navbar-nav navbar-right">
         ${mapTemplate (item:
         ''
           <li><a ${htmlAttr "href" (if (isExternalHref item.href) then "${item.href}" else "${conf.siteUrl}/${item.href}")}>${item.title}</a></li>
         '') data.navbar}
       </ul>
+      ''}
     </div>
 
   </div>

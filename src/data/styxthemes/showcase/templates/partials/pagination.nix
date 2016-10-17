@@ -18,7 +18,7 @@
 
   optionalString ((length pages) > 1)
   ''
-  <nav aria-label="Page navigation">
+  <nav aria-label="Page navigation" class="pagination">
     <ul class="pagination">
       <li${optionalString (index == 1) " ${htmlAttr "class" "disabled"}"}>
         <a ${htmlAttr "href" prevHref} aria-label="Previous">

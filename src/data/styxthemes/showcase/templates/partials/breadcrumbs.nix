@@ -1,3 +1,5 @@
+/* This template automatically display breadcrumbs to a page that has a breadcrumbs attribute
+*/
 { lib, conf, ... }:
 with lib;
 page:
