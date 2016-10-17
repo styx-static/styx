@@ -4,7 +4,7 @@
     <div class="container wrapper">
       <div class="row">
         <div class="col-sm-4 col-xs-4">
-          <p>${conf.theme.site.title}</p>
+          <p>${conf.theme.site.copyright}</p>
         </div>
         <div class="col-sm-4 col-xs-4">
           <ul class="list-unstyled">
@@ -17,4 +17,5 @@
       </div>
     </div>
   </footer>
+
 ''

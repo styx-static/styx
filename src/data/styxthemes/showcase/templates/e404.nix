@@ -9,4 +9,3 @@ let
     '';
 in
   page // { inherit content; }
-

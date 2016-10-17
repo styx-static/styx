@@ -57,19 +57,17 @@ let
 
 
 /*-----------------------------------------------------------------------------
-   Template enviroments
+   Template environments
 
 -----------------------------------------------------------------------------*/
 
-
   /* Default template environment
   */
-  defaultEnvironment = { inherit conf state lib templates data; };
+  defaultEnvironment = { inherit conf state lib templates data pages; };
 
   /* Custom environments for specific templates
   */
   customEnvironments = {
-    partials.head = defaultEnvironment // { feed = pages.feed; };
   };
 
 
@@ -82,26 +80,23 @@ let
 
   data = {
     # loading a single page
-    about  = loadFile { dir = ./pages; file = "about.md"; };
+    about  = loadFile { dir = ./data/pages; file = "about.md"; };
     # loading a list of contents
     posts  = let
-      postsList = loadFolder { inherit substitutions; from = ./posts; };
+      postsList = loadDir { dir = ./data/posts; };
       # include drafts only when renderDrafts is true
-      draftsList = optionals renderDrafts (loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; });
+      draftsList = optionals renderDrafts (loadDir { dir = ./data/drafts; isDraft = true; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
     # Navbar data
     navbar = [
       pages.about
+      (head pages.postsArchive)
       { title = "RSS";  href = "${conf.siteUrl}/${pages.feed.href}"; }
       { title = "Styx"; href = "https://styx-static.github.io/styx-site/"; }
     ];
-    # content taxonomies
-    taxonomies = mkTaxonomyData { pages = pages.posts; taxonomies = [ "tags" "level" ]; };
+    # posts taxonomies
+    taxonomies.posts = mkTaxonomyData { data = pages.posts; taxonomies = [ "tags" "level" ]; };
   };
-
-  /* Substitutions used in data
-  */
-  substitutions = { inherit conf; };
 
 
 /*-----------------------------------------------------------------------------
@@ -110,7 +105,6 @@ let
    This section declares the pages that will be generated
 -----------------------------------------------------------------------------*/
 
-
   pages = rec {
 
     /* Index page
@@ -118,11 +112,12 @@ let
        For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title = "Home";
+      title = conf.theme.site.title;
       baseHref = "index";
       itemsPerPage = conf.theme.index.itemsPerPage;
       template = templates.index;
-      items = posts;
+      data = pages.posts;
+      breadcrumbTitle = templates.icon.fa "home";
     };
 
     /* About page
@@ -140,10 +135,9 @@ let
     feed = {
       href = "feed.xml";
       template = templates.feed;
-      # Show the 10 most recent posts
-      posts = take 10 posts;
       # Bypassing the layout
       layout = id;
+      items = take 10 pages.posts;
     };
 
     /* 404 error page
@@ -156,12 +150,19 @@ let
        list of data
     */
     posts = mkPageList {
-      dataList = data.posts;
+      data = data.posts;
       hrefPrefix = "posts/";
       template = templates.post.full;
-      # Template for multi page contents
-      multipageTemplate = templates.post.full-multipage;
       breadcrumbs = [ (head pages.index) ];
+    };
+
+    postsArchive = mkSplit {
+      title = "Archives";
+      baseHref = "archive/post";
+      template = templates.archive;
+      breadcrumbs = [ (head index) ];
+      itemsPerPage = 15;
+      data = pages.posts;
     };
 
     /* Subpages of multi-pages posts
@@ -169,27 +170,34 @@ let
        subpages are not included in posts because we do not want to have the
        subpages in the rss feed or posts list
     */
-    postsSubpages = let
-      multipagePosts = filter (p: (p ? subpages)) data.posts;
-      generateSubpages = page: 
-        mkMultipages {
-          inherit page;
-          template = templates.post.full-multipage;
-          baseHref = "posts/${page.fileData.basename}";
-          output   = "subpages";
-          breadcrumbs = [ (head pages.index) ];
-      };
-    in flatten (map generateSubpages multipagePosts);
+    postsMultiTail = mkMultiTail {
+      data = data.posts;
+      hrefPrefix = "posts/";
+      template = templates.post.full;
+      breadcrumbs = [ (head pages.index) ];
+    };
 
     /* Taxonomy related pages
     */
     taxonomies = mkTaxonomyPages {
-      data = data.taxonomies;
+      data = data.taxonomies.posts;
       taxonomyTemplate = templates.taxonomy.full;
       termTemplate = templates.taxonomy.term.full;
     };
 
   };
+
+  /* Sitemap
+     The sitemap is out of the pages attribute set because it has to loop
+     through all the pages
+  */
+  sitemap = {
+    href = "sitemap.xml";
+    template = templates.sitemap;
+    layout = id;
+    urls = pagesToList pages;
+  };
+  
 
 
 /*-----------------------------------------------------------------------------
@@ -199,9 +207,15 @@ let
 
   pagesList = let
     # converting pages attribute set to a list
-    list = pagesToList pages;
+    list = (pagesToList pages) ++ [ sitemap ];
     # setting a default layout
     in map (setDefaultLayout templates.layout) list;
+
+  /* Substitutions
+  */
+  substitutions = {
+    siteUrl = conf.siteUrl;
+  };
 
 
 /*-----------------------------------------------------------------------------
@@ -209,4 +223,4 @@ let
 
 -----------------------------------------------------------------------------*/
 
-in generateSite { inherit files pagesList; }
+in generateSite { inherit files pagesList substitutions; }
