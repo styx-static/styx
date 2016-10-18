@@ -10,13 +10,13 @@ Styx was inspired by the great link:https://gohugo.io/[Hugo] static site generat
 === Features
 
 - <<Themes,Theme support>>
-- Host your site anywhere
+- <<Deployment,Host your site anywhere>>
 - <<Data,Flexible content organization>>
 - <<Taxonomies>>
-- <<Markdown and AsciiDoc support,Formats>>
-- <<Sass/Less css automatic conversion,Files>>
-- <<Content metadata,Metadata>>
-- <<Multipages content,Multipages>>
+- <<Formats,Markdown and AsciiDoc support>>
+- <<Special files,Sass/Less css automatic conversion>>
+- <<Metadata,Content metadata>>
+- <<Multipage data,Multipages content>>
 
 === Styx Overview
 

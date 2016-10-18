@@ -28,22 +28,21 @@ Subcommands:
 Generic options:
     -h, --help                 Show this help.
     -v, --version              Print the name and version.
+        --in DIR               Run the selected command in the DIR directory.
+        --file FILE            Run the command using FILE instead of 'site.nix'.
+        --drafts               Process and render drafts.
         --arg ARG VAL          Pass an argument ARG with the value VAL to the build and serve subcommands.
         --argstr ARG VAL       Pass an argument ARG with the value VAL as a string to the build and serve subcommands.
         --show-trace           Show debug trace messages.
-        --in DIR               Run the selected command in the DIR directory.
-        --file FILE            Run the command using FILE instead of 'site.nix'.
 
 Build options:
         --output               Set the build output, "public" by default.
-        --drafts               Process and render drafts.
 
 Serve options:
     -p, --port PORT            Set the server listening port number to PORT, default is "8080".
         --site-url URL         Override configuration "siteUrl" setting with the URL value.
         --server-host HOST     Set the server listening host to HOST, default is "127.0.0.1".
         --detach               Detach the server from the terminal.
-        --drafts               Process and render drafts.
 
 Deploy options:
     --init-gh-pages            If in a git repository, will create a gh-pages branch wit a .styx file.
@@ -62,9 +61,10 @@ last_timestamp() {
 
 # last changed date
 last_change() {
-  lastTimestamp=$(last_timestamp)
+  lastTimestamp=$(last_timestamp $1)
   date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ
 }
+
 
 # current branch name
 current_branch(){
@@ -342,7 +342,7 @@ if [ "$action" = serve ]; then
       siteUrlFlag="--argstr siteUrl $siteURL"
     fi
   fi
-  path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" $siteUrlFlag "${extraFlags[@]}" "$in/$siteFile")
+  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" $siteUrlFlag "${extraFlags[@]}" "$in/$siteFile")
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -370,7 +370,7 @@ if [ "$action" = live ]; then
   # get last change
   lastChange=$(last_timestamp)
   # building to result a first time
-  path=$(nix-build --no-out-link --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
+  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -381,11 +381,11 @@ if [ "$action" = live ]; then
   # saving the pid
   serverPid=$!
   while true; do
-    curLastChange=$(last_timestamp)
+    curLastChange=$(last_timestamp $in)
     if [ "$curLastChange" -gt "$lastChange" ]; then
       # rebuild
       echo "Change detected, rebuilding..."
-      path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
+      path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change $in)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
       if [ $? -ne 0 ]; then
         echo "There were errors in site generation, server restart is skipped until the site generation success."
       else
@@ -402,7 +402,7 @@ if [ "$action" = live ]; then
         sleep 3
       fi
       # update the timestamp
-      lastChange=$(last_timestamp)
+      lastChange=$(last_timestamp $in)
     fi
     read -t 1 -N 1 input
     if [[ $input = "q" ]] || [[ $input = "Q" ]]; then
@@ -448,7 +448,7 @@ if [ "$action" = deploy ]; then
       # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
       # and update the feed
       echo "Building the site"
-      path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change)" "${extraFlags[@]}" "$in/$siteFile")
+      path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
       if [ $? -ne 0 ]; then
         nix_error
         exit 1

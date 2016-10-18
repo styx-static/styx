@@ -30,7 +30,7 @@ let
   /* Parse a markup file to an attribute set
      Extract what it can
   */
-  parseMarkupFile = { fileData, substitutions }:
+  parseMarkupFile = fileData:
     let
       markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
       path = "${fileData.dir + "/${fileData.name}"}";
@@ -59,18 +59,6 @@ let
           echo "}" >> $out/meta
           sed -i "1,$(cat $out/meta | wc -l)d" $out/source
         fi
-
-        # substitutions
-        ${concatMapStringsSep "\n" (set:
-          let
-            key   = head (attrNames  set);
-            value = head (attrValues set);
-          in
-          ''
-            substituteInPlace $out/source \
-              --subst-var-by ${key} ${value}
-          ''
-        ) (setToList substitutions)}
 
         # intro
         if [ "$(grep -Fx "$introSep" $out/source)" ]; then
@@ -118,35 +106,17 @@ let
 
   /* Get data from a file
   */
-  parseFile = { fileData, substitutions }@args:
+  parseFile = fileData:
     let
       # TODO make this regex stricter
       m    = match "^(....-..-..)-(.*)" fileData.basename;
       date = if m != null then { date = (elemAt m 0); } else {};
       path = "${fileData.dir + "/${fileData.name}"}";
-      data =      if elem fileData.ext markupExts then parseMarkupFile args
+      data =      if elem fileData.ext markupExts then parseMarkupFile fileData
              else if elem fileData.ext ext.nix    then import path
              else    abort "Error: this should never happen.";
     in
       { inherit fileData; } // date // data;
-
-  /* Convert a deep set to a list of sets where the key is the path
-     Used to prepare substitutions
-  */
-  setToList = s:
-    let
-    f = path: set:
-      map (key:
-        let
-          value = set.${key};
-          newPath = path ++ [ key ];
-          pathString = concatStringsSep "." newPath;
-        in
-        if isAttrs value
-           then f newPath value
-           else { "${pathString}" = toString value; }
-      ) (attrNames set);
-    in flatten (f [] s);
 
   /* Get a list of files data from a directory
      Ignore unsupported files type
@@ -187,7 +157,7 @@ rec {
     let extraArgs = removeAttrs args [ "dir" "substitutions" ];
     in
     map (fileData:
-      (parseFile { inherit fileData substitutions; }) // extraArgs
+      (parseFile fileData) // extraArgs
     ) (getFiles dir);
 
   /* load a data file
@@ -200,7 +170,7 @@ rec {
       ext = elemAt m 1;
       fileData = { inherit dir basename ext; name = file; };
     in
-      (parseFile { inherit substitutions fileData; }) // extraArgs;
+      (parseFile fileData) // extraArgs;
 
   /* Convert a markdown string to html
   */

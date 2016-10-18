@@ -73,7 +73,7 @@ in
   }:
   map (theme:
     (themesDir + "/${theme}/files")
-  ) themes;
+  ) (reverseList themes);
 
   /* Loads the templates from 'themes' list of themes
   */

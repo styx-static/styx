@@ -1,3 +1,4 @@
+[[Pagesc]]
 == Pages
 
 Pages refer to the pages declared in `site.nix`.

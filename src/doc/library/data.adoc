@@ -12,8 +12,7 @@ The data namespace contains functions related to the `data` set and data formats
 Description::: Load a directory containing data that styx can handle.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `from`: The directory as a nix path.
-  * `substitutions` (optional): A substitution set.
+  * `dir`: The directory as a nix path.
 Return::: A list of data sets.
 Example:::
 
@@ -51,8 +50,7 @@ Description::: Load a file in a format that Styx can handle.
 Parameter Type::: Attribute Set
 Parameters:::
   * `dir`: The directory as a nix path.
-  * `path`: The file name to load as a string.
-  * `substitutions` (optional): A substitution set.
+  * `file`: The file name to load as a string.
 Return::: The loaded file data set.
 Example:::
 

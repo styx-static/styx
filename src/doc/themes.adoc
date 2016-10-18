@@ -78,9 +78,8 @@ NOTE: If multiple themes are enabled, every theme `file` directory contents will
 
 ==== Special files
 
-Styx can automatically convert css preprocessor files like `sass`, `scss` and `less` to css during site generation.
+Styx automatically convert `sass`, `scss` and `less` files to css during site generation.
 
-This feature is disabled by default and should be enabled if required, for details see the <<lib.generation.generateSite,generateSite function documentation>>.
 
 === Templates
 

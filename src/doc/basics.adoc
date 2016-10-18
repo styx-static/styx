@@ -172,9 +172,7 @@ let
   };
 ----
 
-The snippet is pretty self-speaking.
-
-<1> This loads the `conf.nix` file and merges it with theme configuration and main function argument `siteUrl` 
+<1> This loads the `conf.nix` file and merges it with theme configuration and main function `siteUrl` argument.
 
 
 ==== Themes
@@ -240,8 +238,7 @@ NOTE: `defaultEnvironment` refers to not yet declared variables, but it is not a
 
 ==== Data
 
-The data section is responsible for loading data used in the site. +
-When used, content substitutions should also declared in this section.
+The data section is responsible for loading data used in the site.
 
 The <<Data>> section explains in detail how to manage data.
 
@@ -312,14 +309,21 @@ This is the last part before generating the site. The only purpose of this secti
     list = pagesToList pages;
     # setting a default layout
     in map (setDefaultLayout templates.layout) list;
+
+  substitutions = {
+    siteUrl = conf.siteUrl;
+  };
 ----
 
 This section just turns the `pages` attribute set into a list of pages, and set a default `layout` to pages that did not declare one.
 
+The substitution set should be declared in this section.
+
+NOTE: For details about substitutions see <<Substitutions>>.
 
 ==== generateSite
 
-This is the final part and shortest section of `site.nix`. This section is just a call to `generateSite`.
+This is the final part and shortest section of `site.nix`. This section consists in a call to <<lib.generation.generateSite,`generateSite`>>.
 
 [source, nix]
 .Standard generateSite section
@@ -329,7 +333,7 @@ This is the final part and shortest section of `site.nix`. This section is just 
 
 -----------------------------------------------------------------------------*/
 
-in generateSite { inherit files pagesList; }
+in generateSite { inherit files pagesList substitutions; }
 ----
 
 NOTE: `files` is automatically generated in the init section with the enabled themes.

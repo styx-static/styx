@@ -7,13 +7,32 @@ The Styx provides a command line program `styx`.
 `styx --help`:: Display the help message.
 `styx --version`:: Display the version.
 
+=== Common flags
+
+`--in DIR`:: Run the command in `DIR`.
+`--file FILE`:: Use `FILE` instead of `site.nix`.
+`--drafts`:: Process and render drafts.
+`--show-trace`:: Show debug output when styx command fails. (Nix flag)
+`--arg NAME VALUE`:: Pass an argument `NAME` to `site.nix` main function.
+`--argstr NAME VALUE`:: Pass a string argument `NAME` to `site.nix` main function.
+
 === New
 
-The `new` command is used to create a new Styx site.
+The `new` command is used to create a site or a theme.
 
-`styx new`:: Create a Styx site in "styx-site" directory in current path.
-`styx new myblog`:: Create a Styx site in `myblog` directory in current path.
-`styx new myblog --target /tmp`:: Create a Styx site in `myblog` directory in `/tmp`.
+==== Site
+
+The `new site` command is used to create a new Styx site.
+
+`styx new site myblog`:: Create a Styx site in `myblog` directory in current path.
+`styx new site myblog --in /tmp`:: Create a Styx site in `/tmp/myblog`.
+
+==== Theme
+
+The `new theme` command is used to create a new theme.
+
+`styx new theme mytheme --in ./themes`:: Create a theme skeleton in `themes/mytheme`.
+
 
 === Build
 
@@ -23,6 +42,7 @@ The `build` command is used to build a Styx site. It must be used in a Styx site
 `styx build --output DIR`:: Build the nix site and write the output in the `DIR` directory.
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `build` command.
+
 
 === Preview
 
@@ -35,6 +55,7 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 `styx preview --port 9090 --drafts`:: Start a preview server on 127.0.0.1:9090 with drafts rendered.
 
 NOTE: Drafts are rendered only if the related logic is present in `site.nix`. The `--drafts` flag just make styx pass `renderDrafts` as `true` to `site.nix`.
+
 
 === Live
 
@@ -50,6 +71,7 @@ NOTE: The `live` mode does not automatically reload the browser.
 
 WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibility that the server process will stay alive in background. The server process can be found by running `ps aux | grep caddy` and killed with the `kill` command.
 
+
 === Serve
 
 The `serve` command is used to build a site and launch a local server. This allow to check the site without having to deploying it.
@@ -64,6 +86,7 @@ NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALU
 NOTE: Styx use the link:https://caddyserver.com/[caddy server], even if it is performant server, `styx serve` launchs it without any special settings. +
 For production environments it is recommended to use a carefully configured server over `styx serve`.
 
+
 === Deploy
 
 The `deploy` command is used to deploy A styx site on a remote server.
@@ -73,3 +96,4 @@ For more details see the <<Deployment>> section.
 
 `styx deploy --init--gh-pages`:: Prepare a git repository to be able to deploy on GitHub pages.
 `styx deploy --gh-pages`:: Commit the Styx site to the `gh-pages` branch.
+

@@ -4,6 +4,40 @@ Site generation is the final section of `site.nix`.
 
 It mainly consists in a call to `generateSite`, and the preparation of its arguments.
 
+=== Substitutions
+
+Subtitutions are a way to use some variables in markup files or static files.
+
+Substitutions are a set that is passed to the `generateSite`. Any value of this set can be replaced will be replaced in text files that `generateSite` outputs.
+
+To be replaced, the variable as to be surrouded by `@`, for example `@siteUrl@`.
+
+[source, nix]
+.Simple substitution set
+----
+{
+  siteUrl = conf.siteUrl;
+}
+----
+
+[source, markdown]
+.Using a substitution in a markdown file
+----
+Learn more in the [Styx 0.1.0 Documentation](@siteUrl@/documentation-v0-1-0.html).
+----
+
+[source, css]
+.Using a substitution in a css file
+----
+background: url(@siteUrl@/images/foo.png);
+----
+
+TIP: Substitutions are specially useful for resolving in-site links with `conf.siteUrl`, but they can also be used with sass or less to externalize css variables in `conf.nix`.
+
+=== Special files
+
+Styx automatically convert `sass`, `scss` and `less` files to css during site generation.
+
 === Hooks
 
 `generateSite` provide two hooks to customize the site generation process:

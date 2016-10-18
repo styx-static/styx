@@ -4,6 +4,26 @@ lib: pkgs:
 with lib;
 with import ./utils.nix lib;
 
+let
+  /* Convert a deep set to a list of sets where the key is the path
+     Used to prepare substitutions
+  */
+  setToList = s:
+    let
+    f = path: set:
+      map (key:
+        let
+          value = set.${key};
+          newPath = path ++ [ key ];
+          pathString = concatStringsSep "." newPath;
+        in
+        if isAttrs value
+           then f newPath value
+           else { "${pathString}" = toString value; }
+      ) (attrNames set);
+    in flatten (f [] s);
+in
+
 rec {
 
   /* Generate a site with a list pages
@@ -11,50 +31,97 @@ rec {
   generateSite = {
     files ? []
   , pagesList
+  , substitutions ? {}
   , preGen  ? ""
   , postGen ? ""
-  , enablePreprocessors ? false
   }:
     pkgs.runCommand "styx-site" {} ''
       shopt -s globstar
       mkdir -p $out
 
+      # check if a file is a text file
+      text_file () {
+        ${pkgs.file}/bin/file $1 | grep text | cut -d: -f1
+      }
+
+      # run substitutions on a file
+      # output results to subs
+      run_subs () {
+        cp $1 subs
+        ${concatMapStringsSep "\n" (set:
+          let key   = head (attrNames  set);
+              value = head (attrValues set);
+          in
+          ''
+            substituteInPlace subs \
+              --subst-var-by "${key}" "${value}"
+          ''
+        ) (setToList substitutions)}
+      }
+
       eval "${preGen}"
 
-      # Copying files
-      ${concatMapStringsSep "\n" (filesDir:
-        if enablePreprocessors then ''
+      # FILES
+      # files are copied only if necessary, else they are just linked from the source
+      ${concatMapStringsSep "\n" (filesDir: ''
+        for file in ${filesDir}/**/*; do
 
-          cp -r ${filesDir}/* $out
-          chmod u+rw -R $out/
+          # Ignoring folders
+          if [ -d "$file" ]; then continue; fi
 
-          # convert sass / scss
-          for i in $out/**/*.s[ac]ss; do
-            ${pkgs.sass}/bin/sass $i > "$(realpath $i | cut -d'.' -f1).css"
-            rm $i
-          done
+          # output href
+          href=$(realpath --relative-to="${filesDir}" "$file")
+          mkdir -p $(dirname $out/$href)
 
-          # convert less
-          for i in $out/**/*.less; do
-            ${pkgs.lessc}/bin/lessc $i > "$(realpath $i | cut -d'.' -f1).css"
-            rm $i
-          done
+          if [ $(text_file $file) ]; then
+            input=$file
+            hasSubs=
+            run_subs $file
 
-        '' else ''
-        (
-          cd ${filesDir}
-          for file in ./*; do
-            if [ ! -e "$out/$file" ]; then
-              ln -s "$(pwd)/$file" "$out/$file"
+            if [ $(cmp --silent subs $file || echo 1) ]; then
+              input=subs
+              hasSubs=1
             fi
-          done
-        )
-        '') files}
 
-      # Generating pages
+            case "$file" in
+              *.less)
+                href=$(echo "$href" | sed -r 's/[^.]+$/css/')
+                [ -f "$out/$href" ] && rm $out/$href
+                ${pkgs.lessc}/bin/lessc $input > $out/$href
+              ;;
+              *.s[ac]ss)
+                href=$(echo "$href" | sed -r 's/[^.]+$/css/')
+                [ -f "$out/$href" ] && rm $out/$href
+                ${pkgs.sass}/bin/sass $input > $out/$href
+              ;;
+              *)
+                [ -f "$out/$href" ] && rm $out/$href
+                if [ "$hasSubs" ]; then
+                  cp $input $out/$href
+                else
+                  ln -s $input $out/$href
+                fi;
+              ;;
+            esac
+
+          else
+            [ -f "$out/href" ] && rm $out/href
+            ln -s $file $out/$href
+          fi
+        done;
+      '') files}
+
+      # PAGES
       ${concatMapStringsSep "\n" (page: ''
         mkdir -p $(dirname $out/${page.href})
-        ln -s ${pkgs.writeText "styx-site-${replaceStrings ["/"] ["-"] page.href}" (page.layout (page.template page)) } $out/${page.href}
+        page=${pkgs.writeText "styx-site-${replaceStrings ["/"] ["-"] page.href}" (page.layout (page.template page))}
+        run_subs $page
+        if [ $(cmp --silent subs $page || echo 1) ]; then
+          mkdir -p $(dirname $out/${page.href})
+          cp $page $out/${page.href}
+        else
+          ln -s $page $out/${page.href}
+        fi
       '') pagesList}
 
       eval "${postGen}"

@@ -28,5 +28,4 @@ with lib;
       else if order == "dsc" then a."${attribute}" > b."${attribute}"
       else    abort "Sort order must be 'asc' or 'dsc'");
 
-
 }

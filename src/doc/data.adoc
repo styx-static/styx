@@ -1,3 +1,4 @@
+[[Data]]
 == Data
 
 Data refers to the data fetched or declared in the data section of `site.nix`.
@@ -30,7 +31,6 @@ The data loading functions return a set per file loaded and do a few things:
 ** `dir`: The directory of the file.
 ** `name`: The name of the file, `basename` and `ext` field combined with a `.`.
 * Metadada is automatically parsed and merged to the set.
-* Substitutions are automatically performed.
 * Data with introduction gain a `intro` attribute containing the introduction.
 * Multipages data gain a `subpages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
@@ -41,6 +41,7 @@ NOTE: Nix data should be imported with the `import` function, and return the dat
 === Formats
 
 This section present the data file formats supported by styx.
+
 
 ==== Asciidoc
 
@@ -126,29 +127,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet 
 ----
 
 Metadata attributes will automatically be added to the data attribute set.
-
-=== Substitutions
-
-Subtitutions are a way to use some variables in markup files.
-
-Substitutions are a set that is passed to the `loadFile` or `loadDir` functions arguments.
-
-[source, nix]
-.Adding conf substitutions
-----
-  data.posts = loadDir { substitutions = { inherit conf; }; from = ./posts; };
-----
-
-In the markup file, substitutions are used by surround the variable name with `@`.
-
-NOTE: It is impossible to use any nix expression in the substitution.
-
-[source, nix]
-.Using a substitution in a markdown file
-----
-  Learn more in the [Styx 0.1.0 Documentation](@conf.siteUrl@/documentation-v0-1-0.html).
-----
-
 
 === Introduction
 
