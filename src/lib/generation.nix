@@ -47,7 +47,7 @@ rec {
       # run substitutions on a file
       # output results to subs
       run_subs () {
-        cp $1 subs
+        cp $1 subs && chmod u+rw subs
         ${concatMapStringsSep "\n" (set:
           let key   = head (attrNames  set);
               value = head (attrValues set);
@@ -87,12 +87,28 @@ rec {
               *.less)
                 href=$(echo "$href" | sed -r 's/[^.]+$/css/')
                 [ -f "$out/$href" ] && rm $out/$href
-                ${pkgs.lessc}/bin/lessc $input > $out/$href
+                (
+                  ${pkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$href
+                  if [ ! -s "$out/$href" ]; then
+                    echo "Warning: could not build '$href'"
+                  fi
+                ) || (
+                  [ -f "$out/$href" ] && rm $out/$href
+                  echo "Warning: could not build '$href'"
+                )
               ;;
               *.s[ac]ss)
                 href=$(echo "$href" | sed -r 's/[^.]+$/css/')
                 [ -f "$out/$href" ] && rm $out/$href
-                ${pkgs.sass}/bin/sass $input > $out/$href
+                (
+                  ${pkgs.sass}/bin/sass $input 2>/dev/null > $out/$href
+                  if [ ! -s "$out/$href" ]; then
+                    echo "Warning: could not build '$href'"
+                  fi
+                ) || (
+                  [ -f "$out/$href" ] && rm $out/$href
+                  echo "Warning: could not build '$href'"
+                )
               ;;
               *)
                 [ -f "$out/$href" ] && rm $out/$href
