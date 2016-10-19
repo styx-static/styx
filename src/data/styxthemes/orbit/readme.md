@@ -2,7 +2,19 @@
 
 This is a Styx port of [Orbit](//github.com/xriley/Orbit-Theme) - great looking resume/CV template designed for developers by Xiaoying Riley.
 
-Alpha state.
+---
+
+Most of the theme can be configured with the configuration interface defined in `theme.nix`.
+
+For example, to change the title in the navigation:
+
+```
+{
+  theme.site.title = "John Doe";
+}
+```
+
+---
 
 ## License
 
