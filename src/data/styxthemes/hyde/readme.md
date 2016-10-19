@@ -2,7 +2,11 @@
 
 Port of the [Hyde](https://github.com/poole/hyde) theme to the Styx static site generator.
 
-Alpha state.
+---
+
+Look at the example site to see how to use.
+
+---
 
 ## Acknowledgements 
 

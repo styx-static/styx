@@ -57,7 +57,7 @@ let
 
 
 /*-----------------------------------------------------------------------------
-   Template enviroments
+   Template environments
 
 -----------------------------------------------------------------------------*/
 
@@ -80,16 +80,14 @@ let
    the data set is included in the default template environment
 -----------------------------------------------------------------------------*/
 
-  substitutions = { inherit conf; };
-
   data = {
     # loading a single page
     about  = loadFile { dir = ./pages; file = "about.md"; };
     # loading a list of contents
     posts  = let
-      postsList = loadFolder { inherit substitutions; from = ./posts; };
+      postsList = loadDir { dir = ./posts; };
       # include drafts only when renderDrafts is true
-      draftsList = optionals renderDrafts (loadFolder { inherit substitutions; from = ./drafts; extraAttrs = { isDraft = true; }; });
+      draftsList = optionals renderDrafts (loadDir { dir = ./drafts; isDraft = true; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
     menus = [ pages.about ];
   };
@@ -112,7 +110,7 @@ let
       baseHref = "index";
       itemsPerPage = conf.theme.index.itemsPerPage;
       template = templates.index;
-      items = posts;
+      data = posts;
     };
 
     /* About page
@@ -141,7 +139,7 @@ let
     /* Posts pages (as a list of pages)
     */
     posts = mkPageList {
-      dataList = data.posts;
+      data = data.posts;
       hrefPrefix = "posts/";
       template = templates.post.full;
       # Template for multi page contents
