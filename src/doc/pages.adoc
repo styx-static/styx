@@ -1,4 +1,4 @@
-[[Pagesc]]
+[[Pages]]
 == Pages
 
 Pages refer to the pages declared in `site.nix`.
@@ -21,21 +21,23 @@ The page attribute set is an attribute set that must defines at least three attr
 * `template`: A function that take the page attribute set as a parameter and returns an updated attribute set.
 * `href`: The path of the page to generate.
 
+NOTE: This is the strict minimum and most of templates will require extra attributes like `title`.
+
 <<Hello world!>> contains an example of a simple page attribute set.
 
 [source, nix]
 .Simple page attribute set
 ----
-  index = {
-    layout = template: "<html><body>${template}</body></html>";
-    template = page: "<h1>Hello world!</h1>";
-    href = "index.html";
-  };
+pages.index = {
+  layout = template: "<html><body>${template}</body></html>";
+  template = page: "<h1>Hello world!</h1>";
+  href = "index.html";
+};
 ----
 
-In a normal `site.nix`, the template would be an attribute from the `templates` set, e.g. `templates.generic.full`.
+In a normal `site.nix`, the template would be an attribute from the `templates` set like `templates.generic.full`.
 
-Page attribute set are usually augmented by various attributes or merged with data sets to fit any needs.
+Page attribute sets are usually augmented by various attributes or merged with data sets to fit any needs.
 
 NOTE: `generateSite` evaluate `page.layout (page.template page)` and output the result in `page.href` for every page in its `pagesList` argument.
 
@@ -51,10 +53,10 @@ Generating a simple page is trivial as it is just declaring the required attribu
 [source, nix]
 .Creating an error 404 page
 ----
-  e404 = {
-    href     = "404.html";
-    template = templates.e404;
-  };
+pages.e404 = {
+  href     = "404.html";
+  template = templates.e404;
+};
 ----
 
 NOTE: Attribute set attributes should not start with a number. That is why the 404 template is `templates.e404` and not `templates.404`. +
@@ -67,10 +69,10 @@ Generating a page from an imported data is a very common case, and is easy to ac
 [source, nix]
 .Attaching a data set to a page attribute set.
 ----
-  about = {
-    href = "about.html";
-    template = templates.generic.full;
-  } // data.about;
+pages.about = {
+  href = "about.html";
+  template = templates.generic.full;
+} // data.about;
 ----
 
 The `//` operator will merge the `data.about` data set in the `about` page set.
@@ -84,19 +86,19 @@ In such cases, the `id` function, a function that return its parameter without c
 [source, nix]
 .Using id as a layout
 ----
-  feed = {
-    href = "feed.xml";
-    template = templates.feed;
-    posts = take 10 posts;
-    layout = id;
-  };
+pages.feed = {
+  href = "feed.xml";
+  template = templates.feed;
+  posts = take 10 posts;
+  layout = id;
+};
 ----
 
 NOTE: The `id` function is defined as `x: x`.
 
 === Split pages
 
-Split pages refers to list of data split though multiple similar pages.
+Split pages refers to a list of data split though multiple similar pages.
 
 A common example of split page is a blog archive page, the full list of blogs are split in many pages.
 
@@ -106,17 +108,17 @@ Split pages can be generated with the `mkSplit` or `mkSplitCustom` function. +
 [source, nix]
 .mkSplit example
 ----
-  archives = mkSplit {
-    baseHref = "archives";
-    template = templates.archives;
-    itemsPerPage = 5;
-    data = pages.posts;
-  };
+pages.archives = mkSplit {
+  baseHref = "archives";
+  template = templates.archives;
+  itemsPerPage = 5;
+  data = pages.posts;
+};
 ----
 
 This will create a list of pages attribute sets with the following extra attributes:
 
-`href`:: Set accordingly to `baseHref`. "`baseHref`.html" for the first page, and "`baseHref`-`i`.html" for next pages where `i` is the index of the page.
+`href`:: Set accordingly to `baseHref`. `baseHref.html` for the first page, and `baseHref-i.html` for the following pages where `i` is the index of the page.
 `items`:: The list of items for this page.
 `index`:: The position of this page in the list of split pages.
 `pages`:: The split pages lists, useful for generating a pagination.
@@ -146,10 +148,10 @@ Multipages can be generated with the `mkMultipages` function.
 [source, nix]
 .mkMultipages example
 ----
-  about = mkMultipages ({
-    template = templates.generic.full-multipage;
-    baseHref = "about";
-  } // data.about);
+pages.about = mkMultipages ({
+  template = templates.generic.full-multipage;
+  baseHref = "about";
+} // data.about);
 ----
 
 NOTE: `mkMultipages` only requires `baseHref` and `subpages` as parameters. Any extra parameter passed will be added to every generated attribute attribute set.
@@ -178,11 +180,11 @@ This could be done using `mkMultipages` and filtering / mapping, but a `mkPageLi
 [source, nix]
 .Generating the page list with multipage head pages
 ----
-  posts = mkPageList {
-    data = data.posts; # <1>
-    multipageTemplate = templates.post.full-multipage; # <2>
-    template = templates.post.full;
-  };
+pages.posts = mkPageList {
+  data = data.posts; # <1>
+  multipageTemplate = templates.post.full-multipage; # <2>
+  template = templates.post.full;
+};
 ----
 
 <1> `data` is a list of data attribute set to generate pages attribute set from.
@@ -194,18 +196,18 @@ This could be done using `mkMultipages` and filtering / mapping, but a `mkPageLi
 
 Next step is to generate the `tail` of the multipages posts.
 
-`mkMultitail` is the function to generate page sets for the `tail` of multipages in a list of data.
+`mkMultitail` is the function to generate page sets for the `tail` of multipages in a list of data sets.
 
 [source, nix]
 .Generating the multipage posts tail
 ----
-  multiPostsTail = mkMultiTail {
-    data = data.posts;
-    template = templates.post.full-multipage;
-  };
+pages.multiPostsTail = mkMultiTail {
+  data = data.posts;
+  template = templates.post.full-multipage;
+};
 ----
 
-This is very similar to the `mkPageList` function. As only tail pages are rendered, the template is directly set with the `template` attribute.
+This is very similar to the `mkPageList` function but only tail pages sets are generated. As only tail pages are rendered, the template is directly set with the `template` attribute.
 
 IMPORTANT: It is possible to set a prefix to the generated `href` attribute of `mkPageList` and `mkMultiTail` function with the `hrefPrefix` argument. +
 If the `baseHref` argument is set, it **must** be the same for the same data set, else the links between `head` and `tail` pages will be broken.

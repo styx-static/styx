@@ -36,7 +36,7 @@ The data loading functions return a set per file loaded and do a few things:
 * Converted markup is inserted in a `content` attribute.
 * If the file basename begins in a `YYYY-MM-DD` format, this value will be inserted in a `date` attribute.
 
-NOTE: Nix data should be imported with the `import` function, and return the data in the nix file as it is.
+NOTE: Nix data should be imported with the `import` function, that return the data in the nix file as it is.
 
 === Formats
 
@@ -117,8 +117,8 @@ A metadata block is a Nix attribute set which opening is `{---` and closing `---
 .Adding metadata to a markdown file
 ----
 {---
-  date = "2016-10-10";
-  tags = [ "foo" "bar" ];
+date = "2016-10-10";
+tags = [ "foo" "bar" ];
 ---}
 
 # Lorem ipsum
@@ -132,7 +132,7 @@ Metadata attributes will automatically be added to the data attribute set.
 
 It is possible to declare a section on an imported markup file as the introduction.
 
-Introduction and main contents are separated by `>>>`, content prior the separator will be inserted in an `intro` field. +
+Introduction and main contents are separated by `>>>`, content prior the separator will be inserted in the `intro` attribute. +
 
 [source,markdown]
 .Adding an introduction to a markdown file
@@ -150,7 +150,7 @@ NOTE: `intro` field contents are included in the `content` field.
 
 === Multipage data
 
-It is possible to split in markup file in many subpages by using the `<<<` separator.
+It is possible to split markup file in many subpages by using the `<<<` separator.
 
 [source,markdown]
 .Splitting a markdown file in 3 pages
@@ -175,7 +175,7 @@ Phasellus consequat a nibh sit amet ultricies. Quisque feugiat justo eu condimen
 The resulting data set will have an extra `subpages` field that will hold the list of subpages content.
 
 NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute sets is handled by the pages section. +
-For example, the `mkPagesList` or `generateSubpages` function can generate pages from a multipage data set.
+For example, the `mkPagesList` or `mkMultipages` function can generate pages from a multipage data set.
 
 === Taxonomies
 
@@ -198,10 +198,10 @@ Taxonomy are organized in the following structure:
 ==== Creating a taxonomy data structure
 
 A taxonomy data structure is created with the `mkTaxonomyData` function. +
-This function take a set parameter with two required attributes `pages` and `taxonomies`.
+This function take a set parameter with two required attributes `data` and `taxonomies`.
 
-`taxonomies`:: A list of taxonomy fields to look for into `pages`.
-`pages`:: The list of pages to where the `taxonomy` field will be looked for.
+`taxonomies`:: A list of taxonomy fields to look for into `data`.
+`data`:: The list of attribute sets (usually pages attribute sets) to where the `taxonomy` field will be looked for.
 
 [source, nix]
 .Creating a taxonomy structure 
@@ -220,7 +220,7 @@ This will generate a taxonomy data structure where:
 
 Then, the taxonomy related pages can be generated in the page section using the `mkTaxonomyPages` function.
 
-TIP: This example use `pages` and not `data` attribute set, because data attribute sets do not have a `href` field and it is impossible to generate links to them. +
+TIP: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `href` field and it is impossible to generate links to them. +
 Using data attribute sets such as `data.posts` would make it impossible to generate pages from the taxonomy with `mkTaxonomyPages`.
 
 ====

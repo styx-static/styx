@@ -1,6 +1,6 @@
 == Themes
 
-Themes are a central concept in styx and are used to manage a site assets , namely files and templates.
+Themes are a central concept in styx and are used to manage a site assets, namely files and templates.
 They also provide a configuration interface.
 
 Themes also can be combined to offer modularity and easiness of upgrade.
@@ -77,12 +77,12 @@ It is a simple attribute set that defines the theme configuration options with s
 
 - `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`.
 Templates that access themes configuration should use `conf.theme`.
-- `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration and will not be overriden by default.
+- `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration as it is declared in `theme.nix`.
 ====
 
 === Files
 
-The file directory holds the static files of the theme. Every file in in this directory will be copied in the generated site.
+The `files` directory holds the static files of the theme. Every file in in this directory will be copied in the generated site.
 
 NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site.
 
@@ -124,7 +124,7 @@ The nix language is functional, and it allows to partially apply functions and t
 
 Styx templates are functions that return text or page attribute sets when fully evaluated.
 
-Templates are divided in two types:
+Templates are divided in three types:
 
 - Layout templates, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
 - Normal templates, responsible for preparing a page for the layout template, this kind of templates usually return a page attribute set.
@@ -173,10 +173,10 @@ let name = "world"; in
 
 ==== Layout templates
 
-The layout template is responsible for rendering the final source of the page.
-The layout template function usually takes a template environment, and a page attribute set with a `content`. (There are exceptions)
+The layout template is responsible for rendering the final source of the page. +
+The layout template function usually takes a template environment, and a page attribute set with a `content` attribute.
 
-In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag.
+In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag contents.
 
 [source, nix]
 .Layout template example
@@ -195,13 +195,13 @@ page:
 ''
 ----
 
-TIP: Layout templates are just functions, in case the partial template return the full page source like in the rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent and return the `template` result.
+TIP: Layout templates are just functions, in case the partial template return the full page source like in a rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent and return the `template` result.
 
 
 ==== Normal templates
 
 Normal templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
-The normal template should set or update the `content` attribute of the page attribute set so the layout template can render the final source.
+A normal template should set or update the `content` attribute of a page attribute set so the layout template can produce the final source.
 
 Normal templates can also add other attributes to the page attribute to fit any special need.
 
@@ -219,7 +219,7 @@ in
   page // { inherit content; }
 ----
 
-NOTE: In some cases, it is useful to have the partial template to return the final source of the page.
+NOTE: In some cases, it is useful to have the partial template to return the final source of the page. +
 By setting the page `layout` to the `id` function, it is possible to bypass the layout template and have the partial template result being the final source source of the page.
 
 ==== Partial templates
@@ -232,7 +232,7 @@ Partial templates can take arguments and be used to with `mapTemplate` to apply 
 
 The template environment is the first parameter to every template function.
 
-It is automatically added when the templates are loaded from a theme.
+It is automatically set when the templates are loaded from a theme.
 
 The default template environment consists in:
 
@@ -289,7 +289,7 @@ page: # <1>
 
 ==== Calling templates in templates
 
-It is possible to call templates in a template by accessing to the `templates` attribute of the template generic environment.
+It is possible to call templates in a template by accessing to the `templates` attribute of the template environment.
 
 [source, nix]
 .Calling a template in a template
@@ -360,29 +360,28 @@ In `site.nix`, themes are declared as a list. If multiple themes in the list pro
 
 This allows to "extends" themes without modifying them.
 
-For example, to use the default theme but only change the `layout` template. It is possible to create a new theme, and copy the `layout.nix` template in the new theme `templates` directory and change only this file.
+For example, to use the showcase theme but only change the `layout` template. It is possible to create a new theme, and copy the `layout.nix` template in the new theme `templates` directory and change only this file.
 
 [source, bash]
 .Creating a new foo theme
 ----
-$ mkdir themes/foo # <1>
-$ mkdir themes/foo/{templates,files} # <2>
-$ cp themes/{default,foo}/templates/layout.nix # <3>
+$ styx new theme --in themes
+$ cp themes/{showcase,foo}/templates/layout.nix # <3>
 ----
 
 <1> Create the theme directory.
 <2> Create the theme required directories.
-<3> Copying `default` theme `layout.nix` to `foo` theme.
+<3> Copying `showcase` theme `layout.nix` to `foo` theme.
 
-After a new theme has been created, it must be load in the `site.nix` to be used.
+After a new theme has been created, it must be declared in `site.nix` to be used.
 
 [source, nix]
 .Using foo and default themes in `site.nix`
 ----
-  themes = [ "foo" "default" ]; #<1>
+  themes = [ "foo" "showcase" ]; #<1>
 ----
 
-<1> This will use foo and default theme, with foo having a higher priority than default.
+<1> Using foo and showcase theme, with foo having a higher priority than default.
 
-TIP: Combining themes is the recommended way to extend an existing theme as it make upgrades easier.
+TIP: Combining themes is the recommended way to extend an existing theme as it make theme upgrades easier.
 

@@ -1,5 +1,21 @@
 == Release Notes
 
+=== Styx 0.3.0 - 2016/10/21
+
+Highlights:
+
+- <<Themes,Themes as first class citizens>>
+- link:https://github.com/styx-static/themes[New themes]
+- Styx library is automatically bundled
+- <<Taxonomies>>
+- <<library,New functions in library, new sub libraries>>
+- <<Asciidoc,AsciiDoc support>>
+- <<Multipages>>
+- Easier updates
+
+This release brings many major breaking changes that make upgrading from 0.2.0 non trivial. +
+Fortunately, the new features introduced in this release should make future upgrades easy.
+
 === Styx 0.2.0 - 2016/10/10
 
 Highlights:

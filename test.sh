@@ -51,7 +51,7 @@ styxPath=$(nix-build --quiet --no-out-link)
 
 if [ $? -eq 0 ]; then
   styx="$styxPath/bin/styx"
-  $styx -v
+  $styx --version
   echo "Success!"
   successTests=$(( successTests + 1 ))
 else

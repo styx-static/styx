@@ -9,7 +9,7 @@ This is a two step process, initialization of the `gh-pages` branch and update o
 [source, bash]
 .Setting a Styx site for GitHub pages
 ----
-$ styx new mysite && cd mysite # <1>
+$ styx new site mysite && cd mysite # <1>
 $ git init && git add . && git commit -m "Initializing Styx site" # <2>
 $ styx deploy --init-gh-pages # <3> 
 $ styx deploy --gh-pages # <4>
@@ -23,7 +23,7 @@ $ styx deploy --gh-pages # <4>
 Then it is just a matter to push the `gh-pages` branch to your GitHub repository and the site will be published.
 
 WARNING: `styx deploy --init-gh-pages` and `styx deploy --gh-pages` involve git checkouts. Every time git make a checkout, the files timestamp change.
-This means that two successive `styx deploy --gh-pages` will create changes, namely every part of the Styx site that depends on the `lastChange` argument. (Feed by default)
+This means that two successive `styx deploy --gh-pages` will create changes, namely every part of the Styx site that depends on the `lastChange` argument. (RSS feeds)
 
 === Other
 

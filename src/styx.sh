@@ -172,9 +172,11 @@ while [ "$#" -gt 0 ]; do
 # Generic options
 	  -h|--help)
 	    Display_usage
+      exit 0
 	    ;;
 	  -v|--version)
       echo -e "styx $version"
+      exit 0
 	    ;;
     --arg|--argstr)
       extraFlags+=("$i" "$1" "$2"); shift 2
