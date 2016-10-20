@@ -30,7 +30,7 @@ rec {
   */
   generateSite = {
     files ? []
-  , pagesList
+  , pagesList ? []
   , substitutions ? {}
   , preGen  ? ""
   , postGen ? ""
@@ -130,7 +130,7 @@ rec {
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
         mkdir -p $(dirname $out/${page.href})
-        page=${pkgs.writeText "styx-site-${replaceStrings ["/"] ["-"] page.href}" (page.layout (page.template page))}
+        page=${pkgs.writeText "styx-site-page" (page.layout (page.template page))}
         run_subs $page
         if [ $(cmp --silent subs $page || echo 1) ]; then
           mkdir -p $(dirname $out/${page.href})

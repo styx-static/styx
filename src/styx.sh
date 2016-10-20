@@ -270,7 +270,7 @@ fi
 
 #-------------------------------
 #
-# New
+# New site
 #
 #-------------------------------
 
@@ -279,7 +279,7 @@ if [ "$action" = new ] && [ "$newCommand" = site ]; then
   check_dir $target "Error: Cannot create a new site in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{themes,data}
-  cp -r "$share/scaffold/new/conf.nix" "$target/"
+  cp -r $share/scaffold/new/* "$target/"
   chmod -R u+rw "$target"
   echo "Styx site initialized in '$target'."
   exit 0

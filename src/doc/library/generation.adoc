@@ -12,7 +12,7 @@ The generation namespace contains functions related to the site generation.
 Description::: Generate a static site.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `pagesList`: A list of page attribute sets to generate.
+  * `pagesList` (optional): A list of page attribute sets to generate.
   * `files` (optional): A list of folders. All the contents of the folders in this list will be copied to the generated site root.
   * `substitutions` (optional): A substitution set to apply on every generated text file.
   * `preGen` (optional): A list of shell commands to run before the site is generated as a string or multiline string.

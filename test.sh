@@ -12,9 +12,7 @@
 target=/tmp
 name="styx-test"
 dir="$target/$name"
-# The theme to test
-themeRepo=https://github.com/styx-static/styx-theme-showcase.git
-theme=showcase
+themesDir="$target/$name/themes"
 totalTests=0
 successTests=0
 cleanup=0
@@ -91,11 +89,9 @@ sep
 #
 #-------------------------------
 
-echo "Getting '$theme' theme"
+echo "Getting all the themes:"
 
-git clone $themeRepo "$target/$name/themes/$theme"
-
-sitePath="$target/$name/themes/$theme/example"
+git clone --depth 1 --recursive https://github.com/styx-static/themes.git "$themesDir"
 
 sep
 
@@ -105,21 +101,27 @@ sep
 #
 #-------------------------------
 
-totalTests=$(( totalTests + 1 ))
+for theme in $themesDir/*/ ; do
 
-echo "Testing 'styx build':"
+  totalTests=$(( totalTests + 1 ))
 
-$styx build --in $sitePath
+  echo "Testing 'styx build' on $theme example site:"
 
-if [ $? -eq 0 ]; then
-  echo "Success!"
-  successTests=$(( successTests + 1 ))
-else
-  echo "Could not create the Styx site, exiting test suite."
-  exit 1
-fi
+  $styx build --in "$theme/example"
 
-sep
+  if [ $? -eq 0 ]; then
+    echo "Success!"
+    successTests=$(( successTests + 1 ))
+  else
+    echo "Failure"
+  fi
+
+  sep
+
+done
+
+# Using showcase for all the following tests
+showcaseExample=$themesDir/showcase/example
 
 #-------------------------------
 #
@@ -131,7 +133,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx preview':"
 
-$styx preview --in $sitePath --detach
+$styx preview --in $showcaseExample --detach
 serveOk=$?
 
 # wait the server is ready
@@ -162,7 +164,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx serve':"
 
-$styx serve --site-url "http://127.0.0.1" --in $sitePath --detach
+$styx serve --site-url "http://127.0.0.1" --in $showcaseExample --detach
 serveOk=$?
 
 # wait the server is ready
@@ -195,13 +197,13 @@ echo "Testing 'styx deploy --init-gh-pages':"
 
 # Making a git repository in the test directory
 (
-  cd $sitePath
+  cd $showcaseExample
   git init
   git add .
   git commit -m "init"
 )
 
-$styx deploy --init-gh-pages --in $sitePath
+$styx deploy --init-gh-pages --in $showcaseExample
 
 if [ $? -eq 0 ]; then
   echo "Success!"
@@ -216,7 +218,7 @@ totalTests=$(( totalTests + 1 ))
 
 echo "Testing 'styx deploy --gh-pages':"
 
-$styx deploy --gh-pages --in $sitePath
+$styx deploy --gh-pages --in $showcaseExample
 
 if [ $? -eq 0 ]; then
   echo "Success!"

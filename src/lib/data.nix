@@ -36,11 +36,11 @@ let
       path = "${fileData.dir + "/${fileData.name}"}";
       data = pkgs.runCommand "data" {} ''
         # metablock separator
-        metaBlock="/{---/,/---}/p"
+        metaBlock="/^{---$/,/^---}$/p"
         # pageSeparator
         pageSep="<<<"
         # intro separator
-        introSep=">>>"
+        introSep="^>>>$"
 
         mkdir $out
 
@@ -61,8 +61,8 @@ let
         fi
 
         # intro
-        if [ "$(grep -Fx "$introSep" $out/source)" ]; then
-          csplit -s -f intro $out/source "/^$introSep$/"
+        if [ "$(grep "$introSep" $out/source)" ]; then
+          csplit -s -f intro $out/source "/$introSep/"
           cp intro00 $out/intro
           sed -i "/$introSep/d" $out/source
         fi

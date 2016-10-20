@@ -7,7 +7,7 @@ The Styx showcase site can be created and locally served with the following set 
 $ styx new styx-showcase # <1>
 $ cd styx-showcase # <2>
 $ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase # <3>
-$ styx preview --target themes/showcase/example # <4>
+$ styx preview --in themes/showcase/example # <4>
 ----
 
 <1> Initialize a new styx site in the `styx-showcase` directory.

@@ -7,11 +7,14 @@ Themes also can be combined to offer modularity and easiness of upgrade.
 
 === Getting themes
 
-There are a few official themes for styx:
+Styx themes are all listed in the official link:https://github.com/styx-static/themes[theme repository].
+
+Themes available at the moment of writing this documentation are:
 
 - link:https://github.com/styx-static/styx-theme-showcase[Showcase]: A theme that show most of styx functionalities and provides many templates.
 - link:https://github.com/styx-static/styx-theme-hyde[Hyde]: A port of the link:https://github.com/poole/hyde[Jekyll Hyde theme] to styx. Hyde is a simple and beautiful blog theme.
 - link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites.
+- link:https://github.com/styx-static/styx-theme-orbit[Orbit]: A port of the link:http://themes.gohugo.io/orbit/[Hugo orbit theme] to styx. Orbit is a single page site resume / profile theme.
 
 Themes should be installed in the `themes` directory. Using `git` is the recommended way.
 
@@ -19,6 +22,13 @@ Themes should be installed in the `themes` directory. Using `git` is the recomme
 .Installing the showcase theme via git
 ----
 $ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase
+----
+
+
+[source, shell]
+.Installing all themes
+----
+$ git clone --depth 1 --recursive https://github.com/styx-static/themes.git themes
 ----
 
 === Structure
@@ -231,8 +241,9 @@ The default template environment consists in:
 - `state`: The state attribute set, by default it only holds the timestamp of the generation.
 - `templates`: The templates attribute set.
 - `data`: The data attribute set.
+- `pages`: The pages attribute set.
 
-It is possible to extend the default template environment to fit custom needs.
+NOTE: The template environment is set in `site.nix` and can be easily changed.
 
 It is possible to set a specific template environment to a specific template by declaring it in the `customTemplateEnvironments` set.
 
@@ -240,11 +251,11 @@ It is possible to set a specific template environment to a specific template by 
 .Setting custom template environments
 ----
   customEnvironments = {
-    layout = defaultEnvironment // { feed = pages.feed; }; # <1>
+    layout = defaultEnvironment // { foo = "bar"; }; # <1>
   };
 ----
 
-<1> The environment passed to the `layout` template is the default environment extended with a `feed` variables.
+<1> The environment passed to the `layout` template is the default environment extended with a `foo` variable.
 
 
 ==== Template environment in templates

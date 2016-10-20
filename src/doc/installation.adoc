@@ -14,6 +14,6 @@ To only test Styx, it is recommended to use the `nix-shell` command to start a t
 
 [source, shell]
 ----
-$ nix-shell -p `nix-build https://github.com/styx-static/styx/archive/latest.tar.gz`
+$ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
 ----
 

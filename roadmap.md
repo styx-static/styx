@@ -10,11 +10,12 @@
 - [x] Multi-pages pages (with `<<<`)
 - [x] Update documentation...
 - [x] Support content format in asciidoc
-- [ ] polishing default theme (something like https://github.com/appernetic/hugo-bootstrap-premium could be nice)
-- [ ] make sample content act like a lightweight documentation (How drafts woks, quickstart, themes)
+- [x] polishing default theme (something like https://github.com/appernetic/hugo-bootstrap-premium could be nice)
+- [x] make sample content act like a lightweight documentation (How drafts woks, quickstart, themes)
 
 
 ## Features to implement
 
 - [ ] Linkcheck functionality
 - [ ] Syntax highlighting
+- [ ] image galleries
