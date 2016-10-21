@@ -4,26 +4,25 @@
 
 Styx support basic deployment to GitHub pages.
 
-This is a two step process, initialization of the `gh-pages` branch and update of the `gh-branch` with the built site.
+This is a two step process:
 
-[source, bash]
-.Setting a Styx site for GitHub pages
-----
-$ styx new site mysite && cd mysite # <1>
-$ git init && git add . && git commit -m "Initializing Styx site" # <2>
-$ styx deploy --init-gh-pages # <3> 
-$ styx deploy --gh-pages # <4>
-----
+- first by preparing the repository to deploy on GitHub pages. (`deploy --init-gh-pages`)
+- then by updating that branch. (`deploy --gh-pages`)
 
-<1> Creating a new styx site and entering the new site directory.
-<2> Initializing a git repository with all the files and commiting.
-<3> Creating an empty `gh-pages` branch.
-<4> Building the Styx site and commiting the changes to `gh-pages`
+==== Initialization
 
-Then it is just a matter to push the `gh-pages` branch to your GitHub repository and the site will be published.
+`styx deploy --init-gh-pages` command will prepare the repository for GitHub deployment. This command will do the following:
 
-WARNING: `styx deploy --init-gh-pages` and `styx deploy --gh-pages` involve git checkouts. Every time git make a checkout, the files timestamp change.
-This means that two successive `styx deploy --gh-pages` will create changes, namely every part of the Styx site that depends on the `lastChange` argument. (RSS feeds)
+- create a `gh-pages` directory
+- add the `gh-pages` folder to `.gitignore`
+- clone the repository in the `gh-pages` folder
+- create a new empty `gh-pages` branch in the `gh-pages` folder
+
+
+==== Update the gh-pages branch
+
+`styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder folder with the generated static site and commit it to the `gh-pages` branch.
+
 
 === Other
 

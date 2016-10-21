@@ -1,6 +1,6 @@
 == Release Notes
 
-=== Styx 0.3.0 - 2016/10/21
+=== Styx 0.3.0 - 2016/10/26
 
 Highlights:
 

@@ -56,7 +56,7 @@ EOF
 
 # last changed timestamp
 last_timestamp() {
-  find $1 ! -path '*.git/*' ! -name '*.swp' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
+  find $1 ! -path '*.git/*' ! -name '*.swp' ! -path 'gh-pages/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
 }
 
 # last changed date
@@ -430,13 +430,15 @@ if [ "$action" = deploy ]; then
     check_git $in
     (
       cd $in
-      startBranch=$(current_branch)
+      mkdir gh-pages
+      git clone -l $(pwd) ./gh-pages
+      echo gh-pages >> .gitignore
+      cd gh-pages
       git checkout --orphan gh-pages
       git rm -rf .
       touch .styx
       git add .styx
       git commit -m "initialized gh-pages branch"
-      git checkout "$startBranch"
     )
     echo "Successfully created the 'gh-pages' branch."
     echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
@@ -444,31 +446,32 @@ if [ "$action" = deploy ]; then
   elif [ "$deployAction" == "gh-pages" ]; then
     check_git $in
     (
-    cd $in
-    if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
-      # Everytime a checkout is done, files atime and ctime are modified
-      # This means that 2 consecutive styx deploy --gh-pages will update the lastChange
-      # and update the feed
+      cd $in
+      rev=$(git rev-parse --short HEAD)
+
       echo "Building the site"
       path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
       if [ $? -ne 0 ]; then
         nix_error
         exit 1
       fi
-      startBranch=$(current_branch)
-      git checkout gh-pages
-      cp -L -r "$path"/* ./
-      chmod u+rw -R ./
-      git add .
-      git commit -m "Styx update - $(git rev-parse --short HEAD)"
-      git checkout "$startBranch"
-      echo "Successfully updated the gh-pages branch."
-      echo "Push the 'gh-pages' branch to the GitHub repository to publish your site."
-      exit 0
-    else
-      echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
-      exit 1
-    fi
+
+      cd gh-pages
+      if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
+        git checkout gh-pages
+        git rm -rf .
+        cp -L -r "$path"/* ./
+        chmod u+rw -R ./
+        git add .
+        git commit -m "Styx update - $rev"
+        echo "Successfully updated the gh-pages branch in the 'gh-pages' folder."
+        echo "Push the 'gh-pages' branch in the 'gh-pages' folder to the GitHub repository to publish your site."
+        echo "(cd gh-pages && git push origin gh-pages)"
+        exit 0
+      else
+        echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
+        exit 1
+      fi
     )
   fi
 fi

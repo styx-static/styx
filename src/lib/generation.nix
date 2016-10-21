@@ -134,7 +134,7 @@ rec {
         run_subs $page
         if [ $(cmp --silent subs $page || echo 1) ]; then
           mkdir -p $(dirname $out/${page.href})
-          cp $page $out/${page.href}
+          cp subs $out/${page.href}
         else
           ln -s $page $out/${page.href}
         fi

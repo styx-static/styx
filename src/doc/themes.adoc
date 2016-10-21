@@ -365,13 +365,12 @@ For example, to use the showcase theme but only change the `layout` template. It
 [source, bash]
 .Creating a new foo theme
 ----
-$ styx new theme --in themes
-$ cp themes/{showcase,foo}/templates/layout.nix # <3>
+$ styx new theme --in themes # <1>
+$ cp themes/{showcase,foo}/templates/layout.nix # <2>
 ----
 
 <1> Create the theme directory.
-<2> Create the theme required directories.
-<3> Copying `showcase` theme `layout.nix` to `foo` theme.
+<2> Copying `showcase` theme `layout.nix` to `foo` theme.
 
 After a new theme has been created, it must be declared in `site.nix` to be used.
 
