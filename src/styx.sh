@@ -215,7 +215,7 @@ while [ "$#" -gt 0 ]; do
       ;;
 	  preview)
 	    action="serve"
-      siteURL="PREVIEW"
+      siteUrl="PREVIEW"
 	    ;;
 	  build|serve|deploy|live)
 	    action="$i"
@@ -336,15 +336,12 @@ fi
 
 if [ "$action" = serve ]; then
   check_styx $in $siteFile
-  siteUrlFlag=
-  if [ -n "$siteURL" ]; then
-    if [ "$siteURL" = "PREVIEW" ]; then
-      siteUrlFlag="--argstr siteUrl http://$serverHost:$port"
-    else
-      siteUrlFlag="--argstr siteUrl $siteURL"
-    fi
+  if [ "$siteUrl" = "PREVIEW" ]; then
+    extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
+  elif [ -n "$siteUrl" ]; then
+    extraFlags+=("--argstr" "siteUrl" "$siteUrl")
   fi
-  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" $siteUrlFlag "${extraFlags[@]}" "$in/$siteFile")
+  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
   if [ $? -ne 0 ]; then
     nix_error
   fi
