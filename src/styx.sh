@@ -171,7 +171,7 @@ while [ "$#" -gt 0 ]; do
   case "$i" in
 # Generic options
     -h|--help)
-      Display_usage
+      display_usage
       exit 0
       ;;
     -v|--version)
