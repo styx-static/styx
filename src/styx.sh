@@ -170,14 +170,14 @@ while [ "$#" -gt 0 ]; do
   i="$1"; shift 1
   case "$i" in
 # Generic options
-	  -h|--help)
-	    Display_usage
+    -h|--help)
+      Display_usage
       exit 0
-	    ;;
-	  -v|--version)
+      ;;
+    -v|--version)
       echo -e "styx $version"
       exit 0
-	    ;;
+      ;;
     --arg|--argstr)
       extraFlags+=("$i" "$1" "$2"); shift 2
       ;;
@@ -213,31 +213,31 @@ while [ "$#" -gt 0 ]; do
         exit 1
       fi
       ;;
-	  preview)
-	    action="serve"
+    preview)
+      action="serve"
       siteUrl="PREVIEW"
-	    ;;
-	  build|serve|deploy|live)
-	    action="$i"
-	    ;;
+      ;;
+    build|serve|deploy|live)
+      action="$i"
+      ;;
 # Build options
     --drafts)
       extraFlags+=(--arg renderDrafts true)
       ;;
-	  --output)
-	    output="$1"; shift 1
-	    ;;
-# Serve options
-	  -p|--port)
-	    port="$1"; shift 1
-	    ;;
-	  --server-host)
-	    serverHost="$1"; shift 1
-	    ;;
-	  --site-url)
-	    siteUrl="$1"; shift 1
+    --output)
+      output="$1"; shift 1
       ;;
-	  --detach)
+# Serve options
+    -p|--port)
+      port="$1"; shift 1
+      ;;
+    --server-host)
+      serverHost="$1"; shift 1
+      ;;
+    --site-url)
+      siteUrl="$1"; shift 1
+      ;;
+    --detach)
       detachServer=1
       ;;
 # Deploy options
