@@ -365,7 +365,7 @@ For example, to use the showcase theme but only change the `layout` template. It
 [source, bash]
 .Creating a new foo theme
 ----
-$ styx new theme --in themes # <1>
+$ styx new theme foo --in themes # <1>
 $ cp themes/{showcase,foo}/templates/layout.nix # <2>
 ----
 
