@@ -9,7 +9,7 @@ First you need to install a theme, the showcase theme provide an example site th
 To get it, run:
 
 ```
-git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase
+git submodule add https://github.com/styx-static/styx-theme-showcase.git themes/showcase
 ```
 
 Then, the showcase theme example site can be previewed by running `styx preview --in themes/showcase/example`.
@@ -23,7 +23,7 @@ Find the line saying `themes = [ ];` in this directory `site.nix` and change it 
   themes = [ "showcase" ];
 ```
 
-Showcase theme provide a  design and a set of templates, but there is no content to generate yet.
+Showcase theme provide a design and a set of templates, but there is no content to generate yet.
 
 So let's create a page, pages are declared in the pages attribute set. We will start with a  basic "Hello world!" index page:
 
@@ -46,6 +46,8 @@ The site can be previewed with `styx preview`!
 This is just the beginning, take a look at the showcase example `themes/showcase/example/site.nix` to see examples of more complex pages and data handling.
 
 The showcase theme is pretty feature heavy, so you might want to start with a simpler theme like [Hyde](https://github.com/styx-static/styx-theme-hyde) or [Agency](https://github.com/styx-static/styx-theme-agency).
+
+All available themes can be found in the [themes repository](https://github.com/styx-static/themes).
 
 Read the [documentation](https://styx-static.github.io/styx-site/documentation.html) to learn more in details how to customize your site!
 
