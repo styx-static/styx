@@ -16,7 +16,7 @@ with lib;
       <li><a href="/">Home</a></li>
       ${mapTemplate (menu: ''
         <li><a href="${conf.siteUrl}/${menu.href}">${menu.title}</a></li>
-      '') data.menus}
+      '') (data.menus or [])}
     </ul>
 
     <p>&copy; 2016. All rights reserved.</p>
