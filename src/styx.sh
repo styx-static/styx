@@ -46,7 +46,7 @@ Serve options:
         --detach               Detach the server from the terminal.
 
 Deploy options:
-    --init-gh-pages            If in a git repository, will create a gh-pages branch wit a .styx file.
+    --init-gh-pages            If in a git repository, will create a gh-pages branch with a .styx file.
     --gh-pages                 Build the site, copy the build results in the gh-pages branch and make a commit.
 
 EOF
