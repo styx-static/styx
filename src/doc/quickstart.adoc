@@ -1,21 +1,32 @@
 == Quick Start
 
-The Styx showcase site can be created and locally served with the following set of commands:
+The styx showcase theme example site can be previewed by the following command:
 
 [source, bash]
 ----
-$ styx new site styx-showcase # <1>
-$ cd styx-showcase # <2>
-$ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase # <3>
-$ styx preview --in themes/showcase/example # <4>
+$ styx preview --in $(nix-build -A styx-themes.showcase '<nixpkgs>')/example/ # <1>
 ----
 
-<1> Initialize a new styx site in the `styx-showcase` directory.
-<2> Enter the `styx-showcase` directory.
-<3> Download the `styx-showcase` theme in the `themes` directory.
-<4> Launch a local server to preview the showcase theme example site.
+This command download the showcase theme in the nix store, and launch the preview from there. +
+This will only create files in the nix store.
 
-The `styx-showcase` example site will be accessible at link:http://127.0.0.1:8080[http://127.0.0.1:8080]. Check the posts as they provide some information about how styx works.
+The showace example site will be accessible at link:http://127.0.0.1:8080[http://127.0.0.1:8080]. Check the posts as they provide some information about how styx works.
 
-The `styx-showcase` main file, `site.nix` is quite complex as most of the styx features are used in it. It is recommended to start by reading the <<sitenix,site.nix>> section to get familiar on how `site.nix` is structured.
+---
+
+To start a new site, the following set of commands can be used:
+
+[source, bash]
+----
+$ styx new site my-site # <1>
+$ cd my-site # <2>
+----
+
+<1> Initialize a new styx site in the `my-site` directory.
+<2> Enter the `my-site` directory.
+<3> Start hacking!
+
+It is recommended to start by reading the <<sitenix,site.nix>> section to get familiar on how `site.nix` is structured.
+
+Sample `site.nix` configuration can be found in the <<Themes,themes>> examples directory.
 

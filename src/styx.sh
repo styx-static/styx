@@ -28,6 +28,7 @@ Subcommands:
 Generic options:
     -h, --help                 Show this help.
     -v, --version              Print the name and version.
+    -I path                    Add the path to to the Nix expression search path.
         --in DIR               Run the selected command in the DIR directory.
         --file FILE            Run the command using FILE instead of 'site.nix'.
         --drafts               Process and render drafts.
@@ -116,18 +117,20 @@ action=
 dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx share directory
 share=$(realpath "$dir/../share/styx")
-# styx lib directory
-styxLib="$share/lib"
+# styx builder
+builder="$share/builder.nix"
 # debug mode
 debug=
 # extra arguments to be appended to the nix-build command
-extraFlags=("--argstr" "styxLib" "$styxLib")
+extraFlags=()
+#("--argstr" "styxLib" "$styxLib")
 # main site file
 siteFile="site.nix"
 
 # default new-theme name
 themeName=
 
+# subcommands of new
 newCommands=("site" "theme")
 
 # name of the created site for the new action
@@ -180,6 +183,9 @@ while [ "$#" -gt 0 ]; do
     -v|--version)
       echo -e "styx $version"
       exit 0
+      ;;
+    -I)
+      extraFlags+=("$i" "$1"); shift 1
       ;;
     --arg|--argstr)
       extraFlags+=("$i" "$1" "$2"); shift 2
@@ -325,7 +331,8 @@ if [ "$action" = build ]; then
     target=$(realpath "$output")
   fi
   echo "Building the site..."
-  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
+  extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+  path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -362,7 +369,8 @@ if [ "$action" = serve ]; then
   elif [ -n "$siteUrl" ]; then
     extraFlags+=("--argstr" "siteUrl" "$siteUrl")
   fi
-  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
+  extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+  path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -390,7 +398,9 @@ if [ "$action" = live ]; then
   # get last change
   lastChange=$(last_timestamp)
   # building to result a first time
-  path=$(nix-build --no-out-link --argstr lastChange "$(last_change $in)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
+  extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+  extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
+  path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -405,7 +415,7 @@ if [ "$action" = live ]; then
     if [ "$curLastChange" -gt "$lastChange" ]; then
       # rebuild
       echo "Change detected, rebuilding..."
-      path=$(nix-build --no-out-link --quiet --argstr lastChange "$(last_change $in)" --argstr siteUrl "http://$serverHost:$port" "${extraFlags[@]}" "$in/$siteFile")
+      path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
       if [ $? -ne 0 ]; then
         echo "There were errors in site generation, server restart is skipped until the site generation success."
       else
@@ -468,7 +478,8 @@ if [ "$action" = deploy ]; then
       rev=$(git rev-parse --short HEAD)
 
       echo "Building the site"
-      path=$(nix-build --quiet --no-out-link --argstr lastChange "$(last_change $in)" "${extraFlags[@]}" "$in/$siteFile")
+      extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+      path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
       if [ $? -ne 0 ]; then
         nix_error
         exit 1

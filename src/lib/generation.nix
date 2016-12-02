@@ -35,13 +35,15 @@ rec {
   , preGen  ? ""
   , postGen ? ""
   }:
-    pkgs.runCommand "styx-site" {} ''
+    pkgs.runCommand "styx-site" {
+      buildInputs = [ pkgs.styx ];
+    } ''
       shopt -s globstar
       mkdir -p $out
 
       # check if a file is a text file
       text_file () {
-        ${pkgs.file}/bin/file $1 | grep text | cut -d: -f1
+        file $1 | grep text | cut -d: -f1
       }
 
       # run substitutions on a file
@@ -88,7 +90,7 @@ rec {
                 href=$(echo "$href" | sed -r 's/[^.]+$/css/')
                 [ -f "$out/$href" ] && rm $out/$href
                 (
-                  ${pkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$href
+                  lessc $input 2>/dev/null > $out/$href
                   if [ ! -s "$out/$href" ]; then
                     echo "Warning: could not build '$href'"
                   fi
@@ -101,7 +103,7 @@ rec {
                 href=$(echo "$href" | sed -r 's/[^.]+$/css/')
                 [ -f "$out/$href" ] && rm $out/$href
                 (
-                  ${pkgs.sass}/bin/sass $input 2>/dev/null > $out/$href
+                  sass $input 2>/dev/null > $out/$href
                   if [ ! -s "$out/$href" ]; then
                     echo "Warning: could not build '$href'"
                   fi

@@ -54,38 +54,31 @@ in
            baz = 5; };
        }
   */
-  loadConf = {
-    themes
-  , themesDir
-  }:
+  loadConf = themes:
   fold (theme: set:
     let
-      themeConf = import (themesDir + "/${theme}/theme.nix");
+      themeConf = import "${theme}/theme.nix";
     in recursiveUpdate set ({ themes."${theme}" = themeConf; theme = themeConf; })
   ) {} themes;
 
 
   /* Load template files from 'themes' list of themes
   */
-  loadFiles = {
-    themes
-  , themesDir
-  }:
-  map (theme:
-    (themesDir + "/${theme}/files")
-  ) (reverseList themes);
+  loadFiles = themes:
+    map (theme:
+      "${theme}/files"
+    ) (reverseList themes);
 
   /* Loads the templates from 'themes' list of themes
   */
   loadTemplates = {
     themes
-  , themesDir
   , defaultEnvironment
   , customEnvironments ? {}
   }:
   fold (theme: set:
     let
-      templatesDir = themesDir + "/${theme}/templates";
+      templatesDir = "${theme}/templates";
       templateSet  = fetchTemplateDir templatesDir;
       templatesWithEnv = mapAttrsRecursive (path: value:
         let 

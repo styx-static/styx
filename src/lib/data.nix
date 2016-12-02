@@ -23,8 +23,8 @@ let
   /* Convert commands
   */
   commands = {
-    asciidoc = "${pkgs.asciidoctor}/bin/asciidoctor -s -a showtitle -o-";
-    markdown = "${pkgs.multimarkdown}/bin/multimarkdown";
+    asciidoc = "asciidoctor -s -a showtitle -o-";
+    markdown = "multimarkdown";
   };
 
   /* Parse a markup file to an attribute set
@@ -34,7 +34,9 @@ let
     let
       markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
       path = "${fileData.dir + "/${fileData.name}"}";
-      data = pkgs.runCommand "data" {} ''
+      data = pkgs.runCommand "data" {
+        buildInputs = [ pkgs.styx ];
+      } ''
         # metablock separator
         metaBlock="/^{---$/,/^---}$/p"
         # pageSeparator
@@ -141,7 +143,7 @@ let
 
   markupToHtml = markup: text:
     let
-      data = pkgs.runCommand "data" {} ''
+      data = runCommand "data" {} ''
         mkdir $out
         echo -n "${text}" > $out/source
         ${commands."${markup}"} $out/source > $out/content

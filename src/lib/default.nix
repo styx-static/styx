@@ -1,20 +1,20 @@
-pkgs:
+{ lib, pkgs }:
 let
   # nixpkgs lib
-  nixLib = pkgs.lib // builtins;
+  base = lib // builtins;
 
   # Styx lib
-  data       = import ./data.nix nixLib pkgs;
-  pages      = import ./pages.nix nixLib;
-  generation = import ./generation.nix nixLib pkgs;
-  template   = import ./template.nix nixLib;
-  themes     = import ./themes.nix nixLib;
-  utils      = import ./utils.nix nixLib;
-  proplist   = import ./proplist.nix nixLib;
+  data       = (import ./data.nix) base pkgs;
+  pages      = import ./pages.nix base;
+  generation = (import ./generation.nix) base pkgs;
+  template   = import ./template.nix base;
+  themes     = import ./themes.nix base;
+  utils      = import ./utils.nix base;
+  proplist   = import ./proplist.nix base;
 
 in
   {
-    inherit nixLib data generation template themes utils proplist pages;
+    inherit base data generation template themes utils proplist pages;
   }
-  // nixLib
+  // base
   // data // generation // template // themes // utils // proplist // pages

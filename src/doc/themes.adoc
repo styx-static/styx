@@ -16,10 +16,10 @@ Themes available at the moment of writing this documentation are:
 - link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites.
 - link:https://github.com/styx-static/styx-theme-orbit[Orbit]: A port of the link:http://themes.gohugo.io/orbit/[Hugo orbit theme] to styx. Orbit is a single page site resume / profile theme.
 
-Themes should be installed in the `themes` directory. Using `git` is the recommended way.
+Themes can be downloaded in the `themes` directory with git.
 
 [source, shell]
-.Installing the showcase theme via git
+.Downloading the showcase theme via git
 ----
 $ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase
 ----
@@ -33,7 +33,7 @@ $ git clone --depth 1 --recursive https://github.com/styx-static/themes.git them
 
 === Structure
 
-Themes are usually stored in the `themes` directory, but this can be changed in `site.nix`.
+Themes are usually stored in the `themes` directory, or directly called from the `styx-themes` package set.
 
 Every theme is stored in its own directory, and themes are expected to follow a certain structure.
 
@@ -238,7 +238,6 @@ The default template environment consists in:
 
 - `conf`: The configuration attribute set.
 - `lib`: The library attribute set, it contains Styx and nixpkgs functions.
-- `state`: The state attribute set, by default it only holds the timestamp of the generation.
 - `templates`: The templates attribute set.
 - `data`: The data attribute set.
 - `pages`: The pages attribute set.
@@ -339,15 +338,11 @@ Themes related files are automatically loaded in `site.nix` via the `lib.themes.
 ----
   templates = lib.themes.loadTemplates { # <1>
     inherit themes defaultEnvironment customEnvironments;
-    themesDir = conf.themesDir;
   };
 
-  files = lib.themes.loadFiles { # <2>
-    inherit themes;
-    themesDir = conf.themesDir;
-  };
+  files = lib.themes.loadFiles themes; # <2>
 
-  themes = [ "default" ];
+  themes = [ styx-themes.showcase ];
 ----
 
 <1> Load themes templates. See <<themes.loadFiles,loadFiles>> for details.
@@ -366,18 +361,18 @@ For example, to use the showcase theme but only change the `layout` template. It
 .Creating a new foo theme
 ----
 $ styx new theme foo --in themes # <1>
-$ cp themes/{showcase,foo}/templates/layout.nix # <2>
+$ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix themes/templates/layout.nix # <2>
 ----
 
 <1> Create the theme directory.
-<2> Copying `showcase` theme `layout.nix` to `foo` theme.
+<2> Copying `showcase` theme `layout.nix` to the `foo` theme.
 
 After a new theme has been created, it must be declared in `site.nix` to be used.
 
 [source, nix]
 .Using foo and default themes in `site.nix`
 ----
-  themes = [ "foo" "showcase" ]; #<1>
+  themes = [ ./themes/foo styx-themes.showcase ]; #<1>
 ----
 
 <1> Using foo and showcase theme, with foo having a higher priority than default.

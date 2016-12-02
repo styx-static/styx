@@ -10,10 +10,9 @@ This namespace contains functions related to themes.
 ==== loadConf
 
 Description::: Load themes configuration.
-Parameter Type::: Attribute set
+Parameter Type::: Standard
 Parameters:::
-  * `themes`: A list of themes names to load configuration from.
-  * `themesDir`: Directory where the themes are stored.
+  * `themes`: A list of themes paths or packages to load configuration from.
 Return::: A configuration attribute set with the `theme` and `themes` attributes. +
 `theme` is the merged themes configuration, and `themes.THEME` holds the per theme configuration.
 Example:::
@@ -21,7 +20,7 @@ Example:::
 +
 [source, nix]
 ----
-themesConf = lib.themes.loadConf { inherit themes themesDir; };
+themesConf = styxLib.themes.loadConf themes;
 ----
 
 ---
@@ -30,18 +29,16 @@ themesConf = lib.themes.loadConf { inherit themes themesDir; };
 ==== loadFiles 
 
 Description::: Load themes static files.
-Parameter Type::: Attribute set
+Parameter Type::: Standard
 Parameters:::
-  * `themes`: A list of themes names to load configuration from.
-  * `themesDir`: Directory where the themes are stored.
+  * `themes`: A list of themes paths or packages to load configuration from.
 Return::: A list of directory paths. 
 Example:::
 
 +
 [source, nix]
 ----
-files = lib.themes.loadFiles {
-  inherit themes themesDir;
+files = styxLib.themes.loadFiles themes;
 };
 ----
 
@@ -53,8 +50,7 @@ files = lib.themes.loadFiles {
 Description::: Load themes templates.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `themes`: A list of themes names to load configuration from.
-  * `themesDir`: Directory where the themes are stored.
+  * `themes`: A list of themes paths or packages to load configuration from.
   * `defaultEnvironment`: The default template environment.
   * `customEnvironments`: (optional) A set which attributea are template paths and the values template environments.
 Return::: An attribute set containing all the themes template with their environment applied. 
@@ -63,8 +59,8 @@ Example:::
 +
 [source, nix]
 ----
-templates = lib.themes.loadTemplates {
-  inherit themes defaultEnvironment customEnvironments themesDir;
+templates = styxLib.themes.loadTemplates {
+  inherit themes defaultEnvironment customEnvironments;
 };
 ----
 

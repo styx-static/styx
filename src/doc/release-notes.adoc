@@ -1,5 +1,21 @@
 == Release Notes
 
+=== Styx 0.4.0 - 2016/XX/XX
+
+Highlights:
+
+- Better integration with Nix, styx sites can be called from nix expressions with `callPackage`
+- Themes can be used from the `styx-themes` set of packages
+
+Breaking Changes
+
+- Removal of the `state` variable in `site.nix`
+- `site.nix` init section was refactored
+
+
+This release brings few major breaking changes that make upgrading from 0.3.0 non trivial. +
+The main changes involve the init section of `site.nix`.
+
 === Styx 0.3.0 - 2016/10/26
 
 Highlights:

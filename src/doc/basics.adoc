@@ -11,12 +11,14 @@ Let's look at a very basic example of a styx site.
 [source, nix]
 .Hello world!
 ----
-{ pkgs ? import <nixpkgs> {} # <1>
-, styxLib }: # <2>
+{ lib, styx, runCommand, writeText, ... }: # <1>
 
-let # <3>
+let # <2>
 
-  lib = import styxLib pkgs; # <4>
+  styxLib = import "${styx}/share/styx/lib" { # <3>
+    inherit lib; # <4>
+    pkgs = { inherit styx runCommand writeText; };
+  };
 
   index = { # <5>
     layout = template: "<html><body>${template}</body></html>"; # <6>
@@ -26,15 +28,14 @@ let # <3>
   }; # <10>
 
 in # <11>
-  lib.generateSite { pagesList = [ index ]; } # <12>
+  styxLib.generateSite { pagesList = [ index ]; } # <12>
 ----
 
-<1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN }: body` pattern.
-So this line says that the function take a `pkgs` argument that defaults to `import <nixpkgs> {}`.
-<2> The function take a second argument, `styxLib`. This argument must be provided as it has no default. `styxLib` is the styx library and is automatically passed by the `styx` command.
-<3> `let` is a special construction to declare local variables, a `let` block must finish by a `in`. `let a = 1; b = 2; in a + b` is a basic example of using `let`.
-<4> This declare a `lib` variable that holds the styx library. `import` is used to importing a file. `styxLib` is a function and require `pkgs` as a parameter. +
-An easier way to write this would be `(import styxLib) pkgs`, importing the `styxLib` and passing `pkgs` as a parameter.
+<1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN, ... }: body` pattern. +
+The arguments of the function are the dependencies needed to build the site.
+<2> `let` is a special construction to declare local variables, a `let` block must finish by a `in`. `let a = 1; b = 2; in a + b` is a basic example of using `let`.
+<3> This declare a `styxLib` variable that holds the styx library. `import` is used to importing a file. `${styx}/share/styx/lib` is a function and require an argument set. +
+<4> `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`. 
 <5> This declare an `index` variable as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
 <6> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `href`. This line declares the `layout` attribute that is a function that take the `template` attribute and return the page source. +
 `template:` is different from the first point function head, this function use a simple parameter (Point one was using an attribute set parameter).
@@ -52,8 +53,6 @@ Everything is ready, the "Hello world!" site preview can be generated.
 ----
 $ styx preview
 ----
-
-NOTE: `import <nixpkgs> {}` is a way to import the system nixpkgs (nix package manager package set). So by default, a styx site will use the system `nixpkgs`.
 
 TIP: Even if this is a simple example, nix language semantics can be confusing. In a nutshell to build a site, `generateSite` evaluates `page.layout (page.template page)` and output the result in `page.href` for every page in `pagesList`. +
 That is the reason `layout`, `template` and `href` are required attributes of a page set.
@@ -136,15 +135,16 @@ This section is the basic setup of styx, it should not be changed and used as is
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
 
-{ pkgs ? import <nixpkgs> {}
-, styxLib
+{ lib, styx, styx-themes, runCommand, writeText
 , renderDrafts ? false
 , siteUrl ? null
-, lastChange ? null
 }@args:
 
-let lib = import styxLib pkgs;
-in with lib;
+let styxLib = import "${styx}/share/styx/lib" {
+  inherit lib;
+  pkgs = { inherit styx runCommand writeText; };
+};
+in with styxLib;
 
 let
 
@@ -152,26 +152,20 @@ let
   */
   conf = let # <1>
     conf       = import ./conf.nix;
-    themesConf = lib.themes.loadConf { inherit themes themesDir; };
+    themesConf = lib.themes.loadConf themes;
     mergedConf = recursiveUpdate themesConf conf;
   in
     overrideConf mergedConf args;
 
-  /* Site state
-  */
-  state = { inherit lastChange; };
-
   /* Load themes templates
   */
   templates = lib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments themesDir;
+    inherit themes defaultEnvironment customEnvironments;
   };
 
   /* Load themes static files
   */
-  files = lib.themes.loadFiles {
-    inherit themes themesDir;
-  };
+  files = lib.themes.loadFiles themes;
 ----
 
 <1> This loads the `conf.nix` file and merges it with theme configuration and main function `siteUrl` argument.
@@ -191,19 +185,13 @@ Themes are detailed in the <<Themes>> section.
 
 -----------------------------------------------------------------------------*/
 
-  /* Themes location
-  */
-  themesDir = ./themes; # <1>
-
   /* Themes used
   */
-  themes = [ "showcase" ]; # <2>
+  themes = [ styx-themes.showcase ]; # <1>
 ----
 
-<1> `themesDir` should be set relatively to `site.nix`, that is the reason `themesDir` is set it to `../..` in themes example site.
-<2> `themes` is a list so it is possible to set multiple themes at the same time. Themes at the beginning of the list have a higher priority.
-
-NOTE: Styx tries to be as explicit as possible. `themes` and `themesDir` are not hardcoded names but just conventions and can be changed if the Init section is updated accordingly.
+<1> `themes` is a list so it is possible to set multiple themes at the same time. Themes at the beginning of the list have a higher priority. +
+Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
 
 
 ==== Template environments
@@ -228,7 +216,7 @@ Normal sites should not require custom environments, but they can become useful 
 
   /* Default template environment
   */
-  defaultEnvironment = { inherit conf state lib templates data; }; # <1>
+  defaultEnvironment = { inherit conf styxLib templates data; }; # <1>
 
   /* Custom environments for specific templates
   */

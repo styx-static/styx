@@ -8,7 +8,7 @@ Data gets included in the default template environment and can also be used in t
 === Creating data
 
 Data can be created by directly defining a nix data structure. +
-An example of such usage is the navbar items that are declared as a list of attributes sets.
+An example of such usage is the navbar items that are declared as a list of page attributes sets.
 
 [source, nix]
 .Creating navbar data

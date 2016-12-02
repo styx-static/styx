@@ -5,7 +5,7 @@
 # Styx test script
 #
 # This will run most of the styx tasks in /tmp/styx-test
-# Use with care as during the test it will bin port 8080, and kill every caddy processes
+# Use with care as during the test it will bind port 8080, and kill every caddy processes
 #
 #-------------------------------
 
