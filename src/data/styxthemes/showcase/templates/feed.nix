@@ -1,4 +1,4 @@
-{ conf, state, lib, templates, data, ... }:
+{ conf, lib, templates, data, ... }:
 with lib;
 page:
 ''
@@ -10,7 +10,7 @@ page:
     <access:restriction xmlns:access="http://www.bloglines.com/about/specs/fac-1.0" relationship="deny"/>
 
     <title>${if (page ? title) then page.title else conf.theme.site.title}</title>
-    <updated>${state.lastChange}</updated>
+    <updated>${(head page.items).date}T00:00:00Z"</updated>
     <generator>Styx</generator>
     <id>${conf.siteUrl}/${page.href}</id>
     <link href="${conf.siteUrl}/${page.href}" rel="self" type="application/atom+xml"/>
