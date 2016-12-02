@@ -1,4 +1,4 @@
-{ conf, state, lib, templates, ... }:
+{ conf, lib, templates, ... }:
 with lib;
 page:
 ''
@@ -7,7 +7,6 @@ page:
   ${mapTemplate (url: ''
   <url>
     <loc>${conf.siteUrl}/${url.href}</loc>
-    <lastmod>${state.lastChange}</lastmod>
     <changefreq>monthly</changefreq>
   </url>'') page.urls}
 </urlset> 
