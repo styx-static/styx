@@ -4,15 +4,16 @@
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
 
-{ pkgs ? import <nixpkgs> {}
-, styxLib
+{ lib, styx, styx-themes, runCommand, writeText
 , renderDrafts ? false
 , siteUrl ? null
-, lastChange ? null
 }@args:
 
-let lib = import styxLib pkgs;
-in with lib;
+let styxLib = import "${styx}/share/styx/lib" {
+  inherit lib;
+  pkgs = { inherit styx runCommand writeText; };
+};
+in with styxLib;
 
 let
 
@@ -20,26 +21,20 @@ let
   */
   conf = let
     conf       = import ./conf.nix;
-    themesConf = lib.themes.loadConf { inherit themes themesDir; };
+    themesConf = styxLib.themes.loadConf themes;
     mergedConf = recursiveUpdate themesConf conf;
   in
     overrideConf mergedConf args;
 
-  /* Site state
-  */
-  state = { inherit lastChange; };
-
   /* Load themes templates
   */
-  templates = lib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments themesDir;
+  templates = styxLib.themes.loadTemplates {
+    inherit themes defaultEnvironment customEnvironments;
   };
 
   /* Load themes static files
   */
-  files = lib.themes.loadFiles {
-    inherit themes themesDir;
-  };
+  files = styxLib.themes.loadFiles themes;
 
 
 /*-----------------------------------------------------------------------------
@@ -47,13 +42,9 @@ let
 
 -----------------------------------------------------------------------------*/
 
-  /* Themes location
-  */
-  themesDir = ../..;
-
   /* Themes used
   */
-  themes = [ "agency" ];
+  themes = [ ../. ];
 
 
 /*-----------------------------------------------------------------------------
@@ -63,7 +54,7 @@ let
 
   /* Default template environment
   */
-  defaultEnvironment = { inherit conf state lib templates data; };
+  defaultEnvironment = { inherit conf templates data; lib = styxLib; };
 
   /* Custom environments for specific templates
   */
@@ -80,9 +71,9 @@ let
 
   data = {
     # data in markdown format
-    events   = sortBy "index" "asc" (lib.data.loadDir { dir = ./data/events; });
-    projects = sortBy "date"  "dsc" (lib.data.loadDir { dir = ./data/projects; });
-    services = sortBy "index" "asc" (lib.data.loadDir { dir = ./data/services; });
+    events   = sortBy "index" "asc" (styxLib.data.loadDir { dir = ./data/events; });
+    projects = sortBy "date"  "dsc" (styxLib.data.loadDir { dir = ./data/projects; });
+    services = sortBy "index" "asc" (styxLib.data.loadDir { dir = ./data/services; });
     # Data in nix format
     clients  = import ./data/clients.nix;
     team     = import ./data/team.nix;
