@@ -4,7 +4,7 @@
 
 Highlights:
 
-- Better integration with Nix, styx sites can be called from nix expressions with `callPackage`
+- Better integration with the <<NixOps,Nix ecosystem>>, styx sites can be called from nix expressions with `callPackage`
 - Themes can be used from the `styx-themes` set of packages
 
 Breaking Changes

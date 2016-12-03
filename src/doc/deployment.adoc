@@ -24,6 +24,64 @@ This is a two step process:
 `styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder folder with the generated static site and commit it to the `gh-pages` branch.
 
 
+=== NixOps
+
+link:http://nixos.org/nixops/[NixOps] is a deployment tool for NixOS configurations, and can be used to deploy styx sites.
+
+[[nixops-example]]
+[source, nix]
+.NixOps expression to deploy a styx website
+----
+{
+  network.description = "Styx example";
+
+  webserver = { config, pkgs, ... }: { # <1>
+    deployment = { # <2>
+      targetEnv = "virtualbox";
+      virtualbox.memorySize = 1024;
+      virtualbox.headless = true;
+    };
+
+    networking.firewall.allowedTCPPorts = [ 80 ]; # <3>
+
+    services.nginx = { # <4>
+      enable = true;
+      httpConfig = ''
+        server {
+          listen 80;
+          location / {
+            root ${pkgs.callPackage ./site.nix {}}; # <5>
+          }
+        }
+      '';
+    };
+  };
+}
+----
+
+<1> Creating a machine named `webserver` to the deployment.
+<2> Set up deployment information, this example deploy on a VirtualBox machine.
+<3> Opening the port 80 on the `webserver` machine.
+<4> Nginx settings.
+<5> Setting Nginx root location to the styx site package. Remote repositories can be fetched with nixpkgs `fetch*` functions.
+
+NOTE: The NixOps link:http://nixos.org/nixops/manual/[manual] provide information about all the deployment options.
+
+A styx website can be deployed via NixOps with the following set of commands:
+
+[source, bash]
+----
+$ nixops create -d styx-site nixops-expression.nix # <1>
+$ nixops deploy -d styx-site # <2>
+----
+
+<1> This command create a new NixOps deployment, the `-d` flag specify the deployment name. +
+The deployment information can be queried with the `nixops info -d styx-site`. +
+`nixops-expression.nix` is a file containing the nix expression for the deployment like the one showed in the <<nixops-example,example>>.
+<2> This command will create the VirtualBox machine and deploy the configuration into it. +
+If all goes well, the website will be available by opening the deployment machine in a browser.
+The deployement machine IP can be found with the `nixops info -d styx-site`.
+
 === Other
 
 Styx does not yet provide a universal deployment method, but `rsync` can be used to deploy a Styx site to a remote server via ssh.

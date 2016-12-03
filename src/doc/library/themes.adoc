@@ -39,7 +39,6 @@ Example:::
 [source, nix]
 ----
 files = styxLib.themes.loadFiles themes;
-};
 ----
 
 ---

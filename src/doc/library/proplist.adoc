@@ -205,12 +205,12 @@ propFlatten [ { tags = [ "sports" "technology" ]; } { tags = [ "food" "trip" ]; 
 [[lib.proplist.propMap]]
 ==== propMap
 
-Description:: Map through a property list.
+Description:: Map for property lists.
 Parameter Type:: Standard
 Parameters::
   * `f`: A function to apply to the property list.
-  * `list`: The property list to map through.
-Return:: A list..
+  * `propList`: The property list to map.
+Return:: A list.
 Example::
 
 +
