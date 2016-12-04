@@ -29,7 +29,7 @@ Subcommands:
 Generic options:
     -h, --help                 Show this help.
     -v, --version              Print the name and version.
-    -I path                    Add the path to to the Nix expression search path.
+    -I PATH                    Add PATH to to the Nix expression search path.
         --in DIR               Run the selected command in the DIR directory.
         --file FILE            Run the command using FILE instead of 'site.nix'.
         --drafts               Process and render drafts.
@@ -309,7 +309,7 @@ fi
 
 #-------------------------------
 #
-# New-theme
+# New theme
 #
 #-------------------------------
 

@@ -1,3 +1,4 @@
+[[Themes]]
 == Themes
 
 Themes are a central concept in styx and are used to manage a site assets, namely files and templates.
@@ -7,7 +8,7 @@ Themes also can be combined to offer modularity and easiness of upgrade.
 
 === Getting themes
 
-Styx themes are all listed in the official link:https://github.com/styx-static/themes[theme repository].
+Styx themes are listed in the official link:https://github.com/styx-static/themes[theme repository].
 
 Themes available at the moment of writing this documentation are:
 
@@ -16,20 +17,17 @@ Themes available at the moment of writing this documentation are:
 - link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites.
 - link:https://github.com/styx-static/styx-theme-orbit[Orbit]: A port of the link:http://themes.gohugo.io/orbit/[Hugo orbit theme] to styx. Orbit is a single page site resume / profile theme.
 
-Themes can be downloaded in the `themes` directory with git.
+=== Using themes
 
-[source, shell]
-.Downloading the showcase theme via git
+Declaring used themes is done in the <<site.nix-themes,theme section>> of `site.nix`.
+Official themes can be used directly from the `styx-themes` package set.
+
+[source, nix]
+.Using a local my-site theme and the showcase theme
 ----
-$ git clone https://github.com/styx-static/styx-theme-showcase.git themes/showcase
+  themes = [ ./themes/my-site styx-themes.showcase ]; #<1>
 ----
 
-
-[source, shell]
-.Installing all themes
-----
-$ git clone --depth 1 --recursive https://github.com/styx-static/themes.git themes
-----
 
 === Structure
 
@@ -361,7 +359,7 @@ For example, to use the showcase theme but only change the `layout` template. It
 .Creating a new foo theme
 ----
 $ styx new theme foo --in themes # <1>
-$ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix themes/templates/layout.nix # <2>
+$ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix themes/foo/templates/layout.nix # <2>
 ----
 
 <1> Create the theme directory.
@@ -370,7 +368,7 @@ $ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix theme
 After a new theme has been created, it must be declared in `site.nix` to be used.
 
 [source, nix]
-.Using foo and default themes in `site.nix`
+.Using foo and showcase themes in `site.nix`
 ----
   themes = [ ./themes/foo styx-themes.showcase ]; #<1>
 ----

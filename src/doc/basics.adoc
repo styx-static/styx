@@ -171,6 +171,7 @@ let
 <1> This loads the `conf.nix` file and merges it with theme configuration and main function `siteUrl` argument.
 
 
+[[site.nix-themes]]
 ==== Themes
 
 This section is where used themes are declared. Themes are a central concept in styx and provide ways to manage site assets in a very flexible manner.
