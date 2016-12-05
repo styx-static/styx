@@ -4,10 +4,10 @@ The styx showcase theme example site can be previewed by the following command:
 
 [source, bash]
 ----
-$ styx preview --in $(nix-build -A styx-themes.showcase '<nixpkgs>')/example/ # <1>
+$ styx preview --in $(nix-build -A styx-themes.showcase '<nixpkgs>')/example # <1>
 ----
 
-This command download the showcase theme in the nix store, and launch the preview from there. +
+This command download the showcase theme in the nix store, build the site also in the nix store and launch the preview from there. +
 This will only create files in the nix store.
 
 The showcase example site will be accessible at link:http://127.0.0.1:8080[http://127.0.0.1:8080]. Check the posts as they provide some information about how styx works.

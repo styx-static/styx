@@ -40,7 +40,7 @@ Alice
 ---
 
 [[lib.proplist.propKey]]
-==== propValue
+==== propKey
 
 Description:: Get the key of a property.
 Parameter Type:: Standard
@@ -52,7 +52,7 @@ Example::
 +
 [source, nix]
 ----
-propValue { name = "Alice"; }
+propKey { name = "Alice"; }
 ----
 
 +
@@ -169,7 +169,7 @@ removeProp "name" [ { name = "Alice"; } { age = 26; } ]
 [source, nix]
 .Results in
 ----
-{ age = 26; }
+[ { age = 26; } ]
 ----
 
 CAUTION: `removeProp` will trigger an error if there is no property with the `attribute` in the list. +

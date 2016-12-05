@@ -14,7 +14,7 @@ Parameter Type::: Standard
 Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
 Return::: A configuration attribute set with the `theme` and `themes` attributes. +
-`theme` is the merged themes configuration, and `themes.THEME` holds the per theme configuration.
+`theme` is the merged themes configuration, and `themes.THEME` holds the per theme default configuration.
 Example:::
 
 +

@@ -23,7 +23,7 @@ Example:::
 overrideConf mergedConf args
 ----
 
-NOTE: This is similar to the nixpkgs `recursiveUpdate` function, with the only difference that keys that do not exist in `conf` are ingnored.
+NOTE: This is similar to the nixpkgs `recursiveUpdate` function, with the only difference that keys that do not exist in `conf` are ignored.
 
 ---
 
@@ -48,7 +48,7 @@ chunksOf 2 [ 1 2 3 4 5 ]
 [source, nix]
 .Results in
 ----
-[ [ 1 2 ] [ 3 4] [ 5 ] ]
+[ [ 1 2 ] [ 3 4 ] [ 5 ] ]
 ----
 
 ---
@@ -80,5 +80,5 @@ sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
 
 ---
 
-
 :sectnums:
+

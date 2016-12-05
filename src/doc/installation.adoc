@@ -3,14 +3,14 @@
 The only requirement to install Styx is the link:http://nixos.org/nix/[Nix package manager].
 Refer to the link:http://nixos.org/nix/manual/#chap-installation[Nix installation instructions] to install Nix.
 
-It is possible to install Nix with the following command:
+It is possible to install styx with the following command:
 
 [source, shell]
 ----
 $ nix-env -i https://github.com/styx-static/styx/archive/latest.tar.gz
 ----
 
-To only test Styx, it is recommended to use the `nix-shell` command to start a temporary environment including Styx:
+For testing purposes, `nix-shell` can be used to start a temporary environment with styx without needing to install it:
 
 [source, shell]
 ----

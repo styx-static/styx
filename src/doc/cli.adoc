@@ -25,24 +25,24 @@ The `new` command is used to create a site or a theme.
 
 The `new site` command is used to create a new Styx site.
 
-`styx new site myblog`:: Create a Styx site in `myblog` directory in current path.
-`styx new site myblog --in /tmp`:: Create a Styx site in `/tmp/myblog`.
+`styx new site NAME`:: Create a Styx site in `NAME` directory in current path.
+`styx new site NAME --in DIR`:: Create a Styx site in `DIR/NAME`.
 
 ==== Theme
 
 The `new theme` command is used to create a new theme.
 
-`styx new theme mytheme --in ./themes`:: Create a theme skeleton in `themes/mytheme`.
+`styx new theme NAME --in DIR`:: Create a theme skeleton in `DIR/NAME`.
 
 
 === Build
 
-The `build` command is used to build a Styx site. It must be used in a Styx site root file.
+The `build` command is used to build a Styx site.
 
 `styx build`:: Build the Styx site and write the output in the `public` directory.
 `styx build --output DIR`:: Build the nix site and write the output in the `DIR` directory.
 
-NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `build` command.
+NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `build` command.
 
 
 === Preview
@@ -60,13 +60,13 @@ NOTE: Drafts are rendered only if the related logic is present in `site.nix`. Th
 
 === Live
 
-The `live` is similar to preview, with the unique difference that site is automatically rebuilt when a change is made.
+The `live` command is similar to `preview`, with the unique difference that the site is automatically rebuilt when a change is made.
 
 The live mode should be quitted by pressing kbd:[q].
 
 `styx live`:: Start a live preview server on 127.0.0.1:8080.
-`styx preview --port 9090`:: Start a live preview server on 127.0.0.1:9090.
-`styx preview --port 9090 --drafts`:: Start a live preview server on 127.0.0.1:9090 with drafts rendered.
+`styx live --port 9090`:: Start a live preview server on 127.0.0.1:9090.
+`styx live --port 9090 --drafts`:: Start a live preview server on 127.0.0.1:9090 with drafts rendered.
 
 NOTE: The `live` mode does not automatically reload the browser.
 
@@ -75,7 +75,7 @@ WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibi
 
 === Manual
 
-The `manual` can be used to launch styx HTML documentation in the default browser (`$BROWSER`).
+The `manual` command can be used to launch styx HTML documentation in the default browser (`$BROWSER`).
 
 `styx manual`:: Open the HTML help in the default browser.
 `BROWSER=firefox styx manual`:: Open the HTML help in firefox.
@@ -83,14 +83,14 @@ The `manual` can be used to launch styx HTML documentation in the default browse
 
 === Serve
 
-The `serve` command is used to build a site and launch a local server. This allow to check the site without having to deploying it.
+The `serve` command is used to build a site and launch a local server. This allow to check the site without having to deploy it.
 The server can be stopped by pressing kbd:[Ctrl+C].
 
 `styx serve`:: Will serve on the localhost on port `8080`.
 `styx-serve --port 9090`:: Will serve on the port `9090`.
 `styx serve --detach`:: Will serve on the localhost on port `8080` and run the server on background, process can be found by running `ps aux | grep caddy`.
 
-NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE` and `--argstr NAME VALUE` flags can be used with the `serve` command.
+NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `serve` command.
 
 NOTE: Styx use the link:https://caddyserver.com/[caddy server], even if it is performant server, `styx serve` launchs it without any special settings. +
 For production environments it is recommended to use a carefully configured server over `styx serve`.

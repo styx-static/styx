@@ -30,7 +30,7 @@ The data loading functions return a set per file loaded and do a few things:
 ** `ext`: The extension of the file.
 ** `dir`: The directory of the file.
 ** `name`: The name of the file, `basename` and `ext` field combined with a `.`.
-* Metadada is automatically parsed and merged to the set.
+* <<Metadata>> is automatically parsed and merged to the set.
 * Data with introduction gain a `intro` attribute containing the introduction.
 * Multipages data gain a `subpages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
@@ -38,10 +38,10 @@ The data loading functions return a set per file loaded and do a few things:
 
 NOTE: Nix data should be imported with the `import` function, that return the data in the nix file as it is.
 
+
 === Formats
 
 This section present the data file formats supported by styx.
-
 
 ==== Asciidoc
 
@@ -177,13 +177,14 @@ The resulting data set will have an extra `subpages` field that will hold the li
 NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute sets is handled by the pages section. +
 For example, the `mkPagesList` or `mkMultipages` function can generate pages from a multipage data set.
 
+
 === Taxonomies
 
 ==== Overview
 
 Taxonomies are a way to group and structure data.
 
-Styx taxonomies are a two layers grouping system. +
+Styx taxonomies are a two layers grouping system, taxonomies and terms. +
 The taxonomy layer group the content declaring a specific data attribute, and the term layer group the contents in the taxonomy depending of the values set to that specific attribute.
 
 A common example of taxonomy is tags, `tags` will be the taxonomy and `sports` or `technology` will be the terms.
@@ -193,7 +194,6 @@ Taxonomy are organized in the following structure:
 * Taxonomy: Name of the grouping characteristic, for example `tags`.
 * Term: Groups in the taxonomy, for `tags` it will the values tags can take, for example `sports` or `technology`.
 * Values: Objects grouped by a taxonomy term, for example all the posts with the `technology` tag.
-
 
 ==== Creating a taxonomy data structure
 
@@ -220,12 +220,13 @@ This will generate a taxonomy data structure where:
 
 Then, the taxonomy related pages can be generated in the page section using the `mkTaxonomyPages` function.
 
-TIP: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `href` field and it is impossible to generate links to them. +
+TIP: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `href` field making it impossible to generate links to them. +
 Using data attribute sets such as `data.posts` would make it impossible to generate pages from the taxonomy with `mkTaxonomyPages`.
 
 ====
 The taxonomy data structure uses property lists, lists of attribute sets with a single key, for easier data manipulation.
 
+[source, nix]
 .Taxonomy data structure
 ----
 [
@@ -249,7 +250,7 @@ The taxonomy data structure uses property lists, lists of attribute sets with a 
 
 ==== Adding taxonomy to data
 
-Adding taxonomy fields to a content consists in adding a metadata attribute with taxonomy name containing a list of terms to it.
+Adding taxonomy fields to a content consists in adding a metadata attribute with taxonomy name containing a list of terms.
 
 [source,markdown]
 .Setting tags to a markdown file

@@ -21,7 +21,7 @@ The page attribute set is an attribute set that must defines at least three attr
 * `template`: A function that take the page attribute set as a parameter and returns an updated attribute set.
 * `href`: The path of the page to generate.
 
-NOTE: This is the strict minimum and most of templates will require extra attributes like `title`.
+NOTE: This is the strict minimum and most of templates will require extra attributes like `content` or `title`.
 
 <<Hello world!>> contains an example of a simple page attribute set.
 

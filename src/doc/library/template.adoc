@@ -105,7 +105,7 @@ mapTemplate (i: "<li>${i}</li>") [ "foo" "bar" ]
 [[lib.template.mapTemplateWithIndex]]
 ==== mapTemplateWithIndex
 
-Description::: Similar to `mapTemplate` but pass an parameter to the template function that corresponds to the index of the item.
+Description::: Similar to `mapTemplate` but pass a parameter to the template function that corresponds to the index of the item.
 Parameter Type::: Standard
 Parameters:::
   * `templateFunction`: A template or a function that take the index and the item and returns a string.

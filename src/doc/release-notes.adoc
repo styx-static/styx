@@ -1,20 +1,21 @@
 == Release Notes
 
-=== Styx 0.4.0 - 2016/XX/XX
+=== Styx 0.4.0 - 2016/12/XX
 
 Highlights:
 
 - Better integration with the <<NixOps,Nix ecosystem>>, styx sites can be called from nix expressions with `callPackage`
 - Themes can be used from the `styx-themes` set of packages
+- new `manual` subcommand to open the HTML documentation in a browser
 
 Breaking Changes
 
 - Removal of the `state` variable in `site.nix`
 - `site.nix` init section was refactored
 
-
 This release brings few major breaking changes that make upgrading from 0.3.0 non trivial. +
 The main changes involve the init section of `site.nix`.
+
 
 === Styx 0.3.0 - 2016/10/26
 
@@ -31,6 +32,7 @@ Highlights:
 
 This release brings many major breaking changes that make upgrading from 0.2.0 non trivial. +
 Fortunately, the new features introduced in this release should make future upgrades easy.
+
 
 === Styx 0.2.0 - 2016/10/10
 
@@ -75,6 +77,7 @@ Bug Fixes:
 This release bring many major changes that make updating from 0.1.0 non-trivial.
 
 To update, it is recommended to generate a new site, create a new theme with customized templates and static files, and update `site.nix` accordingly.
+
 
 === Styx 0.1.0 - 2016/10/07
 

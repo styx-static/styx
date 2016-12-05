@@ -24,7 +24,7 @@ in
   */
   themes = fold (a: acc: acc // { "${a}" = mkThemeTest a; }) {} [ "agency" "hyde" "orbit" "showcase" ];
 
-  new = pkgs.runCommand "build-test" {} ''
+  new = pkgs.runCommand "styx-new-site" {} ''
     mkdir $out
     ${styx}/bin/styx new site my-site --in $out
   '';

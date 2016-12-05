@@ -1,7 +1,7 @@
 === nixpkgs
 
 The nixpkgs namespace contains the link:https://github.com/NixOS/nixpkgs[nixpkgs] library and the nix link:http://nixos.org/nix/manual/#ssec-builtins[builtins]. +
-This library contains many useful functions.
+This namespace contains many useful functions.
 
 This section will be present a few commonly used function from it.
 
@@ -75,7 +75,7 @@ map (e: e * 2) [ 1 2 3 4 ]
 [ 2 4 6 8 ]
 ----
 
-NOTE: Nix being a functional language recursion is the main way to loop trhough a a list.
+NOTE: Nix being a functional language recursion is the main way to loop through a list.
 
 ---
 

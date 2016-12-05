@@ -22,13 +22,16 @@ let # <2>
 
   index = { # <5>
     layout = template: "<html><body>${template}</body></html>"; # <6>
-    template = p: p.content; # <7>
-    content = "<h1>Hello world!</h1>"; # <8>
+    template = page: '' # <7>
+      <h1>Styx example page</h1>
+      ${page.content}
+    '';
+    content = "<p>Hello world!</p>"; # <8>
     href = "index.html"; # <9>
-  }; # <10>
+  };
 
-in # <11>
-  styxLib.generateSite { pagesList = [ index ]; } # <12>
+in # <10>
+  styxLib.generateSite { pagesList = [ index ]; } # <11>
 ----
 
 <1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN, ... }: body` pattern. +
@@ -37,14 +40,13 @@ The arguments of the function are the dependencies needed to build the site.
 <3> This declare a `styxLib` variable that holds the styx library. `import` is used to importing a file. `${styx}/share/styx/lib` is a function and require an argument set. +
 <4> `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`. 
 <5> This declare an `index` variable as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
-<6> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `href`. This line declares the `layout` attribute that is a function that take the `template` attribute and return the page source. +
-`template:` is different from the first point function head, this function use a simple parameter (Point one was using an attribute set parameter).
-<7> This declare a `template` attribute. `template` is a function that takes the page attribute set, `index` in this case as a parameter and generate a result that will be passed to the `layout` function.
+<6> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `href`. This line declares the `layout` attribute that is a function that take the `template` argument and return the page source. +
+`template:` form is different from the first point function head, this function use a simple parameter (Point one was using a deconstructed attribute set parameter).
+<7> This declare a `template` attribute. `template` is a function that takes the page attribute set, `page` in this case as a parameter and generate a result that will be passed to the `layout` function.
 <8> This declare a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
 <9> This declare a `href` attribute. The `href` attribute is used to specify the path of the page to be generated.
-<10> Closing the `index` page attribute set.
-<11> The `in` mark the end of the `let` declaration, this means `lib` and `index` will be available in the next expression.
-<12> This generate the site by using the library `generateSite` function, its parameter is an attribute set with the argument `pagesList` being a list of the single `index` page.
+<10> The `in` mark the end of the `let` declaration, this means `lib` and `index` will be available in the next expression.
+<11> This generate the site by using the library `generateSite` function, its parameter is an attribute set with the argument `pagesList` being a list of the single `index` page.
 
 Everything is ready, the "Hello world!" site preview can be generated.
 
@@ -78,7 +80,7 @@ But the `styx new` command will generate a few more files for convenience.
 <2> `readme.md` provides some basic information about how to start using styx.
 <3> `site.nix` is the main file for site generation, see <<sitenix>> for details.
 <4> `data/` is an empty directory meant to hold site data.
-<5> `themes/` is an empty directory meant to hold site themes.
+<5> `themes/` is an empty directory meant to hold custom themes.
 
 NOTE: The file structure of styx is totally free and can be changed at will. +
 It is even possible to change the name of `site.nix`. In that case the `--file` flag of the styx command can be used to specify the file name.
@@ -88,7 +90,7 @@ It is even possible to change the name of `site.nix`. In that case the `--file` 
 
 The `site.nix` used in the <<Hello world!>> example contains only enough code to generate a single page. It is likely that a `site.nix` to generate a normal site will contain more informations.
 
-The extreme case is the `showcase` theme example site `site.nix` that use every feature available.
+The extreme case is the `showcase` theme example site `site.nix` that use almost every feature available.
 
 It is best practice to divide `site.nix` in multiple sections, with each section handling a particular topic. +
 It is common to use the following sections:
@@ -106,7 +108,7 @@ It is common to use the following sections:
 ====
 `site.nix` is a function:
 
-- taking at least the styx library as an argument.
+- taking at least nixpkgs `lib`, `styx`, `runCommand` and `writetext` attributes.
 - returning the `generateSite` function.
 ====
 
@@ -116,11 +118,11 @@ It is common to use the following sections:
 - taking at least the list of pages set to generate as an argument.
 - that evaluate each page set with `page.layout (page.template page)` and output the result in `page.href`.
 - returning a generated static site.
+
+NOTE: `generateSite` is a wrapper for nixpkgs `runCommand` function.
 ====
 
-====
-Everything that is between the top function head and `generateSite` is meant to prepare the arguments for `generateSite`.
-====
+NOTE: Everything that is between the top function head and `generateSite` is meant to prepare the arguments for `generateSite`.
 
 ==== Init
 
@@ -174,7 +176,7 @@ let
 [[site.nix-themes]]
 ==== Themes
 
-This section is where used themes are declared. Themes are a central concept in styx and provide ways to manage site assets in a very flexible manner.
+This section is where used themes are declared. Themes are a central concept in styx and provide ways to manage site assets in a flexible manner.
 
 Themes are detailed in the <<Themes>> section.
 
@@ -191,7 +193,7 @@ Themes are detailed in the <<Themes>> section.
   themes = [ styx-themes.showcase ]; # <1>
 ----
 
-<1> `themes` is a list so it is possible to set multiple themes at the same time. Themes at the beginning of the list have a higher priority. +
+<1> `themes` is a list so it is possible to set multiple themes at the same time to combine them. Themes at the beginning of the list have a higher priority. +
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
 
 
@@ -217,7 +219,7 @@ Normal sites should not require custom environments, but they can become useful 
 
   /* Default template environment
   */
-  defaultEnvironment = { inherit conf styxLib templates data; }; # <1>
+  defaultEnvironment = { inherit conf templates data; lib = styxLib; }; # <1>
 
   /* Custom environments for specific templates
   */
@@ -227,11 +229,11 @@ Normal sites should not require custom environments, but they can become useful 
 <1> This declare the default environment thet should feed most of needs.
 <2> Custom template environments are detailed in the template section.
 
-NOTE: `defaultEnvironment` refers to not yet declared variables, but it is not a problem as the let block allows to access any variable declared or that will be declared in it.
+NOTE: `defaultEnvironment` refers to not yet declared variables, but it is not a problem as a let block allows to access any variable declared or that will be declared in it.
 
 ==== Data
 
-The data section is responsible for loading data used in the site.
+The data section is responsible for loading the data used in the site.
 
 The <<Data>> section explains in detail how to manage data.
 
@@ -254,7 +256,7 @@ The <<Data>> section explains in detail how to manage data.
 
 ==== Pages
 
-The pages section is used to declare the pages generated by `generateSite`. +
+The pages section is used to declare the pages that will be generated by `generateSite`. +
 Even if `generateSite` expects a page list, it is usually declared as an attribute set for convenience.
 
 There are multiple functions available to generate different type of pages, but a page is ultimately an attribute set with at least the `layout`, `template` and `href` attribute defined.
@@ -280,10 +282,10 @@ The <<Pages>> section explains in detail how to create pages.
   };
 ----
 
-<1> `//` is the operator to merge attribute sets, this merge the `data.about` set attributes in the `pages.about` attribute set.
+<1> `//` is the operator to merge attribute sets, this merge the `data.about` data attribute set in the `pages.about` page attribute set.
 
 NOTE: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "arguments preparation" section. +
-Only pages that use a different layout explicitly set it in `pages`.
+Only pages that use a different layout usually explicitly set it in `pages`.
 
 ==== Argument preparation
 
@@ -329,7 +331,7 @@ This is the final part and shortest section of `site.nix`. This section consists
 in generateSite { inherit files pagesList substitutions; }
 ----
 
-NOTE: `files` is automatically generated in the init section with the enabled themes.
+NOTE: `files` is automatically generated in the init section using enabled themes.
 
 NOTE: `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
 
@@ -340,7 +342,7 @@ Styx is configured with the `conf.nix` file present in the site root directory.
 
 This files consists in an attribute set defining configuration options, and custom attributes can be added at will.
 
-The main configuration is made through themes via the `theme` attribute. Every theme defines some set of configuration that can be override in `conf.nix` `theme` attribute.
+The main configuration is made through themes via the `theme` attribute. Every theme defines some set of configuration options that can be overridden in `conf.nix` `theme` attribute.
 
 `siteUrl` is the only required field, and must not end with a slash.
 

@@ -18,7 +18,6 @@ This is a two step process:
 - clone the repository in the `gh-pages` folder
 - create a new empty `gh-pages` branch in the `gh-pages` folder
 
-
 ==== Update the gh-pages branch
 
 `styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder folder with the generated static site and commit it to the `gh-pages` branch.

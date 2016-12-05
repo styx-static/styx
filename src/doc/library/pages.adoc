@@ -111,10 +111,7 @@ pages.about = mkMultipages ({
 } // data.about);
 ----
 
-[TIP]
-====
-Any extra arguments to `mkMultipages` will be forwarded to every page set.
-====
+TIP: Any extra arguments to `mkMultipages` will be forwarded to every page set.
 
 NOTE: For details see the <<Multipages>> section.
 

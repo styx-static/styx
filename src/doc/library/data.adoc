@@ -21,7 +21,7 @@ Example:::
 ----
 data.drafts = loadDir {
   dir = ./drafts;
-  extraAttrs = { isDraft = true; };
+  isDraft = true;
 });
 ----
 
