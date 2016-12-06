@@ -54,24 +54,13 @@ Deploy options:
 EOF
 # Dev options:
 #   --DEBUG                    set -x mode
+#   --build-path PATH          Do not build the site and use PATH instead, used for tests.
     exit 0
 }
 
 # last changed timestamp
 last_timestamp() {
   find $1 ! -path '*.git/*' ! -name '*.swp' ! -path 'gh-pages/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
-}
-
-# last changed date
-last_change() {
-  lastTimestamp=$(last_timestamp $1)
-  date -d @"$lastTimestamp" -u +%Y-%m-%dT%TZ
-}
-
-
-# current branch name
-current_branch(){
-  git rev-parse --symbolic-full-name --abbrev-ref HEAD
 }
 
 nix_error () {
@@ -102,6 +91,12 @@ check_git () {
   fi
 }
 
+# build the site in the nix store
+store_build () {
+  nix-build "$builder" --no-out-link "${extraFlags[@]}"
+}
+
+
 #-------------------------------
 
 # Variables
@@ -126,9 +121,10 @@ builder="$share/builder.nix"
 debug=
 # extra arguments to be appended to the nix-build command
 extraFlags=()
-#("--argstr" "styxLib" "$styxLib")
 # main site file
 siteFile="site.nix"
+# set to a path to bypass the site build
+sitePath=
 
 # default new-theme name
 themeName=
@@ -270,6 +266,9 @@ while [ "$#" -gt 0 ]; do
     --DEBUG)
       set -x
       ;;
+    --site-path)
+      sitePath="$1"; shift 1
+      ;;
     *)
       echo "$0: unknown option \`$i'"
       exit 1
@@ -339,7 +338,7 @@ if [ "$action" = build ]; then
   fi
   echo "Building the site..."
   extraFlags+=("--arg" "siteFile" "$in/$siteFile")
-  path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
+  path=$(store_build)
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -370,16 +369,20 @@ fi
 #-------------------------------
 
 if [ "$action" = serve ]; then
-  check_styx $in $siteFile
-  if [ "$siteUrl" = "PREVIEW" ]; then
-    extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
-  elif [ -n "$siteUrl" ]; then
-    extraFlags+=("--argstr" "siteUrl" "$siteUrl")
-  fi
-  extraFlags+=("--arg" "siteFile" "$in/$siteFile")
-  path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
-  if [ $? -ne 0 ]; then
-    nix_error
+  if [ -z $sitePath ]; then
+    check_styx $in $siteFile
+    if [ "$siteUrl" = "PREVIEW" ]; then
+      extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
+    elif [ -n "$siteUrl" ]; then
+      extraFlags+=("--argstr" "siteUrl" "$siteUrl")
+    fi
+    extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+    path=$(store_build)
+    if [ $? -ne 0 ]; then
+      nix_error
+    fi
+  else
+    path="$sitePath"
   fi
   if [ -n "$detachServer" ]; then
     $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
@@ -407,7 +410,7 @@ if [ "$action" = live ]; then
   # building to result a first time
   extraFlags+=("--arg" "siteFile" "$in/$siteFile")
   extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
-  path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
+  path=$(store_build)
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -422,7 +425,7 @@ if [ "$action" = live ]; then
     if [ "$curLastChange" -gt "$lastChange" ]; then
       # rebuild
       echo "Change detected, rebuilding..."
-      path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
+      path=$(store_build)
       if [ $? -ne 0 ]; then
         echo "There were errors in site generation, server restart is skipped until the site generation success."
       else
@@ -484,12 +487,16 @@ if [ "$action" = deploy ]; then
       cd $in
       rev=$(git rev-parse --short HEAD)
 
-      echo "Building the site"
-      extraFlags+=("--arg" "siteFile" "$in/$siteFile")
-      path=$(nix-build "$builder" --no-out-link "${extraFlags[@]}")
-      if [ $? -ne 0 ]; then
-        nix_error
-        exit 1
+      if [ -z $sitePath ]; then
+        echo "Building the site"
+        extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+        path=$(store_build)
+        if [ $? -ne 0 ]; then
+          nix_error
+          exit 1
+        fi
+      else
+        path="$sitePath"
       fi
 
       cd gh-pages

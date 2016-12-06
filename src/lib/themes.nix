@@ -32,12 +32,12 @@ in
      This load the themes configuration in a set, splitting in two keys
 
       - theme: set containing all the themes conf merged
-      - themes.NAME: the theme configuration as it is delcared
+      - themes.NAME: the theme configuration as it is declared
 
-     This theme configuration:
+     For example a foo theme configuration:
 
        {
-         themes.foo = {
+         themes = {
            bar = "hello";
            baz = 5; };
        }
