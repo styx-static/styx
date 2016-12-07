@@ -19,7 +19,7 @@ let
 
 in
 
-{
+rec {
 
   /* Open a site in a browser with:
 
