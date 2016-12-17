@@ -1,13 +1,15 @@
 { conf, lib, ... }:
 with lib;
 page:
-let content =
+let
+  title = "${page.taxonomy}: ${page.term}";
+  content =
 ''
-  <h1>${page.taxonomy}: ${page.title}</h1>
+  <h1>${title}</h1>
   <ul>
     ${mapTemplate (value: ''
       <li><a href="${conf.siteUrl}/${value.href}">${value.title}</a></li>
     '') page.values}
   </ul>
 '';
-in page // { inherit content; }
+in page // { inherit content title; }
