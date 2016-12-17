@@ -1,9 +1,11 @@
 { conf, lib, ... }:
 with lib;
 page:
-let content =
+let 
+  title = page.taxonomy;
+  content =
 ''
-  <h1>${page.title}</h1>
+  <h1>${title}</h1>
   <ul>
   ${mapTemplate (prop:
   let term   = proplist.propKey   prop;
@@ -14,4 +16,4 @@ let content =
   '') (sortTerms page.terms)}
   </ul>
 '';
-in page // { inherit content; }
+in page // { inherit content title; }
