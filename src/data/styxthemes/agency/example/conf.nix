@@ -1,6 +1,6 @@
 {
   # URL of the site, must be set to the url of the domain the site will be deployed
-  siteUrl = "http://yourdomain.com";
+  siteUrl = "https://styx-static.github.io/styx-theme-agency";
 
   # Theme specific settings
   # it is possible to override any of the theme configuration here

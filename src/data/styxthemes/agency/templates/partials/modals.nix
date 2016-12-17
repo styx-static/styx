@@ -19,7 +19,7 @@ ${mapTemplateWithIndex (index: project: ''
               <h2>${project.title}</h2>
               <p class="item-intro text-muted">${project.subtitle}</p>
               <img class="img-responsive img-centered" src="${conf.siteUrl}/img/portfolio/${project.img}" alt="">
-              <p>${project.content}</p>
+              ${project.content}
               <ul class="list-inline">
                 <li>${project.date}</li>
                 <li>Client: <a href="${project.clientLink}">${project.client}</a></li>

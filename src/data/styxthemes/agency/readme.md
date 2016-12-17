@@ -29,3 +29,7 @@ Thanks to
 
 - [David Miller](https://github.com/davidtmiller) for creating this theme
 - [digitalcraftsman](https://github.com/digitalcraftsman) for porting the theme to hugo
+
+## Preview
+
+![Preview](/screen.png)
