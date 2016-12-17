@@ -3,37 +3,16 @@
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ lib, styx, styx-themes, runCommand, writeText
-, renderDrafts ? false
-, siteUrl ? null
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
 }@args:
 
-let styxLib = import "${styx}/share/styx/lib" {
-  inherit lib;
-  pkgs = { inherit styx runCommand writeText; };
-};
-in with styxLib;
+rec {
 
-let
-
-  /* Configuration loading
+  /* Library loading
   */
-  conf = let
-    conf       = import ./conf.nix;
-    themesConf = styxLib.themes.loadConf themes;
-    mergedConf = recursiveUpdate themesConf conf;
-  in
-    overrideConf mergedConf args;
-
-  /* Load themes templates
-  */
-  templates = styxLib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments;
-  };
-
-  /* Load themes static files
-  */
-  files = styxLib.themes.loadFiles themes;
+  styxLib = import styx.lib args;
 
 
 /*-----------------------------------------------------------------------------
@@ -41,42 +20,44 @@ let
 
 -----------------------------------------------------------------------------*/
 
-  /* Themes used
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
   */
-  themes = [ ../. ];
+  themes = [
+    ../.
+  ];
 
-
-/*-----------------------------------------------------------------------------
-   Template environments
-
------------------------------------------------------------------------------*/
-
-  /* Default template environment
+  /* Loading the themes data
   */
-  defaultEnvironment = { inherit conf templates data pages; lib = styxLib; };
-
-  /* Custom environments for specific templates
-  */
-  customEnvironments = {
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    templates.extraEnv = { inherit data pages; };
+    conf.extra = [ (import ./conf.nix) extraConf ];
   };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates;
 
 
 /*-----------------------------------------------------------------------------
    Data
 
    This section declares the data used by the site
-   the data set is included in the default template environment
 -----------------------------------------------------------------------------*/
 
-  data = {
+  data = with lib; {
+
     # loading a single page
     about  = loadFile { dir = ./data/pages; file = "about.md"; };
+
     # loading a list of contents
     posts  = let
       postsList = loadDir { dir = ./data/posts; };
       # include drafts only when renderDrafts is true
-      draftsList = optionals renderDrafts (loadDir { dir = ./data/drafts; isDraft = true; });
+      draftsList = optionals (conf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
+
     # Navbar data
     navbar = [
       pages.about
@@ -84,8 +65,13 @@ let
       { title = "RSS";  href = "${conf.siteUrl}/${pages.feed.href}"; }
       { title = "Styx"; href = "https://styx-static.github.io/styx-site/"; }
     ];
+
     # posts taxonomies
-    taxonomies.posts = mkTaxonomyData { data = pages.posts; taxonomies = [ "tags" "level" ]; };
+    taxonomies.posts = mkTaxonomyData {
+      data = pages.posts;
+      taxonomies = [ "tags" "level" ];
+    };
+
   };
 
 
@@ -95,7 +81,7 @@ let
    This section declares the pages that will be generated
 -----------------------------------------------------------------------------*/
 
-  pages = rec {
+  pages = with lib.pages; rec {
 
     /* Index page
        Example of splitting a list of items through multiple pages
@@ -117,7 +103,7 @@ let
       href = "about.html";
       template = templates.generic.full;
       # setting breadcrumbs
-      breadcrumbs = [ (head index) ];
+      breadcrumbs = [ (lib.head index) ];
     } // data.about;
 
     /* RSS feed page
@@ -126,8 +112,8 @@ let
       href = "feed.xml";
       template = templates.feed;
       # Bypassing the layout
-      layout = id;
-      items = take 10 pages.posts;
+      layout = lib.id;
+      items = lib.take 10 pages.posts;
     };
 
     /* 404 error page
@@ -143,14 +129,14 @@ let
       data = data.posts;
       hrefPrefix = "posts/";
       template = templates.post.full;
-      breadcrumbs = [ (head pages.index) ];
+      breadcrumbs = [ (lib.head pages.index) ];
     };
 
     postsArchive = mkSplit {
       title = "Archives";
       baseHref = "archive/post";
       template = templates.archive;
-      breadcrumbs = [ (head index) ];
+      breadcrumbs = [ (lib.head index) ];
       itemsPerPage = 15;
       data = pages.posts;
     };
@@ -164,7 +150,7 @@ let
       data = data.posts;
       hrefPrefix = "posts/";
       template = templates.post.full;
-      breadcrumbs = [ (head pages.index) ];
+      breadcrumbs = [ (lib.head pages.index) ];
     };
 
     /* Taxonomy related pages
@@ -184,22 +170,22 @@ let
   sitemap = {
     href = "sitemap.xml";
     template = templates.sitemap;
-    layout = id;
-    urls = pagesToList pages;
+    layout = lib.id;
+    urls = lib.pagesToList { inherit pages; };
   };
-  
-
 
 /*-----------------------------------------------------------------------------
-   generateSite arguments preparation
+   Site rendering
 
 -----------------------------------------------------------------------------*/
 
-  pagesList = let
+  pagesList = 
     # converting pages attribute set to a list
-    list = (pagesToList pages) ++ [ sitemap ];
-    # setting a default layout
-    in map (setDefaultLayout templates.layout) list;
+    (lib.pagesToList {
+      inherit pages;
+      default = { layout = templates.layout; };
+    })
+    ++ [ sitemap ];
 
   /* Substitutions
   */
@@ -207,10 +193,9 @@ let
     siteUrl = conf.siteUrl;
   };
 
+  site = lib.generateSite {
+    inherit files pagesList substitutions;
+    meta = (import ./meta.nix) { inherit lib; };
+  };
 
-/*-----------------------------------------------------------------------------
-   Site rendering
-
------------------------------------------------------------------------------*/
-
-in generateSite { inherit files pagesList substitutions; }
+}

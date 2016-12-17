@@ -1,6 +1,7 @@
 /* NavBar template, generate a navbar from data.navbar
 */
 { templates, lib, conf, data, ... }:
+page:
 with lib;
 ''
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -21,7 +22,7 @@ with lib;
       <ul class="nav navbar-nav navbar-right">
         ${mapTemplate (item:
         ''
-          <li><a ${htmlAttr "href" (if (isExternalHref item.href) then "${item.href}" else "${conf.siteUrl}/${item.href}")}>${item.title}</a></li>
+          <li ${optionalString (page.href == item.href) (htmlAttr "class" "active")}><a ${htmlAttr "href" (if (isExternalHref item.href) then "${item.href}" else "${conf.siteUrl}/${item.href}")}>${item.title}</a></li>
         '') data.navbar}
       </ul>
       ''}

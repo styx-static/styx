@@ -11,7 +11,7 @@ with lib;
 
   <body>
 
-    ${templates.partials.navbar.main}
+    ${templates.partials.navbar.main page}
 
     <div class="page-content">
       <div class="container wrapper">
