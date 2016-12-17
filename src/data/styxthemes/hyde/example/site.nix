@@ -3,38 +3,16 @@
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-
-{ lib, styx, styx-themes, runCommand, writeText
-, renderDrafts ? false
-, siteUrl ? null
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
 }@args:
 
-let styxLib = import "${styx}/share/styx/lib" {
-  inherit lib;
-  pkgs = { inherit styx runCommand writeText; };
-};
-in with styxLib;
+rec {
 
-let
-
-  /* Configuration loading
+  /* Library loading
   */
-  conf = let
-    conf       = import ./conf.nix;
-    themesConf = styxLib.themes.loadConf themes;
-    mergedConf = recursiveUpdate themesConf conf;
-  in
-    overrideConf mergedConf args;
-
-  /* Load themes templates
-  */
-  templates = styxLib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments;
-  };
-
-  /* Load themes static files
-  */
-  files = styxLib.themes.loadFiles themes;
+  styxLib = import styx.lib args;
 
 
 /*-----------------------------------------------------------------------------
@@ -42,43 +20,39 @@ let
 
 -----------------------------------------------------------------------------*/
 
-  /* Themes used
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
   */
-  themes = [ ../. ];
+  themes = [
+    ../.
+  ];
 
-
-/*-----------------------------------------------------------------------------
-   Template environments
-
------------------------------------------------------------------------------*/
-
-
-  /* Default template environment
+  /* Loading the themes data
   */
-  defaultEnvironment = { inherit conf templates data; lib = styxLib; };
-
-  /* Custom environments for specific templates
-  */
-  customEnvironments = {
-    partials.head = defaultEnvironment // { feed = pages.feed; };
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    templates.extraEnv = { inherit data pages; };
+    conf.extra = [ (import ./conf.nix) extraConf ];
   };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates;
 
 
 /*-----------------------------------------------------------------------------
    Data
 
    This section declares the data used by the site
-   the data set is included in the default template environment
 -----------------------------------------------------------------------------*/
 
-  data = {
+  data = with lib; {
     # loading a single page
-    about  = loadFile { dir = ./pages; file = "about.md"; };
+    about  = loadFile { dir = ./data/pages; file = "about.md"; };
     # loading a list of contents
     posts  = let
-      postsList = loadDir { dir = ./posts; };
-      # include drafts only when renderDrafts is true
-      draftsList = optionals renderDrafts (loadDir { dir = ./drafts; isDraft = true; });
+      postsList = loadDir { dir = ./data/posts; };
+      draftsList = optionals (extraConf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
     menus = [ pages.about ];
   };
@@ -90,7 +64,7 @@ let
    This section declares the pages that will be generated
 -----------------------------------------------------------------------------*/
 
-  pages = rec {
+  pages = with lib; rec {
 
     /* Index page
        Splitting a list of items through multiple pages
@@ -133,8 +107,15 @@ let
       data = data.posts;
       hrefPrefix = "posts/";
       template = templates.post.full;
-      # Template for multi page contents
-      multipageTemplate = templates.post.full-multipage;
+      breadcrumbs = [ (head pages.index) ];
+    };
+
+    /* Multipages handling
+    */
+    postsMultiTail = mkMultiTail {
+      data = data.posts;
+      hrefPrefix = "posts/";
+      template = templates.post.full;
       breadcrumbs = [ (head pages.index) ];
     };
 
@@ -142,20 +123,16 @@ let
 
 
 /*-----------------------------------------------------------------------------
-   generateSite arguments preparation
-
------------------------------------------------------------------------------*/
-
-  pagesList = let
-    # converting pages attribute set to a list
-    list = pagesToList pages;
-    # setting a layout to pages without one
-    in map (setDefaultLayout templates.layout) list;
-
-
-/*-----------------------------------------------------------------------------
    Site rendering
 
 -----------------------------------------------------------------------------*/
 
-in generateSite { inherit files pagesList; }
+  # converting pages attribute set to a list
+  pagesList = lib.pagesToList {
+    inherit pages;
+    default = { layout = templates.layout; };
+  };
+
+  site = lib.generateSite { inherit files pagesList; };
+
+}
