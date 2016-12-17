@@ -103,42 +103,44 @@ rec {
                 href=$(echo "$href" | sed -r 's/[^.]+$/css/')
                 [ -f "$out/$href" ] && rm $out/$href
                 (
-                  sass $input 2>/dev/null > $out/$href
+                  sass $input 2>/dev/null > "$out/$href"
                   if [ ! -s "$out/$href" ]; then
                     echo "Warning: could not build '$href'"
                   fi
                 ) || (
-                  [ -f "$out/$href" ] && rm $out/$href
+                  [ -f "$out/$href" ] && rm "$out/$href"
                   echo "Warning: could not build '$href'"
                 )
               ;;
               *)
-                [ -f "$out/$href" ] && rm $out/$href
+                [ -f "$out/$href" ] && rm "$out/$href"
                 if [ "$hasSubs" ]; then
-                  cp $input $out/$href
+                  cp "$input" "$out/$href"
                 else
-                  ln -s $input $out/$href
+                  ln -s "$input" "$out/$href"
                 fi;
               ;;
             esac
 
           else
-            [ -f "$out/href" ] && rm $out/href
-            ln -s $file $out/$href
+            [ -f "$out/href" ] && rm "$out/href"
+            ln -s "$file" "$out/$href"
           fi
         done;
       '') files}
 
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
-        mkdir -p $(dirname $out/${page.href})
+        mkdir -p "$(dirname "$out/${page.href}")"
         page=${pkgs.writeText "styx-site-page" (page.layout (page.template page))}
-        run_subs $page
+        run_subs "$page"
         if [ $(cmp --silent subs $page || echo 1) ]; then
-          mkdir -p $(dirname $out/${page.href})
-          cp subs $out/${page.href}
+          mkdir -p "$(dirname $out/${page.href})"
+          cp "subs" "$out/${page.href}"
         else
-          ln -s $page $out/${page.href}
+          echo "$page"
+          echo "$out/${page.href}"
+          ln -s "$page" "$out/${page.href}"
         fi
       '') pagesList}
 

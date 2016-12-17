@@ -1,5 +1,5 @@
 { pkgs ? import <nixpkgs> {}
-, siteUrl ? null
-, siteFile }:
+, siteFile
+, extraConf }:
 
-pkgs.callPackage (import siteFile) { inherit siteUrl; }
+pkgs.callPackage (import siteFile) { inherit extraConf; }

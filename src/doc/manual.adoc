@@ -33,6 +33,8 @@ include::pages.adoc[]
 
 include::generation.adoc[]
 
+include::debugging.adoc[]
+
 include::deployment.adoc[]
 
 include::library.adoc[]

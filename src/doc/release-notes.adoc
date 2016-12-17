@@ -1,5 +1,28 @@
 == Release Notes
 
+=== Styx 0.5.0 - 201X/XX/XX
+
+Highlights:
+
+- <<Debugging,Interactive debugging>>
+- <<Basics,simpler>> `site.nix`
+- posts timestamps now support time
+
+Bug fixes:
+
+- filename containing spaces are correctly generated.
+- `conf.themes` sub attributes are correctly set.
+
+Breaking Changes
+
+- Removal of the `state` variable in `site.nix`
+- `site.nix` was refactored
+- Themes `theme.nix` file **must** declare a `meta.name` attribute specifying the theme name.
+
+This release brings few major changes that make upgrading from 0.4.0 non trivial. +
+The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call.
+
+
 === Styx 0.4.0 - 2016/12/07
 
 Highlights:

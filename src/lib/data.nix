@@ -34,7 +34,7 @@ let
     let
       markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
       path = "${fileData.dir + "/${fileData.name}"}";
-      data = pkgs.runCommand "data" {
+      data = pkgs.runCommand "parsed-data" {
         buildInputs = [ pkgs.styx ];
       } ''
         # metablock separator
@@ -111,7 +111,7 @@ let
   parseFile = fileData:
     let
       # TODO make this regex stricter
-      m    = match "^(....-..-..)-(.*)" fileData.basename;
+      m    = match "^([0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}:[0-9]{2})?)?\-?(.*)$" fileData.basename;
       date = if m != null then { date = (elemAt m 0); } else {};
       path = "${fileData.dir + "/${fileData.name}"}";
       data =      if elem fileData.ext markupExts then parseMarkupFile fileData
@@ -143,7 +143,7 @@ let
 
   markupToHtml = markup: text:
     let
-      data = runCommand "data" {} ''
+      data = pkgs.runCommand "markup-data" {} ''
         mkdir $out
         echo -n "${text}" > $out/source
         ${commands."${markup}"} $out/source > $out/content

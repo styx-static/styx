@@ -7,13 +7,13 @@ It is possible to install styx with the following command:
 
 [source, shell]
 ----
-$ nix-env -i https://github.com/styx-static/styx/archive/latest.tar.gz
+$ nix-env -i styx
 ----
 
 For testing purposes, `nix-shell` can be used to start a temporary environment with styx without needing to install it:
 
 [source, shell]
 ----
-$ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
+$ nix-shell -p styx
 ----
 

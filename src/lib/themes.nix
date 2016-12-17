@@ -58,7 +58,11 @@ in
   fold (theme: set:
     let
       themeConf = import "${theme}/theme.nix";
-    in recursiveUpdate set ({ themes."${theme}" = themeConf; theme = themeConf; })
+    # TODO: show an error if a theme name is not set
+    in recursiveUpdate set {
+      themes."${themeConf.meta.name}" = themeConf;
+      theme = removeAttrs themeConf ["meta"];
+    }
   ) {} themes;
 
 
@@ -73,7 +77,7 @@ in
   */
   loadTemplates = {
     themes
-  , defaultEnvironment
+  , environment
   , customEnvironments ? {}
   }:
   fold (theme: set:
@@ -84,7 +88,7 @@ in
         let 
           env = if hasAttrByPath path customEnvironments
                    then getAttrFromPath path customEnvironments
-                   else defaultEnvironment;
+                   else environment;
           in if hasAttrByPath path set
                 then null
                 else import value env

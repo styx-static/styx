@@ -58,6 +58,11 @@ NOTE: Themes structure is one of the few part using implicit settings in styx.
 
 It is a simple attribute set that defines the theme configuration options with some default values.
 
+Theme meta information should also be declared in the `meta` attribute set. It is important that themes have a `meta.name` set for the configuration to be correctly processed. +
+Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
+
+IMPORTANT: `theme.nix` **must** have a `meta.name` attribute.
+
 [source, nix]
 .Example of a theme.nix
 ----
@@ -67,6 +72,9 @@ It is a simple attribute set that defines the theme configuration options with s
     author = "Your name";
     description = "Your description";
   };
+  meta = {
+    name = "my-theme";
+  };
 }
 ----
 
@@ -75,7 +83,7 @@ It is a simple attribute set that defines the theme configuration options with s
 
 - `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`.
 Templates that access themes configuration should use `conf.theme`.
-- `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration as it is declared in `theme.nix`.
+- `conf.themes.NAME`: `NAME` is the theme `meta.name` value, this holds the theme default configuration as it is declared in `theme.nix`.
 ====
 
 === Files
@@ -242,13 +250,17 @@ The default template environment consists in:
 
 NOTE: The template environment is set in `site.nix` and can be easily modified upon needs.
 
-It is possible to set a specific template environment to a specific template by declaring it in the `customTemplateEnvironments` set.
+It is possible to set a template environment for a specific template by declaring it in the `customTemplateEnvironments` argument of the <<lib.themes.loadTemplates,`loadTemplates`>> function.
 
 [source, nix]
 .Setting custom template environments
 ----
-  customEnvironments = {
-    layout = defaultEnvironment // { foo = "bar"; }; # <1>
+  templates = lib.themes.loadTemplates {
+    inherit themes;
+    environment = { inherit conf templates data pages lib; };
+    customEnvironments = {
+      layout =  { inherit conf templates data pages lib; foo = "bar"; }; # <1>
+    };
   };
 ----
 
@@ -335,7 +347,8 @@ Themes related files are automatically loaded in `site.nix` via the `lib.themes.
 .Loading theme related files
 ----
   templates = lib.themes.loadTemplates { # <1>
-    inherit themes defaultEnvironment customEnvironments;
+    inherit themes;
+    environment = { inherit conf templates data pages lib; };
   };
 
   files = lib.themes.loadFiles themes; # <2>
@@ -343,8 +356,8 @@ Themes related files are automatically loaded in `site.nix` via the `lib.themes.
   themes = [ styx-themes.showcase ];
 ----
 
-<1> Load themes templates. See <<themes.loadFiles,loadFiles>> for details.
-<2> Load themes files. See <<themes.loadTemplates,loadTemplates>> for details.
+<1> Load themes templates. See <<lib.themes.loadTemplates,loadTemplates>> for details.
+<2> Load themes files. See <<lib.themes.loadFiles,loadFiles>> for details.
 
 
 === Combining Themes
@@ -364,6 +377,7 @@ $ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix theme
 
 <1> Create the theme directory.
 <2> Copying `showcase` theme `layout.nix` to the `foo` theme.
+<3> Make changes to `foo` theme `layout.nix` file.
 
 After a new theme has been created, it must be declared in `site.nix` to be used.
 
@@ -376,4 +390,7 @@ After a new theme has been created, it must be declared in `site.nix` to be used
 <1> Using foo and showcase theme, with foo having a higher priority than default.
 
 TIP: Combining themes is the recommended way to extend an existing theme as it make theme upgrades easier.
+
+TIP: Higher granularity can be attained by specifying different list of themes to the `templates` and `files` attributes. +
+This is especially useful when only the templates of a theme are to be used.
 

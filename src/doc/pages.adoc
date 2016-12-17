@@ -90,7 +90,7 @@ pages.feed = {
   href = "feed.xml";
   template = templates.feed;
   posts = take 10 posts;
-  layout = id;
+  layout = lib.id;
 };
 ----
 
@@ -108,7 +108,7 @@ Split pages can be generated with the `mkSplit` or `mkSplitCustom` function. +
 [source, nix]
 .mkSplit example
 ----
-pages.archives = mkSplit {
+pages.archives = lib.mkSplit {
   baseHref = "archives";
   template = templates.archives;
   itemsPerPage = 5;
@@ -148,7 +148,7 @@ Multipages can be generated with the `mkMultipages` function.
 [source, nix]
 .mkMultipages example
 ----
-pages.about = mkMultipages ({
+pages.about = lib.mkMultipages ({
   template = templates.generic.full-multipage;
   baseHref = "about";
 } // data.about);
@@ -180,7 +180,7 @@ This could be done using `mkMultipages` and filtering / mapping, but a `mkPageLi
 [source, nix]
 .Generating the page list with multipage head pages
 ----
-pages.posts = mkPageList {
+pages.posts = lib.mkPageList {
   data = data.posts; # <1>
   multipageTemplate = templates.post.full-multipage; # <2>
   template = templates.post.full;
@@ -201,7 +201,7 @@ Next step is to generate the `tail` of the multipages posts.
 [source, nix]
 .Generating the multipage posts tail
 ----
-pages.multiPostsTail = mkMultiTail {
+pages.multiPostsTail = lib.mkMultiTail {
   data = data.posts;
   template = templates.post.full-multipage;
 };
@@ -220,11 +220,11 @@ Taxonomies pages can be generated from a taxonomy data structure with the `mkTax
 
 [source, nix]
 ----
-  taxonomies = mkTaxonomyPages {
-    data = data.taxonomies;
-    taxonomyTemplate = templates.taxonomy.full;
-    termTemplate = templates.taxonomy.term.full;
-  };
+taxonomies = lib.mkTaxonomyPages {
+  data = data.taxonomies;
+  taxonomyTemplate = templates.taxonomy.full;
+  termTemplate = templates.taxonomy.term.full;
+};
 ----
 
 The `mkTaxonomyPages` function will create the following page attribute sets:

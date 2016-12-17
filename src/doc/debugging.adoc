@@ -1,0 +1,35 @@
+== Debugging
+
+The `nix-repl` utility can be used to debug a styx site.
+
+.Inspect the `conf` set
+----
+$ nix-shell -p nix-repl
+$ nix-repl
+nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
+nix-repl> site.conf
+{ siteUrl = "http://yourdomain.com"; theme = { ... }; themes = { ... }; }
+----
+
+It is also possible to render templates in nix-repl.
+
+.Viewing a page source
+----
+nix-repl> site = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
+nix-repl> site.templates.layout (site.pages.about.template site.pages.about)
+"<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
+----
+
+The full site can even be rendered.
+
+.Building a site
+----
+nix-repl> site = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
+nix-repl> :b site.site
+...
+this derivation produced the following outputs:
+  out -> /nix/store/ak6h49a9h7asysv91nf31nhd5h7fgzhi-styx-site
+----
+
+WARNING: Some functions that use the propagated build inputs of the styx package like `lib.data.markdownToHtml` do not work in a nix-repl environment.
+

@@ -26,12 +26,13 @@ stdenv.mkDerivation rec {
     multimarkdown
   ];
 
+  outputs = [ "out" "lib" ];
+
   installPhase = ''
     mkdir $out
     install -D -m 777 styx.sh $out/bin/styx
 
     mkdir -p $out/share/styx
-    cp -r lib $out/share/styx
     cp -r scaffold $out/share/styx
     cp    builder.nix $out/share/styx
 
@@ -40,6 +41,9 @@ stdenv.mkDerivation rec {
 
     substituteAllInPlace $out/bin/styx
     substituteAllInPlace $out/share/doc/styx/index.html
+
+    mkdir $lib
+    cp -r lib/* $lib
   '';
 
   meta = with stdenv.lib; {

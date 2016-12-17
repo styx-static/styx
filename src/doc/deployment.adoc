@@ -49,7 +49,7 @@ link:http://nixos.org/nixops/[NixOps] is a deployment tool for NixOS configurati
         server {
           listen 80;
           location / {
-            root ${pkgs.callPackage ./site.nix {}}; # <5>
+            root ${(pkgs.callPackage ./site.nix {}).site}; # <5>
           }
         }
       '';

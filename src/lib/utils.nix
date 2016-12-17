@@ -2,14 +2,15 @@
 
 lib:
 with lib;
+with (import ./themes.nix lib);
 
 {
 
-  /* Override the conf attribute set with an attribute set.
-     Update is recursive and only keys with a non-null value are updated.
+  /* load the site configuration
   */
-  overrideConf = conf: override:
-    conf // (filterAttrs (k: v: (hasAttr k conf) && (v != null)) override);
+  loadConf = { file, themes, extraConf ? {} }:
+    (recursiveUpdate (loadConf themes) (import file)) // extraConf;
+
 
   /* split a list in multiple lists of k size
   */

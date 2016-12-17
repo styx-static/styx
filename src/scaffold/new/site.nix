@@ -4,37 +4,32 @@
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
 
-{ lib, styx, styx-themes, runCommand, writeText
-, renderDrafts ? false
-, siteUrl ? null
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
 }@args:
 
-let styxLib = import "${styx}/share/styx/lib" {
-  inherit lib;
-  pkgs = { inherit styx runCommand writeText; };
-};
-in with styxLib;
+rec {
 
-let
+  lib = import styx.lib args;
 
   /* Configuration loading
   */
-  conf = let
-    conf       = import ./conf.nix;
-    themesConf = styxLib.themes.loadConf themes;
-    mergedConf = recursiveUpdate themesConf conf;
-  in
-    overrideConf mergedConf args;
-
-  /* Load themes templates
-  */
-  templates = styxLib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments;
+  conf = lib.utils.loadConf {
+    file = ./conf.nix;
+    inherit themes extraConf;
   };
 
-  /* Load themes static files
+  /* Themes templates loading
   */
-  files = styxLib.themes.loadFiles themes;
+  templates = lib.themes.loadTemplates {
+    inherit themes;
+    environment = { inherit conf templates data pages lib; };
+  };
+
+  /* Themes static files loading
+  */
+  files = lib.themes.loadFiles themes;
 
 
 /*-----------------------------------------------------------------------------
@@ -53,25 +48,9 @@ let
 
 
 /*-----------------------------------------------------------------------------
-   Template environments
-
------------------------------------------------------------------------------*/
-
-  /* Default template environment
-  */
-  defaultEnvironment = { inherit conf templates data pages; lib = styxLib; };
-
-  /* Custom environments for specific templates
-  */
-  customEnvironments = {
-  };
-
-
-/*-----------------------------------------------------------------------------
    Data
 
    This section declares the data used by the site
-   the data set is included in the default template environment
 -----------------------------------------------------------------------------*/
 
   data = {
@@ -91,24 +70,14 @@ let
 
 
 /*-----------------------------------------------------------------------------
-   generateSite arguments preparation
+   Site
 
 -----------------------------------------------------------------------------*/
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = pagesToList pages;
+  pagesList = lib.pagesToList pages;
 
-  /* Substitutions
-  */
-  substitutions = {
-    siteUrl = conf.siteUrl;
-  };
+  site = lib.generateSite { inherit files pagesList; };
 
-
-/*-----------------------------------------------------------------------------
-   Site rendering
-
------------------------------------------------------------------------------*/
-
-in generateSite { inherit files pagesList substitutions; }
+}

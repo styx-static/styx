@@ -20,7 +20,7 @@ Example:::
 +
 [source, nix]
 ----
-themesConf = styxLib.themes.loadConf themes;
+themesConf = lib.themes.loadConf themes;
 ----
 
 ---
@@ -38,7 +38,7 @@ Example:::
 +
 [source, nix]
 ----
-files = styxLib.themes.loadFiles themes;
+files = lib.themes.loadFiles themes;
 ----
 
 ---
@@ -50,7 +50,7 @@ Description::: Load themes templates.
 Parameter Type::: Attribute Set
 Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
-  * `defaultEnvironment`: The default template environment.
+  * `environment`: The default template environment.
   * `customEnvironments`: (optional) A set which attributea are template paths and the values template environments.
 Return::: An attribute set containing all the themes template with their environment applied. 
 Example:::
@@ -58,8 +58,9 @@ Example:::
 +
 [source, nix]
 ----
-templates = styxLib.themes.loadTemplates {
-  inherit themes defaultEnvironment customEnvironments;
+templates = lib.themes.loadTemplates {
+  inherit themes;
+  environment = { inherit conf templates data pages lib; };
 };
 ----
 

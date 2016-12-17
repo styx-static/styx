@@ -11,42 +11,39 @@ Let's look at a very basic example of a styx site.
 [source, nix]
 .Hello world!
 ----
-{ lib, styx, runCommand, writeText, ... }: # <1>
+{ lib, styx, runCommand, writeText, ... }@args: # <1>
 
-let # <2>
+rec { # <2>
 
-  styxLib = import "${styx}/share/styx/lib" { # <3>
-    inherit lib; # <4>
-    pkgs = { inherit styx runCommand writeText; };
-  };
+  lib = import styx.lib args; # <3>
 
-  index = { # <5>
-    layout = template: "<html><body>${template}</body></html>"; # <6>
-    template = page: '' # <7>
+  index = { # <4>
+    layout = template: "<html><body>${template}</body></html>"; # <5>
+    template = page: '' # <6>
       <h1>Styx example page</h1>
       ${page.content}
     '';
-    content = "<p>Hello world!</p>"; # <8>
-    href = "index.html"; # <9>
+    content = "<p>Hello world!</p>"; # <7>
+    href = "index.html"; # <8>
   };
 
-in # <10>
-  styxLib.generateSite { pagesList = [ index ]; } # <11>
+  site = lib.generateSite { pagesList = [ index ]; }; # <9>
+
+}
 ----
 
 <1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN, ... }: body` pattern. +
-The arguments of the function are the dependencies needed to build the site.
-<2> `let` is a special construction to declare local variables, a `let` block must finish by a `in`. `let a = 1; b = 2; in a + b` is a basic example of using `let`.
-<3> This declare a `styxLib` variable that holds the styx library. `import` is used to importing a file. `${styx}/share/styx/lib` is a function and require an argument set. +
-<4> `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`. 
-<5> This declare an `index` variable as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
-<6> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `href`. This line declares the `layout` attribute that is a function that take the `template` argument and return the page source. +
+The arguments of the function are the dependencies needed to build the site. +
+`@args` refers to the whole argument set.
+<2> `{` is starting a set. `rec` makes the set recursive, meaning that attributes can refers each other.
+<3> This imports the styx library in a `lib` attribute.
+<4> This declare an `index` attribute as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
+<5> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `href`. This line declares the `layout` attribute that is a function that take the `template` argument and return the page source. +
 `template:` form is different from the first point function head, this function use a simple parameter (Point one was using a deconstructed attribute set parameter).
-<7> This declare a `template` attribute. `template` is a function that takes the page attribute set, `page` in this case as a parameter and generate a result that will be passed to the `layout` function.
-<8> This declare a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
-<9> This declare a `href` attribute. The `href` attribute is used to specify the path of the page to be generated.
-<10> The `in` mark the end of the `let` declaration, this means `lib` and `index` will be available in the next expression.
-<11> This generate the site by using the library `generateSite` function, its parameter is an attribute set with the argument `pagesList` being a list of the single `index` page.
+<6> This declare a `template` attribute. `template` is a function that takes the page attribute set, `page` in this case as a parameter and generate a result that will be passed to the `layout` function.
+<7> This declare a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
+<8> This declare a `href` attribute. The `href` attribute is used to specify the path of the page to be generated.
+<9> This generate the site by using the library `generateSite` function, its parameter is an attribute set with the argument `pagesList` being a list of the single `index` page.
 
 Everything is ready, the "Hello world!" site preview can be generated.
 
@@ -97,11 +94,9 @@ It is common to use the following sections:
 
 - Init
 - Themes
-- Template environments
 - Data
 - Pages
-- Arguments preparation
-- `generateSite`
+- Site
 
 ==== site.nix in a nutshell
 
@@ -109,7 +104,7 @@ It is common to use the following sections:
 `site.nix` is a function:
 
 - taking at least nixpkgs `lib`, `styx`, `runCommand` and `writetext` attributes.
-- returning the `generateSite` function.
+- returning an attribute set with a `site` attribute using the `generateSite` function.
 ====
 
 ====
@@ -121,8 +116,6 @@ It is common to use the following sections:
 
 NOTE: `generateSite` is a wrapper for nixpkgs `runCommand` function.
 ====
-
-NOTE: Everything that is between the top function head and `generateSite` is meant to prepare the arguments for `generateSite`.
 
 ==== Init
 
@@ -137,40 +130,37 @@ This section is the basic setup of styx, it should not be changed and used as is
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
 
-{ lib, styx, styx-themes, runCommand, writeText
-, renderDrafts ? false
-, siteUrl ? null
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
 }@args:
 
-let styxLib = import "${styx}/share/styx/lib" {
-  inherit lib;
-  pkgs = { inherit styx runCommand writeText; };
-};
-in with styxLib;
+rec {
 
-let
+  lib = import styx.lib args;
 
   /* Configuration loading
   */
-  conf = let # <1>
-    conf       = import ./conf.nix;
-    themesConf = lib.themes.loadConf themes;
-    mergedConf = recursiveUpdate themesConf conf;
-  in
-    overrideConf mergedConf args;
-
-  /* Load themes templates
-  */
-  templates = lib.themes.loadTemplates {
-    inherit themes defaultEnvironment customEnvironments;
+  conf = lib.utils.loadConf { # <1>
+    file = ./conf.nix;
+    inherit themes extraConf;
   };
 
-  /* Load themes static files
+  /* Themes templates loading
   */
-  files = lib.themes.loadFiles themes;
+  templates = lib.themes.loadTemplates { # <2>
+    inherit themes;
+    environment = { inherit conf templates data pages lib; };
+  };
+
+  /* Themes static files loading
+  */
+  files = lib.themes.loadFiles themes; # <3>
 ----
 
 <1> This loads the `conf.nix` file and merges it with theme configuration and main function `siteUrl` argument.
+<2> This loads the templates provided by the themes.
+<3> This loads the static files loaded by the themes.
 
 
 [[site.nix-themes]]
@@ -197,40 +187,6 @@ Themes are detailed in the <<Themes>> section.
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
 
 
-==== Template environments
-
-Template environments control the set of variables available in the templates.
-
-There are two types of environment:
-
-- Default: The environment used in every template that do not have a custom environment
-- Custom: Custom environment for a specific template
-
-Normal sites should not require custom environments, but they can become useful in more complex setups.
-
-[source, nix]
-.Standard template environments section
-----
-/*-----------------------------------------------------------------------------
-   Template environments
-
------------------------------------------------------------------------------*/
-
-
-  /* Default template environment
-  */
-  defaultEnvironment = { inherit conf templates data; lib = styxLib; }; # <1>
-
-  /* Custom environments for specific templates
-  */
-  customEnvironments = {}; # <2>
-----
-
-<1> This declare the default environment thet should feed most of needs.
-<2> Custom template environments are detailed in the template section.
-
-NOTE: `defaultEnvironment` refers to not yet declared variables, but it is not a problem as a let block allows to access any variable declared or that will be declared in it.
-
 ==== Data
 
 The data section is responsible for loading the data used in the site.
@@ -244,11 +200,10 @@ The <<Data>> section explains in detail how to manage data.
    Data
 
    This section declares the data used by the site
-   the data set is included in the default template environment
 -----------------------------------------------------------------------------*/
 
   data = {
-    about  = loadFile { dir = ./pages; file = "about.md"; }; # <1>
+    about = loadFile { dir = ./pages; file = "about.md"; }; # <1>
   };
 ----
 
@@ -284,39 +239,10 @@ The <<Pages>> section explains in detail how to create pages.
 
 <1> `//` is the operator to merge attribute sets, this merge the `data.about` data attribute set in the `pages.about` page attribute set.
 
-NOTE: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "arguments preparation" section. +
+NOTE: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all pages in the site section.
 Only pages that use a different layout usually explicitly set it in `pages`.
 
-==== Argument preparation
-
-This is the last part before generating the site. The only purpose of this section is to prepare the `generateSite` function arguments.
-
-[source, nix]
-.Standard argument preparation section
-----
-/*-----------------------------------------------------------------------------
-   generateSite arguments preparation
-
------------------------------------------------------------------------------*/
-
-  pagesList = let
-    # converting pages attribute set to a list
-    list = pagesToList pages;
-    # setting a default layout
-    in map (setDefaultLayout templates.layout) list;
-
-  substitutions = {
-    siteUrl = conf.siteUrl;
-  };
-----
-
-This section just turns the `pages` attribute set into a list of pages, and set a default `layout` to pages that did not declare one.
-
-The substitution set should be declared in this section.
-
-NOTE: For details about substitutions see <<Substitutions>>.
-
-==== generateSite
+==== Site
 
 This is the final part and shortest section of `site.nix`. This section consists in a call to <<lib.generation.generateSite,`generateSite`>>.
 
@@ -324,12 +250,19 @@ This is the final part and shortest section of `site.nix`. This section consists
 .Standard generateSite section
 ----
 /*-----------------------------------------------------------------------------
-   Site rendering
+   Site
 
 -----------------------------------------------------------------------------*/
 
-in generateSite { inherit files pagesList substitutions; }
+  /* Converting the pages attribute set to a list
+  */
+  pagesList = pagesToList pages; # <1>
+
+  site = generateSite { inherit files pagesList; }
+}
 ----
+
+<1> `generateSite` requires pages as a list, so `pagesToList` convert the pages attribute set to a list.
 
 NOTE: `files` is automatically generated in the init section using enabled themes.
 

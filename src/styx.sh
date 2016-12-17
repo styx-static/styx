@@ -93,7 +93,8 @@ check_git () {
 
 # build the site in the nix store
 store_build () {
-  nix-build "$builder" --no-out-link "${extraFlags[@]}"
+  extraFlags+=("--arg" "extraConf" "{ $(IFS=; echo "${extraConf[@]}") }"); shift 2
+  nix-build -A site "$builder" --no-out-link "${extraFlags[@]}"
 }
 
 
@@ -121,6 +122,8 @@ builder="$share/builder.nix"
 debug=
 # extra arguments to be appended to the nix-build command
 extraFlags=()
+# extra conf passed to site.nix
+extraConf=()
 # main site file
 siteFile="site.nix"
 # set to a path to bypass the site build
@@ -234,7 +237,7 @@ while [ "$#" -gt 0 ]; do
       ;;
 # Build options
     --drafts)
-      extraFlags+=(--arg renderDrafts true)
+      extraConf+=("renderDrafts = true;")
       ;;
     --output)
       output="$1"; shift 1
@@ -317,7 +320,7 @@ if [ "$action" = new ] && [ "$newCommand" = theme ]; then
   check_dir $target "Error: Cannot create a new theme in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{templates,files}
-  echo -e "{\n}" > "$target/theme.nix"
+  echo -e "{\n  meta.name = \"$name\";\n}" > "$target/theme.nix"
   echo "Styx theme initialized in '$target'."
   exit 0
 fi
@@ -337,7 +340,7 @@ if [ "$action" = build ]; then
     target=$(realpath "$output")
   fi
   echo "Building the site..."
-  extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   path=$(store_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -372,11 +375,11 @@ if [ "$action" = serve ]; then
   if [ -z $sitePath ]; then
     check_styx $in $siteFile
     if [ "$siteUrl" = "PREVIEW" ]; then
-      extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
+      extraConf+=("siteUrl = \"http://$serverHost:$port\";")
     elif [ -n "$siteUrl" ]; then
-      extraFlags+=("--argstr" "siteUrl" "$siteUrl")
+      extraConf+=("siteUrl = \"$siteUrl\";")
     fi
-    extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+    extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
     path=$(store_build)
     if [ $? -ne 0 ]; then
       nix_error
@@ -408,8 +411,8 @@ if [ "$action" = live ]; then
   # get last change
   lastChange=$(last_timestamp)
   # building to result a first time
-  extraFlags+=("--arg" "siteFile" "$in/$siteFile")
-  extraFlags+=("--argstr" "siteUrl" "http://$serverHost:$port")
+  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
+  extraConf+=("siteUrl = \"http://$serverHost:$port\";")
   path=$(store_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -489,7 +492,7 @@ if [ "$action" = deploy ]; then
 
       if [ -z $sitePath ]; then
         echo "Building the site"
-        extraFlags+=("--arg" "siteFile" "$in/$siteFile")
+        extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
         path=$(store_build)
         if [ $? -ne 0 ]; then
           nix_error

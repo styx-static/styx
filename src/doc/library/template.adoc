@@ -213,7 +213,7 @@ false
 Description::: Parse a date.
 Parameter Type::: Standard
 Parameters:::
-  * `date`: A date in the format `YYYY-MM-DD`, e.g. `2012-12-21`.
+  * `date`: A date in the format `YYYY-MM-DD` or `YYYY-MM-DDThh:mm:ss`, e.g. `2012-12-21` or `2012-12-21T12:00:00`.
 Return::: An attribute set containing date parts.
   
 Example:::
@@ -247,6 +247,13 @@ with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
 `DD`:: Day of the month in 2 digit format (01, 31).
 `D`:: Day of the month (1, 31).
 `d-`:: Alias to `D`.
+`hh`:: The hour in 2 digit format (08, 12).
+`h`:: The hour in 1 digit format (8, 12).
+`mm`:: The minuts in 2 digit format (05, 55).
+`ss`:: The seconds in 2 digit format (05, 55).
+`time`:: The time in the `mm:hh:ss` format (12:00:00).
+`date.num`:: The date in the `YYYY-MM-DD` format (2012-12-21).
+`date.lit`:: The date in the `D B YYYY` format (21 December 2012).
 ====
 
 ---
