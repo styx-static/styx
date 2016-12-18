@@ -123,8 +123,8 @@ rec {
   { data
   , taxonomyTemplate
   , termTemplate
-  , taxonomyHrefFun ? (t: "${t}/index.html")
-  , termHrefFun ? (ta: te: "${ta}/${te}/index.html")
+  , taxonomyHrefFn ? (ta:     "${ta}/index.html")
+  , termHrefFn     ? (ta: te: "${ta}/${te}/index.html")
   }:
     let
       taxonomyPages = map (plist:
@@ -132,7 +132,7 @@ rec {
             terms    = propValue plist;
         in
         { inherit terms taxonomy;
-          href = taxonomyHrefFun taxonomy;
+          href = taxonomyHrefFn taxonomy;
           template = taxonomyTemplate;
           title = taxonomy; }
       ) data; 
@@ -142,7 +142,7 @@ rec {
         in
         map (term:
           { inherit taxonomy;
-            href     = termHrefFun taxonomy (propKey term);
+            href     = termHrefFn taxonomy (propKey term);
             template = termTemplate;
             title    = propKey   term;
             term     = propKey   term;
@@ -150,13 +150,5 @@ rec {
         ) terms
       ) data);
   in (termPages ++ taxonomyPages);
-
-  /* Set a default layout to a page attribute set
-     Does nothing if a layout is already set
-  */
-  setDefaultLayout = layout: page:
-    if page ? layout
-       then page
-       else page // { inherit layout; };
 
 }

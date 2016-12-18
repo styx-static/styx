@@ -216,7 +216,7 @@ Example::
 +
 [source, nix]
 ----
-propMap (p: v: "${p}: ${v}") [ { name = "Alice"; } { age = 26; } ] 
+propMap (p: v: "${p}: ${toString v}") [ { name = "Alice"; } { age = 26; } ] 
 ----
 
 +

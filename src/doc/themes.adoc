@@ -29,6 +29,7 @@ Official themes can be used directly from the `styx-themes` package set.
 ----
 
 
+[[Themes.Structure]]
 === Structure
 
 Themes are usually stored in the `themes` directory, or directly called from the `styx-themes` package set.
@@ -50,7 +51,7 @@ themes
 <3> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site.
 <4> `templates` is a directory storing all the templates files.
 
-NOTE: Themes structure is one of the few part using implicit settings in styx.
+NOTE: It is possible to change styx theme file structure expectations by setting custom functions, see <<lib.themes.loadConf>>, <<lib.themes.loadFiles>> and <<lib.themes.loadTemplates>>.
 
 === theme.nix
 
@@ -59,6 +60,7 @@ NOTE: Themes structure is one of the few part using implicit settings in styx.
 It is a simple attribute set that defines the theme configuration options with some default values.
 
 Theme meta information should also be declared in the `meta` attribute set. It is important that themes have a `meta.name` set for the configuration to be correctly processed. +
+
 Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
 
 IMPORTANT: `theme.nix` **must** have a `meta.name` attribute.

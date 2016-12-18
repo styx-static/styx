@@ -51,6 +51,15 @@ Parameters:::
   * `substitutions` (optional): A substitution set to apply on every generated text file.
   * `preGen` (optional): A list of shell commands to run before the site is generated as a string or multiline string.
   * `postGen` (optional): A list of shell commands to run after the site is generated as a string or multiline string.
+  * `genPageFn` (optional): Function to generate the page with type `Page -> String`, defaults to `generatePage`.
+  * `pageHrefFn` (optional): Function to generate the page href with type `Page -> String`.
++
+[source, nix]
+.Default implementation
+----
+page: page.href
+----
+
 Return::: The generated static site.
 Example:::
 

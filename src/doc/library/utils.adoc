@@ -6,24 +6,26 @@ The utils namespace contains generic functions that do not fit in other namespac
 
 ---
 
-[[lib.utils.overrideConf]]
-==== overrideConf
+[[lib.utils.mergeConfs]]
+==== mergeConfs
 
-Description::: Override the conf attribute set with another attribute set.
+Description::: Merge a list of configuration attribute sets. Sets at the beginning of the list have lower priority.
+
 Parameter Type::: Standard
 Parameters:::
-  * `conf`: The `conf` attribute set.
-  * `override`: The attribute set to override `conf` with.
-Return::: The attribute set with `conf` and `override` merged.
+  * `confs`: A list of configuration attribute sets.
+Return::: The merged configuration attribute set.
 Example:::
 
 +
 [source, nix]
 ----
-overrideConf mergedConf args
+conf = lib.utils.mergeConfs [
+  (lib.themes.loadConf { inherit themes; })
+  (import ./conf.nix)
+  extraConf
+];
 ----
-
-NOTE: This is similar to the nixpkgs `recursiveUpdate` function, with the only difference that keys that do not exist in `conf` are ignored.
 
 ---
 

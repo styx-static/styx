@@ -141,10 +141,11 @@ rec {
 
   /* Configuration loading
   */
-  conf = lib.utils.loadConf { # <1>
-    file = ./conf.nix;
-    inherit themes extraConf;
-  };
+  conf = lib.utils.mergeConfs [ # <1>
+    (lib.themes.loadConf { inherit themes; })
+    (import ./conf.nix)
+    extraConf
+  ];
 
   /* Themes templates loading
   */
@@ -155,10 +156,10 @@ rec {
 
   /* Themes static files loading
   */
-  files = lib.themes.loadFiles themes; # <3>
+  files = lib.themes.loadFiles { inherit themes; }; # <3>
 ----
 
-<1> This loads the `conf.nix` file and merges it with theme configuration and main function `siteUrl` argument.
+<1> This generate the configuration by merging the themes configuration, `conf.nix` and the `extraConf`, for details see <<Configuration>>.
 <2> This loads the templates provided by the themes.
 <3> This loads the static files loaded by the themes.
 
@@ -267,55 +268,4 @@ This is the final part and shortest section of `site.nix`. This section consists
 NOTE: `files` is automatically generated in the init section using enabled themes.
 
 NOTE: `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
-
-
-=== Configuration
-
-Styx is configured with the `conf.nix` file present in the site root directory.
-
-This files consists in an attribute set defining configuration options, and custom attributes can be added at will.
-
-The main configuration is made through themes via the `theme` attribute. Every theme defines some set of configuration options that can be overridden in `conf.nix` `theme` attribute.
-
-`siteUrl` is the only required field, and must not end with a slash.
-
-[source, nix]
-.Standard conf.nix
-----
-{
-  # URL of the site, must be set to the url of the domain the site will be deployed
-  siteUrl = "http://yourdomain.com";
-
-  # Theme specific settings
-  # it is possible to override any of the theme configuration settings in the 'theme' set
-  theme = {
-    # Changing the theme site.title setting
-    site.title = "Styx Site";
-  };
-}
-----
-
-==== Meta-information
-
-It is possible to set meta attributes that will be inherited by the site derivation. +
-Beside nix derivations link:http://nixos.org/nixpkgs/manual/#sec-standard-meta-attributes[standard meta attributes], `name` and `version` can be used to generate the derivation name in the `${meta.name}-${meta.version}` pattern.
-
-[source, nix]
-.Setting site metadata in conf.nix
-----
-{
-  siteUrl = "http://yourdomain.com";
-
-  meta = {
-    name = "showcase-example";
-    description = "Example site for the showcase site";
-  };
-}
-----
-
-NOTE: In case `meta.name` and `meta.version` are not present, the site derivation will use a generic `styx-site` name.
-
-WARNING: `meta.name` and `meta.version` must not use spaces.
-
-NOTE: A styx site derivation has `meta.platforms` set to `lib.platforms.all` by default.
 

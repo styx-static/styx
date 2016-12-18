@@ -175,7 +175,7 @@ sortTerms terms
 
 ---
 
-[[lib.data.avluesNb]]
+[[lib.data.valuesNb]]
 ==== valuesNb
 
 Description::: Return the number of values a taxonomy term holds.
@@ -188,7 +188,7 @@ Example:::
 +
 [source, nix]
 ----
-sortTerms terms
+valuesNb term
 ----
 
 :sectnums:

@@ -6,8 +6,9 @@ Highlights:
 
 - <<Debugging,Interactive debugging>>
 - <<Basics,simpler>> `site.nix`
-- posts timestamps now support time
-- site metadata can be set in the configurzation file
+- Higher flexibility: <<lib.generation.generateSite,pages generation function can be modified>>, <<Themes.Structure,theme structure can be adapted to needs>> and <<Configuration.Customizing,configuration files can be functions>>
+- <<lib.template.parseDate,Content timestamps now support time>>
+- <<Configuration.Meta,site metadata can be set in the configuration file>>
 
 Bug fixes:
 
@@ -16,9 +17,9 @@ Bug fixes:
 
 Breaking Changes
 
-- Removal of the `state` variable in `site.nix`
 - `site.nix` was refactored
 - Themes `theme.nix` file **must** declare a `meta.name` attribute specifying the theme name.
+- `lib.pages.setDefaultLayout` was removed in favor of a more generic <<lib.utils.setDefault>> function.
 
 This release brings few major changes that make upgrading from 0.4.0 non trivial. +
 The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call.

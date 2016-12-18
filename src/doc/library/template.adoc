@@ -116,8 +116,8 @@ Example:::
 +
 [source, nix]
 ----
-mapTemplateiWithIndex (index: item:
-  "<li>${index} - ${item}</li>"
+mapTemplateWithIndex (index: item:
+  "<li>${toString index} - ${item}</li>"
 ) [ "foo" "bar" ]
 ----
 

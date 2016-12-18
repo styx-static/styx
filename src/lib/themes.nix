@@ -54,26 +54,32 @@ in
            baz = 5; };
        }
   */
-  loadConf = themes:
-  fold (theme: set:
+  loadConf = {
+    themes
+  , getConfFn ? (theme: import "${theme}/theme.nix")
+  , confFnArg ? {}
+  }:
+  fold (theme: acc:
     let
-      themeConf = import "${theme}/theme.nix";
+      conf      = getConfFn theme;
+      themeConf = if isFunction conf then conf confFnArg else conf;
       themeSet  = if hasAttrByPath ["meta" "name"] themeConf
         then {
           themes."${themeConf.meta.name}" = themeConf;
           theme = removeAttrs themeConf ["meta"];
         }
-        else abort "'${theme}' theme's theme.nix file does not declare a `meta.name` attribute.";
-    in recursiveUpdate set themeSet
-  ) {} themes;
+        else abort "'${theme}' theme configuration file must declare a `meta.name` attribute.";
+    in recursiveUpdate themeSet acc
+  ) {} (reverseList themes);
 
 
   /* Load template files from 'themes' list of themes
   */
-  loadFiles = themes:
-    map (theme:
-      "${theme}/files"
-    ) (reverseList themes);
+  loadFiles = {
+    themes
+  , getFilesFn ? (theme: "${theme}/files")
+  }:
+    map getFilesFn (reverseList themes);
 
   /* Loads the templates from 'themes' list of themes
   */
@@ -81,21 +87,22 @@ in
     themes
   , environment
   , customEnvironments ? {}
+  , getTemplatesFn ? (theme: "${theme}/templates")
   }:
-  fold (theme: set:
+  fold (theme: acc:
     let
-      templatesDir = "${theme}/templates";
+      templatesDir = getTemplatesFn theme;
       templateSet  = fetchTemplateDir templatesDir;
       templatesWithEnv = mapAttrsRecursive (path: value:
         let 
           env = if hasAttrByPath path customEnvironments
                    then getAttrFromPath path customEnvironments
                    else environment;
-          in if hasAttrByPath path set
+          in if hasAttrByPath path acc
                 then null
                 else import value env
       ) templateSet;
-    in recursiveUpdate templatesWithEnv set
+    in recursiveUpdate templatesWithEnv acc
   ) {} (reverseList themes);
 
 }

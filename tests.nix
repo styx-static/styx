@@ -2,11 +2,11 @@
 
    run all tests with:
 
-     nix-build ./test.nix
+     nix-build ./tests.nix
 
    Open a theme example site in a browser with (many links will be broken):
 
-     $BROWSER $(nix-build -A showcase-site ./test.nix)/index.html
+     $BROWSER $(nix-build -A showcase-site ./tests.nix)/index.html
 
 */
 { pkgs ? import <nixpkgs> {} }:

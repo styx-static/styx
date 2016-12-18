@@ -16,10 +16,11 @@ rec {
 
   /* Configuration loading
   */
-  conf = lib.utils.loadConf {
-    file = ./conf.nix;
-    inherit themes extraConf;
-  };
+  conf = lib.utils.mergeConfs [
+    (lib.themes.loadConf { inherit themes; })
+    (import ./conf.nix)
+    extraConf
+  ];
 
   /* Themes templates loading
   */
@@ -30,7 +31,7 @@ rec {
 
   /* Themes static files loading
   */
-  files = lib.themes.loadFiles themes;
+  files = lib.themes.loadFiles { inherit themes; };
 
 
 /*-----------------------------------------------------------------------------

@@ -39,6 +39,9 @@ rec {
   , substitutions ? {}
   , preGen  ? ""
   , postGen ? ""
+  # extra customization options
+  , genPageFn ? generatePage
+  , pageHrefFn ? (page: page.href)
   }:
     let
       name    = attrByPath [ "meta" "name" ] "styx-site" conf;
@@ -141,16 +144,14 @@ rec {
 
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
-        mkdir -p "$(dirname "$out/${page.href}")"
-        page=${pkgs.writeText "${drvName}-page" (generatePage page)}
+        outPath="$out/${pageHrefFn page}"
+        page=${pkgs.writeText "${drvName}-page" (genPageFn page)}
+        mkdir -p "$(dirname "$outPath")"
         run_subs "$page"
         if [ $(cmp --silent subs $page || echo 1) ]; then
-          mkdir -p "$(dirname $out/${page.href})"
-          cp "subs" "$out/${page.href}"
+          cp "subs" "$outPath"
         else
-          echo "$page"
-          echo "$out/${page.href}"
-          ln -s "$page" "$out/${page.href}"
+          ln -s "$page" "$outPath"
         fi
       '') pagesList}
 
@@ -163,7 +164,7 @@ rec {
     let
       pages' = attrValues pages;
     in fold
-         (y: x: if isList y then x ++ y else x ++ [y])
+         (p: acc: if isList p then p ++ acc else [p] ++ acc)
          [] pages';
 
 }

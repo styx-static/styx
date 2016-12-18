@@ -192,8 +192,20 @@ Parameters:::
   * `data`: The list of data attribute set to use.
   * `taxonomyTemplate`: The template to use for taxonomies page sets.
   * `termTemplate`: The template to use for terms page sets.
-  * `taxonomyHrefFun` (optional): A function to generate the `href` of the taxonomy page.
-  * `termHrefFun` (optional): A function to generate the `href` of the taxonomy term page.
+  * `taxonomyHrefFn` (optional): A function to generate the `href` of the taxonomy page with type `Taxonomy -> String`.
++
+[source, nix]
+.Default implementation
+----
+ta: "${ta}/index.html"
+----
+  * `termHrefFn` (optional): A function to generate the `href` of the taxonomy term page with type `Taxonomy -> Term -> String`.
++
+[source, nix]
+.Default implementation
+----
+ta: te: "${ta}/${te}/index.html"
+----
 Return::: A list of page attribute set according to the arguments.
 Example:::
 
@@ -226,24 +238,5 @@ CAUTION: Changing `taxonomyHrefFun` or `termHrefFun` will require to also update
 NOTE: For details see the <<Taxonomies>> section.
 
 ---
-
-[[lib.pages.setDefaultLayout]]
-==== setDefaultLayout
-
-Description::: Set a `layout` attribute to a page attribute set if does not have any set.
-Parameter Type::: Standard
-Parameters:::
-  * `layout`: The layout template.
-  * `page`: The page attribute set to set the `layout` to.
-Return::: Return a page attribute set with the `layout` attribute.
-Example:::
-
-+
-[source, nix]
-----
-setDefaultLayout pages.about templates.layout
-----
-
-NOTE: This function is mainly used during `generateSite` argument preparation.
 
 :sectnums:

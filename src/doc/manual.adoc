@@ -25,6 +25,8 @@ include::basics.adoc[]
 
 include::cli.adoc[]
 
+include::configuration.adoc[]
+
 include::themes.adoc[]
 
 include::data.adoc[]

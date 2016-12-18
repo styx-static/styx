@@ -10,9 +10,21 @@ This namespace contains functions related to themes.
 ==== loadConf
 
 Description::: Load themes configuration.
-Parameter Type::: Standard
+Parameter Type::: Attribute Set
 Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
+  * `getConfFn` (optional): Function to get the configuration file with type `Theme -> Conf` or `Theme -> Attribute Set -> Conf`. +
+  The later case is when the theme configuration file is a function, its argument will be `confFnArg` (default is `{}`).
++
+[source, nix]
+.Default implementation
+----
+theme: import "${theme}/theme.nix"
+----
+
+  * `confFnArg` (optional): If the configuration imported with `getConfFn` is a function, `confFnArg` will be passed as an argument. +
+  This allows to pass arguments such as `lib` to themes configuration files for higher flexibility, defaults to `{}`.
+
 Return::: A configuration attribute set with the `theme` and `themes` attributes. +
 `theme` is the merged themes configuration, and `themes.THEME` holds the per theme default configuration.
 Example:::
@@ -20,7 +32,7 @@ Example:::
 +
 [source, nix]
 ----
-themesConf = lib.themes.loadConf themes;
+lib.themes.loadConf { inherit themes; };
 ----
 
 ---
@@ -29,9 +41,17 @@ themesConf = lib.themes.loadConf themes;
 ==== loadFiles 
 
 Description::: Load themes static files.
-Parameter Type::: Standard
+Parameter Type::: Attribute Set
 Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
+  * `getFilesFn` (optional): Function to get the theme static files directory with type `Theme -> Path`.
++
+[source, nix]
+.Default implementation
+----
+theme: "${theme}/files"
+----
+
 Return::: A list of directory paths. 
 Example:::
 
@@ -52,6 +72,14 @@ Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
   * `environment`: The default template environment.
   * `customEnvironments`: (optional) A set which attributea are template paths and the values template environments.
+  * `getTemplatesFn` (optional): Function to get the theme templates directory with type `Theme -> Path`.
++
+[source, nix]
+.Default implementation
+----
+theme: "${theme}/templates"
+----
+
 Return::: An attribute set containing all the themes template with their environment applied. 
 Example:::
 

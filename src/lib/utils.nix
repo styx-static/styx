@@ -2,15 +2,14 @@
 
 lib:
 with lib;
-with (import ./themes.nix lib);
 
 {
 
-  /* load the site configuration
+  /* Merge multiple configurations
   */
-  loadConf = { file, themes, extraConf ? {} }:
-    (recursiveUpdate (loadConf themes) (import file)) // extraConf;
-
+  mergeConfs = fold (conf: acc:
+      recursiveUpdate conf acc
+    ) {};
 
   /* split a list in multiple lists of k size
   */
