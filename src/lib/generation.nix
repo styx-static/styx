@@ -34,14 +34,20 @@ rec {
   */
   generateSite = {
     files ? []
+  , conf ? {}
   , pagesList ? []
   , substitutions ? {}
   , preGen  ? ""
   , postGen ? ""
   }:
-    pkgs.runCommand "styx-site" {
-      buildInputs = [ pkgs.styx ];
-    } ''
+    let
+      name    = attrByPath [ "meta" "name" ] "styx-site" conf;
+      version = attrByPath [ "meta" "version" ] "" conf;
+      drvName = if version != "" then "${name}${version}" else name;
+      meta    = { platforms = lib.platforms.all; } // (attrByPath [ "meta" ] {} conf);
+      env     = { inherit meta; buildInputs = [ pkgs.styx ]; };
+    in
+    pkgs.runCommand drvName env ''
       shopt -s globstar
       mkdir -p $out
 
@@ -136,7 +142,7 @@ rec {
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
         mkdir -p "$(dirname "$out/${page.href}")"
-        page=${pkgs.writeText "styx-site-page" (generatePage page)}
+        page=${pkgs.writeText "${drvName}-page" (generatePage page)}
         run_subs "$page"
         if [ $(cmp --silent subs $page || echo 1) ]; then
           mkdir -p "$(dirname $out/${page.href})"

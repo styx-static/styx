@@ -258,7 +258,7 @@ This is the final part and shortest section of `site.nix`. This section consists
   */
   pagesList = pagesToList pages; # <1>
 
-  site = generateSite { inherit files pagesList; }
+  site = generateSite { inherit conf files pagesList; }
 }
 ----
 
@@ -294,4 +294,28 @@ The main configuration is made through themes via the `theme` attribute. Every t
   };
 }
 ----
+
+==== Meta-information
+
+It is possible to set meta attributes that will be inherited by the site derivation. +
+Beside nix derivations link:http://nixos.org/nixpkgs/manual/#sec-standard-meta-attributes[standard meta attributes], `name` and `version` can be used to generate the derivation name in the `${meta.name}-${meta.version}` pattern.
+
+[source, nix]
+.Setting site metadata in conf.nix
+----
+{
+  siteUrl = "http://yourdomain.com";
+
+  meta = {
+    name = "showcase-example";
+    description = "Example site for the showcase site";
+  };
+}
+----
+
+NOTE: In case `meta.name` and `meta.version` are not present, the site derivation will use a generic `styx-site` name.
+
+WARNING: `meta.name` and `meta.version` must not use spaces.
+
+NOTE: A styx site derivation has `meta.platforms` set to `lib.platforms.all` by default.
 

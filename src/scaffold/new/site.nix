@@ -81,6 +81,6 @@ rec {
 
   /* Generating the site
   */
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.generateSite { inherit conf files pagesList; };
 
 }
