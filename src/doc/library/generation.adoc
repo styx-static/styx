@@ -6,6 +6,40 @@ The generation namespace contains functions related to the site generation.
 
 ---
 
+[[lib.generation.generatePage]]
+==== generatePage
+
+Description::: Generate a page source by applying the `template` and the `layout` to a page attribute set. +
+This is how styx generate pages in `generateSite`, simply evaluate `page.layout (page.template page)`.
+Parameter Type::: Standard
+Parameters:::
+  * `page`: A page attribute set defining at least `template` and `layout`.
+Return::: The generated static site.
+Example:::
+
++
+[source, nix]
+----
+generatePage {
+  layout = template: "<html><body>${template}</body></html>";
+  template = page: ''
+    <h1>Styx example page</h1>
+    ${page.content}
+  '';
+  content = "<p>Hello world!</p>";
+};
+----
+
++
+[source, html]
+.Results in
+----
+<html><body><h1>Styx example page</h1>
+<p>Hello world!</p></body></html>
+----
+
+---
+
 [[lib.generation.generateSite]]
 ==== generateSite
 

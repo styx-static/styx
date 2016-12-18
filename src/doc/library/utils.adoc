@@ -53,6 +53,32 @@ chunksOf 2 [ 1 2 3 4 5 ]
 
 ---
 
+[[lib.utils.setDefault]]
+==== setDefault
+
+Description::: Set default values to a list of attribute sets.
+Parameter Type::: Standard
+Parameters:::
+  * `list`: A list of attribute sets.
+  * `default`: default values as a set.
+Return::: A list of sets.
+Example:::
+
++
+[source, nix]
+----
+setDefault [ { foo = 1; } { bar = 2; } ] { foo = 0; bar = 0; }
+----
+
++
+[source, nix]
+.Results in
+----
+[ { foo = 1; bar = 0; } { foo = 0; bar = 2; } ]
+----
+
+---
+
 [[lib.utils.sortBy]]
 ==== sortBy
 

@@ -3,7 +3,6 @@
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-
 { lib, styx, runCommand, writeText
 , styx-themes
 , extraConf ? {}
@@ -11,6 +10,8 @@
 
 rec {
 
+  /* Library loading
+  */
   lib = import styx.lib args;
 
   /* Configuration loading
@@ -42,7 +43,7 @@ rec {
      Set the themes used here
      paths and packages can be used
 
-     themes = [ ./themes/my-site styx-themes.showcase ];
+       themes = [ ./themes/my-site styx-themes.showcase ];
   */
   themes = [ ];
 
@@ -78,6 +79,8 @@ rec {
   */
   pagesList = lib.pagesToList pages;
 
+  /* Generating the site
+  */
   site = lib.generateSite { inherit files pagesList; };
 
 }

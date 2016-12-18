@@ -110,7 +110,6 @@ let
   */
   parseFile = fileData:
     let
-      # TODO make this regex stricter
       m    = match "^([0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}:[0-9]{2})?)?\-?(.*)$" fileData.basename;
       date = if m != null then { date = (elemAt m 0); } else {};
       path = "${fileData.dir + "/${fileData.name}"}";

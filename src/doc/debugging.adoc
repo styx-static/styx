@@ -1,27 +1,59 @@
 == Debugging
 
-The `nix-repl` utility can be used to debug a styx site.
+The `nix-repl` utility can be used to debug a styx site. +
+It can be installed with `nix-env` or used in a temporary environment with `nix-repl`.
 
-.Inspect the `conf` set
+[source, shell]
+.Starting nix-repl in a nix-shell
 ----
-$ nix-shell -p nix-repl
-$ nix-repl
+$ nix-shell -p nix-repl --run nix-repl
+----
+
+
+=== Inspecting site.nix attributes
+
+[source]
+.Inspecting the `conf` configuration set
+----
 nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
 nix-repl> site.conf
 { siteUrl = "http://yourdomain.com"; theme = { ... }; themes = { ... }; }
 ----
 
-It is also possible to render templates in nix-repl.
+=== Using lib functions
 
-.Viewing a page source
+[source]
+.Using parseDate
+----
+nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
+nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}"
+"18 May 2016, 12:40:21"
+----
+
+WARNING: Some functions that use the propagated build inputs of the styx package like `lib.data.markdownToHtml` will not work in a `nix-repl` environment.
+
+
+=== Rendering pages source
+
+[source]
+.Rendering a page source
 ----
 nix-repl> site = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
-nix-repl> site.templates.layout (site.pages.about.template site.pages.about)
+nix-repl> let page = site.pages.about // { layout = site.templates.layout; }; in site.lib.generatePage page # <1>
+"<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
+nix-repl> site.templates.layout (site.templates.generic.full site.pages.about) # <2>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
 ----
 
-The full site can even be rendered.
+<1> Rendering a page with the `generatePage` function.
+<2> Rendering a page by running directly `layout (template page)`.
 
+
+=== Building the site
+
+It is possible to generate the site in the nix store from `nix-repl`.
+
+[source]
 .Building a site
 ----
 nix-repl> site = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
@@ -30,6 +62,4 @@ nix-repl> :b site.site
 this derivation produced the following outputs:
   out -> /nix/store/ak6h49a9h7asysv91nf31nhd5h7fgzhi-styx-site
 ----
-
-WARNING: Some functions that use the propagated build inputs of the styx package like `lib.data.markdownToHtml` do not work in a nix-repl environment.
 

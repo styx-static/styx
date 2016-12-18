@@ -26,6 +26,10 @@ in
 
 rec {
 
+  /* Generate a page
+  */
+  generatePage = page: page.layout (page.template page);
+
   /* Generate a site with a list pages
   */
   generateSite = {
@@ -132,7 +136,7 @@ rec {
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
         mkdir -p "$(dirname "$out/${page.href}")"
-        page=${pkgs.writeText "styx-site-page" (page.layout (page.template page))}
+        page=${pkgs.writeText "styx-site-page" (generatePage page)}
         run_subs "$page"
         if [ $(cmp --silent subs $page || echo 1) ]; then
           mkdir -p "$(dirname $out/${page.href})"

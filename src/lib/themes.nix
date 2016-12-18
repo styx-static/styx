@@ -58,11 +58,13 @@ in
   fold (theme: set:
     let
       themeConf = import "${theme}/theme.nix";
-    # TODO: show an error if a theme name is not set
-    in recursiveUpdate set {
-      themes."${themeConf.meta.name}" = themeConf;
-      theme = removeAttrs themeConf ["meta"];
-    }
+      themeSet  = if hasAttrByPath ["meta" "name"] themeConf
+        then {
+          themes."${themeConf.meta.name}" = themeConf;
+          theme = removeAttrs themeConf ["meta"];
+        }
+        else abort "'${theme}' theme's theme.nix file does not declare a `meta.name` attribute.";
+    in recursiveUpdate set themeSet
   ) {} themes;
 
 

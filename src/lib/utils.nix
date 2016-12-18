@@ -29,4 +29,9 @@ with (import ./themes.nix lib);
       else if order == "dsc" then a."${attribute}" > b."${attribute}"
       else    abort "Sort order must be 'asc' or 'dsc'");
 
+  /* Set default values to a list of attributes sets
+  */
+  setDefault = list: default:
+    map (set: default // set) list;
+
 }
