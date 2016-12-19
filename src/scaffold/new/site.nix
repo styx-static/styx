@@ -16,7 +16,7 @@ rec {
 
   /* Configuration loading
   */
-  conf = lib.utils.mergeConfs [
+  conf = lib.utils.merge [
     (lib.themes.loadConf { inherit themes; })
     (import ./conf.nix)
     extraConf

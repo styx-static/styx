@@ -4,11 +4,15 @@
 
 Highlights:
 
-- <<Debugging,Interactive debugging>>
-- <<Basics,simpler>> `site.nix`
-- Higher flexibility: <<lib.generation.generateSite,pages generation function can be modified>>, <<Themes.Structure,theme structure can be adapted to needs>> and <<Configuration.Customizing,configuration files can be functions>>
-- <<lib.template.parseDate,Content timestamps now support time>>
-- <<Configuration.Meta,site metadata can be set in the configuration file>>
+* <<Debugging,Interactive debugging>>
+* <<Basics,simpler>> `site.nix`
+* Improved modularity:
+** <<lib.generation.generateSite,Pages generation function can be modified>>
+** <<Themes.Structure,Theme structure can be adapted to needs>>
+** <<Configuration.Customizing,Configuration files can be functions>>
+** <<Themes.Library,Themes can provide function libraries>>
+* <<lib.template.parseDate,Content timestamps now support time>>
+* <<Configuration.Meta,site metadata can be set in the configuration file>>
 
 Bug fixes:
 

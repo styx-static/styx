@@ -56,12 +56,12 @@ in
   */
   loadConf = {
     themes
-  , getConfFn ? (theme: import "${theme}/theme.nix")
+  , getConfFn ? (theme: theme + "/theme.nix")
   , confFnArg ? {}
   }:
   fold (theme: acc:
     let
-      conf      = getConfFn theme;
+      conf      = import (getConfFn theme);
       themeConf = if isFunction conf then conf confFnArg else conf;
       themeSet  = if hasAttrByPath ["meta" "name"] themeConf
         then {
@@ -77,7 +77,7 @@ in
   */
   loadFiles = {
     themes
-  , getFilesFn ? (theme: "${theme}/files")
+  , getFilesFn ? (theme: theme + "/files")
   }:
     map getFilesFn (reverseList themes);
 
@@ -87,7 +87,7 @@ in
     themes
   , environment
   , customEnvironments ? {}
-  , getTemplatesFn ? (theme: "${theme}/templates")
+  , getTemplatesFn ? (theme: theme + "/templates")
   }:
   fold (theme: acc:
     let
@@ -103,6 +103,21 @@ in
                 else import value env
       ) templateSet;
     in recursiveUpdate templatesWithEnv acc
+  ) {} (reverseList themes);
+
+  /* Load the libraries from 'themes' list of themes
+  */
+  loadLib = {
+    themes
+  , getLibFn ? (theme: theme + "/lib/default.nix")
+  , libFnArg ? {}
+  }:
+  fold (theme: acc:
+    let
+      libFile   = getLibFn theme;
+      themeLib' = if pathExists libFile then import libFile else {};
+      themeLib  = if isFunction themeLib' then themeLib' libFnArg else themeLib';
+    in recursiveUpdate themeLib acc
   ) {} (reverseList themes);
 
 }

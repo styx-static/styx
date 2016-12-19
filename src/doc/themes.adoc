@@ -2,7 +2,7 @@
 == Themes
 
 Themes are a central concept in styx and are used to manage a site assets, namely files and templates.
-They also provide a configuration interface.
+They also provide a configuration interface and can declare a function library.
 
 Themes can be combined in a modular way.
 
@@ -28,7 +28,7 @@ Official themes can be used directly from the `styx-themes` package set.
   themes = [ ./themes/my-site styx-themes.showcase ]; #<1>
 ----
 
-NOTE: The `themes` attribute is used in the init section to load themes configuration, templates and static files. It is possible to not use `themes` and directly set a different list of themes for each function.
+NOTE: The `themes` attribute is used in the init section to load themes configuration, templates, library and static files. It is possible to not use `themes` and directly set a different list of themes for each function.
 
 [[Themes.Structure]]
 === Structure
@@ -44,13 +44,15 @@ themes
 └── NAME # <1>
     ├── theme.nix # <2>
     ├── files # <3>
-    └── templates # <4>
+    ├── lib # <4>
+    └── templates # <5>
 -----
 
 <1> Name of the theme. The name should be a valid directory name.
 <2> `theme.nix` defines the theme configuration options, this is file is required and must be named `theme.nix`.
 <3> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site.
-<4> `templates` is a directory storing all the templates files.
+<4> `lib` is a directory where the theme library functions are defined (optional).
+<5> `templates` is a directory storing all the templates files.
 
 NOTE: It is possible to change styx theme file structure expectations by changing <<lib.themes.loadConf>>, <<lib.themes.loadFiles>> and <<lib.themes.loadTemplates>> arguments.
 
@@ -99,6 +101,67 @@ NOTE: If multiple themes are enabled, every theme `file` directory contents will
 
 Styx automatically convert `sass`, `scss` and `less` files to css during site generation.
 
+[[Themes.Library]]
+=== Library
+
+Themes can provide a function library that can be used in `site.nix` or in templates.
+
+To provide a library, a theme must have a `lib/default.nix` file defining some functions.
+
+To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.NAME` where `NAME` is the theme name is a natural choice.
+
+As library functions often make use nixpkgs basic functions, theme libraries are often defined as functions so they can be passed `lib`. +
+In case `lib/default.nix` is a non-fully evaluated function, it is recommended that it take a single argument that is the `site.nix` argument set `args` for best inter-compatibility between themes.
+
+[source, nix]
+.Example of a theme library default.nix
+----
+{ lib, ... }:
+with lib;
+{
+  theme.my-theme = {
+    foo = x: "foo called with ${toString x}";
+  };
+}
+----
+
+====
+As no official theme provide a function library, this feature is disabled in newly generated `site.nix` with the `styx new site` command.
+
+To use a libraries from themes, please update the `site.nix` init section to the following:
+
+[source, nix]
+----
+/*-----------------------------------------------------------------------------
+   Init
+
+   Initialization of Styx, should not be edited
+-----------------------------------------------------------------------------*/
+
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
+}@args:
+
+let styxLib = import styx.lib args; # <1>
+
+in rec {
+
+  /* Library Loading
+  */
+  lib = styxLib.utils.merge [ # <2>
+    styxLib
+    (styxLib.themes.loadLib { inherit themes; libFnArg = args; }) # <3>
+  ];
+----
+
+<1> Load the styx library, library functions are documented in <<Library>>.
+<2> Generate the `lib` library attribute by merging the styx library and themes libraries.
+<3> Loading the themes libraries, for details see <<lib.themes.loadLib>>.
+
+Notice that to avoid infinite recursion, the styx library is inserted in a `styxLib` variable and then merged with themes libraries with <<lib.utils.merge>>.
+
+====
 
 === Templates
 

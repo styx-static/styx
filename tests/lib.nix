@@ -6,7 +6,7 @@
 */
 let
   pkgs = (import <nixpkgs> {});
-  lib = pkgs.callPackage ./src/lib {};
+  lib = pkgs.callPackage ../src/lib {};
 in with lib;
 
 runTests {
@@ -91,15 +91,22 @@ runTests {
   */
 
   testPagesToList = {
-    expr = pagesToList { a = 1; b = [ 2 3 ]; };
-    expected = [ 1 2 3 ];
+    expr = pagesToList {
+      pages = { a = { title = "foo"; }; b = [ { title = "bar"; } { title = "baz"; } ]; } ;
+      default = { layout = "test"; };
+    };
+    expected = [
+      { layout = "test"; title = "foo"; }
+      { layout = "test"; title = "bar"; }
+      { layout = "test"; title = "baz"; }
+    ];
   };
 
   /* Utils
   */
 
-  testMergeConfs = {
-    expr = mergeConfs [ { a = 1; b.c = 1; x.y = 1; } { a = 2; b.c = 2; x.z = 2; } ];
+  testMerge = {
+    expr = merge [ { a = 1; b.c = 1; x.y = 1; } { a = 2; b.c = 2; x.z = 2; } ];
     expected = { a = 2; b = { c = 2; }; x = { y = 1; z = 2; }; };
   };
 

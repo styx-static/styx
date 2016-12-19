@@ -5,10 +5,10 @@ with lib;
 
 {
 
-  /* Merge multiple configurations
+  /* Merge multiple sets
   */
-  mergeConfs = fold (conf: acc:
-      recursiveUpdate conf acc
+  merge = fold (set: acc:
+      recursiveUpdate set acc
     ) {};
 
   /* split a list in multiple lists of k size

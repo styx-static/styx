@@ -13,13 +13,13 @@ Description::: Load themes configuration.
 Parameter Type::: Attribute Set
 Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
-  * `getConfFn` (optional): Function to get the configuration file with type `Theme -> Conf` or `Theme -> Attribute Set -> Conf`. +
-  The later case is when the theme configuration file is a function, its argument will be `confFnArg` (default is `{}`).
+  * `getConfFn` (optional): Function to get the configuration file with type `Theme -> Path`. +
+  The path is imported with nix `import` function and in case a non-fully evaluated function is returned, it will be evaluated with `confFnArg` as an argument (default is `{}`).
 +
 [source, nix]
 .Default implementation
 ----
-theme: import "${theme}/theme.nix"
+theme: theme + "/theme.nix"
 ----
 
   * `confFnArg` (optional): If the configuration imported with `getConfFn` is a function, `confFnArg` will be passed as an argument. +
@@ -49,7 +49,7 @@ Parameters:::
 [source, nix]
 .Default implementation
 ----
-theme: "${theme}/files"
+theme: theme + "/files"
 ----
 
 Return::: A list of directory paths. 
@@ -58,7 +58,38 @@ Example:::
 +
 [source, nix]
 ----
-files = lib.themes.loadFiles themes;
+files = lib.themes.loadFiles { inherit themes; };
+----
+
+---
+
+[[lib.themes.loadLib]]
+==== loadLib
+
+Description::: Load themes libraries.
+Parameter Type::: Attribute Set
+Parameters:::
+  * `themes`: A list of themes paths or packages to load libraries from.
+  * `getLibFn` (optional): Function to get the configuration file with type `Theme -> Path`. +
+  The path is imported with nix `import` function and in case a non-fully evaluated function is returned, it will be evaluated with `libFnArg` as an argument (default is `{}`). +
+  If the path returned by the function does not exists, it will just be ignored and trigger no errors.
++
+[source, nix]
+.Default implementation
+----
+theme: theme: theme + "/lib/default.nix"
+----
+
+  * `confFnArg` (optional): If the configuration imported with `getConfFn` is a function, `confFnArg` will be passed as an argument. +
+  This allows to pass arguments such as `lib` to themes configuration files for higher flexibility, defaults to `{}`.
+
+Return::: An attribute set with all the themes library functions.
+Example:::
+
++
+[source, nix]
+----
+lib.themes.loadLib { inherit themes; libFnArg = args; };
 ----
 
 ---
@@ -77,7 +108,7 @@ Parameters:::
 [source, nix]
 .Default implementation
 ----
-theme: "${theme}/templates"
+theme: theme + "/templates"
 ----
 
 Return::: An attribute set containing all the themes template with their environment applied. 
