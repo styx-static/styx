@@ -33,7 +33,7 @@ nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}
 WARNING: Some functions that use the propagated build inputs of the styx package like `lib.data.markdownToHtml` will not work in a `nix-repl` environment.
 
 
-=== Rendering pages source
+=== Rendering a page source
 
 [source]
 .Rendering a page source
@@ -49,7 +49,7 @@ nix-repl> site.templates.layout (site.templates.generic.full site.pages.about) #
 <2> Rendering a page by running directly `layout (template page)`.
 
 
-=== Building the site
+=== Building a site
 
 It is possible to generate the site in the nix store from `nix-repl`.
 

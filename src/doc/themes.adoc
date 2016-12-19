@@ -4,7 +4,7 @@
 Themes are a central concept in styx and are used to manage a site assets, namely files and templates.
 They also provide a configuration interface.
 
-Themes also can be combined to offer modularity and easiness of upgrade.
+Themes can be combined in a modular way.
 
 === Getting themes
 
@@ -28,11 +28,12 @@ Official themes can be used directly from the `styx-themes` package set.
   themes = [ ./themes/my-site styx-themes.showcase ]; #<1>
 ----
 
+NOTE: The `themes` attribute is used in the init section to load themes configuration, templates and static files. It is possible to not use `themes` and directly set a different list of themes for each function.
 
 [[Themes.Structure]]
 === Structure
 
-Themes are usually stored in the `themes` directory, or directly called from the `styx-themes` package set.
+Themes are usually stored in the `themes` directory, or used from the `styx-themes` package set.
 
 Every theme is stored in its own directory, and themes are expected to follow a certain structure.
 
@@ -51,11 +52,11 @@ themes
 <3> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site.
 <4> `templates` is a directory storing all the templates files.
 
-NOTE: It is possible to change styx theme file structure expectations by setting custom functions, see <<lib.themes.loadConf>>, <<lib.themes.loadFiles>> and <<lib.themes.loadTemplates>>.
+NOTE: It is possible to change styx theme file structure expectations by changing <<lib.themes.loadConf>>, <<lib.themes.loadFiles>> and <<lib.themes.loadTemplates>> arguments.
 
 === theme.nix
 
-`theme.nix` defines the theme configuration interface. It is defined as an attribute set.
+`theme.nix` defines the theme configuration interface and is defined as an attribute set.
 
 It is a simple attribute set that defines the theme configuration options with some default values.
 
@@ -92,7 +93,7 @@ Templates that access themes configuration should use `conf.theme`.
 
 The `files` directory holds the static files of the theme. Every file in in this directory will be copied in the generated site.
 
-NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site.
+NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site. If this is not desirable, it is possible to pass a different list of themes to <<lib.utils.loadConf>>.
 
 ==== Special files
 
@@ -181,8 +182,8 @@ let name = "world"; in
 
 ==== Layout templates
 
-The layout template is responsible for rendering the final source of the page. +
-The layout template function usually takes a template environment, and a page attribute set with a `content` attribute.
+Layout templates are responsible for rendering the final source of a page. +
+A layout template function usually takes a template environment, and a page attribute set with a `content` attribute.
 
 In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag contents.
 
@@ -203,18 +204,18 @@ page:
 ''
 ----
 
-TIP: Layout templates are just functions, in case the partial template return the full page source like in a rss feed case, it is possible to set the page `layout` to the `id` function. This will make the layout evaluation transparent and return the `template` result.
+TIP: Layout templates are just functions, in case the normal template return the full page source like in a rss feed case, it is possible to set the page `layout` to the `lib.id` function. This will make the layout evaluation transparent and return the `template` result.
 
 
 ==== Normal templates
 
-Normal templates are similar to the layout templates, with the only difference that their result will be evaluated by the layout template.
-A normal template should set or update the `content` attribute of a page attribute set so the layout template can produce the final source.
+Normal templates are similar to the layout templates, with the only difference that their result will be evaluated by a layout template.
+A standard normal template will set or update the `content` attribute of a page attribute set so the layout template can produce the final source.
 
 Normal templates can also add other attributes to the page attribute to fit any special need.
 
 [source, nix]
-.Example of a partial template
+.Example of a normal template
 ----
 { templates, ... }:
 page:
@@ -227,14 +228,14 @@ in
   page // { inherit content; }
 ----
 
-NOTE: In some cases, it is useful to have the partial template to return the final source of the page. +
-By setting the page `layout` to the `id` function, it is possible to bypass the layout template and have the partial template result being the final source source of the page.
+NOTE: In some cases, it is useful to have the normal template to return the final source of the page. +
+By setting the page `layout` to the `lib.id` function, it is possible to bypass the layout template and have the normal template result being the final source source of the page.
 
 ==== Partial templates
 
-Partials templates are templates that that are used in normal or layout templates.
+Partials templates are templates that can be used in normal or layout templates.
 
-Partial templates can take arguments and be used to with `mapTemplate` to apply a template to a list of content, or just used as includes.
+Partial templates can take arguments and be used to with `mapTemplate` to apply a template to a list of content, or just be used as includes.
 
 ==== Template environment
 
@@ -252,38 +253,38 @@ The default template environment consists in:
 
 NOTE: The template environment is set in `site.nix` and can be easily modified upon needs.
 
-It is possible to set a template environment for a specific template by declaring it in the `customTemplateEnvironments` argument of the <<lib.themes.loadTemplates,`loadTemplates`>> function.
+It is possible to set a template environment for a specific template by declaring it in the `customTemplateEnvironments` argument of the <<lib.themes.loadTemplates>> function.
 
 [source, nix]
 .Setting custom template environments
 ----
-  templates = lib.themes.loadTemplates {
+  templates = lib.themes.loadTemplates rec {
     inherit themes;
     environment = { inherit conf templates data pages lib; };
     customEnvironments = {
-      layout =  { inherit conf templates data pages lib; foo = "bar"; }; # <1>
+      layout =  environment // { foo = "bar"; }; # <1>
     };
   };
 ----
 
-<1> The environment passed to the `layout` template is the default environment extended with a `foo` variable.
+<1> The environment passed to the `layout` template is the `environment` extended with a `foo` variable.
 
 
 ==== Template environment in templates
 
-There are two ways of writing the `environment` in the template, as a set or as a deconstructed set.
+There are two ways of writing the template environment in the template, as a set or as a deconstructed set.
 
 [source, nix]
 .Environment as a variable
 ----
-environment: # <1>
+env: # <1>
 page:
 ''
-  ${environment.conf.siteTitle}
+  ${env.conf.theme.site.title}
 ''
 ----
 
-<1> `environment` is used as a set, and its key can be accessed with `.`.
+<1> `env` is used as a set, and its key can be accessed with `.`.
 
 [source, nix]
 .Environment as a deconstructed set
@@ -291,7 +292,7 @@ page:
 { conf, lib, ... }: # <1>
 page: # <1>
 ''
-  ${conf.siteTitle}
+  ${conf.site.theme.site.title}
 ''
 ----
 
@@ -308,7 +309,7 @@ It is possible to call templates in a template by accessing to the `templates` a
 { templates, ... }:
 page:
 ''
-  ${templates.foo}
+  ${templates.partials.head}
 ''
 ----
 
@@ -326,7 +327,9 @@ The `mapTemplate` function can be used to map a template to a list of contents.
 { templates, ... }:
 page:
 ''
+  <ul>
   ${mapTemplate templates.post.list page.posts}
+  </ul>
 ''
 ----
 
@@ -353,13 +356,11 @@ Themes related files are automatically loaded in `site.nix` via the `lib.themes.
     environment = { inherit conf templates data pages lib; };
   };
 
-  files = lib.themes.loadFiles themes; # <2>
-
-  themes = [ styx-themes.showcase ];
+  files = lib.themes.loadFiles { inherit themes; }; # <2>
 ----
 
-<1> Load themes templates. See <<lib.themes.loadTemplates,loadTemplates>> for details.
-<2> Load themes files. See <<lib.themes.loadFiles,loadFiles>> for details.
+<1> Load themes templates. See <<lib.themes.loadTemplates>> for details.
+<2> Load themes files. See <<lib.themes.loadFiles>> for details.
 
 
 === Combining Themes
@@ -368,7 +369,7 @@ In `site.nix`, themes are declared as a list. If multiple themes in the list pro
 
 This allows to "extends" themes without modifying them.
 
-For example, to use the showcase theme but only change the `layout` template. It is possible to create a new theme, and copy the `layout.nix` template in the new theme `templates` directory and change only this file.
+For example, to use the showcase theme but only customize the `layout` template. It is possible to create a new theme, and copy the `layout.nix` template in the new theme `templates` directory and change only this file.
 
 [source, bash]
 .Creating a new foo theme
@@ -379,7 +380,6 @@ $ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix theme
 
 <1> Create the theme directory.
 <2> Copying `showcase` theme `layout.nix` to the `foo` theme.
-<3> Make changes to `foo` theme `layout.nix` file.
 
 After a new theme has been created, it must be declared in `site.nix` to be used.
 
@@ -393,6 +393,6 @@ After a new theme has been created, it must be declared in `site.nix` to be used
 
 TIP: Combining themes is the recommended way to extend an existing theme as it make theme upgrades easier.
 
-TIP: Higher granularity can be attained by specifying different list of themes to the `templates` and `files` attributes. +
+TIP: Higher granularity can be attained by specifying different list of themes to the `templates` and `files` loading functions arguments. +
 This is especially useful when only the templates of a theme are to be used.
 

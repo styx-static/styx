@@ -1,14 +1,36 @@
 == Site Generation
 
-Site generation is the final section of `site.nix`.
+Site generation consists in a call to <<lib.generation.generateSite>>, and the preparation of its arguments.
 
-It mainly consists in a call to `generateSite`, and the preparation of its arguments.
+[source, nix]
+.Standard call to generateSite
+----
+pagesList = pagesToList { iherit pages; };
+
+site = generateSite { inherit conf files pagesList; }
+----
+
+It is possible to set default attributes to every page set during the `pages` attribute by using the `default` argument of the <<lib.generation.pagesToList>> function.
+
+A typical example is setting a default layout to every page set that do not declares one.
+
+[source, nix]
+.Setting a default layout to every page set
+----
+pagesList = lib.pagesToList {
+  inherit pages;
+  default = { layout = templates.layout; };
+};
+----
+
+NOTE: Styx expects the site to be rendered in the `site` attribute of the main set.
+
 
 === Substitutions
 
-Subtitutions are a way to use some variables in markup files or static files.
+Subtitutions are a way to pass variables from `site.nix` in markup or static files.
 
-Substitutions are a set that is passed to the `generateSite`. Any value of this set can be replaced will be replaced in text files that `generateSite` outputs.
+Substitutions are a set that is passed to the `generateSite` function. Any value of set will be replaced in the markup or static files that `generateSite` outputs.
 
 To be replaced, the variable as to be surrouded by `@`, for example `@siteUrl@`.
 
@@ -44,5 +66,4 @@ Styx automatically convert `sass`, `scss` and `less` files to css during site ge
 
 - `preGen`: A string or multiline string with shell commands to run before generating the site.
 - `postGen`: A string or multiline string with shell commands to run after generating the site.
-
 

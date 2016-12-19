@@ -1,5 +1,7 @@
 == Quick Start
 
+=== Preview a styx site
+
 The styx showcase theme example site can be previewed by the following command:
 
 [source, bash]
@@ -8,11 +10,14 @@ $ styx preview --in $(nix-build -A styx-themes.showcase '<nixpkgs>')/example # <
 ----
 
 This command download the showcase theme in the nix store, build the site also in the nix store and launch the preview from there. +
-This will only create files in the nix store.
 
 The showcase example site will be accessible at link:http://127.0.0.1:8080[http://127.0.0.1:8080]. Check the posts as they provide some information about how styx works.
 
+NOTE: This command will only create files in the nix store.
+
 ---
+
+=== Create a new site
 
 To start a new site, the following set of commands can be used:
 
@@ -24,9 +29,10 @@ $ cd my-site # <2>
 
 <1> Initialize a new styx site in the `my-site` directory.
 <2> Enter the `my-site` directory.
-<3> Start hacking!
 
-It is recommended to start by reading the <<sitenix,site.nix>> section to get familiar on how `site.nix` is structured.
+A `readme.md` file will be available in the `my-site` directory giving basic instructions.
 
-Sample `site.nix` configuration can be found in the <<Themes,themes>> examples directory.
+It is recommended to read the <<sitenix,site.nix>> section to get familiar on how `site.nix` is structured and works.
+
+Sample `site.nix` configuration can be found in the <<Themes,themes>> `example` directory.
 

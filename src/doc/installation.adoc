@@ -17,3 +17,20 @@ For testing purposes, `nix-shell` can be used to start a temporary environment w
 $ nix-shell -p styx
 ----
 
+====
+Newer versions of styx are available in the `nixpkgs-unstable` or `nixos-unstable` channel, but there might be some delay between a styx release and the time the channel get updated.
+
+It is possible to directly install the latest version of styx by running the following command:
+
+[source, shell]
+----
+$ nix-env -i https://github.com/styx-static/styx/archive/latest.tar.gz
+----
+
+Or to start a nix-shell with the latest styx stable version:
+
+[source, shell]
+----
+$ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
+----
+====

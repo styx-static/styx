@@ -3,12 +3,12 @@
 
 Data refers to the data fetched or declared in the data section of `site.nix`.
 
-Data gets included in the default template environment and can also be used in the pages section of `site.nix` to attach data to pages.
+Data gets included in the default template environment and can also be used in the pages section of `site.nix` to attach data to page attribute sets.
 
 === Creating data
 
 Data can be created by directly defining a nix data structure. +
-An example of such usage is the navbar items that are declared as a list of page attributes sets.
+An example of such usage is a navbar declared as a list of page attributes sets.
 
 [source, nix]
 .Creating navbar data
@@ -18,10 +18,10 @@ An example of such usage is the navbar items that are declared as a list of page
 
 === Importing data
 
-The styx data sub-library provides functions two functions to import  markup data:
+The styx data library provides functions to import external data:
 
 - `loadFile`: load a single data file and return it as an attribute set.
-- `loadDir`: to load all the files in a directory and return them as a list of attributes set.
+- `loadDir`: to load all the files in a directory and return them as a list of attributes set. (non-recursive)
 
 The data loading functions return a set per file loaded and do a few things:
 
@@ -31,10 +31,10 @@ The data loading functions return a set per file loaded and do a few things:
 ** `dir`: The directory of the file.
 ** `name`: The name of the file, `basename` and `ext` field combined with a `.`.
 * <<Metadata>> is automatically parsed and merged to the set.
-* Data with introduction gain a `intro` attribute containing the introduction.
+* Data with introduction gain a `intro` attribute containing the introduction and the introduction is removed from the content.
 * Multipages data gain a `subpages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
-* If the file basename begins in a `YYYY-MM-DD-` or `YYYY-MM-DDThh:mm:ss-` format, this value will be inserted in the `date` attribute.
+* If the file basename begins in a `YYYY-MM-DD-` or `YYYY-MM-DDThh:mm:ss-` format, this value will be inserted in a `date` attribute.
 
 NOTE: Nix data should be imported with the `import` function, that return the data in the nix file as it is.
 
@@ -98,6 +98,8 @@ It is a simple functional language and fits well data that has multiple fields.
 ]
 ----
 
+TIP: It is possible to make nix data a function and pass arguments from `site.nix`  such as `lib` for more flexibility.
+
 ====
 Markup with metadata and nix data structures can be considered equivalent as it is possible to declare fields in nix data as markdown text, and markdown can declare nix fields as metadata.
 
@@ -150,7 +152,7 @@ NOTE: `intro` field contents are included in the `content` field.
 
 === Multipage data
 
-It is possible to split markup file in many subpages by using the `<<<` separator.
+It is possible to split markup file in subpages by using the `<<<` separator.
 
 [source,markdown]
 .Splitting a markdown file in 3 pages
@@ -174,7 +176,7 @@ Phasellus consequat a nibh sit amet ultricies. Quisque feugiat justo eu condimen
 
 The resulting data set will have an extra `subpages` field that will hold the list of subpages content.
 
-NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute sets is handled by the pages section. +
+NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute set is done in the pages section. +
 For example, the `mkPagesList` or `mkMultipages` function can generate pages from a multipage data set.
 
 
@@ -184,8 +186,8 @@ For example, the `mkPagesList` or `mkMultipages` function can generate pages fro
 
 Taxonomies are a way to group and structure data.
 
-Styx taxonomies are a two layers grouping system, taxonomies and terms. +
-The taxonomy layer group the content declaring a specific data attribute, and the term layer group the contents in the taxonomy depending of the values set to that specific attribute.
+Styx taxonomies uses a two layers grouping system: taxonomies and terms. +
+The **taxonomy** layer group the content declaring a specific data attribute, and the **term** layer group the contents in the taxonomy depending of the values set to that specific attribute.
 
 A common example of taxonomy is tags, `tags` will be the taxonomy and `sports` or `technology` will be the terms.
 
@@ -220,7 +222,7 @@ This will generate a taxonomy data structure where:
 
 Then, the taxonomy related pages can be generated in the page section using the `mkTaxonomyPages` function.
 
-TIP: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `href` field making it impossible to generate links to them. +
+NOTE: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `href` field making it impossible to generate links to them. +
 Using data attribute sets such as `data.posts` would make it impossible to generate pages from the taxonomy with `mkTaxonomyPages`.
 
 ====
@@ -256,7 +258,7 @@ Adding taxonomy fields to a content consists in adding a metadata attribute with
 .Setting tags to a markdown file
 ----
 {---
-  tags = [ "foo" "bar" ];
+tags = [ "foo" "bar" ];
 ---}
 
 # Lorem ipsum
@@ -265,5 +267,5 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet 
 ----
 
 
-IMPORTANT: Terms must be a list of strings.
+IMPORTANT: Tiaxonomy terms must be a list of strings.
 

@@ -19,9 +19,9 @@ Breaking Changes
 
 - `site.nix` was refactored
 - Themes `theme.nix` file **must** declare a `meta.name` attribute specifying the theme name.
-- `lib.pages.setDefaultLayout` was removed in favor of a more generic <<lib.utils.setDefault>> function.
+- `lib.pages.setDefaultLayout` was removed (default pages values can be set with the `default` argument of <<lib.generation.pagesToList>>).
 
-This release brings few major changes that make upgrading from 0.4.0 non trivial. +
+This release brings few incompatible changes that requires to refactor `site.nix` to upgrade. +
 The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call.
 
 

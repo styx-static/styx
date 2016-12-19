@@ -75,16 +75,26 @@ generateSite { pagesList = [ pages.index ]; }
 ==== pagesToList
 
 Description::: Convert the `pages` attribute set to a list of pages attribute sets.
-Parameter Type::: Standard
+Parameter Type::: Attribute Set
 Parameters:::
   * `pages`: The `pages` attribute set.
+  * `default` (optional): An attribute set containing default page values, defaults to `{}`.
 Return::: A list of pages attribute sets.
 Example:::
 
 +
 [source, nix]
 ----
-pagesList = pagesToList pages;
+pageslist = pagestolist { inherit pages; };
+----
+
++
+[source, nix]
+----
+pageslist = pagestolist {
+  inherit pages;
+  default = { layout = templates.layout; };
+};
 ----
 
 ---

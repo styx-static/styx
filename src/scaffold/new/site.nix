@@ -78,7 +78,7 @@ rec {
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = lib.pagesToList pages;
+  pagesList = lib.pagesToList { inherit pages; };
 
   /* Generating the site
   */

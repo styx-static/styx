@@ -2,7 +2,7 @@
 
    run with
    
-     nix-instantiate --eval --strict --show-trace lib-tests.nix
+     nix-instantiate --eval --strict --show-trace tests/lib.nix
 */
 let
   pkgs = (import <nixpkgs> {});

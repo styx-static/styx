@@ -160,11 +160,15 @@ rec {
 
   /* Convert a page attribute set to a list of pages
   */
-  pagesToList = pages:
-    let
-      pages' = attrValues pages;
-    in fold
-         (p: acc: if isList p then p ++ acc else [p] ++ acc)
-         [] pages';
+  pagesToList = {
+    pages
+  , default ? {}
+  }:
+    let pages' = attrValues pages;
+    in fold (p: acc:
+         if isList p
+         then (map (x: default // x) p) ++ acc
+         else [(default // p)] ++ acc
+       ) [] pages';
 
 }

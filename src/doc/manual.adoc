@@ -23,8 +23,6 @@ include::quickstart.adoc[]
 
 include::basics.adoc[]
 
-include::cli.adoc[]
-
 include::configuration.adoc[]
 
 include::themes.adoc[]
@@ -38,6 +36,8 @@ include::generation.adoc[]
 include::debugging.adoc[]
 
 include::deployment.adoc[]
+
+include::cli.adoc[]
 
 include::library.adoc[]
 

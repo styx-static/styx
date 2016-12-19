@@ -66,7 +66,7 @@ link:http://nixos.org/nixops/[NixOps] is a deployment tool for NixOS configurati
 
 NOTE: The NixOps link:http://nixos.org/nixops/manual/[manual] provide information about all the deployment options.
 
-A styx website can be deployed via NixOps with the following set of commands:
+Then the site can be deployed via NixOps with the following set of commands:
 
 [source, bash]
 ----

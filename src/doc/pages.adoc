@@ -1,14 +1,12 @@
 [[Pages]]
 == Pages
 
-Pages refer to the pages declared in `site.nix`.
-
 Pages are declared in a `pages` an attribute set. Every page or list of pages declared in this set will be generated.
 
 
 === Overview
 
-Pages get passed to the `generateFunction` that turn each page into a text file in the generated site.
+Pages is passed to the `generateFunction` through the `pagesList` argument that turn each page into a text file.
 
 TIP: Pages are usually generated as html documents, but any kind of text file can be generated from a page attribute set.
 
@@ -35,15 +33,15 @@ pages.index = {
 };
 ----
 
-In a normal `site.nix`, the template would be an attribute from the `templates` set like `templates.generic.full`.
+In an usual `site.nix`, the template would be an attribute from the `templates` set like `templates.generic.full`.
 
-Page attribute sets are usually augmented by various attributes or merged with data sets to fit any needs.
+Page attribute sets are often augmented by various attributes or merged with data sets.
 
 NOTE: `generateSite` evaluate `page.layout (page.template page)` and output the result in `page.href` for every page in its `pagesList` argument.
 
-TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "arguments preparation" section. +
+TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "arguments preparation" with <<lib.utils.setDefault>> section. +
 Usually, only pages that use a different layout explicitly declares it in `pages`. +
-The following examples will omit the `layout` like done in a normal `site.nix`.
+The following examples will omit the `layout` attribute like often done in a normal `site.nix`.
 
 
 === Simple pages
@@ -64,7 +62,7 @@ Nix allow to use attributes starting with a number, but they must be called by u
 
 === Attaching data to a page
 
-Generating a page from an imported data is a very common case, and is easy to achieve.
+Generating a page from an imported data is a very common case, and isi easily done.
 
 [source, nix]
 .Attaching a data set to a page attribute set.
@@ -75,13 +73,13 @@ pages.about = {
 } // data.about;
 ----
 
-The `//` operator will merge the `data.about` data set in the `about` page set.
+The `//` operator will merge the `data.about` data set in the `pages.about` page set.
 
 
 === Bypassing the layout
 
 For pages which the template generate the full page source like for RSS feeds, applying a layout is not needed. +
-In such cases, the `id` function, a function that return its parameter without changing it can be used as a layout.
+In such cases, the `lib.id` function, a function that return its parameter without changing it can be used as a "transparent" layout.
 
 [source, nix]
 .Using id as a layout
@@ -89,7 +87,7 @@ In such cases, the `id` function, a function that return its parameter without c
 pages.feed = {
   href = "feed.xml";
   template = templates.feed;
-  posts = take 10 posts;
+  posts = lib.take 10 posts;
   layout = lib.id;
 };
 ----
@@ -102,7 +100,7 @@ Split pages refers to a list of data split though multiple similar pages.
 
 A common example of split page is a blog archive page, the full list of blogs are split in many pages.
 
-Split pages can be generated with the `mkSplit` or `mkSplitCustom` function. +
+Split pages can be generated with the <<lib.pages.mkSplit>> or <<lib.pages.mkSplitCustom>> function. +
 `mkSplit` being a simpler version of `mkSplitCustom` function that should fit most of needs.
 
 [source, nix]
@@ -123,7 +121,7 @@ This will create a list of pages attribute sets with the following extra attribu
 `index`:: The position of this page in the list of split pages.
 `pages`:: The split pages lists, useful for generating a pagination.
 
-For more complex splitting needs see the <<mkSplitCustom>> function documentation.
+For more complex splitting needs see the <<lib.pages.mkSplitCustom>> function documentation.
 
 NOTE: `mkSplit` only requires `baseHref`, `itemsPerPage` and `data` as parameters. Any extra parameter passed will be added to every split page attribute set. +
 This is on purpose and is used in the previous example to set all the split pages template in the `mkSplit` declaration.
@@ -143,7 +141,7 @@ Mulipage pages are referred as:
 
 ==== Single pages
 
-Multipages can be generated with the `mkMultipages` function.
+Multipages can be generated with the <<lib.pages.mkMultipages>> function.
 
 [source, nix]
 .mkMultipages example
@@ -175,7 +173,7 @@ So for multipages in a list, the generation will be separated in two steps.
 
 First step, generate the page set list with single page data and multipage first page data.
 
-This could be done using `mkMultipages` and filtering / mapping, but a `mkPageList` function is available and do exactly that.
+This could be done using `mkMultipages` and filtering / mapping, but a <<lib.pages.mkPageList>> function is available and do exactly that.
 
 [source, nix]
 .Generating the page list with multipage head pages
@@ -196,7 +194,7 @@ pages.posts = lib.mkPageList {
 
 Next step is to generate the `tail` of the multipages posts.
 
-`mkMultitail` is the function to generate page sets for the `tail` of multipages in a list of data sets.
+<<lib.pages.mkMultitail>> is a function that generate page sets for the multipages `tail` in a list of data sets.
 
 [source, nix]
 .Generating the multipage posts tail
@@ -209,14 +207,14 @@ pages.multiPostsTail = lib.mkMultiTail {
 
 This is very similar to the `mkPageList` function but only tail pages sets are generated. As only tail pages are rendered, the template is directly set with the `template` attribute.
 
-IMPORTANT: It is possible to set a prefix to the generated `href` attribute of `mkPageList` and `mkMultiTail` function with the `hrefPrefix` argument. +
-If the `baseHref` argument is set, it **must** be the same for the same data set, else the links between `head` and `tail` pages will be broken.
+IMPORTANT: It is possible to set a prefix to the generated `href` attribute of <<lib.pages.mkPageList>> and <<lib.pages.mkMultiTail>> function with the `hrefPrefix` argument. +
+If the `hrefPrefix` argument is set, it **must** be the same for the same data set, else the links between `head` and `tail` pages will be broken.
 
 === Taxonomy pages
 
 NOTE: To see how to generate taxonomy data, refer to <<Taxonomies>>.
 
-Taxonomies pages can be generated from a taxonomy data structure with the `mkTaxonomyPages` function.
+Taxonomies pages can be generated from a taxonomy data structure with the <<lib.pages.mkTaxonomyPages>> function.
 
 [source, nix]
 ----
@@ -227,7 +225,7 @@ taxonomies = lib.mkTaxonomyPages {
 };
 ----
 
-The `mkTaxonomyPages` function will create the following page attribute sets:
+The <<lib.pages.mkTaxonomyPages>> function will create the following page attribute sets:
 
 - `TAXONOMY/index.html`, the taxonomy index page set for every taxonomy. A `terms` attribute will be added to the page attribute set containing all the taxonomy terms.
 - `TAXONOMY/TERM/index.html`, the term index page set for every term in every taxonomy. A `values` attribute will be added to the page attribute set containing all the values that use the term.

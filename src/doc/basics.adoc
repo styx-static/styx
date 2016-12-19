@@ -73,7 +73,7 @@ But the `styx new` command will generate a few more files for convenience.
 └── themes/ # <5>
 ----
 
-<1> `conf.nix` is the main configuration, see <<Configuration>> for details.
+<1> `conf.nix` is the main configuration file, see <<Configuration>> for details.
 <2> `readme.md` provides some basic information about how to start using styx.
 <3> `site.nix` is the main file for site generation, see <<sitenix>> for details.
 <4> `data/` is an empty directory meant to hold site data.
@@ -85,9 +85,9 @@ It is even possible to change the name of `site.nix`. In that case the `--file` 
 
 === site.nix
 
-The `site.nix` used in the <<Hello world!>> example contains only enough code to generate a single page. It is likely that a `site.nix` to generate a normal site will contain more informations.
+The `site.nix` used in the <<Hello world!>> example contains only enough code to generate a single page. A standard `site.nix` will contain more information and be more structured.
 
-The extreme case is the `showcase` theme example site `site.nix` that use almost every feature available.
+A complex example of a `site.nix` if the showcase theme example site link:https://github.com/styx-static/styx-theme-showcase/blob/master/example/site.nix[`site.nix`] that use almost every feature available.
 
 It is best practice to divide `site.nix` in multiple sections, with each section handling a particular topic. +
 It is common to use the following sections:
@@ -110,9 +110,9 @@ It is common to use the following sections:
 ====
 `generateSite` is a function:
 
-- taking at least the list of pages set to generate as an argument.
-- that evaluate each page set with `page.layout (page.template page)` and output the result in `page.href`.
-- returning a generated static site.
+- taking at least a list of pages to generate as the `pagesList` argument.
+- that evaluate each page set by evaluating `page.layout (page.template page)` and output the result in `page.href`.
+- returning a generated static site directory.
 
 NOTE: `generateSite` is a wrapper for nixpkgs `runCommand` function.
 ====
@@ -137,11 +137,13 @@ This section is the basic setup of styx, it should not be changed and used as is
 
 rec {
 
-  lib = import styx.lib args;
+  /* Library loading
+  */
+  lib = import styx.lib args; # <1>
 
   /* Configuration loading
   */
-  conf = lib.utils.mergeConfs [ # <1>
+  conf = lib.utils.mergeConfs [ # <2>
     (lib.themes.loadConf { inherit themes; })
     (import ./conf.nix)
     extraConf
@@ -149,19 +151,20 @@ rec {
 
   /* Themes templates loading
   */
-  templates = lib.themes.loadTemplates { # <2>
+  templates = lib.themes.loadTemplates { # <3>
     inherit themes;
     environment = { inherit conf templates data pages lib; };
   };
 
   /* Themes static files loading
   */
-  files = lib.themes.loadFiles { inherit themes; }; # <3>
+  files = lib.themes.loadFiles { inherit themes; }; # <4>
 ----
 
-<1> This generate the configuration by merging the themes configuration, `conf.nix` and the `extraConf`, for details see <<Configuration>>.
-<2> This loads the templates provided by the themes.
-<3> This loads the static files loaded by the themes.
+<1> Load the styx library, library functions are documented in <<Library>>.
+<2> Generate the configuration by merging the themes configuration, `conf.nix` and the `extraConf`, for details see <<Configuration>>.
+<3> Loads the templates provided by the themes.
+<4> Loads the static files provided by the themes.
 
 
 [[site.nix-themes]]
@@ -233,6 +236,7 @@ The <<Pages>> section explains in detail how to create pages.
     about = {
       href = "about.html";
       template = templates.generic.full;
+      layout = templates.layout;
     } // data.about; # <1>
 
   };
@@ -240,8 +244,6 @@ The <<Pages>> section explains in detail how to create pages.
 
 <1> `//` is the operator to merge attribute sets, this merge the `data.about` data attribute set in the `pages.about` page attribute set.
 
-NOTE: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all pages in the site section.
-Only pages that use a different layout usually explicitly set it in `pages`.
 
 ==== Site
 
@@ -257,7 +259,7 @@ This is the final part and shortest section of `site.nix`. This section consists
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = pagesToList pages; # <1>
+  pagesList = pagesToList { inherit pages; }; # <1>
 
   site = generateSite { inherit conf files pagesList; }
 }
@@ -265,7 +267,7 @@ This is the final part and shortest section of `site.nix`. This section consists
 
 <1> `generateSite` requires pages as a list, so `pagesToList` convert the pages attribute set to a list.
 
-NOTE: `files` is automatically generated in the init section using enabled themes.
+NOTE: `files` is generated in the init section using enabled themes.
 
 NOTE: `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
 
