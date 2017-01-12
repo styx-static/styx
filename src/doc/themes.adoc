@@ -25,10 +25,16 @@ Official themes can be used directly from the `styx-themes` package set.
 [source, nix]
 .Using a local my-site theme and the showcase theme
 ----
-  themes = [ ./themes/my-site styx-themes.showcase ]; #<1>
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
+  */
+  themes = [
+    styx-themes.showcase
+    ./themes/my-theme
+  ];
 ----
 
-NOTE: The `themes` attribute is used in the init section to load themes configuration, templates, library and static files. It is possible to not use `themes` and directly set a different list of themes for each function.
+NOTE: Items at the beginning of the `themes` list have lower priority.
 
 [[Themes.Structure]]
 === Structure
@@ -38,38 +44,33 @@ Themes are usually stored in the `themes` directory, or used from the `styx-them
 Every theme is stored in its own directory, and themes are expected to follow a certain structure.
 
 [source, shell]
-.Anatomy of a Styx theme
+.Structure of a Styx theme
 -----
 themes
 └── NAME # <1>
-    ├── theme.nix # <2>
-    ├── files # <3>
-    ├── lib # <4>
-    └── templates # <5>
+    ├── conf.nix # <2>
+    ├── meta.nix # <3>
+    ├── lib.nix # <4>
+    ├── files # <5>
+    └── templates # <6>
 -----
 
 <1> Name of the theme. The name should be a valid directory name.
-<2> `theme.nix` defines the theme configuration options, this is file is required and must be named `theme.nix`.
-<3> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site.
-<4> `lib` is a directory where the theme library functions are defined (optional).
-<5> `templates` is a directory storing all the templates files.
+<2> `conf.nix` defines the theme configuration options (optional). 
+<3> `meta.nix` defines the theme meta information, this is file is required and must define a `name` attribute.
+<4> `lib.nix` defines the theme extra library as a set (optional).
+<5> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site (optional).
+<6> `templates` is a directory storing all the templates files (optional).
 
-NOTE: It is possible to change styx theme file structure expectations by changing <<lib.themes.loadConf>>, <<lib.themes.loadFiles>> and <<lib.themes.loadTemplates>> arguments.
 
-=== theme.nix
+=== conf.nix
 
-`theme.nix` defines the theme configuration interface and is defined as an attribute set.
+`conf.nix` defines the theme configuration interface and is defined as an attribute set.
 
 It is a simple attribute set that defines the theme configuration options with some default values.
 
-Theme meta information should also be declared in the `meta` attribute set. It is important that themes have a `meta.name` set for the configuration to be correctly processed. +
-
-Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
-
-IMPORTANT: `theme.nix` **must** have a `meta.name` attribute.
-
 [source, nix]
-.Example of a theme.nix
+.Example of a theme conf.nix
 ----
 {
   site = {
@@ -77,25 +78,43 @@ IMPORTANT: `theme.nix` **must** have a `meta.name` attribute.
     author = "Your name";
     description = "Your description";
   };
-  meta = {
-    name = "my-theme";
-  };
 }
 ----
 
 ====
-`theme.nix` attribute set will be merged in `site.nix` `conf` variable in two attributes:
+`conf.nix` attribute set will be merged in `site.nix` by the `lib.themes.load` function into the `conf` variable containing two attributes:
 
-- `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`.
-Templates that access themes configuration should use `conf.theme`.
-- `conf.themes.NAME`: `NAME` is the theme `meta.name` value, this holds the theme default configuration as it is declared in `theme.nix`.
+- `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`. +
+Theme templates that access themes configuration should use `conf.theme`.
+- `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration as it is declared in `theme.nix`.
 ====
+
+NOTE: `conf.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
+
+=== meta.nix
+
+Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `name` attribute in `meta.nix` so the theme configuration is correctly processed. +
+
+Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
+
+[source, nix]
+.Example of a theme meta.nix
+----
+{ lib }:
+{
+  name = "showcase";
+  license = lib.licenses.mit;
+  maintainers = with lib.maintainers; [ ericsagnes ];
+}
+----
+
+NOTE: `meta.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
 === Files
 
-The `files` directory holds the static files of the theme. Every file in in this directory will be copied in the generated site.
+The `files` directory holds the static files provided by the theme. Every file in in this directory will be copied in the generated site.
 
-NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site. If this is not desirable, it is possible to pass a different list of themes to <<lib.utils.loadConf>>.
+NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site. If this is not desirable, it is possible to pass a different list of themes to <<lib.themes.load, lib.themes.load>> function `files` argument.
 
 ==== Special files
 
@@ -106,62 +125,23 @@ Styx automatically convert `sass`, `scss` and `less` files to css during site ge
 
 Themes can provide a function library that can be used in `site.nix` or in templates.
 
-To provide a library, a theme must have a `lib/default.nix` file defining some functions.
+To provide a library, a theme must have a `lib.nix` file containing an attribute set of functions.
 
-To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.NAME` where `NAME` is the theme name is a natural choice.
-
-As library functions often make use nixpkgs basic functions, theme libraries are often defined as functions so they can be passed `lib`. +
-In case `lib/default.nix` is a non-fully evaluated function, it is recommended that it take a single argument that is the `site.nix` argument set `args` for best inter-compatibility between themes.
+To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.NAME` where `NAME` is the theme name as a natural choice.
 
 [source, nix]
-.Example of a theme library default.nix
+.Example of a theme lib.nix
 ----
-{ lib, ... }:
-with lib;
+{ lib }:
 {
   theme.my-theme = {
-    foo = x: "foo called with ${toString x}";
+    foo = x: "foo called with ${builtins.toString x}";
   };
 }
 ----
 
-====
-As no official theme provide a function library, this feature is disabled in newly generated `site.nix` with the `styx new site` command.
+NOTE: `lib.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
-To use a libraries from themes, please update the `site.nix` init section to the following:
-
-[source, nix]
-----
-/*-----------------------------------------------------------------------------
-   Init
-
-   Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-
-{ lib, styx, runCommand, writeText
-, styx-themes
-, extraConf ? {}
-}@args:
-
-let styxLib = import styx.lib args; # <1>
-
-in rec {
-
-  /* Library Loading
-  */
-  lib = styxLib.utils.merge [ # <2>
-    styxLib
-    (styxLib.themes.loadLib { inherit themes; libFnArg = args; }) # <3>
-  ];
-----
-
-<1> Load the styx library, library functions are documented in <<Library>>.
-<2> Generate the `lib` library attribute by merging the styx library and themes libraries.
-<3> Loading the themes libraries, for details see <<lib.themes.loadLib>>.
-
-Notice that to avoid infinite recursion, the styx library is inserted in a `styxLib` variable and then merged with themes libraries with <<lib.utils.merge>>.
-
-====
 
 === Templates
 
@@ -198,20 +178,20 @@ Styx templates are functions that return text or page attribute sets when fully 
 
 Templates are divided in three types:
 
-- Layout templates, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
-- Normal templates, responsible for preparing a page for the layout template, this kind of templates usually return a page attribute set.
-- Partial templates, responsible for rendering a part of a layout or a normal template. 
+- *Layout templates*, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
+- *Normal templates*, responsible for preparing a page for the layout template, this kind of templates usually return a page attribute set.
+- *Partial templates*, responsible for rendering a part of a layout or a normal template. 
 
-The normal template evaluation flow is:
+The template evaluation flow is:
 
-- Normal templates evaluate the page attribute set and generates a partial result that is stored in the page attribute set `content` key.
-- Layout templates evaluate the page attribute set returned by the normal template and produce the final source of the page.
+- *Normal templates* evaluate the page attribute set and generates a partial result that is stored in the page attribute set `content` key.
+- *Layout templates* evaluate the page attribute set returned by the *normal template* and produce the final source of the page.
 
 ==== Text handling basics
 
 Most of the work in template is done by manipulating text.
 
-This introduce the basics of text handling in the templates:
+This section introduce the basics of text handling in the templates:
 
 - single-line or multi-line text (leading spaces are stripped without changing relative line align), delimited by `''`.
 
@@ -248,7 +228,7 @@ let name = "world"; in
 Layout templates are responsible for rendering the final source of a page. +
 A layout template function usually takes a template environment, and a page attribute set with a `content` attribute.
 
-In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `head` tag contents.
+In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `html` tag contents.
 
 [source, nix]
 .Layout template example
@@ -309,33 +289,16 @@ It is automatically set when the templates are loaded from a theme.
 The default template environment consists in:
 
 - `conf`: The configuration attribute set.
-- `lib`: The library attribute set, it contains Styx and nixpkgs functions.
+- `lib`: The library attribute set, it contains Styx and nixpkgs library functions.
 - `templates`: The templates attribute set.
 - `data`: The data attribute set.
 - `pages`: The pages attribute set.
 
 NOTE: The template environment is set in `site.nix` and can be easily modified upon needs.
 
-It is possible to set a template environment for a specific template by declaring it in the `customTemplateEnvironments` argument of the <<lib.themes.loadTemplates>> function.
-
-[source, nix]
-.Setting custom template environments
-----
-  templates = lib.themes.loadTemplates rec {
-    inherit themes;
-    environment = { inherit conf templates data pages lib; };
-    customEnvironments = {
-      layout =  environment // { foo = "bar"; }; # <1>
-    };
-  };
-----
-
-<1> The environment passed to the `layout` template is the `environment` extended with a `foo` variable.
-
-
 ==== Template environment in templates
 
-There are two ways of writing the template environment in the template, as a set or as a deconstructed set.
+There are two ways of writing the template environment in the template, as a variable or as a deconstructed set.
 
 [source, nix]
 .Environment as a variable
@@ -397,38 +360,9 @@ page:
 ----
 
 
-=== Themes in site.nix
-
-Themes are declared as a list in the `themes` variable.
-
-[source, shell]
-.Declaring used themes
------
-  themes = [ styx-themes.showcase ]; # <1>
------
-
-<1> The `themes` variable is a list of theme packages or paths, it is possible to set multiple themes. In that case, themes at the head of the list will have a higher priority.
-
-Themes related files are automatically loaded in `site.nix` via the `lib.themes.loadTemplates` and `lib.themes.loadFiles` functions.
-
-[source, shell]
-.Loading theme related files
-----
-  templates = lib.themes.loadTemplates { # <1>
-    inherit themes;
-    environment = { inherit conf templates data pages lib; };
-  };
-
-  files = lib.themes.loadFiles { inherit themes; }; # <2>
-----
-
-<1> Load themes templates. See <<lib.themes.loadTemplates>> for details.
-<2> Load themes files. See <<lib.themes.loadFiles>> for details.
-
-
 === Combining Themes
 
-In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the one from the first theme to declare it will be used.
+In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the last theme in the list to declare it will be used.
 
 This allows to "extends" themes without modifying them.
 
@@ -446,16 +380,5 @@ $ cp $(nix-build -A styx-themes.showcase '<nixpkgs>')/templates/layout.nix theme
 
 After a new theme has been created, it must be declared in `site.nix` to be used.
 
-[source, nix]
-.Using foo and showcase themes in `site.nix`
-----
-  themes = [ ./themes/foo styx-themes.showcase ]; #<1>
-----
-
-<1> Using foo and showcase theme, with foo having a higher priority than default.
-
 TIP: Combining themes is the recommended way to extend an existing theme as it make theme upgrades easier.
-
-TIP: Higher granularity can be attained by specifying different list of themes to the `templates` and `files` loading functions arguments. +
-This is especially useful when only the templates of a theme are to be used.
 

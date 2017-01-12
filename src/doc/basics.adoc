@@ -32,6 +32,8 @@ rec { # <2>
 }
 ----
 
+NOTE: This example does not use themes.
+
 <1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN, ... }: body` pattern. +
 The arguments of the function are the dependencies needed to build the site. +
 `@args` refers to the whole argument set.
@@ -53,7 +55,8 @@ Everything is ready, the "Hello world!" site preview can be generated.
 $ styx preview
 ----
 
-TIP: Even if this is a simple example, nix language semantics can be confusing. In a nutshell to build a site, `generateSite` evaluates `page.layout (page.template page)` and output the result in `page.href` for every page in `pagesList`. +
+TIP: Even if this is a simple example, nix language semantics can be confusing. +
+In a nutshell to build a site, `generateSite` evaluates `page.layout (page.template page)` and output the result in `page.href` for every page in `pagesList`. +
 That is the reason `layout`, `template` and `href` are required attributes of a page set.
 
 NOTE: Nix expression language is lazily evaluated, so infinite data structures are not a problem (unless some code try to evaluate them).
@@ -75,11 +78,11 @@ But the `styx new` command will generate a few more files for convenience.
 
 <1> `conf.nix` is the main configuration file, see <<Configuration>> for details.
 <2> `readme.md` provides some basic information about how to start using styx.
-<3> `site.nix` is the main file for site generation, see <<sitenix>> for details.
+<3> `site.nix` is the main file for site generation, see <<site.nix,site.nix>> for details.
 <4> `data/` is an empty directory meant to hold site data.
 <5> `themes/` is an empty directory meant to hold custom themes.
 
-NOTE: The file structure of styx is totally free and can be changed at will. +
+NOTE: The file structure of styx is totally free and can be changed according to needs. +
 It is even possible to change the name of `site.nix`. In that case the `--file` flag of the styx command can be used to specify the file name.
 
 
@@ -137,40 +140,18 @@ This section is the basic setup of styx, it should not be changed and used as is
 
 rec {
 
-  /* Library loading
+  /* Styx library
   */
-  lib = import styx.lib args; # <1>
-
-  /* Configuration loading
-  */
-  conf = lib.utils.mergeConfs [ # <2>
-    (lib.themes.loadConf { inherit themes; })
-    (import ./conf.nix)
-    extraConf
-  ];
-
-  /* Themes templates loading
-  */
-  templates = lib.themes.loadTemplates { # <3>
-    inherit themes;
-    environment = { inherit conf templates data pages lib; };
-  };
-
-  /* Themes static files loading
-  */
-  files = lib.themes.loadFiles { inherit themes; }; # <4>
+  styxLib = import styx.lib args; <1>
 ----
 
 <1> Load the styx library, library functions are documented in <<Library>>.
-<2> Generate the configuration by merging the themes configuration, `conf.nix` and the `extraConf`, for details see <<Configuration>>.
-<3> Loads the templates provided by the themes.
-<4> Loads the static files provided by the themes.
 
 
 [[site.nix-themes]]
 ==== Themes
 
-This section is where used themes are declared. Themes are a central concept in styx and provide ways to manage site assets in a flexible manner.
+The theme section is responsible for loading themes assets (configuration, library, static files, and templates).
 
 Themes are detailed in the <<Themes>> section.
 
@@ -182,14 +163,31 @@ Themes are detailed in the <<Themes>> section.
 
 -----------------------------------------------------------------------------*/
 
-  /* Themes used
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
   */
-  themes = [ styx-themes.showcase ]; # <1>
+  themes = [ # <1>
+    styx-themes.showcase
+  ];
+
+  /* Loading the themes data
+  */
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    templates.extraEnv = { inherit data pages; }; # <2>
+    conf.extra = [ (import ./conf.nix) extraConf ]; # <3>
+  };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates; # <4>
 ----
 
-<1> `themes` is a list so it is possible to set multiple themes at the same time to combine them. Themes at the beginning of the list have a higher priority. +
+<1> `themes` is a list so it is possible to set multiple themes at the same time to combine them. Themes at the beginning of the list have a lower priority. +
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
-
+<2> Extra variables to add to the template environment.
+<3> Extra configuration sets to merge with the themes configurations, head of the list have lower priority.
+<4> Bringing the `themesData` attributes in the scope.
 
 ==== Data
 
@@ -234,9 +232,9 @@ The <<Pages>> section explains in detail how to create pages.
   pages = {
 
     about = {
-      href = "about.html";
+      href     = "about.html";
       template = templates.generic.full;
-      layout = templates.layout;
+      layout   = templates.layout;
     } // data.about; # <1>
 
   };

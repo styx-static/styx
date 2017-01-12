@@ -125,28 +125,30 @@ rec {
   , termTemplate
   , taxonomyHrefFn ? (ta:     "${ta}/index.html")
   , termHrefFn     ? (ta: te: "${ta}/${te}/index.html")
-  }:
+  , ...
+  }@args:
     let
+      extraArgs = removeAttrs args [ "data" "taxonomyTemplate" "termTemplate" "taxonomyHrefFn" "termHrefFn" ];
       taxonomyPages = map (plist:
         let taxonomy = propKey   plist;
             terms    = propValue plist;
         in
+        (extraArgs //
         { inherit terms taxonomy;
           href = taxonomyHrefFn taxonomy;
-          template = taxonomyTemplate;
-          title = taxonomy; }
+          template = taxonomyTemplate; })
       ) data; 
       termPages = flatten (map (plist:
         let taxonomy = propKey   plist;
             terms    = propValue plist;
         in
         map (term:
+          (extraArgs //
           { inherit taxonomy;
             href     = termHrefFn taxonomy (propKey term);
             template = termTemplate;
-            title    = propKey   term;
             term     = propKey   term;
-            values   = propValue term; }
+            values   = propValue term; })
         ) terms
       ) data);
   in (termPages ++ taxonomyPages);

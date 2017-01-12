@@ -55,6 +55,26 @@ chunksOf 2 [ 1 2 3 4 5 ]
 
 ---
 
+[[lib.utils.dirContains]]
+==== dirContains
+
+Description::: Check if a path exists in a directory.
+
+Parameter Type::: Standard
+Parameters:::
+  * `dir`: A directory.
+  * `path`: A path.
+Return::: `true` if the path exists, `false` if not.
+Example:::
+
++
+[source, nix]
+----
+lib.utils.dirContains styx-themes.showcase "lib.nix";
+----
+
+---
+
 [[lib.utils.setDefault]]
 ==== setDefault
 

@@ -16,6 +16,7 @@ $ nix-shell -p nix-repl --run nix-repl
 .Inspecting the `conf` configuration set
 ----
 nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
+
 nix-repl> site.conf
 { siteUrl = "http://yourdomain.com"; theme = { ... }; themes = { ... }; }
 ----
@@ -38,10 +39,12 @@ WARNING: Some functions that use the propagated build inputs of the styx package
 [source]
 .Rendering a page source
 ----
-nix-repl> site = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
-nix-repl> let page = site.pages.about // { layout = site.templates.layout; }; in site.lib.generatePage page # <1>
+nix-repl> showcase = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
+
+nix-repl> with showcase; lib.generatePage (pages.about // { layout = templates.layout; }) # <1>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
-nix-repl> site.templates.layout (site.templates.generic.full site.pages.about) # <2>
+
+nix-repl> with showcase; templates.layout (templates.generic.full pages.about) # <2>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
 ----
 
@@ -56,8 +59,9 @@ It is possible to generate the site in the nix store from `nix-repl`.
 [source]
 .Building a site
 ----
-nix-repl> site = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
-nix-repl> :b site.site
+nix-repl> showcase = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
+
+nix-repl> :b showcase.site
 ...
 this derivation produced the following outputs:
   out -> /nix/store/ak6h49a9h7asysv91nf31nhd5h7fgzhi-styx-site

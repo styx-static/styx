@@ -28,6 +28,23 @@ with lib;
       else if order == "dsc" then a."${attribute}" > b."${attribute}"
       else    abort "Sort order must be 'asc' or 'dsc'");
 
+  /* Check if a path exists in a dir
+     
+     Used to overcome pathExists limitations with store paths
+  */
+  dirContains = dir: path:
+    let
+      pathArray = filter (x: x != "") (splitString "/" path);
+      loop = base: path:
+        let contents = readDir base;
+        in if hasAttrByPath [ (head path) ] contents
+           then if length path > 1
+                then loop (base + "/${head path}") (tail path)
+                else true
+           else false;
+    in loop dir pathArray;
+
+
   /* Set default values to a list of attributes sets
   */
   setDefault = list: default:

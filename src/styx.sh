@@ -302,7 +302,7 @@ if [ "$action" = new ] && [ "$newCommand" = site ]; then
   check_dir $target "Error: Cannot create a new site in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{themes,data}
-  cp -r $share/scaffold/new/* "$target/"
+  cp -r $share/scaffold/new-site/* "$target/"
   chmod -R u+rw "$target"
   echo "Styx site initialized in '$target'."
   exit 0
@@ -320,7 +320,8 @@ if [ "$action" = new ] && [ "$newCommand" = theme ]; then
   check_dir $target "Error: Cannot create a new theme in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{templates,files}
-  echo -e "{\n  meta.name = \"$name\";\n}" > "$target/theme.nix"
+  echo -e "{ lib }:\n{\n  name = \"$name\";\n}" > "$target/meta.nix"
+  cp -r $share/scaffold/new-theme/* "$target/"
   echo "Styx theme initialized in '$target'."
   exit 0
 fi

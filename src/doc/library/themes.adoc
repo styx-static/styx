@@ -6,120 +6,80 @@ This namespace contains functions related to themes.
 
 ---
 
-[[lib.themes.loadConf]]
-==== loadConf
+[[lib.themes.load]]
+==== load
 
-Description::: Load themes configuration.
+Description::: Load themes data.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `themes`: A list of themes paths or packages to load configuration from.
-  * `getConfFn` (optional): Function to get the configuration file with type `Theme -> Path`. +
-  The path is imported with nix `import` function and in case a non-fully evaluated function is returned, it will be evaluated with `confFnArg` as an argument (default is `{}`).
-+
-[source, nix]
-.Default implementation
-----
-theme: theme + "/theme.nix"
-----
+  * `styxLib`: Styx library.
+  * `themes`: A list of themes paths or packages to load data from, head of the list have lower priority.
+  * `conf` (optional): configuration loading parameters:
+  ** `themes` (optional): A list of themes attribute set to load configuration from, can be used to load configuration from a different list of themes than `themes`.
+  ** `extra` (optional): A list of base configuration attribute sets, head of the list have lower priority.
+  * `lib` (optional): library loading parameters:
+  ** `themes` (optional): A list of themes attribute set to load library from, can be used to load library from a different list of themes than `themes`.
+  * `files` (optional): library loading parameters:
+  ** `themes` (optional): A list of themes attribute set to load static files from, can be used to load static files from a different list of themes than `themes`.
+  * `templates` (optional): templates loading parameters:
+  ** `themes` (optional): A list of themes attribute set to load templates from, can be used to load templates from a different list of themes than `themes`.
+  ** `extraEnv` (optional): An attribute set that will be merged with the template environment.
 
-  * `confFnArg` (optional): If the configuration imported with `getConfFn` is a function, `confFnArg` will be passed as an argument. +
-  This allows to pass arguments such as `lib` to themes configuration files for higher flexibility, defaults to `{}`.
+Return::: An attribute set containing:
+* `conf`: The merged configuration.
+* `lib`: The merged library.
+* `files`: List of static files folder.
+* `templates`: The merged template set.
+* `themes`: List of themes attribute sets.
 
-Return::: A configuration attribute set with the `theme` and `themes` attributes. +
-`theme` is the merged themes configuration, and `themes.THEME` holds the per theme default configuration.
 Example:::
 
 +
 [source, nix]
+.Basic usage
 ----
-lib.themes.loadConf { inherit themes; };
+themesData = styxLib.themes.load {
+  inherit styxLib themes;
+  templates.extraEnv = { inherit data pages; };
+  conf.extra = [ (import ./conf.nix) extraConf ];
+};
+----
+
++
+[source, nix]
+.Using a different list of themes for static files
+----
+themesData = styxLib.themes.load {
+  inherit styxLib themes;
+  files.themes = styxLib.themes.loadThemes [ ./themes/my-theme ];
+  templates.extraEnv = { inherit data pages; };
+  conf.extra = [ (import ./conf.nix) extraConf ];
+};
 ----
 
 ---
 
-[[lib.themes.loadFiles]]
-==== loadFiles 
+[[lib.themes.loadThemes]]
+==== loadThemes
 
-Description::: Load themes static files.
+Description::: Load a list of themes data.
 Parameter Type::: Attribute Set
 Parameters:::
   * `themes`: A list of themes paths or packages to load configuration from.
-  * `getFilesFn` (optional): Function to get the theme static files directory with type `Theme -> Path`.
-+
-[source, nix]
-.Default implementation
-----
-theme: theme + "/files"
-----
+  * `metaFnArg` (optional): If the theme `meta.nix` file is a function, the function will be evaluated with `metaFnArg`, defaults to `{ lib = lib; }`.
 
-Return::: A list of directory paths. 
+Return::: A list of themes attribute sets containing:
+* `name`: The theme name, `meta.nix`'s `name` attribute.
+* `path`: The theme path in the nix store.
+* `meta`: The theme meta information set, `meta.nix` contents.
+
 Example:::
 
 +
 [source, nix]
 ----
-files = lib.themes.loadFiles { inherit themes; };
-----
-
----
-
-[[lib.themes.loadLib]]
-==== loadLib
-
-Description::: Load themes libraries.
-Parameter Type::: Attribute Set
-Parameters:::
-  * `themes`: A list of themes paths or packages to load libraries from.
-  * `getLibFn` (optional): Function to get the configuration file with type `Theme -> Path`. +
-  The path is imported with nix `import` function and in case a non-fully evaluated function is returned, it will be evaluated with `libFnArg` as an argument (default is `{}`). +
-  If the path returned by the function does not exists, it will just be ignored and trigger no errors.
-+
-[source, nix]
-.Default implementation
-----
-theme: theme: theme + "/lib/default.nix"
-----
-
-  * `confFnArg` (optional): If the configuration imported with `getConfFn` is a function, `confFnArg` will be passed as an argument. +
-  This allows to pass arguments such as `lib` to themes configuration files for higher flexibility, defaults to `{}`.
-
-Return::: An attribute set with all the themes library functions.
-Example:::
-
-+
-[source, nix]
-----
-lib.themes.loadLib { inherit themes; libFnArg = args; };
-----
-
----
-
-[[lib.themes.loadTemplates]]
-==== loadTemplates 
-
-Description::: Load themes templates.
-Parameter Type::: Attribute Set
-Parameters:::
-  * `themes`: A list of themes paths or packages to load configuration from.
-  * `environment`: The default template environment.
-  * `customEnvironments`: (optional) A set which attributea are template paths and the values template environments.
-  * `getTemplatesFn` (optional): Function to get the theme templates directory with type `Theme -> Path`.
-+
-[source, nix]
-.Default implementation
-----
-theme: theme + "/templates"
-----
-
-Return::: An attribute set containing all the themes template with their environment applied. 
-Example:::
-
-+
-[source, nix]
-----
-templates = lib.themes.loadTemplates {
-  inherit themes;
-  environment = { inherit conf templates data pages lib; };
+lib.themes.loadThemes {
+  themes = [ styx-themes.showcase ];
 };
 ----
 

@@ -2,6 +2,7 @@
 
 lib:
 with lib;
+with import ./utils.nix lib;
 
 let
   /* Recursively fetches a directory of templates
@@ -16,7 +17,7 @@ let
           in
           if v == "directory"
              then nameValuePair k (f (path ++ [ dir ]) (dir + "/${k}"))
-             else if nixFile != null then nameValuePair (elemAt nixFile 0) ("${dir}/${k}")
+             else if nixFile != null then nameValuePair (elemAt nixFile 0) (dir + "/${k}")
              # non-nix files
              else nameValuePair k null
         )
@@ -25,10 +26,97 @@ let
       cleanup = filterAttrsRecursive (n: v: v != null);
     in
       cleanup (f [ dir ] dir);
-in
-{
 
-  /* Load the configuration files from 'themes' lit of themes
+  /* find a file in a theme
+     return null if not found
+  */
+  findInTheme = t: f:
+    if dirContains t.path f then t.path + "/${f}" else null;
+
+  /* import a file and if it is a function load apply args to it
+  */
+  importApply = file: arg:
+    let f = import file;
+    in if isFunction f then f arg else f;
+in
+rec {
+
+  /* Load themes related files
+
+     returns an attribute set containing:
+       - conf: the loaded configuration set
+       - lib: the loaded lib
+       - files: the loaded static files paths
+       - templates: the loaded templates attribute set
+       - themes: the list of loaded themes information
+
+     This is mainly a wrapper to the other lib.themes.load* functions
+  */
+  load = {
+  # styx library
+    styxLib
+  # list of themes as path or packages
+  , themes ? []
+  # configuration loading arguments
+  , conf ? {}
+  # library loading arguments
+  , lib ? {}
+  # files loading arguments
+  , files ? {}
+  # templates loading arguments
+  , templates ? {}
+  }:
+  let
+    themes' = loadThemes { inherit themes; metaFnArg = { lib = lib'; }; };
+
+    conf' = 
+      let themesConf = loadConf ({
+        themes = themes';
+        confFnArg = { lib = styxLib; };
+      } // (removeAttrs conf [ "extra" ]));
+    in styxLib.utils.merge ([ themesConf ] ++ (conf.extra or []));
+
+    lib' = 
+      let themesLib = loadLib ({
+        themes = themes';
+        libFnArg = { lib = styxLib; };
+      } // lib);
+    in recursiveUpdate styxLib themesLib;
+
+    files' = loadFiles ({
+      themes = themes';
+    } // files);
+
+    templates' =
+      let templatesArgs = {
+          themes = themes';
+        } 
+        // removeAttrs templates [ "extraEnv" ]
+        // { environment = (templates.extraEnv or {})
+             // { conf = conf'; lib = lib'; templates = templates'; }; };
+    in loadTemplates templatesArgs;
+  in
+  {
+    conf      = conf';
+    lib       = lib';
+    files     = files';
+    templates = templates';
+    themes    = themes';
+  };
+  
+  /* convert a list of themes into a list of sets with name, meta and path attributes
+
+       [ { name = "foo"; meta = { ... }; path = "/nix/store/..."; } ]
+  */
+  loadThemes = {
+    themes
+  , metaFnArg ? { inherit lib; }
+  }:
+    map (theme:
+      rec { meta = importApply (theme + "/meta.nix") metaFnArg; name = meta.name; path = theme; }
+    ) themes;
+
+  /* Load the configuration files from 'themes' list of themes
      This load the themes configuration in a set, splitting in two keys
 
       - theme: set containing all the themes conf merged
@@ -56,30 +144,29 @@ in
   */
   loadConf = {
     themes
-  , getConfFn ? (theme: theme + "/theme.nix")
   , confFnArg ? {}
   }:
+  let
+    confs = filter (t: t.file != null) (map (t: t // { file = findInTheme t "conf.nix"; }) themes);
+  in
   fold (theme: acc:
     let
-      conf      = import (getConfFn theme);
-      themeConf = if isFunction conf then conf confFnArg else conf;
-      themeSet  = if hasAttrByPath ["meta" "name"] themeConf
-        then {
-          themes."${themeConf.meta.name}" = themeConf;
-          theme = removeAttrs themeConf ["meta"];
-        }
-        else abort "'${theme}' theme configuration file must declare a `meta.name` attribute.";
+      conf      =  importApply theme.file confFnArg;
+      themeSet  = {
+        themes."${theme.name}" = conf;
+        theme = conf;
+      };
     in recursiveUpdate themeSet acc
-  ) {} (reverseList themes);
+  ) {} confs;
 
 
-  /* Load template files from 'themes' list of themes
+  /* Load themes static files from 'themes' list of themes
   */
   loadFiles = {
     themes
-  , getFilesFn ? (theme: theme + "/files")
   }:
-    map getFilesFn (reverseList themes);
+    filter (p: p != null)
+      (map (t: findInTheme t "files") themes);
 
   /* Loads the templates from 'themes' list of themes
   */
@@ -87,37 +174,35 @@ in
     themes
   , environment
   , customEnvironments ? {}
-  , getTemplatesFn ? (theme: theme + "/templates")
   }:
-  fold (theme: acc:
+  let
+    templates = filter (p: p != null) (map (t: findInTheme t "templates") themes);
+  in
+  fold (dir: acc:
     let
-      templatesDir = getTemplatesFn theme;
-      templateSet  = fetchTemplateDir templatesDir;
+      templateSet  = fetchTemplateDir dir;
       templatesWithEnv = mapAttrsRecursive (path: value:
         let 
           env = if hasAttrByPath path customEnvironments
-                   then getAttrFromPath path customEnvironments
+                   then environment // (getAttrFromPath path customEnvironments)
                    else environment;
           in if hasAttrByPath path acc
                 then null
                 else import value env
       ) templateSet;
     in recursiveUpdate templatesWithEnv acc
-  ) {} (reverseList themes);
+  ) {} templates;
 
   /* Load the libraries from 'themes' list of themes
   */
   loadLib = {
     themes
-  , getLibFn ? (theme: theme + "/lib/default.nix")
   , libFnArg ? {}
   }:
-  fold (theme: acc:
-    let
-      libFile   = getLibFn theme;
-      themeLib' = if pathExists libFile then import libFile else {};
-      themeLib  = if isFunction themeLib' then themeLib' libFnArg else themeLib';
-    in recursiveUpdate themeLib acc
-  ) {} (reverseList themes);
+  let
+    libs = filter (p: p != null) (map (t: findInTheme t "lib.nix") themes);
+  in fold (file: acc:
+    recursiveUpdate (importApply file libFnArg) acc
+  ) {} libs;
 
 }

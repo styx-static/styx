@@ -10,28 +10,9 @@
 
 rec {
 
-  /* Library loading
+  /* Base library
   */
-  lib = import styx.lib args;
-
-  /* Configuration loading
-  */
-  conf = lib.utils.merge [
-    (lib.themes.loadConf { inherit themes; })
-    (import ./conf.nix)
-    extraConf
-  ];
-
-  /* Themes templates loading
-  */
-  templates = lib.themes.loadTemplates {
-    inherit themes;
-    environment = { inherit conf templates data pages lib; };
-  };
-
-  /* Themes static files loading
-  */
-  files = lib.themes.loadFiles { inherit themes; };
+  styxLib = import styx.lib args;
 
 
 /*-----------------------------------------------------------------------------
@@ -39,14 +20,24 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  /* Themes used
-
-     Set the themes used here
-     paths and packages can be used
-
-       themes = [ ./themes/my-site styx-themes.showcase ];
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
   */
-  themes = [ ];
+  themes = [
+    
+  ];
+
+  /* Loading the themes data
+  */
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    templates.extraEnv = { inherit data pages; };
+    conf.extra = [ (import ./conf.nix) extraConf ];
+  };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates;
 
 
 /*-----------------------------------------------------------------------------
@@ -56,7 +47,7 @@ rec {
 -----------------------------------------------------------------------------*/
 
   data = {
-
+    
   };
 
 
@@ -67,7 +58,7 @@ rec {
 -----------------------------------------------------------------------------*/
 
   pages = rec {
-
+    
   };
 
 
@@ -82,6 +73,6 @@ rec {
 
   /* Generating the site
   */
-  site = lib.generateSite { inherit conf files pagesList; };
+  site = lib.generateSite { inherit files pagesList; };
 
 }

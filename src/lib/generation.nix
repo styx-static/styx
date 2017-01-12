@@ -13,13 +13,13 @@ let
     f = path: set:
       map (key:
         let
-          value = set.${key};
+          value = set ? key;
           newPath = path ++ [ key ];
           pathString = concatStringsSep "." newPath;
         in
         if isAttrs value
            then f newPath value
-           else { "${pathString}" = toString value; }
+           else { "${pathString}" = value; }
       ) (attrNames set);
     in flatten (f [] s);
 in
@@ -33,8 +33,9 @@ rec {
   /* Generate a site with a list pages
   */
   generateSite = {
-    files ? []
-  , conf ? {}
+    name ? "styx-site"
+  , meta ? {}
+  , files ? []
   , pagesList ? []
   , substitutions ? {}
   , preGen  ? ""
@@ -44,13 +45,12 @@ rec {
   , pageHrefFn ? (page: page.href)
   }:
     let
-      name    = attrByPath [ "meta" "name" ] "styx-site" conf;
-      version = attrByPath [ "meta" "version" ] "" conf;
-      drvName = if version != "" then "${name}${version}" else name;
-      meta    = { platforms = lib.platforms.all; } // (attrByPath [ "meta" ] {} conf);
-      env     = { inherit meta; buildInputs = [ pkgs.styx ]; };
+      env = {
+        meta = { platforms = lib.platforms.all; } // meta;
+        buildInputs = [ pkgs.styx ];
+      };
     in
-    pkgs.runCommand drvName env ''
+    pkgs.runCommand name env ''
       shopt -s globstar
       mkdir -p $out
 
@@ -69,7 +69,7 @@ rec {
           in
           ''
             substituteInPlace subs \
-              --subst-var-by "${key}" "${value}"
+              --subst-var-by "${key}" "${toString value}"
           ''
         ) (setToList substitutions)}
       }
@@ -136,7 +136,7 @@ rec {
             esac
 
           else
-            [ -f "$out/href" ] && rm "$out/href"
+            [ -f "$out/$href" ] && rm "$out/$href"
             ln -s "$file" "$out/$href"
           fi
         done;
@@ -145,7 +145,7 @@ rec {
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
         outPath="$out/${pageHrefFn page}"
-        page=${pkgs.writeText "${drvName}-page" (genPageFn page)}
+        page=${pkgs.writeText "${name}-page" (genPageFn page)}
         mkdir -p "$(dirname "$outPath")"
         run_subs "$page"
         if [ $(cmp --silent subs $page || echo 1) ]; then

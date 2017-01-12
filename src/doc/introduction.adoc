@@ -25,7 +25,7 @@ Pros:
 - Caching: Styx benefit of the Nix caching system, so only needed pages are rebuild.
 - Light weight: Styx has very few dependencies.
 - Flexibility: Styx is very flexible and make it is easy to implement new features.
-- Integration with the Nix ecosystem: NixOps can deploy styx sites, and continuous integration can be done with Hydra.
+- Integration with the Nix ecosystem: Styx sites can be deployed with NixOps, and continuous integration can be done with Hydra.
 
 Cons:
 
