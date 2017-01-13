@@ -1,0 +1,3 @@
+env:
+taxonomy:
+"/${taxonomy}/"
