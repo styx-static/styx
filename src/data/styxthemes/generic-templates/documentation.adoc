@@ -1,0 +1,466 @@
+
+Generic-templates is a special theme providing a template framework and meant to be used as a base for other themes.
+
+Its main purpose is to be composed with other theme to reduce the amount of boilerplate code.
+
+Showcase and Hyde themes take advantage of generic-templates.
+
+This theme also provide templates for some link:http://getbootstrap.com/components/[bootstrap components].
+
+== Layout structure
+
+Generic templates provide a `templates.layout` template, divided in many partials that allow to quickly start or adapt a design to styx.
+
+* `layout`
+** `partials.doctype`: The `doctype` can be changed via the configuration interface `theme.html.doctype`.
+** `partials.html`
+*** `partials.head.default`: See below for head templates division.
+*** `partials.body`
+**** `partials.content-pre`: Pre content template, usually holds navigation bar, empty by default.
+**** `partials.content`: Main content template, should be overriden to needs.
+**** `partials.content-post`: Post content template, usually holds footer, empty by default.
+**** `partials.js`
+***** `lib.js.jquery`: Loading jquery javascript, controlled by `conf.theme.lib.jquery.enable`.
+***** `lib.js.bootstrap`: Loading bootstrap javascript, controlled by `theme.lib.bootstrap.enable`.
+***** `partials.js-custom`: Should be overriden to load custom javascript files, empty by default.
+***** `partials.js-extra`: Add custom javascript that are set in the page attribute set `extraJS` attribute, allow to have custom javascript per page.
+
+Head templates division:
+
+* `partials.head.default`
+** `partials.head.title-pre`
+*** `partials.head.meta`: Include a few default `meta` tags, can be overriden to fit needs.
+** `partials.head.title`
+** `partials.head.title-post`
+*** `partials.head.feed`: Create a link for `pages.feed` if it exists by default, can be overriden to fit needs.
+*** `partials.head.css`
+**** `lib.css.bootstrap`: Loading bootstrap css, controlled by `conf.theme.lib.bootstrap.enable`.
+**** `lib.css.font-awesome`: Loading font-awesome css, controlled by `conf.theme.lib.font-awesome.enable`.
+**** `partials.head.css-custom`: Should be overriden to load custom css files, empty by default.
+**** `partials.head.css-extra`: Add custom css that are set in the page attribute set `extraCSS` attribute, allow to have custom css per page.
+*** `partials.head.title-post-extra`: Can be overriden to fit needs, empty by default.
+
+
+== Overriding a template
+
+Any template from any theme can be overriden to fit needs.
+
+To override a template, just copy it to a custom theme and edit it:
+
+[source, bash]
+.Overriding the partials.content template
+----
+$ styx new theme foo --in ./themes # <1>
+$ mkdir -p themes/foo/templates/partials/ # <2>
+$ cp $(nix-build -A --no-out-link styx-themes.generic-templates '<nixpkgs>')/templates/partials/content.nix themes/foo/templates/partials/content.nix # <3>
+----
+
+<1> Creating a new `foo` theme.
+<2> Create the `themes/foo/templates/partials/` directory.
+<3> Copy the generic-templates `templates/partials/content.nix` to the foo theme. +
+This code use nix-build to directly access the generic-templates source from the nix store.
+
+[source, nix]
+.Combining generic-templates and my-theme
+----
+themes = [
+  styx-themes.generic-templates
+  ./themes/my-theme
+];
+----
+
+== Useful templates
+
+NOTE: Examples in this section use `conf.siteUrl` as `\http://domain.org`.
+
+:sectnums!:
+
+---
+
+=== templates.url
+
+Convert a path starting with `/` to a full url, default implemetation use `conf.siteUrl`.
+
+[source, nix]
+.Example
+----
+templates.url "/foo.html"
+----
+
+[source, html]
+.Results in
+----
+http://domain.org/foo.html
+----
+
+---
+
+=== templates.purl
+
+`purl` is for **p**age *url*, convert a page to its full url, default implementation use `templates.url`.
+
+[source, nix]
+.Example
+----
+templates.purl pages.about
+----
+
+[source, html]
+.Results in
+----
+http://domain.org/about.html
+----
+
+---
+
+=== templates.tag.ilink
+
+`ilink` is for **i**nternal **link**, takes a `content` and a `page` or a `path` and generate a link (`a` tag).
+
+[source, nix]
+.Example
+----
+templates.tag.ilink { page = pages.about; content = "about"; }
+----
+
+[source, html]
+.Results in
+----
+<a href="http://domain.org/about.html">about</a>
+----
+
+[source, nix]
+.Example 2
+----
+templates.tag.ilink { path = "/foo"; content = "foo"; }
+----
+
+[source, html]
+.Results in
+----
+<a href="http://domain.org/foo">foo</a>
+----
+
+---
+
+=== templates.tag.link-atom
+
+Generate a `link` tag for an atom feed.
+
+[source, nix]
+.Example
+----
+templates.tag.link-atom { href = "/feed.atom"; }
+----
+
+[source, html]
+.Results in
+----
+<link href="http://domain.org/feed.atom" rel="alternate" type="application/atom+xml" />
+----
+
+---
+
+=== templates.tag.link-css
+
+Generate a `link` tag for an css file.
+
+[source, nix]
+.Example
+----
+templates.tag.link-css { href = "/css/style.css"; }
+----
+
+[source, html]
+.Results in
+----
+<link href="http://domain.org/css/style.css" rel="stylesheet" type="text/css" />
+----
+
+---
+
+=== templates.icon.bootstrap
+
+Generate a bootstrap glyphicon markup from a glyphicon code.
+
+[source, nix]
+.Example
+----
+templates.icon.bootstrap "picture"
+----
+
+[source, html]
+.Results in
+----
+<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+----
+
+---
+
+=== templates.icon.font-awesome
+
+Generate a font-awesome icon markup from an icon code.
+
+[source, nix]
+----
+templates.icon.font-awesome "code"
+----
+
+[source, html]
+.Results in
+----
+<i class="fa fa-code" aria-hidden="true"></i>
+----
+
+---
+
+:sectnums:
+
+== Bootstrap components
+
+:sectnums!:
+
+---
+
+=== templates.bootstrap.alert
+
+Generate a bootstrap alert.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.alert { type = "success"; content = "alert"; }
+----
+
+[source, html]
+.Results in
+----
+<div class="alert alert-success" role="alert">alert</div>
+----
+
+---
+
+=== templates.bootstrap.badge
+
+Generate a bootstrap badge.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.badge 42
+----
+
+[source, nix]
+.Results in
+----
+<span class="badge">42</span>
+----
+
+---
+
+=== templates.bootstrap.breadcrumbs
+
+Generate a page breadcrumbs, `page` page attribute set should have a `breadcrumbs` attribute containing a list of pages.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.breadcrumbs page.about
+----
+
+[source, html]
+.Results in
+----
+<ol class="breadcrumb">
+<li><a href="http://domain.org/index.html">Home</a></li>
+<li class="active">About</li>
+</ol>
+----
+
+---
+
+=== templates.bootstrap.label
+
+Generate a bootstrap label.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.label { content = "default"; type = "default"; }
+----
+
+[source, html]
+.Results in
+----
+<span class="label label-default">default</span>
+----
+
+---
+
+=== templates.bootstrap.navbar.default
+
+Generates navbar, meant to be flexible it is divided in multiple parts.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.navbar.default {
+  inverted = true;
+  brand = ''<a class="navbar-brand" href="#">Project Name</a>'';
+  content = [
+    (templates.bootstrap.navbar.nav {
+      items = [ 
+        { title = "Home";    path = "/#"; }
+        { title = "About";   path = "/#about"; }
+        { title = "Contact"; path = "/#contact"; }
+      ];
+      # Hack for demonstration purposes, the current page attribute set should be passed
+      currentPage = { title = "Home"; path = "/#"; };
+    })
+  ];
+} 
+----
+
+[source, html]
+.Results in
+----
+<nav class="navbar navbar-inverse">
+<div class="container">
+<div class="navbar-header">
+  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="#">Project Name</a>
+</div>
+<div class="collapse navbar-collapse" id="navbar">
+<ul class="nav navbar-nav">
+<li class="active"><a href="http://domain.org/#">Home</a></li>
+<li><a href="http://domain.org/#about">About</a></li>
+<li><a href="http://domain.org/#contact">Contact</a></li>
+</ul>
+</div>
+</div>
+</nav>
+----
+
+---
+
+=== templates.bootstrap.pager
+
+Generate a pager. `pages` should be a list of pages.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.pager {
+  pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
+  index = 5;
+}
+----
+
+[source, html]
+.Results in
+----
+<nav aria-label="...">
+<ul class="pager">
+<li><a href="http://domain.org/#4">Previous</a></li>
+<li><a href="http://domain.org/#6">Next</a></li>
+</ul>
+</nav>
+----
+
+---
+
+=== templates.bootstrap.pagination
+
+generate a pagination. `pages` should be a list of pages.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.pagination {
+  pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
+  index = 5;
+}
+----
+
+[source, html]
+.Results in
+----
+<nav aria-label="Page navigation" class="pagination">
+<ul class="pagination">
+<li>
+<a href="http://domain.org/#4" aria-label="Previous">
+<span aria-hidden="true">&laquo;</span>
+</a>
+</li>
+<li><a href="http://domain.org/#1">1</a></li>
+<li><a href="http://domain.org/#2">2</a></li>
+<li><a href="http://domain.org/#3">3</a></li>
+<li><a href="http://domain.org/#4">4</a></li>
+<li class="active"><a href="http://domain.org/#5">5</a></li>
+<li><a href="http://domain.org/#6">6</a></li>
+<li><a href="http://domain.org/#7">7</a></li>
+<li><a href="http://domain.org/#8">8</a></li>
+<li><a href="http://domain.org/#9">9</a></li>
+<li><a href="http://domain.org/#10">10</a></li>
+<li>
+<a href="http://domain.org/#6" aria-label="Next">
+<span aria-hidden="true">&raquo;</span>
+</a>
+</li>
+</ul>
+</nav>
+----
+
+---
+
+=== templates.bootstrap.panel
+
+Generate a bootstrap panel.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.panel {
+  type    = "danger";
+  heading = ''<h3 class="panel-title">Panel title</h3>'';
+  body    = "Panel content"; }
+----
+
+[source, html]
+.Results in
+----
+<div class="panel panel-danger">
+<div class="panel-heading"><h3 class="panel-title">Panel title</h3></div>
+<div class="panel-body"><h3 class="panel-title">Panel title</h3></div>
+</div>
+----
+
+---
+
+=== templates.bootstrap.progressbar
+
+Generate a bootstrap progress bar.
+
+[source, nix]
+.Example
+----
+templates.bootstrap.progress-bar { value = 60; }
+----
+
+[source, html]
+.Results in
+----
+<div class="progress">
+<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"><span class="sr-only">60% Complete</span></div>
+</div>
+----
+
+---
+
+:sectnums:
+

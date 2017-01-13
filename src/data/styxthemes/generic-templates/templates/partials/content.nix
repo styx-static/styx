@@ -1,0 +1,5 @@
+env:
+{ page, ... }:
+''
+${page.content}
+''
