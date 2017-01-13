@@ -43,7 +43,7 @@ rec {
     let site = pkgs.runCommand "styx-new-site" { } ''
       mkdir $out
       ${styx}/bin/styx new site my-site --in $out
-      sed -i 's/pages = rec {/pages = rec {\nindex = { href="index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
+      sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
     '';
     in (pkgs.callPackage (import "${site}/my-site/site.nix") { inherit styx; }).site;
 

@@ -12,19 +12,19 @@ The pages namespace contains functions related to the `pages` set.
 Description::: Generate a list of page attributes set by splitting a list of data attribute sets.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `baseHref`: The base `href` set to the pages set, the first page `href` is `baseHref.html`, following pages `href` is `baseHref-index.html` where index is the number of the page.
+  * `basePath`: The base `path` set to the pages set, the first page `path` is `basePath.html`, following pages `path` is `basePath-index.html` where index is the number of the page.
   * `itemsPerPage`: The number of items per page set.
   * `data`: The list of data attribute set to split between the pages.
-Return::: A list of `data` / `itemsPerPage` page attribute set with the `href` set accordingly to `baseHref`.
+Return::: A list of `data` / `itemsPerPage` page attribute set with the `path` set accordingly to `basePath`.
 Example:::
 
 +
 [source, nix]
 ----
 pages.archives = mkSplit {
-  baseHref = "archives";
+  basePath     = "archives";
   itemsPerPage = 10;
-  data = pages.posts;
+  data         = pages.posts;
 };
 ----
 
@@ -36,10 +36,10 @@ Any extra arguments to `mkSplit` will be forwarded to every generated page set.
 .Set a template with mkSplit
 ----
 pages.archives = mkSplit {
-  baseHref = "archives";
+  basePath     = "archives";
   itemsPerPage = 10;
-  data = pages.posts;
-  template = templates.archives;
+  data         = pages.posts;
+  template     = templates.archives;
 };
 ----
 ====
@@ -59,7 +59,7 @@ Parameters:::
   ** `itemsNb`: The number of items to display on the first page.
   * `tail`: Setting for the following pages.
   ** `itemsNb`: The number of items to display per page.
-  ** `baseHref`: The base `href` set to the pages, the `href` is `baseHref-index.html` where index is the number of the page.
+  ** `basePath`: The base `path` set to the pages, the `path` is `basePath-index.html` where index is the number of the page.
 Return::: A list of page attribute set according to the arguments.
 Example:::
 
@@ -97,7 +97,7 @@ Description::: Create the list of page set for multipages data set.
 Parameter Type::: Attribute Set
 Parameters:::
   * `subpages`: The list of subpages source.
-  * `baseHref`: The base `href` set to the pages set, the first page `href` is `baseHref.html`, following pages `href` is `baseHref-index.html` where index is the number of the page.
+  * `basepath`: The base `path` set to the pages set, the first page `path` is `basepath.html`, following pages `path` is `basepath-index.html` where index is the number of the page.
   * `output`: `all`, `head` or `tail`. This select which pages set to generate.
 Return::: A list of page attribute set according to the arguments.
 Example:::
@@ -107,7 +107,7 @@ Example:::
 ----
 pages.about = mkMultipages ({
   template = templates.generic.full-multipage;
-  baseHref = "about";
+  basepath = "about";
 } // data.about);
 ----
 
@@ -124,7 +124,7 @@ Description::: Generate a list of pages attribute sets from a list of data set, 
 Parameter Type::: Attribute Set
 Parameters:::
   * `data`: The list of data attribute set to use.
-  * `hrefPrefix` (optional): A prefix string to add to the generated page set `href`.
+  * `pathPrefix` (optional): A prefix string to add to the generated page set `path`.
   * `multipageTemplate`: The template used for multipage data sets.
 Return::: A list of page attribute set according to the arguments.
 Example:::
@@ -134,7 +134,7 @@ Example:::
 ----
 pages.posts = mkPageList {
   data = data.posts;
-  hrefPrefix = "posts/";
+  pathPrefix = "posts/";
   template = templates.post.full;
   multipageTemplate = templates.post.full-multipage;
 };
@@ -147,7 +147,7 @@ Any extra arguments to `mkPageList` will be forwarded to every generated page se
 
 NOTE: For details see the <<Multipages>> section.
 
-IMPORTANT: For the same data set list, `baseHref` set in `mkPageList` and in `mkMultiTail` **must** be the same.
+IMPORTANT: For the same data set list, `basepath` set in `mkPageList` and in `mkMultiTail` **must** be the same.
 
 ---
 
@@ -158,7 +158,7 @@ Description::: Generate a list of multipages subpages tail page attribute sets f
 Parameter Type::: Attribute Set
 Parameters:::
   * `data`: The list of data attribute set to use.
-  * `hrefPrefix` (optional): A prefix string to add to the generated page set `href`.
+  * `pathPrefix` (optional): A prefix string to add to the generated page set `path`.
 Return::: A list of page attribute set according to the arguments.
 Example:::
 
@@ -167,7 +167,7 @@ Example:::
 ----
 pages.postsMultiTail = mkMultiTail {
   data = data.posts;
-  hrefPrefix = "posts/";
+  pathPrefix = "posts/";
   template = templates.post.full-multipage;
 };
 ----
@@ -179,7 +179,7 @@ Any extra arguments to `mkMultiTail` will be forwarded to every generated page s
 
 NOTE: For details see the <<Multipages>> section.
 
-IMPORTANT: For the same data set list, `baseHref` set in `mkPageList` and in `mkMultiTail` **must** be the same.
+IMPORTANT: For the same data set list, `basePath` set in `mkPageList` and in `mkMultiTail` **must** be the same.
 
 ---
 
@@ -192,19 +192,19 @@ Parameters:::
   * `data`: The list of data attribute set to use.
   * `taxonomyTemplate`: The template to use for taxonomies page sets.
   * `termTemplate`: The template to use for terms page sets.
-  * `taxonomyHrefFn` (optional): A function to generate the `href` of the taxonomy page with type `Taxonomy -> String`.
+  * `taxonomyPathFn` (optional): A function to generate the `path` of the taxonomy page with type `Taxonomy -> String`.
 +
 [source, nix]
 .Default implementation
 ----
-ta: "${ta}/index.html"
+ta: "/${ta}/index.html"
 ----
-  * `termHrefFn` (optional): A function to generate the `href` of the taxonomy term page with type `Taxonomy -> Term -> String`.
+  * `termPathFn` (optional): A function to generate the `path` of the taxonomy term page with type `Taxonomy -> Term -> String`.
 +
 [source, nix]
 .Default implementation
 ----
-ta: te: "${ta}/${te}/index.html"
+ta: te: "/${ta}/${te}/index.html"
 ----
 Return::: A list of page attribute set according to the arguments.
 Example:::
@@ -221,18 +221,18 @@ pages.postTaxonomies = mkTaxonomyPages {
 
 ====
 [source, nix]
-.Default taxonomyHrefFun
+.Default taxonomyPathFun
 ----
-taxonomy: "${taxonomy}/index.html"
+taxonomy: "/${taxonomy}/index.html"
 ----
 
 [source, nix]
-.Default termHrefFun
+.Default termPathFun
 ----
-taxonomy: term: "${taxonomy}/${term}index.html"
+taxonomy: term: "/${taxonomy}/${term}index.html"
 ----
 
-CAUTION: Changing `taxonomyHrefFun` or `termHrefFun` will require to also update the taxonomy related template links.
+CAUTION: Changing `taxonomyPathFun` or `termPathFun` will require to also update the taxonomy related template links.
 ====
 
 NOTE: For details see the <<Taxonomies>> section.

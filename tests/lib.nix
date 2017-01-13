@@ -16,12 +16,12 @@ runTests {
 
   testHtmlAttr = {
     expr = htmlAttr "class" [ "foo" "bar" ];
-    expected = "class=\"foo bar\"";
+    expected = ''class="foo bar"'';
   };
 
-  testIsExternalHref = {
-    expr = isExternalHref "/test.html";
-    expected = false;
+  testHtmlAttrs = {
+    expr = htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; };
+    expected = ''class="foo bar" id="baz"'';
   };
 
   testMapTemplate = {
@@ -77,13 +77,13 @@ runTests {
 
   testMkSplit = {
     expr = mkSplit {
-      baseHref = "/test";
+      basePath = "/test";
       itemsPerPage = 2;
       data = range 1 4;
     };
     expected = let 
-      pages = [ { href = "/test.html";   index = 1; items = [ 1 2 ]; itemsNb = 2; }
-                { href = "/test-2.html"; index = 2; items = [ 3 4 ]; itemsNb = 2; } ];
+      pages = [ { path = "/test.html";   index = 1; items = [ 1 2 ]; itemsNb = 2; }
+                { path = "/test-2.html"; index = 2; items = [ 3 4 ]; itemsNb = 2; } ];
       in map (p: p // { inherit pages; }) pages;
   };
 

@@ -17,7 +17,7 @@ The page attribute set is an attribute set that must defines at least three attr
 
 * `layout`: A function that take the `template` result as a parameter and return the source of the file to generate.
 * `template`: A function that take the page attribute set as a parameter and returns an updated attribute set.
-* `href`: The path of the page to generate.
+* `path`: The path of the page to generate, must start with a `/`.
 
 NOTE: This is the strict minimum and most of templates will require extra attributes like `content` or `title`.
 
@@ -29,7 +29,7 @@ NOTE: This is the strict minimum and most of templates will require extra attrib
 pages.index = {
   layout = template: "<html><body>${template}</body></html>";
   template = page: "<h1>Hello world!</h1>";
-  href = "index.html";
+  path = "index.html";
 };
 ----
 
@@ -37,7 +37,7 @@ In an usual `site.nix`, the template would be an attribute from the `templates` 
 
 Page attribute sets are often augmented by various attributes or merged with data sets.
 
-NOTE: `generateSite` evaluate `page.layout (page.template page)` and output the result in `page.href` for every page in its `pagesList` argument.
+NOTE: `generateSite` evaluate `page.layout (page.template page)` and output the result in `page.path` for every page in its `pagesList` argument.
 
 TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "arguments preparation" with <<lib.utils.setDefault>> section. +
 Usually, only pages that use a different layout explicitly declares it in `pages`. +
@@ -52,7 +52,7 @@ Generating a simple page is trivial as it is just declaring the required attribu
 .Creating an error 404 page
 ----
 pages.e404 = {
-  href     = "404.html";
+  path     = "404.html";
   template = templates.e404;
 };
 ----
@@ -68,7 +68,7 @@ Generating a page from an imported data is a very common case, and isi easily do
 .Attaching a data set to a page attribute set.
 ----
 pages.about = {
-  href = "about.html";
+  path     = "about.html";
   template = templates.generic.full;
 } // data.about;
 ----
@@ -85,10 +85,10 @@ In such cases, the `lib.id` function, a function that return its parameter witho
 .Using id as a layout
 ----
 pages.feed = {
-  href = "feed.xml";
-  template = templates.feed;
-  posts = lib.take 10 posts;
-  layout = lib.id;
+  path     = "feed.xml";
+  template = templates.feed.atom;
+  items    = lib.take 10 posts;
+  layout   = lib.id;
 };
 ----
 
@@ -107,7 +107,7 @@ Split pages can be generated with the <<lib.pages.mkSplit>> or <<lib.pages.mkSpl
 .mkSplit example
 ----
 pages.archives = lib.mkSplit {
-  baseHref = "archives";
+  basePath = "archives";
   template = templates.archives;
   itemsPerPage = 5;
   data = pages.posts;
@@ -116,14 +116,14 @@ pages.archives = lib.mkSplit {
 
 This will create a list of pages attribute sets with the following extra attributes:
 
-`href`:: Set accordingly to `baseHref`. `baseHref.html` for the first page, and `baseHref-i.html` for the following pages where `i` is the index of the page.
+`path`:: Set accordingly to `basePath`. `basePath.html` for the first page, and `basePath-i.html` for the following pages where `i` is the index of the page.
 `items`:: The list of items for this page.
 `index`:: The position of this page in the list of split pages.
 `pages`:: The split pages lists, useful for generating a pagination.
 
 For more complex splitting needs see the <<lib.pages.mkSplitCustom>> function documentation.
 
-NOTE: `mkSplit` only requires `baseHref`, `itemsPerPage` and `data` as parameters. Any extra parameter passed will be added to every split page attribute set. +
+NOTE: `mkSplit` only requires `basePath`, `itemsPerPage` and `data` as parameters. Any extra parameter passed will be added to every split page attribute set. +
 This is on purpose and is used in the previous example to set all the split pages template in the `mkSplit` declaration.
 
 
@@ -148,11 +148,11 @@ Multipages can be generated with the <<lib.pages.mkMultipages>> function.
 ----
 pages.about = lib.mkMultipages ({
   template = templates.generic.full-multipage;
-  baseHref = "about";
+  basePath = "about";
 } // data.about);
 ----
 
-NOTE: `mkMultipages` only requires `baseHref` and `subpages` as parameters. Any extra parameter passed will be added to every generated attribute attribute set.
+NOTE: `mkMultipages` only requires `basePath` and `subpages` as parameters. Any extra parameter passed will be added to every generated attribute attribute set.
 
 
 ==== Pages in a list
@@ -207,8 +207,8 @@ pages.multiPostsTail = lib.mkMultiTail {
 
 This is very similar to the `mkPageList` function but only tail pages sets are generated. As only tail pages are rendered, the template is directly set with the `template` attribute.
 
-IMPORTANT: It is possible to set a prefix to the generated `href` attribute of <<lib.pages.mkPageList>> and <<lib.pages.mkMultiTail>> function with the `hrefPrefix` argument. +
-If the `hrefPrefix` argument is set, it **must** be the same for the same data set, else the links between `head` and `tail` pages will be broken.
+IMPORTANT: It is possible to set a prefix to the generated `path` attribute of <<lib.pages.mkPageList>> and <<lib.pages.mkMultiTail>> function with the `pathPrefix` argument. +
+If the `pathPrefix` argument is set, it **must** be the same for the same data set, else the links between `head` and `tail` pages will be broken.
 
 === Taxonomy pages
 
@@ -230,6 +230,6 @@ The <<lib.pages.mkTaxonomyPages>> function will create the following page attrib
 - `TAXONOMY/index.html`, the taxonomy index page set for every taxonomy. A `terms` attribute will be added to the page attribute set containing all the taxonomy terms.
 - `TAXONOMY/TERM/index.html`, the term index page set for every term in every taxonomy. A `values` attribute will be added to the page attribute set containing all the values that use the term.
 
-NOTE: If required `mkTaxonomyPages` generated pages `href` can be changed with the `taxonomyHrefFun` and the `termHrefFun`, for details see <<mkTaxonomyPages>>. +
+NOTE: If required `mkTaxonomyPages` generated pages `path` can be changed with the `taxonomyPathFun` and the `termPathFun`, for details see <<lib.pages.mkTaxonomyPages>>. +
 If any of these functions is changed, the templates should be updated accordingly.
 

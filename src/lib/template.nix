@@ -4,7 +4,7 @@ lib:
 with lib;
 rec {
 
-  /* Generate html tag attributes
+  /* Generate a single html tag attributes
 
        htmlAttr "class" "foo"
        => class="foo" (as a string)
@@ -19,16 +19,44 @@ rec {
                else value;
     in "${attrName}=\"${value'}\"";
 
-  /* Check if an href is pointing to an external domain
-     Any href starting with http is considered external
+  /* Generate html tag attributes from an attribute set
+
+       htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; }
+       => class="foo bar" id="baz"
+
   */
-  isExternalHref = href: (match "^http.*" href) != null;
+  htmlAttrs = s: concatStringsSep " " (mapAttrsToList (k: v: htmlAttr k v) s); 
 
   /* Create a generator meta tag for Styx
   */
   generatorMeta = ''
     <meta name="generator" content="Styx" /> 
   '';
+
+  /* normal template function
+
+     f can be:
+       - a function Page -> String
+       - a string
+
+      if f return a String it is put in the result page `content` attribute
+      if f return an Attribute set it is merged with the result page attribute set
+
+     Use for trivial inline normal templates:
+
+       template = normalTemplate (p: "<h1>${p.content}</h1>");
+
+       template = normalTemplate "<h1>Hello, world!</h1>";
+       
+  */
+  normalTemplate = f: p:
+    let content = if isFunction f
+                  then f p
+                  else f;
+        contentSet = if isAttrs content
+                     then content
+                     else { inherit content; };
+    in p // contentSet;
 
   /* Concat template functions with a new line
   */
@@ -96,6 +124,7 @@ rec {
       lit = "${D} ${B} ${YYYY}";
     };
     time = "${hh}:${mm}:${ss}";
+    T    = "${date.num}T${time}";
     # year
     YYYY = year;
     YY   = substring 2 4 year;

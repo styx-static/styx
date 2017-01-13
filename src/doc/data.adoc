@@ -222,7 +222,7 @@ This will generate a taxonomy data structure where:
 
 Then, the taxonomy related pages can be generated in the page section using the `mkTaxonomyPages` function.
 
-NOTE: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `href` field making it impossible to generate links to them. +
+NOTE: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `path` field making it impossible to generate links to them. +
 Using data attribute sets such as `data.posts` would make it impossible to generate pages from the taxonomy with `mkTaxonomyPages`.
 
 ====

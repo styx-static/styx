@@ -42,7 +42,7 @@ rec {
   , postGen ? ""
   # extra customization options
   , genPageFn ? generatePage
-  , pageHrefFn ? (page: page.href)
+  , pagePathFn ? (page: page.path)
   }:
     let
       env = {
@@ -84,9 +84,9 @@ rec {
           # Ignoring folders
           if [ -d "$file" ]; then continue; fi
 
-          # output href
-          href=$(realpath --relative-to="${filesDir}" "$file")
-          mkdir -p $(dirname $out/$href)
+          # output path
+          path=$(realpath --relative-to="${filesDir}" "$file")
+          mkdir -p $(dirname $out/$path)
 
           if [ $(text_file $file) ]; then
             input=$file
@@ -100,51 +100,51 @@ rec {
 
             case "$file" in
               *.less)
-                href=$(echo "$href" | sed -r 's/[^.]+$/css/')
-                [ -f "$out/$href" ] && rm $out/$href
+                path=$(echo "$path" | sed -r 's/[^.]+$/css/')
+                [ -f "$out/$path" ] && rm $out/$path
                 (
-                  lessc $input 2>/dev/null > $out/$href
-                  if [ ! -s "$out/$href" ]; then
-                    echo "Warning: could not build '$href'"
+                  lessc $input 2>/dev/null > $out/$path
+                  if [ ! -s "$out/$path" ]; then
+                    echo "Warning: could not build '$path'"
                   fi
                 ) || (
-                  [ -f "$out/$href" ] && rm $out/$href
-                  echo "Warning: could not build '$href'"
+                  [ -f "$out/$path" ] && rm $out/$path
+                  echo "Warning: could not build '$path'"
                 )
               ;;
               *.s[ac]ss)
-                href=$(echo "$href" | sed -r 's/[^.]+$/css/')
-                [ -f "$out/$href" ] && rm $out/$href
+                path=$(echo "$path" | sed -r 's/[^.]+$/css/')
+                [ -f "$out/$path" ] && rm $out/$path
                 (
-                  sass $input 2>/dev/null > "$out/$href"
-                  if [ ! -s "$out/$href" ]; then
-                    echo "Warning: could not build '$href'"
+                  sass $input 2>/dev/null > "$out/$path"
+                  if [ ! -s "$out/$path" ]; then
+                    echo "Warning: could not build '$path'"
                   fi
                 ) || (
-                  [ -f "$out/$href" ] && rm "$out/$href"
-                  echo "Warning: could not build '$href'"
+                  [ -f "$out/$path" ] && rm "$out/$path"
+                  echo "Warning: could not build '$path'"
                 )
               ;;
               *)
-                [ -f "$out/$href" ] && rm "$out/$href"
+                [ -f "$out/$path" ] && rm "$out/$path"
                 if [ "$hasSubs" ]; then
-                  cp "$input" "$out/$href"
+                  cp "$input" "$out/$path"
                 else
-                  ln -s "$input" "$out/$href"
+                  ln -s "$input" "$out/$path"
                 fi;
               ;;
             esac
 
           else
-            [ -f "$out/$href" ] && rm "$out/$href"
-            ln -s "$file" "$out/$href"
+            [ -f "$out/$path" ] && rm "$out/$path"
+            ln -s "$file" "$out/$path"
           fi
         done;
       '') files}
 
       # PAGES
       ${concatMapStringsSep "\n" (page: ''
-        outPath="$out/${pageHrefFn page}"
+        outPath="$out${pagePathFn page}"
         page=${pkgs.writeText "${name}-page" (genPageFn page)}
         mkdir -p "$(dirname "$outPath")"
         run_subs "$page"

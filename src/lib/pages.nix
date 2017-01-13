@@ -15,12 +15,12 @@ rec {
        index = mkSplitCustom {
          head = {
            title    = "Home";
-           href     = "index.html";
+           path     = "index.html";
            itemsNb  = 1;
          };
          tail = {
            title    = "Archives";
-           baseHref = "archive";
+           basePath = "archive";
            itemsNb  = 2;
          };
          data = posts;
@@ -36,7 +36,7 @@ rec {
         // extraArgs
         // (if i ==1
                then head
-               else (removeAttrs tail [ "baseHref" ]) // { href = "${tail.baseHref}-${toString i}.html"; })
+               else (removeAttrs tail [ "basePath" ]) // { path = "${tail.basePath}-${toString i}.html"; })
       ) itemsList;
     in map (p: p // { inherit pages; }) pages;
 
@@ -47,34 +47,34 @@ rec {
 
        index = mkSplit {
          title = "Home";
-         baseHref = "index";
+         basePath = "index";
          itemsPerPage = 1;
          template = templates.index;
          data = posts;
        };
 
   */
-  mkSplit = { baseHref, itemsPerPage, data, ... }@args:
+  mkSplit = { basePath, itemsPerPage, data, ... }@args:
     let
-      extraArgs = removeAttrs args [ "baseHref" "itemsPerPage" "data" ];
+      extraArgs = removeAttrs args [ "basePath" "itemsPerPage" "data" ];
       set = { itemsNb = itemsPerPage; };
     in mkSplitCustom ({
       inherit data;
-      head = set // { href = "${baseHref}.html"; };
-      tail = set // { inherit baseHref; };
+      head = set // { path = "${basePath}.html"; };
+      tail = set // { inherit basePath; };
     } // extraArgs);
 
   /* Split a page with subpages into multiple pages attribute sets
   */
-  mkMultipages = { subpages, baseHref, output ? "all", ... }@args:
+  mkMultipages = { subpages, basePath, output ? "all", ... }@args:
     let
-      extraArgs = removeAttrs args [ "baseHref" "output" ];
+      extraArgs = removeAttrs args [ "basePath" "output" ];
       pages = imap (index: subpage:
         extraArgs // 
           { inherit index;
-            href = if index == 1 
-                   then "${baseHref}.html"
-                   else "${baseHref}-${toString index}.html";
+            path = if index == 1 
+                   then "${basePath}.html"
+                   else "${basePath}-${toString index}.html";
             content = subpage; }
        ) subpages;
       pages' = map (p: p // { inherit pages; }) pages;
@@ -85,9 +85,9 @@ rec {
 
   /* Make a list of pages, automatically deal with multipages
   */
-  mkPageList = { data, hrefPrefix ? "", multipageTemplate ? null, ... }@args:
+  mkPageList = { data, pathPrefix ? "", multipageTemplate ? null, ... }@args:
     let
-      extraArgs = removeAttrs args [ "data" "hrefPrefix" "multipageTemplate" ];
+      extraArgs = removeAttrs args [ "data" "pathPrefix" "multipageTemplate" ];
       mkPage = data: let
         mpTemplate = if (multipageTemplate != null)
                         then { template = multipageTemplate; }
@@ -96,24 +96,24 @@ rec {
           if data ? subpages
              then mkMultipages (extraArgs // {
                output = "head";
-               baseHref = "${hrefPrefix}${data.fileData.basename}";
+               basePath = "${pathPrefix}${data.fileData.basename}";
              } // data // mpTemplate)
              else data;
         in extraArgs // {
-             href = "${hrefPrefix}${data.fileData.basename}.html";
+             path = "${pathPrefix}${data.fileData.basename}.html";
             } // page;
     in map mkPage data;
 
   /* generates a the tails pages of the multipages of a list
   */
-  mkMultiTail = { data, hrefPrefix ? "", ... }@args:
+  mkMultiTail = { data, pathPrefix ? "", ... }@args:
     let
-      extraArgs = removeAttrs args [ "data" "hrefPrefix" ];
+      extraArgs = removeAttrs args [ "data" "pathPrefix" ];
       mpData = filter (d: (d ? subpages)) data;
       mkPage = data:
         mkMultipages (extraArgs // {
           output = "tail";
-          baseHref = "${hrefPrefix}${data.fileData.basename}";
+          basePath = "${pathPrefix}${data.fileData.basename}";
         } // data);
     in flatten (map mkPage mpData);
 
@@ -123,19 +123,20 @@ rec {
   { data
   , taxonomyTemplate
   , termTemplate
-  , taxonomyHrefFn ? (ta:     "${ta}/index.html")
-  , termHrefFn     ? (ta: te: "${ta}/${te}/index.html")
+  , taxonomyPathFn ? (ta:     "/${ta}/index.html")
+  , termPathFn     ? (ta: te: "/${ta}/${te}/index.html")
   , ...
   }@args:
     let
-      extraArgs = removeAttrs args [ "data" "taxonomyTemplate" "termTemplate" "taxonomyHrefFn" "termHrefFn" ];
+      extraArgs = removeAttrs args [ "data" "taxonomyTemplate" "termTemplate" "taxonomyPathFn" "termPathFn" ];
       taxonomyPages = map (plist:
         let taxonomy = propKey   plist;
             terms    = propValue plist;
         in
         (extraArgs //
         { inherit terms taxonomy;
-          href = taxonomyHrefFn taxonomy;
+          taxonomyData = plist;
+          path = taxonomyPathFn taxonomy;
           template = taxonomyTemplate; })
       ) data; 
       termPages = flatten (map (plist:
@@ -145,7 +146,7 @@ rec {
         map (term:
           (extraArgs //
           { inherit taxonomy;
-            href     = termHrefFn taxonomy (propKey term);
+            path     = termPathFn taxonomy (propKey term);
             template = termTemplate;
             term     = propKey   term;
             values   = propValue term; })

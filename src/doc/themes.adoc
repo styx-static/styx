@@ -260,7 +260,7 @@ Normal templates can also add other attributes to the page attribute to fit any 
 [source, nix]
 .Example of a normal template
 ----
-{ templates, ... }:
+env:
 page:
 let
   content =
@@ -273,6 +273,16 @@ in
 
 NOTE: In some cases, it is useful to have the normal template to return the final source of the page. +
 By setting the page `layout` to the `lib.id` function, it is possible to bypass the layout template and have the normal template result being the final source source of the page.
+
+This pattern of updating the page set `content` attribute and return page set is very common so there is a `lib.templates.normalTemplate` function that abstract it.
+
+[source, nix]
+.Previous example abstracted with normalTemplate
+----
+{ lib, ... }:
+lib.templates.basicTemplate (page: "<h1>${page.title}</h1>")
+----
+
 
 ==== Partial templates
 

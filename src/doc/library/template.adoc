@@ -32,20 +32,27 @@ class="foo bar"
 
 ---
 
-[[lib.template.isExternalHref]]
-==== isExternalHref
+[[lib.template.htmlAttrs]]
+==== htmlAttrs
 
-Description::: Checks whether a strings starts with `http`.
+Description::: Create html tag attributes from an attribute set.
 Parameter Type::: Standard
 Parameters:::
-  * `href`: The href to check.
-Return::: `true` if `href` starts with `http`, false if not.
+  * `attrs`: Attribute set to generate tag attribute to generate.
+Return::: A string of the attributes.
 Example:::
 
 +
 [source, nix]
 ----
-isExternalHref item.href
+htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; } 
+----
+
++
+[source, text]
+.Results in
+----
+class="foo bar" id="baz"
 ----
 
 ---
@@ -254,6 +261,7 @@ with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
 `time`:: The time in the `mm:hh:ss` format (12:00:00).
 `date.num`:: The date in the `YYYY-MM-DD` format (2012-12-21).
 `date.lit`:: The date in the `D B YYYY` format (21 December 2012).
+`T`:: The date and time combined in the `YYYY-MM-DDThh:mm:ss` format (2012-12-21T12:00:00).
 ====
 
 ---

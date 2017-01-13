@@ -23,7 +23,7 @@ So let's create a page, pages are declared in the pages attribute set. We will s
     index = {
       title    = "Hello world!";
       content  = "<p>Hello world!</p>";
-      href     = "index.html";
+      path     = "/index.html";
       template = templates.generic.full;
       layout   = templates.layout;
     };

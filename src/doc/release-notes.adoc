@@ -11,6 +11,7 @@ Highlights:
 ** Configuration files can be functions
 ** <<Themes.Library,Themes can provide function libraries>>
 * <<lib.template.parseDate,Content timestamps support time>>
+* New theme: generic-templates. The generic-templates theme provide a template framework and basic templates for common components.
 
 Bug fixes:
 
@@ -22,6 +23,7 @@ Breaking Changes
 - `site.nix` was refactored
 - Themes `theme.nix` file **must** declare a `meta.name` attribute specifying the theme name.
 - `lib.pages.setDefaultLayout` was removed (default pages values can be set with the `default` argument of <<lib.generation.pagesToList>>).
+- all occurences of `href` in function names / parameters and template variables has been replaced with `path`.
 
 This release brings few incompatible changes that requires to refactor `site.nix` to upgrade. +
 The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call.
