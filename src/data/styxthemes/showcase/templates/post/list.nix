@@ -1,11 +1,8 @@
-{ conf, lib, ... }:
+{ conf, lib, templates, ... }:
 with lib;
 page:
-let
-  draftIcon = optionalString (attrByPath ["isDraft"] false page) "<span class=\"glyphicon glyphicon-file\"></span> ";
-in
-  ''
-    <li>
-      <a href="${conf.siteUrl}/${page.href}">${draftIcon}${page.title}</a>
-    </li>
-  ''
+''
+  <li>
+    <a href="${templates.url page.path}">${templates.post.draft-icon page}${page.title}</a>
+  </li>
+''
