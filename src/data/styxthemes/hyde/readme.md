@@ -22,3 +22,7 @@ Look at the example site to see how to use.
 Open sourced under the [MIT license](LICENSE.md).
 
 <3
+
+## Preview
+
+![Preview](/screen.png)
