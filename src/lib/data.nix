@@ -93,18 +93,18 @@ let
       intro = let
           rawContent = readFile "${data}/intro";
         in if rawContent == "" then {} else { intro = rawContent; };
-      subpages = let
+      pages = let
           dir = "${data}/subpages";
           subpages = mapAttrsToList (k: v:
-            readFile "${dir}/${k}"
+            { content = readFile "${dir}/${k}"; }
           ) (readDir dir);
         in if subpages != []
-              then { inherit subpages; }
+              then { pages = subpages; }
               else { };
 
       meta = import "${data}/meta";
     in
-      content // intro // meta // subpages;
+      content // intro // meta // pages;
 
   /* Get data from a file
   */

@@ -15,12 +15,13 @@ rec {
        index = mkSplitCustom {
          head = {
            title    = "Home";
-           path     = "index.html";
+           path     = "/index.html";
            itemsNb  = 1;
          };
          tail = {
            title    = "Archives";
-           basePath = "archive";
+           basePath = "/archive";
+           pathFn   = i: 
            itemsNb  = 2;
          };
          data = posts;
@@ -31,12 +32,13 @@ rec {
     let
       extraArgs = removeAttrs args [ "head" "tail" "data" ];
       itemsList = [ (take head.itemsNb data) ] ++ (chunksOf tail.itemsNb (drop head.itemsNb data));
+      pathFn = tail.pathFn or (i: "${tail.basePath}-${toString i}.html");
       pages = imap (i: items:
         { inherit items; index = i; }
         // extraArgs
         // (if i ==1
                then head
-               else (removeAttrs tail [ "basePath" ]) // { path = "${tail.basePath}-${toString i}.html"; })
+               else (removeAttrs tail [ "basePath" "pathFn" ]) // { path = pathFn i; })
       ) itemsList;
     in map (p: p // { inherit pages; }) pages;
 
@@ -46,11 +48,11 @@ rec {
      Example usage:
 
        index = mkSplit {
-         title = "Home";
-         basePath = "index";
+         title        = "Home";
+         basePath     = "/index";
          itemsPerPage = 1;
-         template = templates.index;
-         data = posts;
+         template     = templates.index;
+         data         = posts;
        };
 
   */
@@ -66,19 +68,20 @@ rec {
 
   /* Split a page with subpages into multiple pages attribute sets
   */
-  mkMultipages = { subpages, basePath, output ? "all", ... }@args:
+  mkMultipages = { pages, basePath, output ? "all", ... }@args:
     let
-      extraArgs = removeAttrs args [ "basePath" "output" ];
-      pages = imap (index: subpage:
+      extraArgs = removeAttrs args [ "basePath" "output" "pages" ];
+      subpages = imap (index: page:
         extraArgs // 
-          { inherit index;
-            path = if index == 1 
-                   then "${basePath}.html"
-                   else "${basePath}-${toString index}.html";
-            content = subpage; }
-       ) subpages;
-      pages' = map (p: p // { inherit pages; }) pages;
-    in      if output == "all" then pages
+        { inherit index;
+          path = if index == 1 
+                 then "${basePath}.html"
+                 else "${basePath}-${toString index}.html";
+        }
+        // page
+       ) pages;
+      pages' = map (p: p // { pages = subpages; }) subpages;
+    in      if output == "all"  then pages'
        else if output == "head" then head pages'
        else if output == "tail" then tail pages'
        else abort "mkMultipage output must be 'all', 'head' or 'tail'";
@@ -93,7 +96,7 @@ rec {
                         then { template = multipageTemplate; }
                         else {};
         page =
-          if data ? subpages
+          if data ? pages
              then mkMultipages (extraArgs // {
                output = "head";
                basePath = "${pathPrefix}${data.fileData.basename}";
@@ -109,7 +112,7 @@ rec {
   mkMultiTail = { data, pathPrefix ? "", ... }@args:
     let
       extraArgs = removeAttrs args [ "data" "pathPrefix" ];
-      mpData = filter (d: (d ? subpages)) data;
+      mpData = filter (d: (d ? pages)) data;
       mkPage = data:
         mkMultipages (extraArgs // {
           output = "tail";

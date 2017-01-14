@@ -19,7 +19,7 @@ Generic templates provide a `templates.layout` template, divided in many partial
 *** `partials.head.default`: See below for head templates division.
 *** `partials.body`
 **** `partials.content-pre`: Pre content template, usually holds navigation bar, empty by default.
-**** `partials.content`: Main content template, should be overriden to needs, empty by default.
+**** `partials.content`: Main content template, should be overriden to needs.
 **** `partials.content-post`: Post content template, usually holds footer, empty by default.
 **** `partials.js`
 ***** `lib.js.jquery`: Loading jquery javascript, controlled by `conf.theme.lib.jquery.enable`.
@@ -34,7 +34,7 @@ Head templates division:
 *** `partials.head.meta`: Include a few default `meta` tags, can be overriden to fit needs.
 ** `partials.head.title`
 ** `partials.head.title-post`
-*** `partials.head.feed`: Should be overriden to include link feeds.
+*** `partials.head.feed`: Create a link for `pages.feed` if it exists by default, can be overriden to fit needs.
 *** `partials.head.css`
 **** `lib.css.bootstrap`: Loading bootstrap css, controlled by `conf.theme.lib.bootstrap.enable`.
 **** `lib.css.font-awesome`: Loading font-awesome css, controlled by `conf.theme.lib.font-awesome.enable`.
@@ -44,6 +44,8 @@ Head templates division:
 
 
 ==== Overriding a template
+
+Any template from any theme can be overriden to fit needs.
 
 To override a template, just copy it to a custom theme and edit it:
 
@@ -59,6 +61,17 @@ $ cp $(nix-build -A styx-themes.generic-templates '<nixpkgs>')/templates/partial
 <2> Create the `themes/foo/templates/partials/` directory.
 <3> Copy the generic-templates `templates/partials/content.nix` to the foo theme. +
 This code use nix-build to directly access the generic-templates source from the nix store.
+
+Themes need to be declared in `site.nix` to be used, see <<Combining Themes>> for details.
+
+[source, nix]
+.Combining generic-templates and my-theme
+----
+  themes = [
+    styx-themes.generic-templates
+    ./themes/my-theme
+  ];
+----
 
 ==== Useful templates
 

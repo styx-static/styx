@@ -6,6 +6,94 @@ The template namspace contains functions useful in templates.
 
 ---
 
+[[lib.template.normalTemplate]]
+==== normalTemplate
+
+Description::: Abstract the <<Normal templates,normal templates>> pattern.
+Parameter Type::: Mixed
+Parameters::: Parameters can be a:
+  * `String`: The parameter will be added to the page set `content`, and the page set will be returned.
+  * `Attribute Set`: The parameter will be merged to the page set, and the page set will be returned.
+  * `Page Attribute Set -> String`: The `String` parameter will be added to the page set `content`, and the page set will be returned.
+  * `Page Attribute Set -> Attribute Set`: The `Attribute Set` parameter will be merged to the page set, and the page set will be returned.
+Return::: A normal template function in the form `Page Attribute Set -> Page Attribute Set`.
+Examples:::
+
++
+[source, nix]
+.String parameter
+----
+normalTemplate "Sample content"
+----
+
++
+[source, text]
+.Results in
+----
+page: page // { content = "Sample content"; }
+----
+
++
+---
+
++
+[source, nix]
+.Attribute Set parameter
+----
+normalTemplate {
+  content = "Sample content";
+  title   = "Sample";
+};
+----
+
++
+[source, text]
+.Results in
+----
+page: page // { content = "Sample content"; title = "Sample"; }
+----
+
++
+---
+
++
+[source, nix]
+.Page Attribute Set -> String parameter
+----
+normalTemplate (page:
+  "Page path: ${page.path}"
+)
+----
+
++
+[source, text]
+.Results in
+----
+page: page // { content = "Page path: ${page.path}"; }
+----
+
++
+---
+
++
+[source, nix]
+.Page Attribute Set -> Attribute Set
+----
+normalTemplate (page: {
+  content = "Page path: ${page.path}";
+  title   = "Sample";
+})
+----
+
++
+[source, text]
+.Results in
+----
+page: page // { content = "Page path: ${page.path}"; title = "Sample"; }
+----
+
+---
+
 [[lib.template.htmlAttr]]
 ==== htmlAttr
 

@@ -60,6 +60,7 @@ Parameters:::
   * `tail`: Setting for the following pages.
   ** `itemsNb`: The number of items to display per page.
   ** `basePath`: The base `path` set to the pages, the `path` is `basePath-index.html` where index is the number of the page.
+  ** `pathFn`: Function to generate tail page path of type `Int -> Path`, default implemetation is `i: "${tail.basePath}-${toString i}.html"`.
 Return::: A list of page attribute set according to the arguments.
 Example:::
 
@@ -99,7 +100,7 @@ Parameters:::
   * `subpages`: The list of subpages source.
   * `basepath`: The base `path` set to the pages set, the first page `path` is `basepath.html`, following pages `path` is `basepath-index.html` where index is the number of the page.
   * `output`: `all`, `head` or `tail`. This select which pages set to generate.
-Return::: A list of page attribute set according to the arguments.
+Return::: A list of page attribute set according to the arguments, the subpages list is added in the `pages` attribute.
 Example:::
 
 +
@@ -126,7 +127,7 @@ Parameters:::
   * `data`: The list of data attribute set to use.
   * `pathPrefix` (optional): A prefix string to add to the generated page set `path`.
   * `multipageTemplate`: The template used for multipage data sets.
-Return::: A list of page attribute set according to the arguments.
+Return::: A list of page attribute set according to the arguments, the subpages list is added in the `pages` attribute of each page if subpages are present.
 Example:::
 
 +

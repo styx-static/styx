@@ -1,10 +1,8 @@
 [[Themes]]
 == Themes
 
-Themes are a central concept in styx and are used to manage a site assets, namely files and templates.
+Themes are a central concept in styx and are used to manage a site assets, like static files and templates.
 They also provide a configuration interface and can declare a function library.
-
-Themes can be combined in a modular way.
 
 === Getting themes
 
@@ -26,13 +24,26 @@ A new theme folder structure can be created by running the `styx new theme` comm
 .Creating a new theme
 ----
 $ styx new theme my-theme --in ./themes
-$ tree ./themes
-└── my-theme
-    ├── conf.nix
-    ├── files
-    ├── meta.nix
-    └── templates
 ----
+
+This command will generate the following files:
+
+----
+├── conf.nix   # <1>
+├── meta.nix   # <2>
+├── files/     # <3>
+└── templates/ # <4>
+----
+
+<1> Theme configuration interface, see <<Themes.conf.nix,conf.nix>> for details.
+<2> Theme meta data, see <<meta.nix>> for details.
+<3> Directory to store theme static files, see <<Files>> for details.
+<4> Directory to store theme templates, see <<Templates>> for details.
+
+See <<Themes.Structure, Structure>> for details.
+
+NOTE: Site and themes both have `conf.nix` files, their purpose is different and should not be confused. +
+Theme `conf.nix` define the configuration interface, and site `conf.nix` use this configuration.
 
 === Using themes
 
@@ -68,8 +79,8 @@ themes
     ├── conf.nix # <2>
     ├── meta.nix # <3>
     ├── lib.nix # <4>
-    ├── files # <5>
-    └── templates # <6>
+    ├── files/ # <5>
+    └── templates/ # <6>
 -----
 
 <1> Name of the theme. The name should be a valid directory name.
@@ -80,6 +91,7 @@ themes
 <6> `templates` is a directory storing all the templates files (optional).
 
 
+[[Themes.conf.nix]]
 === conf.nix
 
 `conf.nix` defines the theme configuration interface and is defined as an attribute set.
@@ -106,11 +118,19 @@ Theme templates that access themes configuration should use `conf.theme`.
 - `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration as it is declared in `theme.nix`.
 ====
 
+[source, nix]
+.Usage of a theme configuration interface in a **site** conf.nix
+----
+{
+  theme.site.title = "My Agency";
+}
+----
+
 NOTE: `conf.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
 === meta.nix
 
-Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `name` attribute in `meta.nix` so the theme configuration is correctly processed. +
+Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with a `name` attribute so the theme configuration is correctly processed. +
 
 Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
 
@@ -129,9 +149,11 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 {
   name = "showcase";
   license = lib.licenses.mit;
-  maintainers = with lib.maintainers; [ ericsagnes ];
+  maintainers = with lib.maintainers; [ johndoe ];
 }
 ----
+
+IMPORTANT: Themes *must* define a `meta.nix` with a `name` attribute.
 
 NOTE: `meta.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
@@ -176,17 +198,15 @@ In `site.nix`, themes are declared as a list. If multiple themes in the list pro
 
 This allows to build new themes based on other themes, like the showcase theme is built on the base of the generic-templates theme.
 
-TIP: Combining themes is the recommended way to extend an existing theme.
-
 To combine a theme it is just needed to declare multiple themes in `site.nix`. If multiple themes define the same asset, asset from the later theme in the list will be used.
 
 [source, nix]
 .Combining generic-templates and my-theme
 ----
-  themes = [
-    styx-themes.generic-templates
-    ./themes/my-theme
-  ];
+themes = [
+  styx-themes.generic-templates
+  ./themes/my-theme
+];
 ----
 
 If generic-templates and my-theme both defines `templates/partials/content.nix`, the one from my-theme will be used. +

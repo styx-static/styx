@@ -174,7 +174,7 @@ Cras malesuada metus quis mi pulvinar faucibus. Vivamus suscipit est ante, ut au
 Phasellus consequat a nibh sit amet ultricies. Quisque feugiat justo eu condimentum convallis.
 ----
 
-The resulting data set will have an extra `subpages` field that will hold the list of subpages content.
+The resulting data set will have an extra `pages` field that will hold the list of subpages content in format `[ { content = ...; } ]`.
 
 NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute set is done in the pages section. +
 For example, the `mkPagesList` or `mkMultipages` function can generate pages from a multipage data set.

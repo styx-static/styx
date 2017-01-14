@@ -32,8 +32,6 @@ rec { # <2>
 }
 ----
 
-NOTE: This example does not use themes.
-
 <1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN, ... }: body` pattern. +
 The arguments of the function are the dependencies needed to build the site. +
 `@args` refers to the whole argument set.
@@ -168,7 +166,7 @@ Themes are detailed in the <<Themes>> section.
      items at the end of the list have higher priority
   */
   themes = [ # <1>
-    styx-themes.showcase
+    styx-themes.generic-templates
   ];
 
   /* Loading the themes data
@@ -184,7 +182,7 @@ Themes are detailed in the <<Themes>> section.
   inherit (themesData) conf lib files templates; # <4>
 ----
 
-<1> `themes` is a list so it is possible to set multiple themes at the same time to combine them. Themes at the beginning of the list have a lower priority. +
+<1> `themes` is a list so it is possible to set multiple themes at the same time to <<Combining Themes,combine them>>. Themes at the beginning of the list have a lower priority. +
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
 <2> Extra variables to add to the template environment.
 <3> Extra configuration sets to merge with the themes configurations, head of the list have lower priority.
@@ -219,6 +217,8 @@ Even if `generateSite` expects a page list, it is usually declared as an attribu
 
 There are multiple functions available to generate different type of pages, but a page is ultimately an attribute set with at least the `layout`, `template` and `path` attribute defined.
 
+IMPORTANT: `path` must start with a `/`.
+
 The <<Pages>> section explains in detail how to create pages.
 
 [source, nix]
@@ -234,7 +234,7 @@ The <<Pages>> section explains in detail how to create pages.
 
     about = {
       path     = "/about.html";
-      template = templates.generic.full;
+      template = templates.page.full;
       layout   = templates.layout;
     } // data.about; # <1>
 
@@ -266,7 +266,6 @@ This is the final part and shortest section of `site.nix`. This section consists
 
 <1> `generateSite` requires pages as a list, so `pagesToList` convert the pages attribute set to a list.
 
-NOTE: `files` is generated in the init section using enabled themes.
-
-NOTE: `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
+NOTE: `files` is generated in the init section using enabled themes. +
+`inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
 

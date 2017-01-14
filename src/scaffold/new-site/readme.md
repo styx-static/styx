@@ -24,7 +24,7 @@ So let's create a page, pages are declared in the pages attribute set. We will s
       title    = "Hello world!";
       content  = "<p>Hello world!</p>";
       path     = "/index.html";
-      template = templates.generic.full;
+      template = templates.page.full;
       layout   = templates.layout;
     };
 

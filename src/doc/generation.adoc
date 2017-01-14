@@ -5,7 +5,7 @@ Site generation consists in a call to <<lib.generation.generateSite>>, and the p
 [source, nix]
 .Standard call to generateSite
 ----
-pagesList = pagesToList { iherit pages; };
+pagesList = pagesToList { inherit pages; };
 
 site = generateSite { inherit conf files pagesList; }
 ----
@@ -32,15 +32,19 @@ Subtitutions are a way to pass variables from `site.nix` in markup or static fil
 
 Substitutions are a set that is passed to the `generateSite` function. Any value of set will be replaced in the markup or static files that `generateSite` outputs.
 
-To be replaced, the variable as to be surrouded by `@`, for example `@siteUrl@`.
-
 [source, nix]
 .Simple substitution set
 ----
-{
-  siteUrl = conf.siteUrl;
-}
+  substitutions = {
+    siteUrl = conf.siteUrl;
+  };
+
+  site = lib.generateSite {
+    inherit files pagesList substitutions;
+  };
 ----
+
+To be replaced, the variable as to be surrouded by `@`, for example `@siteUrl@`.
 
 [source, markdown]
 .Using a substitution in a markdown file
