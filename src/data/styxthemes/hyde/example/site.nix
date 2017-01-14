@@ -24,6 +24,7 @@ rec {
      items at the end of the list have higher priority
   */
   themes = [
+    styx-themes.generic-templates
     ../.
   ];
 
@@ -54,7 +55,7 @@ rec {
       postsList = loadDir { dir = ./data/posts; };
       draftsList = optionals (extraConf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
     in sortBy "date" "dsc" (postsList ++ draftsList);
-    menus = [ pages.about ];
+    menu = [ pages.about ];
   };
 
 
@@ -71,51 +72,53 @@ rec {
        For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title = "Home";
-      baseHref = "index";
+      title        = "Home";
+      basePath     = "/index";
       itemsPerPage = conf.theme.index.itemsPerPage;
-      template = templates.index;
-      data = posts;
+      template     = templates.index;
+      data         = posts;
     };
 
     /* About page
        Example of generating a page from imported data
     */
     about = {
-      href = "about.html";
-      template = templates.generic.full;
+      path     = "/about.html";
+      template = templates.page.full;
     } // data.about;
 
-    /* RSS feed page
+    /* Feed page
     */
     feed = {
-      href = "feed.xml";
-      template = templates.feed;
-      # Show the 10 most recent posts
-      posts = take 10 posts;
+      path     = "/feed.xml";
+      template = templates.feed.atom;
       # Bypassing the layout
-      layout = id;
+      layout   = id;
+      items    = take 10 posts;
     };
 
     /* 404 error page
     */
-    e404 = { href = "404.html"; template = templates.e404; title = "404"; };
+    e404 = {
+      path     = "/404.html";
+      template = templates.e404;
+    };
 
     /* Posts pages (as a list of pages)
     */
     posts = mkPageList {
-      data = data.posts;
-      hrefPrefix = "posts/";
-      template = templates.post.full;
+      data        = data.posts;
+      pathPrefix  = "/posts/";
+      template    = templates.post.full;
       breadcrumbs = [ (head pages.index) ];
     };
 
     /* Multipages handling
     */
     postsMultiTail = mkMultiTail {
-      data = data.posts;
-      hrefPrefix = "posts/";
-      template = templates.post.full;
+      data        = data.posts;
+      pathPrefix  = "/posts/";
+      template    = templates.post.full;
       breadcrumbs = [ (head pages.index) ];
     };
 
