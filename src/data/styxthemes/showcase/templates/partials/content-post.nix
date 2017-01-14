@@ -1,4 +1,5 @@
 { conf, ... }:
+args:
 ''
   <footer>
     <div class="container wrapper">
@@ -17,5 +18,4 @@
       </div>
     </div>
   </footer>
-
 ''

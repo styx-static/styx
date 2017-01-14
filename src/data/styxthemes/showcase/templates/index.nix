@@ -1,19 +1,14 @@
 { conf, templates, lib, ... }:
 with lib;
-page:
-
-let
-  content = 
-    ''
-      <h1>${page.title}</h1>
-      <ul class="list-unstyled">
-        ${mapTemplateWithIndex (index: item: ''
-          ${templates.post.preview item}
-          ${optionalString (isEven index) templates.partials.clearfix}
-        '')page.items}
-      </ul>
-      ${templates.partials.clearfix}
-      ${templates.partials.pagination { pages = page.pages; index = page.index; }}
-    '';
-in
-  page // { inherit content; }
+normalTemplate (page: 
+  ''
+    <h1>${page.title}</h1>
+    <div class="clearfix">
+    ${mapTemplateWithIndex (index: item: ''
+      ${templates.post.preview item}
+      ${optionalString (isEven index) ''<div class="clearfix"></div>''}
+    '') page.items}
+    </div>
+    ${templates.bootstrap.pagination { inherit (page) pages index; }}
+  ''
+)

@@ -24,6 +24,7 @@ rec {
      items at the end of the list have higher priority
   */
   themes = [
+    styx-themes.generic-templates
     ../.
   ];
 
@@ -62,8 +63,8 @@ rec {
     navbar = [
       pages.about
       (head pages.postsArchive)
-      { title = "RSS";  href = "${conf.siteUrl}/${pages.feed.href}"; }
-      { title = "Styx"; href = "https://styx-static.github.io/styx-site/"; }
+      (pages.feed // { navbarTitle = "RSS"; })
+      { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
     ];
 
     # posts taxonomies
@@ -88,20 +89,20 @@ rec {
        For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title = conf.theme.site.title;
-      baseHref = "index";
-      itemsPerPage = conf.theme.index.itemsPerPage;
-      template = templates.index;
-      data = pages.posts;
-      breadcrumbTitle = templates.icon.fa "home";
+      title           = conf.theme.site.title;
+      basePath        = "/index";
+      itemsPerPage    = conf.theme.index.itemsPerPage;
+      template        = templates.index;
+      data            = pages.posts;
+      breadcrumbTitle = templates.icon.font-awesome "home";
     };
 
     /* About page
        Example of generating a page from a piece of data
     */
     about = {
-      href = "about.html";
-      template = templates.generic.full;
+      path        = "/about.html";
+      template    = templates.page.full;
       # setting breadcrumbs
       breadcrumbs = [ (lib.head index) ];
     } // data.about;
@@ -109,16 +110,20 @@ rec {
     /* RSS feed page
     */
     feed = {
-      href = "feed.xml";
-      template = templates.feed;
+      path     = "/feed.xml";
+      template = templates.feed.atom;
       # Bypassing the layout
-      layout = lib.id;
-      items = lib.take 10 pages.posts;
+      layout   = lib.id;
+      items    = lib.take 10 pages.posts;
     };
 
     /* 404 error page
     */
-    e404 = { href = "404.html"; template = templates.e404; title = "404"; };
+    e404 = {
+      path     = "/404.html";
+      template = templates.e404;
+      title    = "404";
+    };
 
     /* Posts pages (as a list of pages)
 
@@ -126,19 +131,19 @@ rec {
        list of data
     */
     posts = mkPageList {
-      data = data.posts;
-      hrefPrefix = "posts/";
-      template = templates.post.full;
+      data        = data.posts;
+      pathPrefix  = "/posts/";
+      template    = templates.post.full;
       breadcrumbs = [ (lib.head pages.index) ];
     };
 
     postsArchive = mkSplit {
-      title = "Archives";
-      baseHref = "archive/post";
-      template = templates.archive;
-      breadcrumbs = [ (lib.head index) ];
+      title        = "Archives";
+      basePath     = "/archive/post";
+      template     = templates.archive;
+      breadcrumbs  = [ (lib.head index) ];
       itemsPerPage = 15;
-      data = pages.posts;
+      data         = pages.posts;
     };
 
     /* Subpages of multi-pages posts
@@ -147,18 +152,18 @@ rec {
        subpages in the rss feed or posts list
     */
     postsMultiTail = mkMultiTail {
-      data = data.posts;
-      hrefPrefix = "posts/";
-      template = templates.post.full;
+      data        = data.posts;
+      pathPrefix  = "/posts/";
+      template    = templates.post.full;
       breadcrumbs = [ (lib.head pages.index) ];
     };
 
     /* Taxonomy related pages
     */
     taxonomies = mkTaxonomyPages {
-      data = data.taxonomies.posts;
+      data             = data.taxonomies.posts;
       taxonomyTemplate = templates.taxonomy.full;
-      termTemplate = templates.taxonomy.term.full;
+      termTemplate     = templates.taxonomy.term.full;
     };
 
   };
@@ -168,10 +173,10 @@ rec {
      through all the pages
   */
   sitemap = {
-    href = "sitemap.xml";
+    path     = "/sitemap.xml";
     template = templates.sitemap;
-    layout = lib.id;
-    urls = lib.pagesToList { inherit pages; };
+    layout   = lib.id;
+    pages    = lib.pagesToList { inherit pages; };
   };
 
 /*-----------------------------------------------------------------------------
