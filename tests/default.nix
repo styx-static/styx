@@ -26,7 +26,15 @@ let
     };
   }).site;
 
-  themes-sites = fold (a: acc: acc // { "${a}-site" = mkThemeTest a; }) {} [ "agency" "hyde" "orbit" "showcase" ];
+  themes-sites = fold (a: acc: acc // { "${a}-site" = mkThemeTest a; }) {} themes;
+ 
+  themes = [
+    "agency"
+    "hyde"
+    "orbit"
+    "showcase"
+    "generic-templates"
+  ];
 
 in
 

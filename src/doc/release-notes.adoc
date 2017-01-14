@@ -4,14 +4,14 @@
 
 Highlights:
 
+* New theme: <<themes.generic-templates,generic-templates>>. The generic-templates theme provide a template framework and basic templates for common components.
 * <<Debugging,Interactive debugging>>
-* <<Basics,simpler>> `site.nix`
+* <<site.nix,simpler>> `site.nix`
+* <<lib.template.parseDate,Content timestamps support time>>
 * Improved modularity:
 ** <<lib.generation.generateSite,Pages generation function can be modified>>
 ** Configuration files can be functions
 ** <<Themes.Library,Themes can provide function libraries>>
-* <<lib.template.parseDate,Content timestamps support time>>
-* New theme: generic-templates. The generic-templates theme provide a template framework and basic templates for common components.
 
 Bug fixes:
 
@@ -26,7 +26,7 @@ Breaking Changes
 - all occurences of `href` in function names / parameters and template variables has been replaced with `path`.
 
 This release brings few incompatible changes that requires to refactor `site.nix` to upgrade. +
-The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call.
+The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call and `href` occurrences replaced by `path`.
 
 
 === Styx 0.4.0 - 2016/12/07

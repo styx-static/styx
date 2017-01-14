@@ -1,0 +1,226 @@
+=== Templates
+
+Every template in the `templates` directory will be accessible by its file basename in the `templates` attribute set.
+Directories are converted to nested sets.
+
+[source, shell]
+.Example of a template directory structure
+-----
+├── archive.nix
+└── post
+    ├── full.nix
+    └── list.nix
+-----
+
+[source, nix]
+.Generated attribute set
+-----
+templates = {
+  archive = <<lambda>>;
+  posts = {
+    full = <<lambda>>;
+    list = <<lambda>>;
+  };
+};
+-----
+
+NOTE: the `\<<lambda>>` notation is borrowed from the `nix-repl` tool, and means a non fully evaluated function. +
+The nix language is functional, and it allows to partially apply functions and to pass function as argument to other functions.
+
+'''
+
+Styx templates are functions that return text or page attribute sets when fully evaluated.
+
+Templates are divided in three types:
+
+- *Layout templates*, responsible for the final rendering of a page, it must return text. (page attribute set `layout` key)
+- *Normal templates*, responsible for preparing a page for the layout template, this kind of templates usually return a page attribute set.
+- *Partial templates*, responsible for rendering a part of a layout or a normal template. 
+
+The template evaluation flow is:
+
+- *Normal templates* evaluate the page attribute set and generates a partial result that is stored in the page attribute set `content` key.
+- *Layout templates* evaluate the page attribute set returned by the *normal template* and produce the final source of the page.
+
+==== Text handling basics
+
+Most of the work in template is done by manipulating text.
+
+This section introduce the basics of text handling in the templates:
+
+- single-line or multi-line text (leading spaces are stripped without changing relative line align), delimited by `''`.
+
++
+[source, nix]
+.Multi-line text
+----
+''
+  Hello world!
+  Hello Styx!
+''
+----
+
+- single-line or multi-line text, delimited by `"`.
+
++
+[source, nix]
+.Single-line text
+----
+"Hello world!"
+----
+
+Nix expressions can be included in text in enclosed in `${...}`.
+
+[source, nix]
+.Expression antiquotation
+----
+let name = "world"; in
+"Hello ${name}!"
+----
+
+==== Layout templates
+
+Layout templates are responsible for rendering the final source of a page. +
+A layout template function usually takes a template environment, and a page attribute set with a `content` attribute.
+
+In a HTML context, the layout template is usually responsible of the HTML code that is not directly related to the content, like the `html` tag contents.
+
+[source, nix]
+.Layout template example
+----
+env:
+page:
+''
+  <html>
+    ...
+  <body>
+    ...
+    ${page.content}
+    ...
+  </body>
+  </html>
+''
+----
+
+TIP: Layout templates are just functions, in case the normal template return the full page source like in a rss feed case, it is possible to set the page `layout` to the `lib.id` function. This will make the layout evaluation transparent and return the `template` result.
+
+
+==== Normal templates
+
+Normal templates are similar to the layout templates, with the only difference that their result will be evaluated by a layout template.
+A standard normal template will set or update the `content` attribute of a page attribute set so the layout template can produce the final source.
+
+Normal templates can also add other attributes to the page attribute to fit any special need.
+
+[source, nix]
+.Example of a normal template
+----
+env:
+page:
+let
+  content =
+    ''
+      <h1>${page.title}</h1>
+    '';
+in
+  page // { inherit content; }
+----
+
+NOTE: In some cases, it is useful to have the normal template to return the final source of the page. +
+By setting the page `layout` to the `lib.id` function, it is possible to bypass the layout template and have the normal template result being the final source source of the page.
+
+This pattern of updating the page set `content` attribute and return page set is very common so there is a `lib.templates.normalTemplate` function that abstract it.
+
+[source, nix]
+.Previous example abstracted with normalTemplate
+----
+{ lib, ... }:
+lib.templates.basicTemplate (page: "<h1>${page.title}</h1>")
+----
+
+
+==== Partial templates
+
+Partials templates are templates that can be used in normal or layout templates.
+
+Partial templates can take arguments and be used to with `mapTemplate` to apply a template to a list of content, or just be used as includes.
+
+==== Template environment
+
+The template environment is the first parameter to every template function.
+
+It is automatically set when the templates are loaded from a theme.
+
+The default template environment consists in:
+
+- `conf`: The configuration attribute set.
+- `lib`: The library attribute set, it contains Styx and nixpkgs library functions.
+- `templates`: The templates attribute set.
+- `data`: The data attribute set.
+- `pages`: The pages attribute set.
+
+NOTE: The template environment is set in `site.nix` and can be easily modified upon needs.
+
+==== Template environment in templates
+
+There are two ways of writing the template environment in the template, as a variable or as a deconstructed set.
+
+[source, nix]
+.Environment as a variable
+----
+env: # <1>
+page:
+''
+  ${env.conf.theme.site.title}
+''
+----
+
+<1> `env` is used as a set, and its key can be accessed with `.`.
+
+[source, nix]
+.Environment as a deconstructed set
+----
+{ conf, lib, ... }: # <1>
+page: # <1>
+''
+  ${conf.site.theme.site.title}
+''
+----
+
+<1> environment is deconstructed in its keys values. The last `...` means all others keys and is required if the set contains more keys than the keys deconstructed.
+
+
+==== Calling templates in templates
+
+It is possible to call templates in a template by accessing to the `templates` attribute of the template environment.
+
+[source, nix]
+.Calling a template in a template
+----
+{ templates, ... }:
+page:
+''
+  ${templates.partials.head}
+''
+----
+
+NOTE: When templates are loaded, they will automatically receive the template environment as a parameter, this will partially evaluate the template function. This means that the template function will be become a single argument function (`page`).
+
+WARNING: Trying to call the current template will trigger an infinite loop and make the site generation fail.
+
+==== Applying templates to multiple contents
+
+The `mapTemplate` function can be used to map a template to a list of contents.
+
+[source, nix]
+.Applying a template to multiple contents
+----
+{ templates, ... }:
+page:
+''
+  <ul>
+  ${mapTemplate templates.post.list page.posts}
+  </ul>
+''
+----
+

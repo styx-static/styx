@@ -86,6 +86,7 @@ NOTE: The file structure of styx is totally free and can be changed according to
 It is even possible to change the name of `site.nix`. In that case the `--file` flag of the styx command can be used to specify the file name.
 
 
+[[site.nix]]
 === site.nix
 
 The `site.nix` used in the <<Hello world!>> example contains only enough code to generate a single page. A standard `site.nix` will contain more information and be more structured.
