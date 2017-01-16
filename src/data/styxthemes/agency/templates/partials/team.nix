@@ -1,6 +1,6 @@
 { conf, lib, data, ... }:
 with lib;
-optionalString (conf.theme.team != null)
+optionalString (conf.theme.team.members != [])
 ''
 <!-- Team Section -->
 <section id="team" class="bg-light-gray">
@@ -25,7 +25,7 @@ optionalString (conf.theme.team != null)
             </ul>
           </div>
         </div>
-      '') data.team}
+      '') conf.theme.team.members}
     </div>
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 text-center">
