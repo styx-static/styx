@@ -1,6 +1,6 @@
 { lib, conf, data, ... }:
 with lib;
-optionalString (conf.theme.services != null)
+optionalString (conf.theme.services.items != [])
 ''
 <!-- Services -->
 <section id="services">
@@ -21,7 +21,7 @@ optionalString (conf.theme.services != null)
           <h4 class="service-heading">${service.title}</h4>
           <div class="text-muted">${service.content}</div>
         </div>
-        '') data.services}
+        '') conf.theme.services.items}
       </div>
   </div>
 </section>

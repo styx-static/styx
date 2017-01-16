@@ -1,6 +1,6 @@
 { lib, conf, data, ... }:
 with lib;
-optionalString (conf.theme.about != null)
+optionalString (conf.theme.about.items != [])
 ''
 <!-- About Section -->
 <section id="about">
@@ -29,7 +29,7 @@ optionalString (conf.theme.about != null)
                 </div>
               </div>
             </li>
-          '') data.events}
+          '') conf.theme.about.items}
           <li class="timeline-inverted">
             <div class="timeline-image">
               <h4>${conf.theme.about.endpoint}</h4>

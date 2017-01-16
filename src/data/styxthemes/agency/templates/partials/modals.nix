@@ -1,6 +1,6 @@
 { conf, lib, data, ... }:
 with lib;
-optionalString (conf.theme.portfolio != null)
+optionalString (conf.theme.portfolio.items != [])
 ''
 <!-- Portfolio Modals -->
 ${mapTemplateWithIndex (index: project: ''
@@ -32,5 +32,5 @@ ${mapTemplateWithIndex (index: project: ''
       </div>
     </div>
   </div>
-'') data.projects}
+'') conf.theme.portfolio.items}
 ''

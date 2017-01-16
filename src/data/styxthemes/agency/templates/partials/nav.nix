@@ -27,31 +27,31 @@ with lib;
           </li>
           '') conf.theme.menu.prepend}
 
-          ${optionalString (conf.theme.services != null) ''
+          ${optionalString (conf.theme.services.items != []) ''
           <li>
             <a class="page-scroll" href="#services">Services</a>
           </li>
           ''}
 
-          ${optionalString (conf.theme.portfolio != null) ''
+          ${optionalString (conf.theme.portfolio.items != []) ''
           <li>
             <a class="page-scroll" href="#portfolio">Portfolio</a>
           </li>
           ''}
 
-          ${optionalString (conf.theme.about != null) ''
+          ${optionalString (conf.theme.about.items != []) ''
           <li>
             <a class="page-scroll" href="#about">About</a>
           </li>
           ''}
 
-          ${optionalString (conf.theme.team != null) ''
+          ${optionalString (conf.theme.team.members != []) ''
           <li>
             <a class="page-scroll" href="#team">Team</a>
           </li>
           ''}
 
-          ${optionalString (conf.theme.contact != null) ''
+          ${optionalString (conf.theme.contact.enable) ''
           <li>
             <a class="page-scroll" href="#contact">Contact</a>
           </li>

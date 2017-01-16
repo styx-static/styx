@@ -10,19 +10,6 @@ Originally made by [digitalcraftsman](https://github.com/digitalcraftsman).
 
 ---
 
-Most of the theme can be configured with the configuration interface defined in `theme.nix`.
-
-For example, to change the title in the navigation:
-
-```
-{
-  theme.site.title = "My Agency";
-
-}
-```
-
----
-
 ## Acknowledgements 
 
 Thanks to
