@@ -1,5 +1,6 @@
 == Release Notes
 
+[[v0.5.0]]
 === Styx 0.5.0 - 201X/XX/XX
 
 Highlights:
@@ -18,17 +19,20 @@ Bug fixes:
 - filename containing spaces are correctly generated.
 - `conf.themes` sub attributes are correctly set.
 
-Breaking Changes
+Breaking Changes:
 
 - `site.nix` was refactored
 - Themes `theme.nix` file **must** declare a `meta.name` attribute specifying the theme name.
 - `lib.pages.setDefaultLayout` was removed (default pages values can be set with the `default` argument of <<lib.generation.pagesToList>>).
 - all occurences of `href` in function names / parameters and template variables has been replaced with `path`.
 
+Upgrading:
+
 This release brings few incompatible changes that requires to refactor `site.nix` to upgrade. +
-The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call and `href` occurrences replaced by `path`.
+The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call and `href` occurrences replaced by `path` (`path` attributes must start with a `/`).
 
 
+[[v0.4.0]]
 === Styx 0.4.0 - 2016/12/07
 
 Highlights:
@@ -46,6 +50,7 @@ This release brings few major breaking changes that make upgrading from 0.3.0 no
 The main changes involve the init section of `site.nix`.
 
 
+[[v0.3.0]]
 === Styx 0.3.0 - 2016/10/26
 
 Highlights:
@@ -62,7 +67,7 @@ Highlights:
 This release brings many major breaking changes that make upgrading from 0.2.0 non trivial. +
 Fortunately, the new features introduced in this release should make future upgrades easy.
 
-
+[[v0.2.0]]
 === Styx 0.2.0 - 2016/10/10
 
 Highlights:
@@ -108,6 +113,7 @@ This release bring many major changes that make updating from 0.1.0 non-trivial.
 To update, it is recommended to generate a new site, create a new theme with customized templates and static files, and update `site.nix` accordingly.
 
 
+[[v0.1.0]]
 === Styx 0.1.0 - 2016/10/07
 
 Initial release of Styx.

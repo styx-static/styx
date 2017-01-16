@@ -3,6 +3,7 @@
 lib:
 with lib;
 with import ./utils.nix lib;
+with import ./proplist.nix lib;
 
 let
   /* Recursively fetches a directory of templates
@@ -33,11 +34,10 @@ let
   findInTheme = t: f:
     if dirContains t.path f then t.path + "/${f}" else null;
 
-  /* import a file and if it is a function load apply args to it
+  /* extract an attribute key from a list of theme and remove null values
   */
-  importApply = file: arg:
-    let f = import file;
-    in if isFunction f then f arg else f;
+  getThemesAttr = themes: attr: (filter (x: x != null) (map (t: t."${attr}") themes)) ;
+
 in
 rec {
 
@@ -48,7 +48,7 @@ rec {
        - lib: the loaded lib
        - files: the loaded static files paths
        - templates: the loaded templates attribute set
-       - themes: the list of loaded themes information
+       - themes: themes information attribute set
 
      This is mainly a wrapper to the other lib.themes.load* functions
   */
@@ -59,150 +59,143 @@ rec {
   , themes ? []
   # configuration loading arguments
   , conf ? {}
-  # library loading arguments
-  , lib ? {}
-  # files loading arguments
-  , files ? {}
   # templates loading arguments
   , templates ? {}
   }:
   let
-    themes' = loadThemes { inherit themes; metaFnArg = { lib = lib'; }; };
+    themesList = map (theme: loadData { inherit theme styxLib; }) themes;
+
+    themesSet = fold (t: acc:
+      acc // { "${t.id}" = t; }
+    ) {} themesList;
 
     conf' = 
-      let themesConf = loadConf ({
-        themes = themes';
-        confFnArg = { lib = styxLib; };
-      } // (removeAttrs conf [ "extra" ]));
-    in styxLib.utils.merge ([ themesConf ] ++ (conf.extra or []));
+      let
+        isPath     = x: ( ! isAttrs x ) && styxLib.types.path.check x;
+        extraConf  = map (c: if isPath c then importApply c { lib = lib'; } else c) (conf.extra or []);
+        defs       = styxLib.utils.merge extraConf;
+        themesDefs = styxLib.utils.merge (getThemesAttr themesList "defs");
+        types      = styxLib.utils.merge (getThemesAttr themesList "types");
+        typeCheckResult = if defs ? theme
+                          then styxLib.conf.typeCheck types defs.theme
+                          else null;
+      in deepSeq typeCheckResult (styxLib.utils.merge [ themesDefs defs ]);
 
-    lib' = 
-      let themesLib = loadLib ({
-        themes = themes';
-        libFnArg = { lib = styxLib; };
-      } // lib);
-    in recursiveUpdate styxLib themesLib;
+    lib' = styxLib.utils.merge ([ styxLib ] ++ (getThemesAttr themesList "lib"));
 
-    files' = loadFiles ({
-      themes = themes';
-    } // files);
+    files' = getThemesAttr themesList "files";
 
     templates' =
-      let templatesArgs = {
-          themes = themes';
-        } 
-        // removeAttrs templates [ "extraEnv" ]
-        // { environment = (templates.extraEnv or {})
-             // { conf = conf'; lib = lib'; templates = templates'; }; };
-    in loadTemplates templatesArgs;
+      let
+        environment = (templates.extraEnv or {}) // {
+          conf      = conf';
+          lib       = lib';
+          templates = templates';
+        };
+        templatesSet = styxLib.utils.merge (map (t: t.templates) themesList);
+      in mapAttrsRecursive (path: template:
+        template environment
+      ) templatesSet;
   in
   {
     conf      = conf';
     lib       = lib';
     files     = files';
     templates = templates';
-    themes    = themes';
+    themes    = themesSet;
   };
   
-  /* convert a list of themes into a list of sets with name, meta and path attributes
+  /* Load theme information, return a set with the following keys:
 
-       [ { name = "foo"; meta = { ... }; path = "/nix/store/..."; } ]
+     
+     - lib: function library
+     - meta: meta information
+     - id: id
+     - path: path
+     - decls: configuration interface declarations
+     - defs: configuration interfaces definition
+     - docs: configuration interface documentation
+     - types: configuratoin interface types
+     - templates: templates functions, environment not applied
+     - files: static files
+
   */
-  loadThemes = {
-    themes
-  , metaFnArg ? { inherit lib; }
+  loadData = {
+    theme
+  , styxLib
   }:
-    map (theme:
-      rec { meta = importApply (theme + "/meta.nix") metaFnArg; name = meta.name; path = theme; }
-    ) themes;
-
-  /* Load the configuration files from 'themes' list of themes
-     This load the themes configuration in a set, splitting in two keys
-
-      - theme: set containing all the themes conf merged
-      - themes.NAME: the theme configuration as it is declared
-
-     For example a foo theme configuration:
-
-       {
-         themes = {
-           bar = "hello";
-           baz = 5; };
-       }
-
-     Will be converted to:
-
-       {
-         theme = {
-           bar = "hello";
-           baz = 5; };
-
-         themes.foo = {
-           bar = "hello";
-           baz = 5; };
-       }
-  */
-  loadConf = {
-    themes
-  , confFnArg ? {}
-  }:
-  let
-    confs = filter (t: t.file != null) (map (t: t // { file = findInTheme t "conf.nix"; }) themes);
-  in
-  fold (theme: acc:
     let
-      conf      =  importApply theme.file confFnArg;
-      themeSet  = {
-        themes."${theme.name}" = conf;
-        theme = conf;
-      };
-    in recursiveUpdate themeSet acc
-  ) {} confs;
+      confFile = findInTheme { path = theme; } "conf.nix";
+      libFile  = findInTheme { path = theme; } "lib.nix";
+      filesDir = findInTheme { path = theme; } "files";
+      templatesDir = findInTheme { path = theme; } "templates";
+      arg = { lib = fullLib; };
+      lib   = if   libFile != null
+              then (importApply libFile { lib = styxLib; })
+              else null;
+      fullLib = styxLib.utils.merge [ styxLib (if lib != null then lib else {}) ];
+    in rec {
+      # function library
+      inherit lib;
+      # meta information
+      meta  = importApply (theme + "/meta.nix") arg;
+      # id
+      id    = meta.id;
+      # path
+      path  = toPath theme;
+      # configuration interface declarations
+      decls = if   confFile != null
+              then importApply confFile arg
+              else null;
+      # configuration interfaces definition
+      defs  = (if   decls != null
+              then (c: { theme = c; }) (styxLib.extract { key = "default"; set = decls; })
+              else null);
+      # configuration interface documentation
+      docs  = if   decls != null
+              then styxLib.extract { key = "description"; set = decls; nullify = true; }
+              else null;
+      # configuratoin interface types
+      types = if   decls != null
+              then styxLib.extract { key = "type"; set = decls; }
+              else null;
+      # templates functions, environment not applied
+      templates = if   templatesDir != null
+                  then mapAttrsRecursive (path: value:
+                         import value
+                       ) (fetchTemplateDir templatesDir)
+                  else null;
+      # theme static files
+      files = if   filesDir != null
+              then filesDir
+              else null;
+    };
 
-
-  /* Load themes static files from 'themes' list of themes
+  /* Generate theme configuration interface data
   */
-  loadFiles = {
-    themes
+  mkDocs = {
+    docs
+  , decls
   }:
-    filter (p: p != null)
-      (map (t: findInTheme t "files") themes);
-
-  /* Loads the templates from 'themes' list of themes
-  */
-  loadTemplates = {
-    themes
-  , environment
-  , customEnvironments ? {}
-  }:
-  let
-    templates = filter (p: p != null) (map (t: findInTheme t "templates") themes);
-  in
-  fold (dir: acc:
     let
-      templateSet  = fetchTemplateDir dir;
-      templatesWithEnv = mapAttrsRecursive (path: value:
-        let 
-          env = if hasAttrByPath path customEnvironments
-                   then environment // (getAttrFromPath path customEnvironments)
-                   else environment;
-          in if hasAttrByPath path acc
-                then null
-                else import value env
-      ) templateSet;
-    in recursiveUpdate templatesWithEnv acc
-  ) {} templates;
-
-  /* Load the libraries from 'themes' list of themes
-  */
-  loadLib = {
-    themes
-  , libFnArg ? {}
-  }:
-  let
-    libs = filter (p: p != null) (map (t: findInTheme t "lib.nix") themes);
-  in fold (file: acc:
-    recursiveUpdate (importApply file libFnArg) acc
-  ) {} libs;
+    f = path: set:
+      map (key:
+        let
+          value = set.${key};
+          data = {
+                   description = value;
+                   type        = attrByPath (path ++ [ key "type" "description" ]) null decls;
+                   default     = attrByPath (path ++ [ key "default" ]) null decls;
+                   example     = attrByPath (path ++ [ key "example" ]) null decls;
+                   path        = path ++ [ key ];
+                   pathString  = concatStringsSep "." newPath;
+                 };
+          newPath = path ++ [ key ];
+        in
+        if isAttrs value
+           then f newPath value
+           else data
+      ) (attrNames set);
+    in filter (t: t.description != null) (flatten (f [] docs));
 
 }

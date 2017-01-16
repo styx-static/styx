@@ -12,10 +12,11 @@ let
   themes     = import ./themes.nix base;
   utils      = import ./utils.nix base;
   proplist   = import ./proplist.nix base;
+  conf       = import ./conf.nix base;
 
 in
   {
-    inherit base data generation template themes utils proplist pages;
+    inherit base data generation template themes utils proplist pages conf;
   }
   // base
-  // data // generation // template // themes // utils // proplist // pages
+  // data // generation // template // themes // utils // proplist // pages // conf

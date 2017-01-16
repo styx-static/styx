@@ -7,7 +7,7 @@ with lib;
 
   /* Merge multiple sets
   */
-  merge = fold (set: acc:
+  merge = foldl' (set: acc:
       recursiveUpdate set acc
     ) {};
 
@@ -44,6 +44,29 @@ with lib;
            else false;
     in loop dir pathArray;
 
+  /* Convert a deep set to a list of sets where the key is the path
+     Used to prepare substitutions
+  */
+  setToList = s:
+    let
+    f = path: set:
+      map (key:
+        let
+          value = set.${key};
+          newPath = path ++ [ key ];
+          pathString = concatStringsSep "." newPath;
+        in
+        if isAttrs value
+           then f newPath value
+           else { "${pathString}" = value; }
+      ) (attrNames set);
+    in flatten (f [] s);
+
+  /* import a file and if it is a function load apply args to it
+  */
+  importApply = file: arg:
+    let f = import file;
+    in if isFunction f then f arg else f;
 
   /* Set default values to a list of attributes sets
   */

@@ -38,7 +38,7 @@ Generic options:
         --show-trace           Show debug trace messages.
 
 Build options:
-        --output               Set the build output folder, './public' by default.
+        --out                  Set the build output folder, './public' by default.
         --clean                Clean the build directory contents before building the site.
 
 Serve options:
@@ -50,6 +50,7 @@ Serve options:
 Deploy options:
     --init-gh-pages            If in a git repository, will create a gh-pages branch with a .styx file.
     --gh-pages                 Build the site, copy the build results in the gh-pages branch and make a commit.
+    --out DIR                  Deploy the gh-pages folder in the DIR directory.
 
 EOF
 # Dev options:
@@ -85,8 +86,9 @@ check_styx () {
 }
 
 check_git () {
-  if [ ! -d "$1/.git" ]; then
-    echo "Error: '$1' is not a  git repository."
+  $(git rev-parse --is-inside-work-tree)
+  if [ $? -ne 0 ]; then 
+    echo "Error: '$1' is not a git repository."
     exit 1
   fi
 }
@@ -127,7 +129,7 @@ extraConf=()
 # main site file
 siteFile="site.nix"
 # set to a path to bypass the site build
-sitePath=
+buildPath=
 
 # default new-theme name
 themeName=
@@ -239,7 +241,7 @@ while [ "$#" -gt 0 ]; do
     --drafts)
       extraConf+=("renderDrafts = true;")
       ;;
-    --output)
+    --out)
       output="$1"; shift 1
       ;;
     --clean)
@@ -269,8 +271,8 @@ while [ "$#" -gt 0 ]; do
     --DEBUG)
       set -x
       ;;
-    --site-path)
-      sitePath="$1"; shift 1
+    --build-path)
+      buildPath="$1"; shift 1
       ;;
     *)
       echo "$0: unknown option \`$i'"
@@ -373,7 +375,7 @@ fi
 #-------------------------------
 
 if [ "$action" = serve ]; then
-  if [ -z $sitePath ]; then
+  if [ -z $buildPath ]; then
     check_styx $in $siteFile
     if [ "$siteUrl" = "PREVIEW" ]; then
       extraConf+=("siteUrl = \"http://$serverHost:$port\";")
@@ -386,7 +388,7 @@ if [ "$action" = serve ]; then
       nix_error
     fi
   else
-    path="$sitePath"
+    path="$buildPath"
   fi
   if [ -n "$detachServer" ]; then
     $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
@@ -467,7 +469,6 @@ fi
 #-------------------------------
 
 if [ "$action" = deploy ]; then
-  check_styx $in $siteFile
   if [ "$deployAction" == "init-gh-pages" ]; then
     check_git $in
     (
@@ -487,23 +488,29 @@ if [ "$action" = deploy ]; then
     exit 0
   elif [ "$deployAction" == "gh-pages" ]; then
     check_git $in
+    if [ -z $output ]; then
+      target=$(realpath "$in/gh-pages")
+    else
+      target=$(realpath "$output/gh-pages")
+    fi
+    inDir=$(realpath "$in")
     (
       cd $in
       rev=$(git rev-parse --short HEAD)
 
-      if [ -z $sitePath ]; then
+      if [ -z $buildPath ]; then
         echo "Building the site"
-        extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
+        extraFlags+=("--arg" "siteFile" $(realpath "$inDir/$siteFile"))
         path=$(store_build)
         if [ $? -ne 0 ]; then
           nix_error
           exit 1
         fi
       else
-        path="$sitePath"
+        path="$buildPath"
       fi
 
-      cd gh-pages
+      cd "$target"
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
         git checkout gh-pages
         git rm -rf .
@@ -513,7 +520,7 @@ if [ "$action" = deploy ]; then
         git commit -m "Styx update - $rev"
         echo "Successfully updated the gh-pages branch in the 'gh-pages' folder."
         echo "Push the 'gh-pages' branch in the 'gh-pages' folder to the GitHub repository to publish your site."
-        echo "(cd gh-pages && git push origin gh-pages)"
+        echo "(cd gh-pages && git push -u origin gh-pages) && git push -u origin gh-pages"
         exit 0
       else
         echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."

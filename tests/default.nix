@@ -63,7 +63,7 @@ rec {
 
   serve = pkgs.runCommand "styx-serve" { buildInputs = [ pkgs.curl ]; } ''
     mkdir $out
-    ${styx}/bin/styx serve --site-path ${themes-sites.showcase-site} --detach
+    ${styx}/bin/styx serve --build-path ${themes-sites.showcase-site} --detach
     sleep 3
     curl -I 127.0.0.1:8080/index.html > $out/result
   '';
@@ -77,7 +77,7 @@ rec {
     git config --global user.email "styx@test.styx"
     cd $out && git init && git add . && git commit -m "init repo"
     ${styx}/bin/styx deploy --init-gh-pages --in $out
-    ${styx}/bin/styx deploy --gh-pages --in $out --site-path "${themes-sites.showcase-site}/"
+    ${styx}/bin/styx deploy --gh-pages --in $out --build-path "${themes-sites.showcase-site}/"
   '';
 
 } // themes-sites

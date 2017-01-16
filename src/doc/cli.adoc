@@ -40,7 +40,7 @@ The `new theme` command is used to create a new theme.
 The `build` command is used to build a Styx site.
 
 `styx build`:: Build the Styx site and write the output in the `public` directory.
-`styx build --output DIR`:: Build the nix site and write the output in the `DIR` directory.
+`styx build --out DIR`:: Build the nix site and write the output in the `DIR` directory.
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `build` command.
 
@@ -104,5 +104,6 @@ Currently only GitHub pages are supported.
 For more details see the <<Deployment>> section.
 
 `styx deploy --init--gh-pages`:: Prepare a git repository to be able to deploy on GitHub pages.
-`styx deploy --gh-pages`:: Commit the Styx site to the `gh-pages` branch.
+`styx deploy --gh-pages`:: Commit the Styx site in the current directory to the `gh-pages` branch in the `./gh-pages` folder.
+`styx deploy --gh-pages --in ./example --out ./`:: Commit the Styx site in `./example` to the `gh-pages` branch in the `./gh-pages` folder.
 

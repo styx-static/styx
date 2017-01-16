@@ -31,8 +31,6 @@ nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}
 "18 May 2016, 12:40:21"
 ----
 
-WARNING: Some functions that use the propagated build inputs of the styx package like `lib.data.markdownToHtml` will not work in a `nix-repl` environment.
-
 
 === Rendering a page source
 

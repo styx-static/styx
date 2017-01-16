@@ -10,11 +10,11 @@ Styx themes are listed in the official link:https://github.com/styx-static/theme
 
 Themes available at the moment of writing this documentation are:
 
-- link:https://github.com/styx-static/styx-theme-generic-templates[Generic templates]: A theme theme provide a template framework and basic templates for common components.
-- link:https://github.com/styx-static/styx-theme-showcase[Showcase]: A theme that show most of styx functionalities and provides many templates.
-- link:https://github.com/styx-static/styx-theme-hyde[Hyde]: A port of the link:https://github.com/poole/hyde[Jekyll Hyde theme] to styx. Hyde is a simple and beautiful blog theme.
-- link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites.
-- link:https://github.com/styx-static/styx-theme-orbit[Orbit]: A port of the link:http://themes.gohugo.io/orbit/[Hugo orbit theme] to styx. Orbit is a single page site resume / profile theme.
+- link:https://github.com/styx-static/styx-theme-generic-templates[Generic templates]: A theme theme provide a template framework and basic templates for common components. (link:https://styx-static.github.io/styx-theme-generic-templates/[demo site])
+- link:https://github.com/styx-static/styx-theme-showcase[Showcase]: A theme that show most of styx functionalities and provides many templates. (link:https://styx-static.github.io/styx-theme-showcase/[demo site])
+- link:https://github.com/styx-static/styx-theme-hyde[Hyde]: A port of the link:https://github.com/poole/hyde[Jekyll Hyde theme] to styx. Hyde is a simple and beautiful blog theme. (link:https://styx-static.github.io/styx-theme-hyde/[demo site])
+- link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites. (link:https://styx-static.github.io/styx-theme-agency/[demo site])
+- link:https://github.com/styx-static/styx-theme-orbit[Orbit]: A port of the link:http://themes.gohugo.io/orbit/[Hugo orbit theme] to styx. Orbit is a single page site resume / profile theme. (link:https://styx-static.github.io/styx-theme-orbit/[demo site])
 
 === Creating a new theme
 
@@ -83,20 +83,20 @@ themes
     └── templates/ # <6>
 -----
 
-<1> Name of the theme. The name should be a valid directory name.
+<1> Theme directory.
 <2> `conf.nix` defines the theme configuration options (optional). 
-<3> `meta.nix` defines the theme meta information, this is file is required and must define a `name` attribute.
+<3> `meta.nix` defines the theme meta information, this is file is required and must define a `id` attribute.
 <4> `lib.nix` defines the theme extra library as a set (optional).
 <5> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site (optional).
 <6> `templates` is a directory storing all the templates files (optional).
 
 
 [[Themes.conf.nix]]
-=== conf.nix
+=== Configuration interface
 
-`conf.nix` defines the theme configuration interface and is defined as an attribute set.
+A theme can provide a configuration interface by having a `conf.nix` file at the theme root directory.
 
-It is a simple attribute set that defines the theme configuration options with some default values.
+`conf.nix` should be an attribute set defining theme options with a default value.
 
 [source, nix]
 .Example of a theme conf.nix
@@ -115,7 +115,7 @@ It is a simple attribute set that defines the theme configuration options with s
 
 - `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`. +
 Theme templates that access themes configuration should use `conf.theme`.
-- `conf.themes.NAME`: `NAME` is the theme name, this holds the theme default configuration as it is declared in `theme.nix`.
+- `conf.themes.id`: `id` is the theme id, this holds the theme default configuration as it is declared in `theme.nix`.
 ====
 
 [source, nix]
@@ -130,7 +130,7 @@ NOTE: `conf.nix` can be an attribute set or a function, if it is a function it w
 
 === meta.nix
 
-Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with a `name` attribute so the theme configuration is correctly processed. +
+Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with an `id` attribute so the theme configuration is correctly processed. +
 
 Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
 
@@ -138,7 +138,7 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 .Example of a simple theme meta.nix
 ----
 {
-  name = "showcase";
+  id = "showcase";
 }
 ----
 
@@ -147,13 +147,13 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 ----
 { lib }:
 {
-  name = "showcase";
+  id = "showcase";
   license = lib.licenses.mit;
   maintainers = with lib.maintainers; [ johndoe ];
 }
 ----
 
-IMPORTANT: Themes *must* define a `meta.nix` with a `name` attribute.
+IMPORTANT: Themes *must* define a `meta.nix` with an `id` attribute.
 
 NOTE: `meta.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
@@ -174,7 +174,7 @@ Themes can provide a function library that can be used in `site.nix` or in templ
 
 To provide a library, a theme must have a `lib.nix` file containing an attribute set of functions.
 
-To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.NAME` where `NAME` is the theme name as a natural choice.
+To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.ID` where `ID` is the theme id as a natural choice.
 
 [source, nix]
 .Example of a theme lib.nix

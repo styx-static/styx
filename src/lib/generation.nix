@@ -4,26 +4,6 @@ lib: pkgs:
 with lib;
 with import ./utils.nix lib;
 
-let
-  /* Convert a deep set to a list of sets where the key is the path
-     Used to prepare substitutions
-  */
-  setToList = s:
-    let
-    f = path: set:
-      map (key:
-        let
-          value = set ? key;
-          newPath = path ++ [ key ];
-          pathString = concatStringsSep "." newPath;
-        in
-        if isAttrs value
-           then f newPath value
-           else { "${pathString}" = value; }
-      ) (attrNames set);
-    in flatten (f [] s);
-in
-
 rec {
 
   /* Generate a page
@@ -74,7 +54,7 @@ rec {
         ) (setToList substitutions)}
       }
 
-      eval "${preGen}"
+      ${preGen}
 
       # FILES
       # files are copied only if necessary, else they are just linked from the source
@@ -155,7 +135,7 @@ rec {
         fi
       '') pagesList}
 
-      eval "${postGen}"
+      ${postGen}
     '';
 
   /* Convert a page attribute set to a list of pages

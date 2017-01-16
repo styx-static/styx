@@ -142,9 +142,9 @@ let
 
   markupToHtml = markup: text:
     let
-      data = pkgs.runCommand "markup-data" {} ''
+      data = pkgs.runCommand "markup-data" { buildInputs = [ pkgs.styx ]; } ''
         mkdir $out
-        echo -n "${text}" > $out/source
+        echo -n '${replaceStrings ["'"] ["'\i'''"] text}' > $out/source
         ${commands."${markup}"} $out/source > $out/content
       '';
     in readFile "${data}/content";

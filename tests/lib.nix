@@ -59,6 +59,38 @@ runTests {
   };
 
 
+  /* Conf
+  */
+
+  testExtract = {
+    expr = extract {
+      key = "default";
+      set = {
+        a.b.c = mkOption {
+          default = "abc";
+          type = types.str;
+        };
+        x.y = 1;
+      };
+    };
+    expected = { a.b.c = "abc"; x.y = 1; };
+  };
+
+  testExtractNull = {
+    expr = extract {
+      key = "default";
+      set = {
+        a.b.c = mkOption {
+          default = "abc";
+          type = types.str;
+        };
+        x.y = 1;
+      };
+      nullify = true;
+    };
+    expected = { a.b.c = "abc"; x.y = null; };
+  };
+
   /* Data
   */
 
