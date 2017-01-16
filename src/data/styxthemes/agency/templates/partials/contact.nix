@@ -1,6 +1,6 @@
 { conf, lib, ... }:
 with lib;
-optionalString (conf.theme.contact != null)
+optionalString (conf.theme.contact.enable)
 ''
 <!-- Contact Section -->
 <section id="contact">

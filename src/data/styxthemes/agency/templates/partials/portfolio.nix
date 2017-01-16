@@ -1,6 +1,6 @@
 { lib, conf, data, ... }:
 with lib;
-optionalString (conf.theme.portfolio != null)
+optionalString (conf.theme.portfolio.items != [])
 ''
 <!-- Portfolio Grid Section -->
 <section id="portfolio" class="bg-light-gray">
@@ -27,7 +27,7 @@ optionalString (conf.theme.portfolio != null)
           <p class="text-muted">${project.category}</p>
         </div>
       </div>
-      '') data.projects}
+      '') conf.theme.portfolio.items}
     </div>
   </div>
 </section>

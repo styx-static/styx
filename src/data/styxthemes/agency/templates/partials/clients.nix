@@ -1,6 +1,6 @@
 { conf, lib, data, ... }:
 with lib;
-optionalString (data ? clients)
+optionalString (conf.theme.clients != [])
 ''
 <!-- Clients Aside -->
 <aside class="clients">
@@ -12,7 +12,7 @@ optionalString (data ? clients)
             <img src="${conf.siteUrl}/img/logos/${client.logo}" class="img-responsive img-centered" alt="">
           </a>
         </div>
-      '') data.clients}
+      '') conf.theme.clients}
     </div>
   </div>
 </aside>
