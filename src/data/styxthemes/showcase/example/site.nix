@@ -33,7 +33,7 @@ rec {
   themesData = styxLib.themes.load {
     inherit styxLib themes;
     templates.extraEnv = { inherit data pages; };
-    conf.extra = [ (import ./conf.nix) extraConf ];
+    conf.extra = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
@@ -142,7 +142,7 @@ rec {
       basePath     = "/archive/post";
       template     = templates.archive;
       breadcrumbs  = [ (lib.head index) ];
-      itemsPerPage = 15;
+      itemsPerPage = conf.theme.archives.itemsPerPage;
       data         = pages.posts;
     };
 
@@ -188,7 +188,7 @@ rec {
     # converting pages attribute set to a list
     (lib.pagesToList {
       inherit pages;
-      default = { layout = templates.layout; };
+      default.layout = templates.layout;
     })
     ++ [ sitemap ];
 
