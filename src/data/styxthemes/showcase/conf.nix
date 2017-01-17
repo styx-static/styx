@@ -1,24 +1,29 @@
-/* Showcase theme default settings
-   
-*/
-
+{ lib }:
+with lib;
 {
   site = {
-    # Site title, used in the site header and the atom feed
-    title = "Styx Showcase Theme";
+    description = mkOption {
+      description = "Site description, added in the footer.";
+      default = "Write a description for your new site here.";
+      type = types.string;
+    };
 
-    # Site description used in the base template
-    description = "Write a description for your new site here.";
-
-    languageCode = "en";
-
-    copyright = "&copy; 2016";
+    copyright = mkOption {
+      default = "&copy; 2017";
+      type = types.string;
+      description = "Site copyright, added in the footer.";
+    };
   };
 
-  # The text to display in the navbar
-  navbar.brand = "Showcase Theme";
+  index.itemsPerPage = mkOption {
+    default = 4;
+    description = "Number of posts on the index page.";
+    type = types.int;
+  };
 
-  # Number of posts on the index / archive page
-  index.itemsPerPage = 4;
-
+  archives.itemsPerPage = mkOption {
+    default = 15;
+    description = "Number of posts on the archive page.";
+    type = types.int;
+  };
 }
