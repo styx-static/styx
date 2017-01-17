@@ -1,11 +1,11 @@
-{ conf, lib, data, templates, ... }:
+{ conf, lib, templates, ... }:
 with lib;
-optionalString (data ? summary)
+optionalString (conf.theme.summary.content != null)
 ''
 <section class="section summary-section">
-  <h2 class="section-title">${templates.icon.fa data.summary.icon}${data.summary.title}</h2>
+  <h2 class="section-title">${templates.icon.fa conf.theme.summary.icon}${conf.theme.summary.title}</h2>
   <div class="summary">
-    <p>${data.summary.content}</p>
+    <p>${conf.theme.summary.content}</p>
   </div><!--//summary-->
 </section><!--//section-->
 ''

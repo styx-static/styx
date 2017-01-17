@@ -1,6 +1,6 @@
-{ conf, templates, data, lib, ... }:
+{ conf, templates, lib, ... }:
 with lib;
-optionalString (conf.theme.experiences != null)
+optionalString (conf.theme.experiences.items != [])
 ''
 <section class="section experiences-section">
   <h2 class="section-title">${templates.icon.fa conf.theme.experiences.icon}${conf.theme.experiences.title}</h2>
@@ -17,6 +17,6 @@ optionalString (conf.theme.experiences != null)
     ${item.content}
     </div><!--//details-->
   </div><!--//item-->
-  '') data.experiences}
+  '') conf.theme.experiences.items}
 </section><!--//section-->
 ''

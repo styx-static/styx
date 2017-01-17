@@ -1,6 +1,6 @@
 { conf, lib, ... }:
 with lib;
-optionalString (conf.theme.interests != null)
+optionalString (conf.theme.interests != [])
 ''
 <div class="interests-container container-block">
   <h2 class="container-block-title">${conf.theme.interests.title}</h2>
