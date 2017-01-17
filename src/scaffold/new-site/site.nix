@@ -32,7 +32,7 @@ rec {
   themesData = styxLib.themes.load {
     inherit styxLib themes;
     templates.extraEnv = { inherit data pages; };
-    conf.extra = [ (import ./conf.nix) extraConf ];
+    conf.extra = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope

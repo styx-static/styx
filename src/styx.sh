@@ -322,8 +322,7 @@ if [ "$action" = new ] && [ "$newCommand" = theme ]; then
   check_dir $target "Error: Cannot create a new theme in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{templates,files}
-  echo -e "{ lib }:\n{\n  name = \"$name\";\n}" > "$target/meta.nix"
-  cp -r $share/scaffold/new-theme/* "$target/"
+  echo -e "{ lib }:\n{\n  id = \"$name\";\n}" > "$target/meta.nix"
   echo "Styx theme initialized in '$target'."
   exit 0
 fi

@@ -1,0 +1,977 @@
+== Styx-themes
+
+=== agency
+
+Port of the https://github.com/digitalcraftsman/hugo-agency-theme[Agency] theme for Styx.
+
+Originally made by https://github.com/digitalcraftsman[digitalcraftsman].
+
+https://github.com/digitalcraftsman/hugo-agency-theme[Original Theme]
+
+> Agency Theme is a one page portfolio for companies and freelancers based on the original Bootstrap theme by David Miller. This Hugo theme features several content sections, a responsive portfolio grid with hover effects, full page portfolio item modals, a timeline, and a contact form.
+
+
+- https://styx-static.github.io/styx-theme-agency[Demo]
+- https://github.com/styx-static/styx-theme-agency[Homepage]
+
+
+---
+
+image::imgs/agency.png[agency,align="center"]
+
+
+==== Configuration interface
+
+---
+===== about.endpoint 
+
+Description:: Last about bubble text.
+Type:: "string"
+Default::
++
+----
+"Be part<br>of our<br>story!"
+----
+
+
+
+---
+
+
+===== about.items 
+
+Description:: List of about events as attribute sets, requires `img`, `date`, `title`, and `content`.  
+If set to the empty list `[]`, the about area will not be displayed.";
+
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+"loadDir { dir = ./data/events; };"
+----
+
+
+
+---
+
+
+===== about.subtitle 
+
+Description:: Subtitle of the about area.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet consectetur."
+----
+
+
+
+---
+
+
+===== about.title 
+
+Description:: Title of the about area.
+Type:: "string"
+Default::
++
+----
+"About"
+----
+
+
+
+---
+
+
+===== clients 
+
+Description:: List of clients as attribute sets, requires `logo` and `link`.  
+If set to the empty list `[]`, the clients area will not be displayed.";
+
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"link":"#","logo":"envato.jpg"},{"link":"#","logo":"designmodo.jpg"}]
+----
+
+
+
+---
+
+
+===== contact.buttonText 
+
+Description:: Text of the contact area button.
+Type:: "string"
+Default::
++
+----
+"Send message"
+----
+
+
+
+---
+
+
+===== contact.enable 
+
+Description:: Whether to enable contact area.
+Type:: "boolean"
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
+----
+
+
+
+---
+
+
+===== contact.form.email 
+
+Description:: Contact form email input label
+Type:: "attribute set"
+Default::
++
+----
+{"text":"Your Email *","warning":"Please enter your email address."}
+----
+
+
+
+---
+
+
+===== contact.form.message 
+
+Description:: Contact form message input label
+Type:: "attribute set"
+Default::
++
+----
+{"text":"Your Message *","warning":"Please enter a message."}
+----
+
+
+
+---
+
+
+===== contact.form.name 
+
+Description:: Contact form name input label
+Type:: "attribute set"
+Default::
++
+----
+{"text":"Your Name *","warning":"Please enter your name."}
+----
+
+
+
+---
+
+
+===== contact.form.phone 
+
+Description:: Contact form phone input label
+Type:: "attribute set"
+Default::
++
+----
+{"text":"Your Phone *","warning":"Please enter your phone number."}
+----
+
+
+
+---
+
+
+===== contact.form.receiver 
+
+Description:: Contact area from receiver mail address.
+Type:: "string"
+Default::
++
+----
+"your@email.com"
+----
+
+
+
+---
+
+
+===== contact.subtitle 
+
+Description:: Subtitle of the contact area.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet consectetur."
+----
+
+
+
+---
+
+
+===== contact.title 
+
+Description:: Title of the contact area.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet consectetur."
+----
+
+
+
+---
+
+
+===== footer.copyright 
+
+Description:: Footer copyright text.
+Type:: "string"
+Default::
++
+----
+"Published under the Apache License 2.0."
+----
+
+
+
+---
+
+
+===== footer.quicklinks 
+
+Description:: Footer links.
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"link":"#","text":"Privacy Policy"},{"link":"#","text":"Terms of Use"}]
+----
+
+
+
+---
+
+
+===== footer.social 
+
+Description:: Social media links to display in the footer.
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"icon":"fa-twitter","link":"#"},{"icon":"fa-facebook","link":"#"},{"icon":"fa-linkedin","link":"#"}]
+----
+
+
+
+---
+
+
+===== hero.buttonText 
+
+Description:: Button text of the hero area.
+Type:: "string"
+Default::
++
+----
+"Tell me more"
+----
+
+
+
+---
+
+
+===== hero.subtitle 
+
+Description:: Subtitle of the hero area.
+Type:: "string"
+Default::
++
+----
+"It's nice to meet you"
+----
+
+
+
+---
+
+
+===== hero.title 
+
+Description:: Title of the hero area.
+Type:: "string"
+Default::
++
+----
+"Welcome To Our Studio!"
+----
+
+
+
+---
+
+
+===== menu.append 
+
+Description:: Menu items to add at the end of the navigation.
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"name":"Styx","url":"https://styx-static.github.io/styx-site/"}]
+----
+
+
+
+---
+
+
+===== menu.prepend 
+
+Description:: Menu items to add at the beginning of the navigation.
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"name":"Styx","url":"https://styx-static.github.io/styx-site/"}]
+----
+
+
+
+---
+
+
+===== portfolio.items 
+
+Description:: List of portfolio projects as attribute sets, requires `title`, `subtitle`, `img`, `preview`, `client`, `clientLink`, `category` and `content`.  
+If set to the empty list `[]`, the portfolio area will not be displayed.";
+
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+"loadDir { dir = ./data/projects; };"
+----
+
+
+
+---
+
+
+===== portfolio.subtitle 
+
+Description:: Subtitle of the portgolio area.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet consectetur."
+----
+
+
+
+---
+
+
+===== portfolio.title 
+
+Description:: Title of the portfolio area.
+Type:: "string"
+Default::
++
+----
+"Services"
+----
+
+
+
+---
+
+
+===== services.items 
+
+Description:: List of services as attribute sets, requires `title`, `icon` and `content` attributes.  
+If set to the empty list `[]`, the services area will not be displayed.";
+
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+"loadDir { dir = ./data/services; };"
+----
+
+
+
+---
+
+
+===== services.subtitle 
+
+Description:: Subtitle of the services area.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet consectetur."
+----
+
+
+
+---
+
+
+===== services.title 
+
+Description:: Title of the services area.
+Type:: "string"
+Default::
++
+----
+"Services"
+----
+
+
+
+---
+
+
+===== site.author 
+
+Description:: Content of the author `meta` tag.
+Type:: "string"
+Default::
++
+----
+"Your name"
+----
+
+
+
+---
+
+
+===== site.description 
+
+Description:: Content of the description `meta` tag.
+Type:: "string"
+Default::
++
+----
+"Your description"
+----
+
+
+
+---
+
+
+===== site.title 
+
+Description:: Title of the site.
+Type:: "string"
+Default::
++
+----
+"The Agency"
+----
+
+
+
+---
+
+
+===== team.description 
+
+Description:: Description of the team
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde."
+----
+
+
+
+---
+
+
+===== team.members 
+
+Description:: List of team members as attribute sets, requires `img`, `name`, `position`, and `social`. `social` have the same format to `footer.social`.
+If set to the empty list `[]`, the team area will not be displayed.";
+
+Type:: "list of attribute sets"
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+"loadDir { dir = ./data/team.nix; };"
+----
+
+
+
+---
+
+
+===== team.subtitle 
+
+Description:: Subtitle of the team area.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum dolor sit amet consectetur."
+----
+
+
+
+---
+
+
+===== team.title 
+
+Description:: Title of the team area.
+Type:: "string"
+Default::
++
+----
+"About"
+----
+
+
+
+---
+
+
+
+=== Generic templates
+
+
+
+
+- https://styx-static.github.io/styx-theme-generic-templates[Demo]
+- https://github.com/styx-static/styx-theme-generic-templates[Homepage]
+
+
+---
+
+image::imgs/generic-templates.png[Generic templates,align="center"]
+
+
+==== Configuration interface
+
+---
+===== html.doctype 
+
+Description:: Doctype declaration to use.
+Type:: "one of \"html5\", \"html4\", \"xhtml1\""
+Default::
++
+----
+"html5"
+----
+
+
+
+---
+
+
+===== lib.bootstrap.enable 
+
+Description:: Whether to enable bootstrap.
+Type:: "boolean"
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
+----
+
+
+
+---
+
+
+===== lib.bootstrap.version 
+
+Description:: Selects bootstrap version to use.
+Type:: "string"
+Default::
++
+----
+"3.3.7"
+----
+
+
+
+---
+
+
+===== lib.font-awesome.enable 
+
+Description:: Whether to enable font awesome.
+Type:: "boolean"
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
+----
+
+
+
+---
+
+
+===== lib.font-awesome.version 
+
+Description:: Selects font-awesome version to use.
+Type:: "string"
+Default::
++
+----
+"4.7.0"
+----
+
+
+
+---
+
+
+===== lib.jquery.enable 
+
+Description:: Whether to enable jQuery.
+Type:: "boolean"
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
+----
+
+
+
+---
+
+
+===== lib.jquery.version 
+
+Description:: Selects jQuery version to use.
+Type:: "string"
+Default::
++
+----
+"3.1.1"
+----
+
+
+
+---
+
+
+===== site.title 
+
+Description:: String to append to the site `title` tag contents.
+Type:: "string"
+Default::
++
+----
+"Generic Templates"
+----
+
+
+
+---
+
+
+
+=== hyde
+
+
+
+
+- https://styx-static.github.io/styx-theme-generic-hyde[Demo]
+- https://github.com/styx-static/styx-theme-generic-hyde[Homepage]
+
+
+---
+
+image::imgs/hyde.png[hyde,align="center"]
+
+
+==== Configuration interface
+
+---
+
+
+=== orbit
+
+
+
+
+- https://styx-static.github.io/styx-theme-generic-orbit[Demo]
+- https://github.com/styx-static/styx-theme-generic-orbit[Homepage]
+
+
+---
+
+image::imgs/orbit.png[orbit,align="center"]
+
+
+==== Configuration interface
+
+---
+===== copyright 
+
+Description:: Footer copyright text.
+Type:: "string"
+Default::
++
+----
+"copyright"
+----
+
+
+
+---
+
+
+===== site.author 
+
+Description:: Content of the author `meta` tag.
+Type:: "string"
+Default::
++
+----
+"John Doe"
+----
+
+
+
+---
+
+
+===== site.description 
+
+Description:: Content of the description `meta` tag.
+Type:: "string"
+Default::
++
+----
+"Lorem ipsum..."
+----
+
+
+
+---
+
+
+===== site.title 
+
+Description:: Title of the site.
+Type:: "string"
+Default::
++
+----
+"Orbit theme"
+----
+
+
+
+---
+
+
+===== style 
+
+Description:: Theme color scheme.
+Type:: "one of 1, 2, 3, 4, 5, 6"
+Default::
++
+----
+1
+----
+
+
+
+---
+
+
+
+=== showcase
+
+A theme to show Styx main functionalities.
+This theme example site includes:
+
+- navigation bar
+- Split pages
+- Multipages
+- Taxonomies
+- Atom feed
+- Sitemap
+- Breadcrumbs
+- Archives page
+
+
+- https://styx-static.github.io/styx-theme-showcase[Demo]
+- https://github.com/styx-static/styx-theme-showcase[Homepage]
+
+
+---
+
+image::imgs/showcase.png[showcase,align="center"]
+
+
+==== Configuration interface
+
+---
+===== archives.itemsPerPage 
+
+Description:: Number of posts on the archive page.
+Type:: "integer"
+Default::
++
+----
+15
+----
+
+
+
+---
+
+
+===== index.itemsPerPage 
+
+Description:: Number of posts on the index page.
+Type:: "integer"
+Default::
++
+----
+4
+----
+
+
+
+---
+
+
+===== site.copyright 
+
+Description:: Site copyright, added in the footer.
+Type:: "string"
+Default::
++
+----
+"&copy; 2017"
+----
+
+
+
+---
+
+
+===== site.description 
+
+Description:: Site description, added in the footer.
+Type:: "string"
+Default::
++
+----
+"Write a description for your new site here."
+----
+
+
+
+---
+
+
+

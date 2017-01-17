@@ -174,7 +174,7 @@ Themes are detailed in the <<Themes>> section.
   themesData = styxLib.themes.load {
     inherit styxLib themes;
     templates.extraEnv = { inherit data pages; }; # <2>
-    conf.extra = [ (import ./conf.nix) extraConf ]; # <3>
+    conf.extra = [ ./conf.nix extraConf ]; # <3>
   };
 
   /* Bringing the themes data to the scope

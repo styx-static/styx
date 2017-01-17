@@ -44,6 +44,7 @@ rec {
   /* Load themes related files
 
      returns an attribute set containing:
+
        - conf: the loaded configuration set
        - lib: the loaded lib
        - files: the loaded static files paths
@@ -147,7 +148,7 @@ rec {
       decls = if   confFile != null
               then importApply confFile arg
               else null;
-      # configuration interfaces definition
+      # configuration interfaces defaults
       defs  = (if   decls != null
               then (c: { theme = c; }) (styxLib.extract { key = "default"; set = decls; })
               else null);
@@ -155,7 +156,7 @@ rec {
       docs  = if   decls != null
               then styxLib.extract { key = "description"; set = decls; nullify = true; }
               else null;
-      # configuratoin interface types
+      # configuration interface types
       types = if   decls != null
               then styxLib.extract { key = "type"; set = decls; }
               else null;

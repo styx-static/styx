@@ -84,7 +84,7 @@ themes
 -----
 
 <1> Theme directory.
-<2> `conf.nix` defines the theme configuration options (optional). 
+<2> `conf.nix` defines the theme configuration interface options (optional). 
 <3> `meta.nix` defines the theme meta information, this is file is required and must define a `id` attribute.
 <4> `lib.nix` defines the theme extra library as a set (optional).
 <5> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site (optional).
@@ -96,7 +96,7 @@ themes
 
 A theme can provide a configuration interface by having a `conf.nix` file at the theme root directory.
 
-`conf.nix` should be an attribute set defining theme options with a default value.
+In its simplest form, `conf.nix` should be an attribute set defining theme options with default values.
 
 [source, nix]
 .Example of a theme conf.nix
@@ -110,25 +110,84 @@ A theme can provide a configuration interface by having a `conf.nix` file at the
 }
 ----
 
-====
-`conf.nix` attribute set will be merged in `site.nix` by the `lib.themes.load` function into the `conf` variable containing two attributes:
-
-- `conf.theme`: The global theme configuration, all the enabled themes configuration will be merged in this variable. This allow to extend theme configuration in `conf.nix`. +
-Theme templates that access themes configuration should use `conf.theme`.
-- `conf.themes.id`: `id` is the theme id, this holds the theme default configuration as it is declared in `theme.nix`.
-====
+This configuration is merged in the `conf` variable `theme` key after theme loading, and can be used from the site configuration (site `conf.nix`).
 
 [source, nix]
-.Usage of a theme configuration interface in a **site** conf.nix
+.Usage of a theme configuration option in a **site** conf.nix
 ----
 {
   theme.site.title = "My Agency";
 }
 ----
 
-NOTE: `conf.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
-=== meta.nix
+==== Typing
+
+`conf.nix` can leverage NixOS module system like typing, and declare options with the `mkOption` function.
+
+https://nixos.org/nixos/manual/index.html#sec-option-declarations
+
+This have two benefits:
+
+- Site configuration, site root `site.nix`, will be type checked.
+- Documentation will be automatically generated for the configuration interface.
+
+On the other hand, typing a theme configuration interface is verbose and can be an overkill for theme that will not be shared.  
+Typing is not required, but should be done for themes that are part of the `styx-themes` theme set or meant to be shared.
+
+
+[source, nix]
+.Example of a theme conf.nix with typing
+----
+{ lib }:
+with lib;
+{
+  
+/* General settings
+*/
+  site = {
+    title = mkOption {
+      default = "The Agency";
+      type = types.str;
+      description = "Title of the site.";
+    };
+    author = mkOption {
+      default = "Your name";
+      type = types.str;
+      description = "Content of the author `meta` tag.";
+    };
+    description = mkOption {
+      default = "Your description";
+      type = types.str;
+      description = "Content of the description `meta` tag.";
+    };
+  };
+}
+----
+
+Options can then be used in the site `conf.nix` in the same manner than non-typed ones.
+
+[source, nix]
+.Wrong usage of a theme configuration option in a **site** conf.nix
+----
+{
+  theme.site.title = 2;
+}
+----
+
+[source, bash]
+.Trying to build a site with type errors
+----
+$ styx preview
+error: The configuration option `theme.site.title' is not a str.
+(use ‘--show-trace’ to show detailed location information)
+---
+Error: Site could not been built, fix the errors and run the command again.
+The '--show-trace' flag can be used to show debug information.
+----
+
+
+=== Meta-data
 
 Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with an `id` attribute so the theme configuration is correctly processed. +
 

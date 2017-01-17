@@ -1,0 +1,14 @@
+#! /usr/bin/env sh
+
+# Update documentation styx-themes chapter
+
+# usage
+
+#  ./scripts/update-doc -I nixpkgs=/PATH/TO/DEV/nixpkgs
+
+#  ./scripts/update-doc -I nixpkgs=/home/eric/Projects/nixos/nixpkgs
+
+scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+path=$(nix-build "$scriptDir/doc.nix" --no-out-link "$@")
+target=$(realpath "$scriptDir/../src/doc/")
+cp -r $path/* $target --no-preserve=all

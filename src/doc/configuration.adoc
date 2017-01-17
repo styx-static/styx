@@ -24,6 +24,7 @@ It can be a domain like `\http://www.domain.org` or contains a path like `\http:
 [source, nix]
 .Standard conf.nix
 ----
+{ lib }:
 {
   # URL of the site, must be set to the url of the domain the site will be deployed
   siteUrl = "http://yourdomain.com";

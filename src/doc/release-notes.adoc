@@ -9,10 +9,11 @@ Highlights:
 * <<Debugging,Interactive debugging>>
 * <<site.nix,simpler>> `site.nix`
 * <<lib.template.parseDate,Content timestamps support time>>
+* Theme configuration interface can be typed, and site configuration is type-checked.
+* <<Themes.Library,Themes can provide function libraries>>
 * Improved modularity:
 ** <<lib.generation.generateSite,Pages generation function can be modified>>
-** Configuration files can be functions
-** <<Themes.Library,Themes can provide function libraries>>
+
 
 Bug fixes:
 

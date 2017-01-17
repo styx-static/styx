@@ -1,0 +1,35 @@
+#! /usr/bin/env sh
+
+# Run the tests, should be run before every commit
+
+# usage
+
+#  ./scripts/run-tests -I nixpkgs=/PATH/TO/DEV/nixpkgs
+
+#  ./scripts/run-tests -I nixpkgs=/home/eric/Projects/nixos/nixpkgs
+
+scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+testsDir=$(realpath "$scriptDir/../tests")
+
+main=$(nix-build "$testsDir" --no-out-link "$@")
+
+echo "Main tests:"
+if [ $? -ne 0 ]; then
+  echo "  failure"
+else
+  echo "  success"
+fi
+
+echo "---"
+
+echo "Lib tests:"
+if [ "$(nix-instantiate --eval --strict --show-trace $testsDir/lib.nix)" != "[ ]" ]; then
+  echo "  failure"
+else
+  echo "  success"
+fi
+
+echo "---"
+
+echo "Finished"
+
