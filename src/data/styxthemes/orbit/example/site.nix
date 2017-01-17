@@ -32,7 +32,7 @@ rec {
   themesData = styxLib.themes.load {
     inherit styxLib themes;
     templates.extraEnv = { inherit data pages; };
-    conf.extra = [ (import ./conf.nix) extraConf ];
+    conf.extra = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
@@ -46,11 +46,7 @@ rec {
    This section declares the data used by the site
 -----------------------------------------------------------------------------*/
 
-  data = with lib; {
-    # data in markdown format
-    experiences = sortBy "index" "asc" (loadDir { dir = ./data/experiences; });
-    projects    = sortBy "index" "asc" (loadDir { dir = ./data/projects; });
-    summary     = loadFile { dir = ./data; file = "summary.md"; };
+  data = {
   };
 
 

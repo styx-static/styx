@@ -1,6 +1,6 @@
 { conf, lib, ... }:
 with lib;
-optionalString (conf.theme.languages != null)
+optionalString (conf.theme.languages.items != [])
 ''
 <div class="languages-container container-block">
   <h2 class="container-block-title">${conf.theme.languages.title}</h2>
