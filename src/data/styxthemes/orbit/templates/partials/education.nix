@@ -1,6 +1,6 @@
 { conf, lib, ... }:
 with lib;
-optionalString (conf.theme.education != null)
+optionalString (conf.theme.education.items != [])
 ''
 <div class="education-container container-block">
   <h2 class="container-block-title">${conf.theme.education.title}</h2>

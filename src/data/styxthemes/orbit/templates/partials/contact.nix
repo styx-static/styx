@@ -1,6 +1,6 @@
 { conf, lib, templates, ... }:
 with lib;
-optionalString (conf.theme.contact != null)
+optionalString (conf.theme.contact.items != [])
 ''
 <div class="contact-container container-block">
   <ul class="list-unstyled contact-list">
