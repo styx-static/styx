@@ -3,8 +3,8 @@ args:
 with lib;
 let 
   class = htmlAttr "class" (
-       (optional (conf.theme ? color) conf.theme.color)
-    ++ (optional (conf.theme.layout-reverse) "layout-reverse")
+       (optional (conf.theme.colorScheme != null) "theme-base-${conf.theme.colorScheme}")
+    ++ (optional (conf.theme.layout.reverse) "layout-reverse")
   );
 in
 ''

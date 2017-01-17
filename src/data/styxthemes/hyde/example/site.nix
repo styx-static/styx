@@ -33,7 +33,7 @@ rec {
   themesData = styxLib.themes.load {
     inherit styxLib themes;
     templates.extraEnv = { inherit data pages; };
-    conf.extra = [ (import ./conf.nix) extraConf ];
+    conf.extra = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
@@ -74,7 +74,7 @@ rec {
     index = mkSplit {
       title        = "Home";
       basePath     = "/index";
-      itemsPerPage = conf.theme.index.itemsPerPage;
+      itemsPerPage = conf.theme.itemsPerPage;
       template     = templates.index;
       data         = posts;
     };
