@@ -15,71 +15,60 @@ Parameters:::
   * `styxLib`: Styx library.
   * `themes`: A list of themes paths or packages to load data from, head of the list have lower priority.
   * `conf` (optional): configuration loading parameters:
-  ** `themes` (optional): A list of themes attribute set to load configuration from, can be used to load configuration from a different list of themes than `themes`.
-  ** `extra` (optional): A list of base configuration attribute sets, head of the list have lower priority.
-  * `lib` (optional): library loading parameters:
-  ** `themes` (optional): A list of themes attribute set to load library from, can be used to load library from a different list of themes than `themes`.
-  * `files` (optional): library loading parameters:
-  ** `themes` (optional): A list of themes attribute set to load static files from, can be used to load static files from a different list of themes than `themes`.
+  ** `extra` (optional): A list of base configuration attribute sets or paths, head of the list have lower priority.
   * `templates` (optional): templates loading parameters:
-  ** `themes` (optional): A list of themes attribute set to load templates from, can be used to load templates from a different list of themes than `themes`.
   ** `extraEnv` (optional): An attribute set that will be merged with the template environment.
 
 Return::: An attribute set containing:
-* `conf`: The merged configuration.
-* `lib`: The merged library.
+* `conf`: The merged themes configuration.
+* `lib`: The merged themes library.
 * `files`: List of static files folder.
-* `templates`: The merged template set.
+* `templates`: The merged themes template set.
 * `themes`: List of themes attribute sets.
 
 Example:::
 
 +
 [source, nix]
-.Basic usage
 ----
 themesData = styxLib.themes.load {
   inherit styxLib themes;
   templates.extraEnv = { inherit data pages; };
-  conf.extra = [ (import ./conf.nix) extraConf ];
-};
-----
-
-+
-[source, nix]
-.Using a different list of themes for static files
-----
-themesData = styxLib.themes.load {
-  inherit styxLib themes;
-  files.themes = styxLib.themes.loadThemes [ ./themes/my-theme ];
-  templates.extraEnv = { inherit data pages; };
-  conf.extra = [ (import ./conf.nix) extraConf ];
+  conf.extra = [ ./conf.nix extraConf ];
 };
 ----
 
 ---
 
-[[lib.themes.loadThemes]]
-==== loadThemes
+[[lib.themes.loadData]]
+==== loadData
 
-Description::: Load a list of themes data.
+Description::: Load a themes data.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `themes`: A list of themes paths or packages to load configuration from.
-  * `metaFnArg` (optional): If the theme `meta.nix` file is a function, the function will be evaluated with `metaFnArg`, defaults to `{ lib = lib; }`.
+  * `styxLib`: Styx library.
+  * `theme`: A themes path or package to load data from.
 
 Return::: A list of themes attribute sets containing:
-* `name`: The theme name, `meta.nix`'s `name` attribute.
-* `path`: The theme path in the nix store.
-* `meta`: The theme meta information set, `meta.nix` contents.
+* `lib`: Theme function library.
+* `meta`: Theme meta information.
+* `id`: Theme id.
+* `path`: Theme path.
+* `decls`: Theme configuration interface declarations.
+* `defs`: Theme configuration interfaces definition.
+* `docs`: Theme configuration interface documentation.
+* `types`: Theme configuratoin interface types.
+* `templates`: Theme templates functions (environment not applied).
+* `files`: Theme static files path.
 
 Example:::
 
 +
 [source, nix]
 ----
-lib.themes.loadThemes {
-  themes = [ styx-themes.showcase ];
+lib.themes.loadData {
+  inherit styxLib;
+  theme = styx-themes.showcase;
 };
 ----
 

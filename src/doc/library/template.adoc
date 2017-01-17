@@ -27,7 +27,7 @@ normalTemplate "Sample content"
 ----
 
 +
-[source, text]
+[source, nix]
 .Results in
 ----
 page: page // { content = "Sample content"; }
@@ -47,7 +47,7 @@ normalTemplate {
 ----
 
 +
-[source, text]
+[source, nix]
 .Results in
 ----
 page: page // { content = "Sample content"; title = "Sample"; }
@@ -66,7 +66,7 @@ normalTemplate (page:
 ----
 
 +
-[source, text]
+[source, nix]
 .Results in
 ----
 page: page // { content = "Page path: ${page.path}"; }
@@ -86,7 +86,7 @@ normalTemplate (page: {
 ----
 
 +
-[source, text]
+[source, nix]
 .Results in
 ----
 page: page // { content = "Page path: ${page.path}"; title = "Sample"; }

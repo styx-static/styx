@@ -16,7 +16,7 @@ Configuration loading is done in `site.nix` theme section.
 This files consist in an attribute set defining configuration options.
 
 The main configuration is made through themes via the `theme` attribute. +
-Every theme defines a configuration interface that can be manipulated in `conf.nix` `theme` attribute.
+Every theme defines a <<Themes.conf.nix,configuration interface>> that can be changed in `conf.nix`.
 
 `siteUrl` is the only required field, and must not end with a slash. +
 It can be a domain like `\http://www.domain.org` or contains a path like `\http://www.domain.org/styx-site`.

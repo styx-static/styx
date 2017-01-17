@@ -31,14 +31,11 @@ in rec {
   /* Type check configuration declaration (site conf.nix) with the configuration definition (theme conf.nix)
   */
   typeCheck = types: defs:
-    #let
-    #  types = extract "type" defs;
-    #in 
     mapAttrsRecursive (path: v:
       if (hasAttrByPath path types) && isOptionType (getAttrFromPath path types)
       then if   (getAttrFromPath path types).check v
            then "check ok"
-           else throw "The configuration option `theme.${showOption path}' is not a ${(getAttrFromPath path types).name}."
+           else throw "The configuration option `theme.${showOption path}' is not a ${(getAttrFromPath path types).description}."
       else "no type"
     ) defs;
 

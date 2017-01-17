@@ -41,7 +41,7 @@ include::cli.adoc[]
 
 include::library.adoc[]
 
-include::styx-themes.adoc[]
-
 include::release-notes.adoc[]
+
+== link:./appendix.html[Appendix - Styx-themes]
 

@@ -185,7 +185,7 @@ Themes are detailed in the <<Themes>> section.
 <1> `themes` is a list so it is possible to set multiple themes at the same time to <<Combining Themes,combine them>>. Themes at the beginning of the list have a lower priority. +
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
 <2> Extra variables to add to the template environment.
-<3> Extra configuration sets to merge with the themes configurations, head of the list have lower priority.
+<3> Extra configuration sets to merge with the themes configurations, can be files or paths, head of the list have lower priority.
 <4> Bringing the `themesData` attributes in the scope.
 
 ==== Data

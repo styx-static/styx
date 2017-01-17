@@ -10,5 +10,10 @@
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 path=$(nix-build "$scriptDir/doc.nix" --no-out-link "$@")
+if [ $? -ne 0 ]; then 
+  echo "Error: Doc build failed"
+  exit 1
+fi
 target=$(realpath "$scriptDir/../src/doc/")
 cp -r $path/* $target --no-preserve=all
+echo "Doc updated!"

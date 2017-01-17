@@ -381,7 +381,7 @@ generate a pagination. `pages` should be a list of pages.
 .Example
 ----
 templates.bootstrap.pagination {
-  pages = genList (x: { path = "#${toString (x + 1)}"; }) 10;
+  pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
   index = 5;
 }
 ----

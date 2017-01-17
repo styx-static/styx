@@ -6,15 +6,8 @@ They also provide a configuration interface and can declare a function library.
 
 === Getting themes
 
-Styx themes are listed in the official link:https://github.com/styx-static/themes[theme repository].
+Styx themes that are part od the `styx-themes` package set are documented in the link:./appendix.html[appendix].
 
-Themes available at the moment of writing this documentation are:
-
-- link:https://github.com/styx-static/styx-theme-generic-templates[Generic templates]: A theme theme provide a template framework and basic templates for common components. (link:https://styx-static.github.io/styx-theme-generic-templates/[demo site])
-- link:https://github.com/styx-static/styx-theme-showcase[Showcase]: A theme that show most of styx functionalities and provides many templates. (link:https://styx-static.github.io/styx-theme-showcase/[demo site])
-- link:https://github.com/styx-static/styx-theme-hyde[Hyde]: A port of the link:https://github.com/poole/hyde[Jekyll Hyde theme] to styx. Hyde is a simple and beautiful blog theme. (link:https://styx-static.github.io/styx-theme-hyde/[demo site])
-- link:https://github.com/styx-static/styx-theme-agency[Agency]: A port of the link:http://themes.gohugo.io/agency/[Hugo agency theme] to styx. Agency is a single page site with a modern design fitting company or agency websites. (link:https://styx-static.github.io/styx-theme-agency/[demo site])
-- link:https://github.com/styx-static/styx-theme-orbit[Orbit]: A port of the link:http://themes.gohugo.io/orbit/[Hugo orbit theme] to styx. Orbit is a single page site resume / profile theme. (link:https://styx-static.github.io/styx-theme-orbit/[demo site])
 
 === Creating a new theme
 
@@ -26,7 +19,7 @@ A new theme folder structure can be created by running the `styx new theme` comm
 $ styx new theme my-theme --in ./themes
 ----
 
-This command will generate the following files:
+This command will generate the following files in `./themes/my-theme`:
 
 ----
 ├── conf.nix   # <1>
@@ -43,7 +36,7 @@ This command will generate the following files:
 See <<Themes.Structure, Structure>> for details.
 
 NOTE: Site and themes both have `conf.nix` files, their purpose is different and should not be confused. +
-Theme `conf.nix` define the configuration interface, and site `conf.nix` use this configuration.
+Theme `conf.nix` define the **configuration interface**, and site `conf.nix` settings **use** this interface to customize the theme.
 
 === Using themes
 
@@ -125,16 +118,17 @@ This configuration is merged in the `conf` variable `theme` key after theme load
 
 `conf.nix` can leverage NixOS module system like typing, and declare options with the `mkOption` function.
 
-https://nixos.org/nixos/manual/index.html#sec-option-declarations
+See link:https://nixos.org/nixos/manual/index.html#sec-option-declarations[NixOS manual option declaration chapter] for `mkOption` usage details.
 
 This have two benefits:
 
 - Site configuration, site root `site.nix`, will be type checked.
 - Documentation will be automatically generated for the configuration interface.
 
-On the other hand, typing a theme configuration interface is verbose and can be an overkill for theme that will not be shared.  
+On the other hand, typing a theme configuration interface is verbose and can be an overkill for a private theme. +
 Typing is not required, but should be done for themes that are part of the `styx-themes` theme set or meant to be shared.
 
+WARNING: `types.submodule` type checking is not supported.
 
 [source, nix]
 .Example of a theme conf.nix with typing
@@ -179,7 +173,7 @@ Options can then be used in the site `conf.nix` in the same manner than non-type
 .Trying to build a site with type errors
 ----
 $ styx preview
-error: The configuration option `theme.site.title' is not a str.
+error: The configuration option `theme.site.title' is not a string.
 (use ‘--show-trace’ to show detailed location information)
 ---
 Error: Site could not been built, fix the errors and run the command again.
@@ -187,11 +181,22 @@ The '--show-trace' flag can be used to show debug information.
 ----
 
 
-=== Meta-data
+[[meta.nix]]
+=== Metadata
 
 Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with an `id` attribute so the theme configuration is correctly processed. +
 
 Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
+
+`meta` attributes commonly used for the documentation are:
+
+- `name`: Theme name, can contain any character.
+- `license`: A license from `lib.licenses`.
+- `demoPage`: Url of the theme example site live demo.
+- `homepage`: Url of the theme.
+- `screenshot`: Path to a screenshot of the theme example site.
+- `description`: A single line theme description, asciidoc markup can be used.
+- `longDescription`: Free length site description, asciidoc markup can be used.
 
 [source, nix]
 .Example of a simple theme meta.nix
@@ -202,13 +207,17 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 ----
 
 [source, nix]
-.Example of a theme meta.nix with license and maintainers
+.Example of a theme meta.nix with multiple attributes
 ----
 { lib }:
 {
   id = "showcase";
+  name = "Showcase";
   license = lib.licenses.mit;
-  maintainers = with lib.maintainers; [ johndoe ];
+  demoPage = https://styx-static.github.io/styx-theme-showcase;
+  homepage = https://github.com/styx-static/styx-theme-showcase;
+  screenshot = ./screen.png;
+  description = "A theme to show Styx main functionalities.";
 }
 ----
 

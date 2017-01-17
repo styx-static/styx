@@ -1,0 +1,64 @@
+=== Conf
+
+This namespace contains functions related to configuration.
+
+:sectnums!:
+
+---
+
+[[lib.conf.extract]]
+==== extract
+
+Description::: Extract a keys from `mkOption` declarations in a set.
+Parameter Type::: Attribute Set
+Parameters:::
+  * `key`: Key to extract.
+  * `set`: Set to extract keys from.
+  * `nullify` (optional): Set every non extracted key value to `null`.
+
+Return::: An attribute set where `mkOption` declaration have been replaced.
+
+Example:::
+
++
+[source, nix]
+----
+extract {
+  key = "default";
+  set = {
+    a.b.c = mkOption {
+      default = "abc";
+      type = types.str;
+    };
+    x.y = 1;
+  };
+};
+----
+
++
+[source, nix]
+.Results in
+----
+{
+  a.b.c = "abc";
+  x.y = 1;
+}
+----
+
+---
+
+[[lib.conf.typeCheck]]
+==== typeCheck
+
+Description::: Extract a keys from `mkOption` declarations in a set.
+Parameter Type::: Standard
+Parameters:::
+  * `types`: Types attribute set.
+  * `defs`: Configuration definition set.
+
+Return::: Throw an error if `defs` do not type-check with `types`.
+
+---
+
+:sectnums:
+

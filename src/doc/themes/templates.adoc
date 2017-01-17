@@ -135,7 +135,8 @@ This pattern of updating the page set `content` attribute and returning page set
 .Previous example abstracted with normalTemplate
 ----
 { lib, ... }:
-lib.template.normalTemplate (page: "<h1>${page.title}</h1>")
+with lib;
+normalTemplate (page: "<h1>${page.title}</h1>")
 ----
 
 
@@ -161,7 +162,7 @@ The default template environment consists in:
 - `pages`: The pages attribute set.
 
 The template environment is set in `site.nix` theme loading section and can be easily modified upon needs. +
-`conf`, `lib` are `templates` automatially set, but `data` and `pages` are explicitly set via the `templates.extraEnv` parameter of the <<lib.themes.oad,lib.themes.load>> function.
+`conf`, `lib` are `templates` automatically set, but `data` and `pages` are explicitly set via the `templates.extraEnv` parameter of the <<lib.themes.oad,lib.themes.load>> function.
 
 [source, nix]
 .Adding custom parameters to the template environment.
@@ -171,7 +172,7 @@ The template environment is set in `site.nix` theme loading section and can be e
   themesData = styxLib.themes.load {
     inherit styxLib themes;
     templates.extraEnv = { inherit data pages; foo = "bar"; }; # <1>
-    conf.extra = [ (import ./conf.nix) extraConf ];
+    conf.extra = [ ./conf.nix extraConf ];
   };
 ----
 

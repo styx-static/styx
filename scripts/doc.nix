@@ -34,13 +34,14 @@ stdenv.mkDerivation rec {
   unpackPhase = ":";
 
   doc = writeText "doc" ''
-    == Styx-themes
 
     ${mapTemplate (theme: ''
-      === ${theme.meta.name}
+      == ${theme.meta.name}
 
       ${optionalString (theme.meta ? description) theme.meta.description}
       ${optionalString (theme.meta ? longDescription) theme.meta.longDescription}
+
+      ---
 
       ${optionalString (theme.meta ? demoPage) "- ${theme.meta.demoPage}[Demo]"}
       ${optionalString (theme.meta ? homepage) "- ${theme.meta.homepage}[Homepage]"}
@@ -52,17 +53,19 @@ stdenv.mkDerivation rec {
       image::${theme.meta.screenshotPath}[${theme.meta.name},align="center"]
       ''}
 
-      ==== Configuration interface
+      === Configuration interface
+
+      :sectnums!:
 
       ---
       ${mapTemplate (data:
       let isSet = x: hasAttr x data && data."${x}" != null;
       in
       ''
-        ===== ${data.pathString} 
+        ==== ${data.pathString} 
 
         ${optionalString (isSet "description") "Description:: ${data.description}"}
-        ${optionalString (isSet "type") "Type:: ${toJSON data.type}"}
+        ${optionalString (isSet "type") "Type:: ${data.type}"}
         ${optionalString (isSet "default") ''
         Default::
         +
@@ -81,7 +84,11 @@ stdenv.mkDerivation rec {
 
         ---
 
+
       '') (mkDocs { inherit (theme) docs decls; })}
+
+      :sectnums:
+
     '') themes}
   '';
 

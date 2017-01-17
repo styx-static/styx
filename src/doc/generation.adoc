@@ -5,10 +5,13 @@ Site generation consists in a call to <<lib.generation.generateSite>>, and the p
 [source, nix]
 .Standard call to generateSite
 ----
-pagesList = pagesToList { inherit pages; };
+pagesList = pagesToList { inherit pages; }; # <1>
 
-site = generateSite { inherit conf files pagesList; }
+site = generateSite { inherit conf files pagesList; } # <2>
 ----
+
+<1> Convert the pages attribute set to a list of pages.
+<2> Generate the site.
 
 It is possible to set default attributes to every page set during the `pages` attribute by using the `default` argument of the <<lib.generation.pagesToList>> function.
 
@@ -19,7 +22,7 @@ A typical example is setting a default layout to every page set that do not decl
 ----
 pagesList = lib.pagesToList {
   inherit pages;
-  default = { layout = templates.layout; };
+  default.layout = templates.layout;
 };
 ----
 
@@ -70,4 +73,23 @@ Styx automatically convert `sass`, `scss` and `less` files to css during site ge
 
 - `preGen`: A string or multiline string with shell commands to run before generating the site.
 - `postGen`: A string or multiline string with shell commands to run after generating the site.
+
+
+=== Site derivation
+
+Styx creates the static site as a standard nix derivation.
+
+It is possible to set the derivation metadata by passing a `meta` set to the `generateSite` function.
+
+[source, nix]
+.Setting site derivation metadata
+----
+  site = with lib; generateSite {
+    inherit files pagesList substitutions;
+    meta = {
+      license = licenses.mit;
+      name = "foo-1.0.0";
+    };
+  };
+----
 

@@ -18,7 +18,7 @@ $ nix-shell -p nix-repl --run nix-repl
 nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
 
 nix-repl> site.conf
-{ siteUrl = "http://yourdomain.com"; theme = { ... }; themes = { ... }; }
+{ siteUrl = "https://styx-static.github.io/styx-theme-showcase"; theme = { ... }; }
 ----
 
 === Using lib functions
@@ -27,6 +27,7 @@ nix-repl> site.conf
 .Using parseDate
 ----
 nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
+
 nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}"
 "18 May 2016, 12:40:21"
 ----
@@ -42,7 +43,7 @@ nix-repl> showcase = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-them
 nix-repl> with showcase; lib.generatePage (pages.about // { layout = templates.layout; }) # <1>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
 
-nix-repl> with showcase; templates.layout (templates.generic.full pages.about) # <2>
+nix-repl> with showcase; templates.layout (templates.page.full pages.about) # <2>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
 ----
 

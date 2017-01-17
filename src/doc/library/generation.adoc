@@ -95,7 +95,7 @@ pageslist = pagestolist { inherit pages; };
 ----
 pageslist = pagestolist {
   inherit pages;
-  default = { layout = templates.layout; };
+  default.layout = templates.layout;
 };
 ----
 

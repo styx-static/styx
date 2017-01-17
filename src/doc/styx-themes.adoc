@@ -1,6 +1,5 @@
-== Styx-themes
 
-=== agency
+== Agency
 
 Port of the https://github.com/digitalcraftsman/hugo-agency-theme[Agency] theme for Styx.
 
@@ -11,22 +10,26 @@ https://github.com/digitalcraftsman/hugo-agency-theme[Original Theme]
 > Agency Theme is a one page portfolio for companies and freelancers based on the original Bootstrap theme by David Miller. This Hugo theme features several content sections, a responsive portfolio grid with hover effects, full page portfolio item modals, a timeline, and a contact form.
 
 
+---
+
 - https://styx-static.github.io/styx-theme-agency[Demo]
 - https://github.com/styx-static/styx-theme-agency[Homepage]
 
 
 ---
 
-image::imgs/agency.png[agency,align="center"]
+image::imgs/agency.png[Agency,align="center"]
 
 
-==== Configuration interface
+=== Configuration interface
+
+:sectnums!:
 
 ---
-===== about.endpoint 
+==== about.endpoint 
 
 Description:: Last about bubble text.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -38,12 +41,13 @@ Default::
 ---
 
 
-===== about.items 
+
+==== about.items 
 
 Description:: List of about events as attribute sets, requires `img`, `date`, `title`, and `content`.  
-If set to the empty list `[]`, the about area will not be displayed.";
+If set to the empty list `[]`, the about area will not be displayed.
 
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -53,7 +57,7 @@ Default::
 Example::
 +
 ----
-"loadDir { dir = ./data/events; };"
+[{"content":"Lorem ipsum dolor sit amet consectetur.","date":"2009-2011","img":"1.jpg","title":"Our Humble Beginnings"}]
 ----
 
 
@@ -61,10 +65,11 @@ Example::
 ---
 
 
-===== about.subtitle 
+
+==== about.subtitle 
 
 Description:: Subtitle of the about area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -76,10 +81,11 @@ Default::
 ---
 
 
-===== about.title 
+
+==== about.title 
 
 Description:: Title of the about area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -91,12 +97,13 @@ Default::
 ---
 
 
-===== clients 
+
+==== clients 
 
 Description:: List of clients as attribute sets, requires `logo` and `link`.  
 If set to the empty list `[]`, the clients area will not be displayed.";
 
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -114,10 +121,11 @@ Example::
 ---
 
 
-===== contact.buttonText 
+
+==== contact.buttonText 
 
 Description:: Text of the contact area button.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -129,10 +137,11 @@ Default::
 ---
 
 
-===== contact.enable 
+
+==== contact.enable 
 
 Description:: Whether to enable contact area.
-Type:: "boolean"
+Type:: boolean
 Default::
 +
 ----
@@ -150,10 +159,11 @@ true
 ---
 
 
-===== contact.form.email 
+
+==== contact.form.email 
 
 Description:: Contact form email input label
-Type:: "attribute set"
+Type:: attribute set
 Default::
 +
 ----
@@ -165,10 +175,11 @@ Default::
 ---
 
 
-===== contact.form.message 
+
+==== contact.form.message 
 
 Description:: Contact form message input label
-Type:: "attribute set"
+Type:: attribute set
 Default::
 +
 ----
@@ -180,10 +191,11 @@ Default::
 ---
 
 
-===== contact.form.name 
+
+==== contact.form.name 
 
 Description:: Contact form name input label
-Type:: "attribute set"
+Type:: attribute set
 Default::
 +
 ----
@@ -195,10 +207,11 @@ Default::
 ---
 
 
-===== contact.form.phone 
+
+==== contact.form.phone 
 
 Description:: Contact form phone input label
-Type:: "attribute set"
+Type:: attribute set
 Default::
 +
 ----
@@ -210,10 +223,11 @@ Default::
 ---
 
 
-===== contact.form.receiver 
+
+==== contact.form.receiver 
 
 Description:: Contact area from receiver mail address.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -225,10 +239,11 @@ Default::
 ---
 
 
-===== contact.subtitle 
+
+==== contact.subtitle 
 
 Description:: Subtitle of the contact area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -240,10 +255,11 @@ Default::
 ---
 
 
-===== contact.title 
+
+==== contact.title 
 
 Description:: Title of the contact area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -255,10 +271,11 @@ Default::
 ---
 
 
-===== footer.copyright 
+
+==== footer.copyright 
 
 Description:: Footer copyright text.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -270,10 +287,11 @@ Default::
 ---
 
 
-===== footer.quicklinks 
+
+==== footer.quicklinks 
 
 Description:: Footer links.
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -291,10 +309,11 @@ Example::
 ---
 
 
-===== footer.social 
+
+==== footer.social 
 
 Description:: Social media links to display in the footer.
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -312,10 +331,11 @@ Example::
 ---
 
 
-===== hero.buttonText 
+
+==== hero.buttonText 
 
 Description:: Button text of the hero area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -327,10 +347,11 @@ Default::
 ---
 
 
-===== hero.subtitle 
+
+==== hero.subtitle 
 
 Description:: Subtitle of the hero area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -342,10 +363,11 @@ Default::
 ---
 
 
-===== hero.title 
+
+==== hero.title 
 
 Description:: Title of the hero area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -357,10 +379,11 @@ Default::
 ---
 
 
-===== menu.append 
+
+==== menu.append 
 
 Description:: Menu items to add at the end of the navigation.
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -378,10 +401,11 @@ Example::
 ---
 
 
-===== menu.prepend 
+
+==== menu.prepend 
 
 Description:: Menu items to add at the beginning of the navigation.
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -399,12 +423,13 @@ Example::
 ---
 
 
-===== portfolio.items 
+
+==== portfolio.items 
 
 Description:: List of portfolio projects as attribute sets, requires `title`, `subtitle`, `img`, `preview`, `client`, `clientLink`, `category` and `content`.  
-If set to the empty list `[]`, the portfolio area will not be displayed.";
+If set to the empty list `[]`, the portfolio area will not be displayed.
 
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -414,7 +439,7 @@ Default::
 Example::
 +
 ----
-"loadDir { dir = ./data/projects; };"
+[{"category":"Graphic Design","client":"Start Bootstrap","clientLink":"#","content":"Lorem ipsum dolor sit amet consectetur.","date":"2014-07-05","img":"roundicons.png","preview":"roundicons-preview.png","subtitle":"Lorem ipsum dolor sit amet consectetur.","title":"Round Icons"}]
 ----
 
 
@@ -422,10 +447,11 @@ Example::
 ---
 
 
-===== portfolio.subtitle 
+
+==== portfolio.subtitle 
 
 Description:: Subtitle of the portgolio area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -437,10 +463,11 @@ Default::
 ---
 
 
-===== portfolio.title 
+
+==== portfolio.title 
 
 Description:: Title of the portfolio area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -452,12 +479,13 @@ Default::
 ---
 
 
-===== services.items 
+
+==== services.items 
 
 Description:: List of services as attribute sets, requires `title`, `icon` and `content` attributes.  
-If set to the empty list `[]`, the services area will not be displayed.";
+If set to the empty list `[]`, the services area will not be displayed.
 
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -467,7 +495,7 @@ Default::
 Example::
 +
 ----
-"loadDir { dir = ./data/services; };"
+[{"content":"Lorem ipsum dolor sit amet consectetur.","icon":"fa-shopping-cart","title":"E-Commerce"}]
 ----
 
 
@@ -475,10 +503,11 @@ Example::
 ---
 
 
-===== services.subtitle 
+
+==== services.subtitle 
 
 Description:: Subtitle of the services area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -490,10 +519,11 @@ Default::
 ---
 
 
-===== services.title 
+
+==== services.title 
 
 Description:: Title of the services area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -505,10 +535,11 @@ Default::
 ---
 
 
-===== site.author 
+
+==== site.author 
 
 Description:: Content of the author `meta` tag.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -520,10 +551,11 @@ Default::
 ---
 
 
-===== site.description 
+
+==== site.description 
 
 Description:: Content of the description `meta` tag.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -535,10 +567,11 @@ Default::
 ---
 
 
-===== site.title 
+
+==== site.title 
 
 Description:: Title of the site.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -550,10 +583,11 @@ Default::
 ---
 
 
-===== team.description 
+
+==== team.description 
 
 Description:: Description of the team
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -565,12 +599,13 @@ Default::
 ---
 
 
-===== team.members 
+
+==== team.members 
 
 Description:: List of team members as attribute sets, requires `img`, `name`, `position`, and `social`. `social` have the same format to `footer.social`.
 If set to the empty list `[]`, the team area will not be displayed.";
 
-Type:: "list of attribute sets"
+Type:: list of attribute sets
 Default::
 +
 ----
@@ -580,7 +615,7 @@ Default::
 Example::
 +
 ----
-"loadDir { dir = ./data/team.nix; };"
+[{"img":"1.jpg","name":"Kay Garland","position":"Lead Designer","social":[{"link":"#","type":"twitter"},{"link":"#","type":"facebook"},{"link":"#","type":"linkedin"}]}]
 ----
 
 
@@ -588,10 +623,11 @@ Example::
 ---
 
 
-===== team.subtitle 
+
+==== team.subtitle 
 
 Description:: Subtitle of the team area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -603,10 +639,11 @@ Default::
 ---
 
 
-===== team.title 
+
+==== team.title 
 
 Description:: Title of the team area.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -619,10 +656,16 @@ Default::
 
 
 
-=== Generic templates
+
+:sectnums:
+
+
+== Generic templates
 
 
 
+
+---
 
 - https://styx-static.github.io/styx-theme-generic-templates[Demo]
 - https://github.com/styx-static/styx-theme-generic-templates[Homepage]
@@ -633,13 +676,15 @@ Default::
 image::imgs/generic-templates.png[Generic templates,align="center"]
 
 
-==== Configuration interface
+=== Configuration interface
+
+:sectnums!:
 
 ---
-===== html.doctype 
+==== html.doctype 
 
 Description:: Doctype declaration to use.
-Type:: "one of \"html5\", \"html4\", \"xhtml1\""
+Type:: one of "html5", "html4", "xhtml1"
 Default::
 +
 ----
@@ -651,10 +696,11 @@ Default::
 ---
 
 
-===== lib.bootstrap.enable 
+
+==== lib.bootstrap.enable 
 
 Description:: Whether to enable bootstrap.
-Type:: "boolean"
+Type:: boolean
 Default::
 +
 ----
@@ -672,10 +718,11 @@ true
 ---
 
 
-===== lib.bootstrap.version 
+
+==== lib.bootstrap.version 
 
 Description:: Selects bootstrap version to use.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -687,10 +734,11 @@ Default::
 ---
 
 
-===== lib.font-awesome.enable 
+
+==== lib.font-awesome.enable 
 
 Description:: Whether to enable font awesome.
-Type:: "boolean"
+Type:: boolean
 Default::
 +
 ----
@@ -708,10 +756,11 @@ true
 ---
 
 
-===== lib.font-awesome.version 
+
+==== lib.font-awesome.version 
 
 Description:: Selects font-awesome version to use.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -723,10 +772,11 @@ Default::
 ---
 
 
-===== lib.jquery.enable 
+
+==== lib.jquery.enable 
 
 Description:: Whether to enable jQuery.
-Type:: "boolean"
+Type:: boolean
 Default::
 +
 ----
@@ -744,10 +794,11 @@ true
 ---
 
 
-===== lib.jquery.version 
+
+==== lib.jquery.version 
 
 Description:: Selects jQuery version to use.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -759,10 +810,11 @@ Default::
 ---
 
 
-===== site.title 
+
+==== site.title 
 
 Description:: String to append to the site `title` tag contents.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -775,10 +827,18 @@ Default::
 
 
 
-=== hyde
+
+:sectnums:
+
+
+== Hyde
+
+Port of the https://github.com/poole/hyde[Hyde] theme. +
+Requires the `generic-templates` theme.
 
 
 
+---
 
 - https://styx-static.github.io/styx-theme-generic-hyde[Demo]
 - https://github.com/styx-static/styx-theme-generic-hyde[Homepage]
@@ -786,18 +846,90 @@ Default::
 
 ---
 
-image::imgs/hyde.png[hyde,align="center"]
+image::imgs/hyde.png[Hyde,align="center"]
 
 
-==== Configuration interface
+=== Configuration interface
+
+:sectnums!:
+
+---
+==== colorScheme 
+
+Description:: Selects the color scheme. Set to `null` for default black scheme.
+Type:: null or one of "08", "09", "0a", "0b", "0c", "0d", "0e", "0f"
+
+
 
 ---
 
 
-=== orbit
+
+==== description 
+
+Description:: Content of the description `meta` tag.
+Type:: string
+Default::
++
+----
+"An elegant open source and mobile first theme for styx made by <a href=\"http://twitter.com/mdo\">@mdo</a>. Originally made for Jekyll.\n"
+----
 
 
 
+---
+
+
+
+==== itemsPerPage 
+
+Description:: Number of posts per page.
+Type:: integer
+Default::
++
+----
+3
+----
+
+
+
+---
+
+
+
+==== layout.reverse 
+
+Description:: Whether to enable reverse layout.
+Type:: boolean
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
+----
+
+
+
+---
+
+
+
+
+:sectnums:
+
+
+== Orbit
+
+http://github.com/xriley/Orbit-Theme[Orbit] theme port - great looking resume/CV template designed for developers by Xiaoying Riley.
+
+
+
+---
 
 - https://styx-static.github.io/styx-theme-generic-orbit[Demo]
 - https://github.com/styx-static/styx-theme-generic-orbit[Homepage]
@@ -805,76 +937,18 @@ image::imgs/hyde.png[hyde,align="center"]
 
 ---
 
-image::imgs/orbit.png[orbit,align="center"]
+image::imgs/orbit.png[Orbit,align="center"]
 
 
-==== Configuration interface
+=== Configuration interface
 
----
-===== copyright 
-
-Description:: Footer copyright text.
-Type:: "string"
-Default::
-+
-----
-"copyright"
-----
-
-
+:sectnums!:
 
 ---
-
-
-===== site.author 
-
-Description:: Content of the author `meta` tag.
-Type:: "string"
-Default::
-+
-----
-"John Doe"
-----
-
-
-
----
-
-
-===== site.description 
-
-Description:: Content of the description `meta` tag.
-Type:: "string"
-Default::
-+
-----
-"Lorem ipsum..."
-----
-
-
-
----
-
-
-===== site.title 
-
-Description:: Title of the site.
-Type:: "string"
-Default::
-+
-----
-"Orbit theme"
-----
-
-
-
----
-
-
-===== style 
+==== colorScheme 
 
 Description:: Theme color scheme.
-Type:: "one of 1, 2, 3, 4, 5, 6"
+Type:: one of 1, 2, 3, 4, 5, 6
 Default::
 +
 ----
@@ -887,7 +961,447 @@ Default::
 
 
 
-=== showcase
+==== contact.items.items 
+
+Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
+If set to the empty list `[]`, the skills area will not be displayed.
+
+Type:: list of attribute sets
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"icon":"envelope","title":"john.doe@website.com","type":"email","url":"mailto: yourname@email.com"}]
+----
+
+
+
+---
+
+
+
+==== copyright 
+
+Description:: Footer copyright text.
+Type:: string
+Default::
++
+----
+"copyright"
+----
+
+
+
+---
+
+
+
+==== education.items 
+
+Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
+If set to the empty list `[]`, the education area will not be displayed.
+
+Type:: list of attribute sets
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"college":"University of London","dates":"2006 - 2010","degree":"MSc in Computer Science"}]
+----
+
+
+
+---
+
+
+
+==== education.title 
+
+Description:: Title of the education section
+Type:: string
+Default::
++
+----
+"Education"
+----
+
+
+
+---
+
+
+
+==== experiences.icon 
+
+Description:: Code of the font awesome icon of the experience title.
+Type:: string
+Default::
++
+----
+"briefcase"
+----
+
+
+
+---
+
+
+
+==== experiences.items 
+
+Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
+If set to the empty list `[]`, the experiences area will not be displayed.
+
+Type:: list of attribute sets
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"company":"Startup Hubs, San Francisco","content":"lorem ipsum","dates":"2015 - Present","position":"Lead Developer"}]
+----
+
+
+
+---
+
+
+
+==== experiences.title 
+
+Description:: Title of the experiences section
+Type:: string
+Default::
++
+----
+"Experiences"
+----
+
+
+
+---
+
+
+
+==== interests.items 
+
+Description:: List of interests. If set to the empty list `[]`, the interests area will not be displayed.
+
+Type:: list of strings
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+["Climbing","Snowboarding","Cooking"]
+----
+
+
+
+---
+
+
+
+==== interests.title 
+
+Description:: Title of the interests section
+Type:: string
+Default::
++
+----
+"Interests"
+----
+
+
+
+---
+
+
+
+==== languages.items 
+
+Description:: List of languages as attribute sets, requires `language`, and `level`.  
+If set to the empty list `[]`, the languages area will not be displayed.
+
+Type:: list of attribute sets
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"language":"English","level":"Native"}]
+----
+
+
+
+---
+
+
+
+==== languages.title 
+
+Description:: Title of the languages section
+Type:: string
+Default::
++
+----
+"Languages"
+----
+
+
+
+---
+
+
+
+==== profile 
+
+Description:: Profile information, must have `name`, `tagline` and `image` attributes.
+Type:: attribute set
+Default::
++
+----
+{"image":"profile.png","name":"John Doe","tagline":"Full Stack Developer"}
+----
+
+
+
+---
+
+
+
+==== projects.icon 
+
+Description:: Code of the font awesome icon of the projects title.
+Type:: string
+Default::
++
+----
+"archive"
+----
+
+
+
+---
+
+
+
+==== projects.items 
+
+Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
+If set to the empty list `[]`, the projects area will not be displayed.
+
+Type:: list of attribute sets
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"content":"lorem ipsum","title":"Simple FAQ Theme for Hugo","url":"https://github.com/aerohub/hugo-faq-theme"}]
+----
+
+
+
+---
+
+
+
+==== projects.title 
+
+Description:: Title of the projects section
+Type:: string
+Default::
++
+----
+"Projects"
+----
+
+
+
+---
+
+
+
+==== site.author 
+
+Description:: Content of the author `meta` tag.
+Type:: string
+Default::
++
+----
+"John Doe"
+----
+
+
+
+---
+
+
+
+==== site.description 
+
+Description:: Content of the description `meta` tag.
+Type:: string
+Default::
++
+----
+"Lorem ipsum..."
+----
+
+
+
+---
+
+
+
+==== site.title 
+
+Description:: Title of the site.
+Type:: string
+Default::
++
+----
+"Orbit theme"
+----
+
+
+
+---
+
+
+
+==== skills.icon 
+
+Description:: Code of the font awesome icon of the skills title.
+Type:: string
+Default::
++
+----
+"rocket"
+----
+
+
+
+---
+
+
+
+==== skills.items 
+
+Description:: List of skills as attribute sets, requires `title` and `level`.  
+If set to the empty list `[]`, the skills area will not be displayed.
+
+Type:: list of attribute sets
+Default::
++
+----
+[]
+----
+
+Example::
++
+----
+[{"level":"98%","skill":"Python & Django"},{"level":"50%","skill":"Javascript & jQuery"}]
+----
+
+
+
+---
+
+
+
+==== skills.title 
+
+Description:: Title of the skills section
+Type:: string
+Default::
++
+----
+"Skills & Proficiency"
+----
+
+
+
+---
+
+
+
+==== summary.content 
+
+Description:: content of the profile area as HTML text.  
+if set to `null`, the summary area will not be displayed.
+
+Type:: null or string
+
+
+
+---
+
+
+
+==== summary.icon 
+
+Description:: Code of the font awesome icon of the summary title.
+Type:: string
+Default::
++
+----
+"user"
+----
+
+
+
+---
+
+
+
+==== summary.title 
+
+Description:: Title of the summary section
+Type:: string
+Default::
++
+----
+"Career profile"
+----
+
+
+
+---
+
+
+
+
+:sectnums:
+
+
+== Showcase
 
 A theme to show Styx main functionalities.
 This theme example site includes:
@@ -902,22 +1416,26 @@ This theme example site includes:
 - Archives page
 
 
+---
+
 - https://styx-static.github.io/styx-theme-showcase[Demo]
 - https://github.com/styx-static/styx-theme-showcase[Homepage]
 
 
 ---
 
-image::imgs/showcase.png[showcase,align="center"]
+image::imgs/showcase.png[Showcase,align="center"]
 
 
-==== Configuration interface
+=== Configuration interface
+
+:sectnums!:
 
 ---
-===== archives.itemsPerPage 
+==== archives.itemsPerPage 
 
 Description:: Number of posts on the archive page.
-Type:: "integer"
+Type:: integer
 Default::
 +
 ----
@@ -929,10 +1447,11 @@ Default::
 ---
 
 
-===== index.itemsPerPage 
+
+==== index.itemsPerPage 
 
 Description:: Number of posts on the index page.
-Type:: "integer"
+Type:: integer
 Default::
 +
 ----
@@ -944,10 +1463,11 @@ Default::
 ---
 
 
-===== site.copyright 
+
+==== site.copyright 
 
 Description:: Site copyright, added in the footer.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -959,10 +1479,11 @@ Default::
 ---
 
 
-===== site.description 
+
+==== site.description 
 
 Description:: Site description, added in the footer.
-Type:: "string"
+Type:: string
 Default::
 +
 ----
@@ -973,5 +1494,9 @@ Default::
 
 ---
 
+
+
+
+:sectnums:
 
 

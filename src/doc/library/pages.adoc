@@ -97,10 +97,10 @@ NOTE: For details see the <<Split pages>> section.
 Description::: Create the list of page set for multipages data set.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `subpages`: The list of subpages source.
-  * `basepath`: The base `path` set to the pages set, the first page `path` is `basepath.html`, following pages `path` is `basepath-index.html` where index is the number of the page.
+  * `pages`: The list of subpages.
+  * `basePath`: The base `path` set to the pages set, the first page `path` is `basePath.html`, following pages `path` is `basePath-index.html` where index is the number of the page.
   * `output`: `all`, `head` or `tail`. This select which pages set to generate.
-Return::: A list of page attribute set according to the arguments, the subpages list is added in the `pages` attribute.
+Return::: A list of page attribute set according to the arguments, the `pages` is inherited.
 Example:::
 
 +

@@ -9,6 +9,8 @@ include::library/template.adoc[]
 
 include::library/data.adoc[]
 
+include::library/conf.adoc[]
+
 include::library/pages.adoc[]
 
 include::library/generation.adoc[]
