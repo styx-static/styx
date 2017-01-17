@@ -1,19 +1,25 @@
+{ lib }:
+with lib;
 {
-  site = {
-    # Site title, used in the site header and the atom feed
-    title = "Styx Hyde Theme";
-    languageCode = "en";
-    description = ''
+  description = mkOption {
+    default = ''
       An elegant open source and mobile first theme for styx made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
     '';
+    type = types.str;
+    description = "Content of the description `meta` tag.";
   };
 
-  # Set the color theme
-  #color = "THeme-base-09";
+  colorScheme = mkOption {
+    description = "Selects the color scheme. Set to `null` for default black scheme.";
+    type = with types; nullOr (enum [ "08" "09" "0a" "0b" "0c" "0d" "0e" "0f" ]);
+    default = null;
+  };
 
-  # Reverse layout
-  layout-reverse = false;
+  layout.reverse = mkEnableOption "reverse layout";
 
-  # Number of posts on the index / archive page
-  index.itemsPerPage = 3;
+  itemsPerPage = mkOption {
+    default = 3;
+    description = "Number of posts per page.";
+    type = types.int;
+  };
 }
