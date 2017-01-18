@@ -31,10 +31,9 @@ So let's create a page, pages are declared in the pages attribute set. We will s
   };
 ```
 
-The site can be previewed with `styx preview`!
+Then, a preview of the site can be launch by running `styx preview`.
 
-This is just the beginning, take a look at the showcase [example site.nix](https://github.com/styx-static/styx-theme-showcase/blob/master/example/site.nix) to see examples of more complex pages and data handling.
-
-The documentation for the current version of styx can be opened in a browser by running the `styx manual` command.
+The documentation for the current version of styx can be launched in a browser by running the `styx doc` command.
+The `styx-themes` packages set, that contains themes with example sites, documentation can also be found in the in styx documentation.
 
 Have fun!

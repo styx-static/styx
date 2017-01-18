@@ -10,7 +10,7 @@ styxLib  = pkgs.callPackage ../src/lib {};
 themes = with styxLib;
   let
     themesDrv = (filterAttrs (k: v: isDerivation v) pkgs.styx-themes);
-    data      = map (t: styxLib.themes.loadData { inherit styxLib; theme = t; }) (attrValues themesDrv);
+    data      = map (t: { exampleSrc = readFile (t + "/example/site.nix"); } // (styxLib.themes.loadData { inherit styxLib; theme = t; })) (attrValues themesDrv);
     # adding some data
     data'     = map (t:
                   let
@@ -36,6 +36,7 @@ stdenv.mkDerivation rec {
   doc = writeText "doc" ''
 
     ${mapTemplate (theme: ''
+      [[${theme.meta.id}]]
       == ${theme.meta.name}
 
       ${optionalString (theme.meta ? description) theme.meta.description}
@@ -52,6 +53,18 @@ stdenv.mkDerivation rec {
 
       image::${theme.meta.screenshotPath}[${theme.meta.name},align="center"]
       ''}
+
+      ${optionalString (theme.meta ? documentation) ''
+        
+        === Documentation
+
+        :leveloffset: +2
+
+        ${theme.meta.documentation}
+
+        :leveloffset: -2
+
+      ''} 
 
       === Configuration interface
 
@@ -89,12 +102,19 @@ stdenv.mkDerivation rec {
 
       :sectnums:
 
+      === Example site source
+
+      [source, nix]
+      ----
+      ${theme.exampleSrc}
+      ----
+
     '') themes}
   '';
 
   installPhase = ''
     mkdir $out
-    cp $doc $out/styx-themes.adoc
+    cp $doc $out/styx-themes-generated.adoc
     ${mapTemplate (t:
       optionalString (t.meta ? screenshotPath) ''
         mkdir -p $(dirname "$out/${t.meta.screenshotPath}")

@@ -21,7 +21,6 @@ rec {
          tail = {
            title    = "Archives";
            basePath = "/archive";
-           pathFn   = i: 
            itemsNb  = 2;
          };
          data = posts;
@@ -68,15 +67,18 @@ rec {
 
   /* Split a page with subpages into multiple pages attribute sets
   */
-  mkMultipages = { pages, basePath, output ? "all", ... }@args:
+  mkMultipages = {
+    pages
+  , basePath
+  , output   ? "all"
+  , pathFn   ? (i: if i == 1 then "${basePath}.html" else "${basePath}-${toString i}.html")
+  , ... }@args:
     let
-      extraArgs = removeAttrs args [ "basePath" "output" "pages" ];
+      extraArgs = removeAttrs args [ "basePath" "pathFn" "output" "pages" ];
       subpages = imap (index: page:
         extraArgs // 
         { inherit index;
-          path = if index == 1 
-                 then "${basePath}.html"
-                 else "${basePath}-${toString index}.html";
+          path = pathFn index;
         }
         // page
        ) pages;
@@ -88,9 +90,14 @@ rec {
 
   /* Make a list of pages, automatically deal with multipages
   */
-  mkPageList = { data, pathPrefix ? "", multipageTemplate ? null, ... }@args:
+  mkPageList = { 
+    data
+  , pathPrefix ? ""
+  , pathFn ? (data: "${pathPrefix}${data.fileData.basename}")
+  , multipageTemplate ? null
+  , ... }@args:
     let
-      extraArgs = removeAttrs args [ "data" "pathPrefix" "multipageTemplate" ];
+      extraArgs = removeAttrs args [ "data" "pathPrefix" "pathFn" "multipageTemplate" ];
       mkPage = data: let
         mpTemplate = if (multipageTemplate != null)
                         then { template = multipageTemplate; }
@@ -98,32 +105,36 @@ rec {
         page =
           if data ? pages
              then mkMultipages (extraArgs // {
-               output = "head";
-               basePath = "${pathPrefix}${data.fileData.basename}";
+               output   = "head";
+               basePath = pathFn data;
              } // data // mpTemplate)
              else data;
         in extraArgs // {
-             path = "${pathPrefix}${data.fileData.basename}.html";
+             path = "${pathFn data}.html";
             } // page;
     in map mkPage data;
 
   /* generates a the tails pages of the multipages of a list
   */
-  mkMultiTail = { data, pathPrefix ? "", ... }@args:
+  mkMultiTail = { 
+    data
+  , pathPrefix ? ""
+  , pathFn ? (data: "${pathPrefix}${data.fileData.basename}")
+  , ... }@args:
     let
-      extraArgs = removeAttrs args [ "data" "pathPrefix" ];
+      extraArgs = removeAttrs args [ "data" "pathFn" "pathPrefix" ];
       mpData = filter (d: (d ? pages)) data;
       mkPage = data:
         mkMultipages (extraArgs // {
-          output = "tail";
-          basePath = "${pathPrefix}${data.fileData.basename}";
+          output   = "tail";
+          basePath = pathFn data;
         } // data);
     in flatten (map mkPage mpData);
 
   /* Generate taxonomy pages
   */
-  mkTaxonomyPages =
-  { data
+  mkTaxonomyPages = {
+    data
   , taxonomyTemplate
   , termTemplate
   , taxonomyPathFn ? (ta:     "/${ta}/index.html")
@@ -139,8 +150,8 @@ rec {
         (extraArgs //
         { inherit terms taxonomy;
           taxonomyData = plist;
-          path = taxonomyPathFn taxonomy;
-          template = taxonomyTemplate; })
+          path         = taxonomyPathFn taxonomy;
+          template     = taxonomyTemplate; })
       ) data; 
       termPages = flatten (map (plist:
         let taxonomy = propKey   plist;

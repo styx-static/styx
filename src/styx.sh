@@ -24,7 +24,7 @@ Subcommands:
     live                       Similar to preview, but automatically rebuild the site on changes.
     serve                      Build the site and serve it.
     deploy                     Deploy the site, must be used with a deploy option.
-    manual                     Opens the HTML documentation in BROWSER.
+    doc                        Opens the HTML documentation in BROWSER.
 
 Generic options:
     -h, --help                 Show this help.
@@ -116,8 +116,8 @@ action=
 dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx share directory
 share=$(realpath "$dir/../share/styx")
-# styx html manual path
-manual=$(realpath "$dir/../share/doc/styx/index.html")
+# styx html doc path
+doc=$(realpath "$dir/../share/doc/styx/index.html")
 # styx builder
 builder="$share/builder.nix"
 # debug mode
@@ -233,8 +233,8 @@ while [ "$#" -gt 0 ]; do
     build|serve|deploy|live)
       action="$i"
       ;;
-    manual)
-      $BROWSER $manual 
+    doc|manual)
+      $BROWSER $doc 
       exit 0
       ;;
 # Build options
@@ -284,7 +284,7 @@ done
 
 if [ ! "$action" ]; then
   echo "Error: no command specified."
-  echo "Use one of 'new', 'build', 'serve', 'preview', 'deploy', 'manual'"
+  echo "Use one of 'new', 'build', 'serve', 'preview', 'deploy', 'doc'"
   exit 1
 fi
 

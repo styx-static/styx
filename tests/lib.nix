@@ -104,6 +104,30 @@ runTests {
     expected = 3;
   };
 
+  testMkTaxonomyData = {
+    expr = mkTaxonomyData {
+      data = [
+        { tags = [ "foo" "bar" ]; }
+        { tags = [ "foo" ]; }
+        { category = [ "baz" ]; }
+      ];
+      taxonomies = [ "tags" "category" ];
+    };
+    expected = [
+      {
+        category = [
+          { baz = [ { category = [ "baz" ]; } ]; }
+        ];
+      } 
+      { 
+        tags = [
+          { foo = [ { tags = [ "foo" ]; } { tags = [ "foo" "bar" ]; } ]; }
+          { bar = [ { tags = [ "foo" "bar" ]; } ]; }
+        ];
+      }
+    ];
+  };
+
   /* Pages
   */
 
@@ -117,6 +141,20 @@ runTests {
       pages = [ { path = "/test.html";   index = 1; items = [ 1 2 ]; itemsNb = 2; }
                 { path = "/test-2.html"; index = 2; items = [ 3 4 ]; itemsNb = 2; } ];
       in map (p: p // { inherit pages; }) pages;
+  };
+
+  testMkMultipages = {
+    expr = mkMultipages {
+      pages    = map (i: { content = "page ${toString i}"; }) (range 1 2);
+      pathFn   = (i: "/foo-${toString i}.html");
+      basePath = null;
+      output   = "all";
+    };
+    expected = let
+      pages = map (i:
+        { content = "page ${toString i}"; index = i; path = "/foo-${toString i}.html"; }
+      ) (range 1 2);
+    in map (p: p // { inherit pages; }) pages;
   };
 
   /* Generation

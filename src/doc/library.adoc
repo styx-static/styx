@@ -1,3 +1,4 @@
+[[Library]]
 == Library
 
 The library contains various functions that are used through `site.nix` and templates.

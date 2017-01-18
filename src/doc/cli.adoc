@@ -73,12 +73,12 @@ NOTE: The `live` mode does not automatically reload the browser.
 WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibility that the server process will stay alive in background. The server process can be found by running `ps aux | grep caddy` and killed with the `kill` command.
 
 
-=== Manual
+=== Doc
 
-The `manual` command can be used to launch styx HTML documentation in the default browser (`$BROWSER`).
+The `doc` command can be used to launch styx HTML documentation in the default browser (`$BROWSER`).
 
-`styx manual`:: Open the HTML help in the default browser.
-`BROWSER=firefox styx manual`:: Open the HTML help in firefox.
+`styx doc`:: Open the HTML help in the default browser.
+`BROWSER=firefox styx doc`:: Open the HTML help in firefox.
 
 
 === Serve

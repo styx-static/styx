@@ -124,7 +124,7 @@ rec {
       lit = "${D} ${B} ${YYYY}";
     };
     time = "${hh}:${mm}:${ss}";
-    T    = "${date.num}T${time}";
+    T    = "${date.num}T${time}Z";
     # year
     YYYY = year;
     YY   = substring 2 4 year;

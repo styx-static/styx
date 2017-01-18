@@ -1,36 +1,37 @@
 == Release Notes
 
 [[v0.5.0]]
-=== Styx 0.5.0 - 201X/XX/XX
+=== Styx 0.5.0 - 2017/01/18
 
 Highlights:
 
-* New theme: <<themes.generic-templates,generic-templates>>. The generic-templates theme provide a template framework and basic templates for common components.
-* <<Debugging,Interactive debugging>>
-* <<site.nix,simpler>> `site.nix`
-* <<lib.template.parseDate,Content timestamps support time>>
+* New theme: link:./styx-themes.html#generic-templates[generic-templates]. The generic-templates theme provide a template framework and basic templates for common components.
+* Showcase and Hyde themes have been ported to use generic-templates.
 * Theme configuration interface can be typed, and site configuration is type-checked.
-* <<Themes.Library,Themes can provide function libraries>>
-* Improved modularity:
-** <<lib.generation.generateSite,Pages generation function can be modified>>
-
-
-Bug fixes:
-
-- filename containing spaces are correctly generated.
-- `conf.themes` sub attributes are correctly set.
+* `styx-themes` themes link:./styx-themes.html[full documentation].
+* <<themes.metadata,Themes metadata>>.
+* <<Debugging,Interactive debugging>> with `nix-repl.`
+* <<site.nix,Simpler and shorter>> `site.nix`
+* <<themes.library,Themes can provide function libraries>>.
+* <<lib.template.parseDate,Content timestamps support time>>.
 
 Breaking Changes:
 
-- `site.nix` was refactored
-- Themes `theme.nix` file **must** declare a `meta.name` attribute specifying the theme name.
-- `lib.pages.setDefaultLayout` was removed (default pages values can be set with the `default` argument of <<lib.generation.pagesToList>>).
-- all occurences of `href` in function names / parameters and template variables has been replaced with `path`.
+* Many, among others:
+** `site.nix` was refactored
+** Themes `theme.nix` was removed, its functionality is divided in two files, `conf.nix` and `meta.nix`. `conf.nix` for configuration interface and `meta.nix` for theme metadata.
+** Themes `meta.nix` file **must** be present and **must** declare a `id` attribute specifying the theme id.
+** `lib.pages.setDefaultLayout` was removed (default pages values can be set with the `default` argument of <<lib.generation.pagesToList>>).
+** all occurences of `href` in function names / parameters and template variables has been replaced with `path`, pages `path` attribute must start with a `/`.
 
 Upgrading:
 
-This release brings few incompatible changes that requires to refactor `site.nix` to upgrade. +
-The main changes involve the init section of `site.nix` and `site.nix` returning a set instead of a `generateSite` call and `href` occurrences replaced by `path` (`path` attributes must start with a `/`).
+This release brings many incompatible changes that requires to refactor `site.nix` to upgrade. +
+Changes involve, among others, the init section of `site.nix`, `site.nix` returning a set instead of a `generateSite` call and `href` occurrences replaced by `path` (`path` attributes must start with a `/`).
+
+Comments:
+
+This is the first close to stable release of styx. Please test and send any bug or question to the link:https://github.com/styx-static/styx/issues[bug tracker].
 
 
 [[v0.4.0]]

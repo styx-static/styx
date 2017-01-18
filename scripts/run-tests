@@ -25,11 +25,11 @@ echo "---"
 echo "Lib tests:"
 if [ "$(nix-instantiate --eval --strict --show-trace $testsDir/lib.nix)" != "[ ]" ]; then
   echo "  failure"
+  nix-instantiate --eval --strict --show-trace $testsDir/lib.nix
 else
   echo "  success"
 fi
 
 echo "---"
-
 echo "Finished"
 

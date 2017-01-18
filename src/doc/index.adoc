@@ -1,4 +1,4 @@
-= Styx manual
+= Styx documentation
 :revnumber: @version@
 :description: Styx static site generator documentation
 :toc: left
@@ -43,5 +43,6 @@ include::library.adoc[]
 
 include::release-notes.adoc[]
 
-== link:./appendix.html[Appendix - Styx-themes]
+[appendix]
+== link:./styx-themes.html[Styx-themes]
 

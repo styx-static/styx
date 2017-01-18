@@ -1,9 +1,9 @@
 [[Data]]
 == Data
 
-Data refers to the data fetched or declared in the data section of `site.nix`.
+Data refers to the data fetched or declared in the <<site.nix-data,data section>> of `site.nix`.
 
-Data gets included in the default template environment and can also be used in the pages section of `site.nix` to attach data to page attribute sets.
+Data is included in the default template environment and can be used in the pages section of `site.nix` to attach data to page attribute sets.
 
 === Creating data
 
@@ -20,8 +20,8 @@ An example of such usage is a navbar declared as a list of page attributes sets.
 
 The styx data library provides functions to import external data:
 
-- `loadFile`: load a single data file and return it as an attribute set.
-- `loadDir`: to load all the files in a directory and return them as a list of attributes set. (non-recursive)
+- `<<lib.data.loadFile>>`: load a single data file and return it as an attribute set.
+- `<<lib.data.loadDir>>`: to load all the files in a directory and return them as a list of attributes set. (non-recursive)
 
 The data loading functions return a set per file loaded and do a few things:
 
@@ -30,14 +30,13 @@ The data loading functions return a set per file loaded and do a few things:
 ** `ext`: The extension of the file.
 ** `dir`: The directory of the file.
 ** `name`: The name of the file, `basename` and `ext` field combined with a `.`.
-* <<Metadata>> is automatically parsed and merged to the set.
-* Data with introduction gain a `intro` attribute containing the introduction and the introduction is removed from the content.
-* Multipages data gain a `subpages` attribute, a list containing each page content.
+* <<data.metadata>> is automatically parsed and merged to the set.
+* Data with <<data.introduction,introduction>> gain a `intro` attribute containing the introduction and the introduction is removed from the content.
+* <<data.multipage,Multipages>> data gain a `pages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
-* If the file basename begins in a `YYYY-MM-DD-` or `YYYY-MM-DDThh:mm:ss-` format, this value will be inserted in a `date` attribute.
+* If the file basename begins in a `YYYY-MM-DD-` or `YYYY-MM-DDThh:mm:ss` format, this value will be inserted in a `date` attribute.
 
 NOTE: Nix data should be imported with the `import` function, that return the data in the nix file as it is.
-
 
 === Formats
 
@@ -109,6 +108,7 @@ Which one to choose is really a matter of choice but:
 - Markup is well suited do content centric data.
 ====
 
+[[data.metadata]]
 === Metadata
 
 Metadata is the way to attach Nix data to markup files.
@@ -130,6 +130,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet 
 
 Metadata attributes will automatically be added to the data attribute set.
 
+[[data.introduction]]
 === Introduction
 
 It is possible to declare a section on an imported markup file as the introduction.
@@ -150,6 +151,7 @@ Mauris quis dolor nec est accumsan dictum eu ut nulla. Sed ut tempus quam, vel b
 
 NOTE: `intro` field contents are included in the `content` field.
 
+[[data.multipage]]
 === Multipage data
 
 It is possible to split markup file in subpages by using the `<<<` separator.
@@ -176,10 +178,11 @@ Phasellus consequat a nibh sit amet ultricies. Quisque feugiat justo eu condimen
 
 The resulting data set will have an extra `pages` field that will hold the list of subpages content in format `[ { content = ...; } ]`.
 
-NOTE: The data section is only responsible for generating the data attribute set. Transforming the data attribute sets in a page attribute set is done in the pages section. +
+NOTE: The data section is only responsible for generating the data attribute set. Transforming a data attribute set in a page attribute set is done in the pages section. +
 For example, the `mkPagesList` or `mkMultipages` function can generate pages from a multipage data set.
 
 
+[[data.taxonomies]]
 === Taxonomies
 
 ==== Overview

@@ -2,16 +2,16 @@
 == Themes
 
 Themes are a central concept in styx and are used to manage a site assets, like static files and templates.
-They also provide a configuration interface and can declare a function library.
+They can also provide a configuration interface and a function library.
 
 === Getting themes
 
-Styx themes that are part od the `styx-themes` package set are documented in the link:./appendix.html[appendix].
+Styx themes that are part of the `styx-themes` package set are documented in the link:./styx-themes.html[styx-themes documentation].
 
 
 === Creating a new theme
 
-A new theme folder structure can be created by running the `styx new theme` command.
+A new theme file structure can be created by running the `styx new theme` command.
 
 [source, shell]
 .Creating a new theme
@@ -28,20 +28,20 @@ This command will generate the following files in `./themes/my-theme`:
 └── templates/ # <4>
 ----
 
-<1> Theme configuration interface, see <<Themes.conf.nix,conf.nix>> for details.
-<2> Theme meta data, see <<meta.nix>> for details.
-<3> Directory to store theme static files, see <<Files>> for details.
-<4> Directory to store theme templates, see <<Templates>> for details.
+<1> Theme configuration interface, see <<themes.configuration>> for details.
+<2> Theme meta data, see <<themes.metadata>> for details.
+<3> Directory to store theme static files, see <<themes.files>> for details.
+<4> Directory to store theme templates, see <<themes.templates>> for details.
 
-See <<Themes.Structure, Structure>> for details.
+See <<themes.structure>> for details.
 
 NOTE: Site and themes both have `conf.nix` files, their purpose is different and should not be confused. +
-Theme `conf.nix` define the **configuration interface**, and site `conf.nix` settings **use** this interface to customize the theme.
+Theme `conf.nix` **define** the configuration interface, and site `conf.nix` settings **use** this interface to customize the theme.
 
 === Using themes
 
 Declaring used themes is done in the <<site.nix-themes,theme section>> of `site.nix`.
-Official themes can be used directly from the `styx-themes` package set.
+Path or packages can be used.
 
 [source, nix]
 .Using a local my-site theme and the generic-templates theme
@@ -57,10 +57,10 @@ Official themes can be used directly from the `styx-themes` package set.
 
 NOTE: Items at the beginning of the `themes` list have lower priority.
 
-[[Themes.Structure]]
+[[themes.structure]]
 === Structure
 
-Themes are usually stored in the `themes` directory, or used from the `styx-themes` package set.
+Themes are usually stored in a `themes` directory, or used from the `styx-themes` package set.
 
 Every theme is stored in its own directory, and themes are expected to follow a certain structure.
 
@@ -78,13 +78,13 @@ themes
 
 <1> Theme directory.
 <2> `conf.nix` defines the theme configuration interface options (optional). 
-<3> `meta.nix` defines the theme meta information, this is file is required and must define a `id` attribute.
+<3> `meta.nix` defines the theme meta information, this is file is **required** and **must** define a `id` attribute.
 <4> `lib.nix` defines the theme extra library as a set (optional).
 <5> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site (optional).
 <6> `templates` is a directory storing all the templates files (optional).
 
 
-[[Themes.conf.nix]]
+[[themes.configuration]]
 === Configuration interface
 
 A theme can provide a configuration interface by having a `conf.nix` file at the theme root directory.
@@ -128,7 +128,7 @@ This have two benefits:
 On the other hand, typing a theme configuration interface is verbose and can be an overkill for a private theme. +
 Typing is not required, but should be done for themes that are part of the `styx-themes` theme set or meant to be shared.
 
-WARNING: `types.submodule` type checking is not supported.
+WARNING: `types.submodule` type is **not** supported.
 
 [source, nix]
 .Example of a theme conf.nix with typing
@@ -181,14 +181,14 @@ The '--show-trace' flag can be used to show debug information.
 ----
 
 
-[[meta.nix]]
+[[themes.metadata]]
 === Metadata
 
-Theme meta information should be declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with an `id` attribute so the theme configuration is correctly processed. +
+Theme metadata is declared in the `meta.nix` file as an attribute set. Themes *must* define a `meta.nix` with an `id` attribute so the theme configuration is correctly processed. +
 
 Other attributes of the `meta` set are totally optional and can be set at will to provide information about the theme (e.g. `license`, `description`, `author`, `homepage`, ...).
 
-`meta` attributes commonly used for the documentation are:
+`meta` attributes used for the generated documentation are:
 
 - `name`: Theme name, can contain any character.
 - `license`: A license from `lib.licenses`.
@@ -197,6 +197,7 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 - `screenshot`: Path to a screenshot of the theme example site.
 - `description`: A single line theme description, asciidoc markup can be used.
 - `longDescription`: Free length site description, asciidoc markup can be used.
+- `documentation`: Theme documentation, asciidoc markup should be used.
 
 [source, nix]
 .Example of a simple theme meta.nix
@@ -211,12 +212,12 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 ----
 { lib }:
 {
-  id = "showcase";
-  name = "Showcase";
-  license = lib.licenses.mit;
-  demoPage = https://styx-static.github.io/styx-theme-showcase;
-  homepage = https://github.com/styx-static/styx-theme-showcase;
-  screenshot = ./screen.png;
+  id          = "showcase";
+  name        = "Showcase";
+  license     = lib.licenses.mit;
+  demoPage    = https://styx-static.github.io/styx-theme-showcase;
+  homepage    = https://github.com/styx-static/styx-theme-showcase;
+  screenshot  = ./screen.png;
   description = "A theme to show Styx main functionalities.";
 }
 ----
@@ -225,17 +226,18 @@ IMPORTANT: Themes *must* define a `meta.nix` with an `id` attribute.
 
 NOTE: `meta.nix` can be an attribute set or a function, if it is a function it will be called with an attribute set argument containing `lib`.
 
+[[themes.files]]
 === Files
 
 The `files` directory holds the static files provided by the theme. Every file in in this directory will be copied in the generated site.
 
-NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site. If this is not desirable, it is possible to pass a different list of themes to <<lib.themes.load, lib.themes.load>> function `files` argument.
+NOTE: If multiple themes are enabled, every theme `file` directory contents will be copied to the generated site.
 
 ==== Special files
 
 Styx automatically convert `sass`, `scss` and `less` files to css during site generation.
 
-[[Themes.Library]]
+[[themes.library]]
 === Library
 
 Themes can provide a function library that can be used in `site.nix` or in templates.
@@ -259,7 +261,7 @@ NOTE: `lib.nix` can be an attribute set or a function, if it is a function it wi
 
 include::themes/templates.adoc[]
 
-
+[[themes.combining]]
 === Combining Themes
 
 In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the last theme in the list to declare it will be used.
@@ -281,6 +283,4 @@ If generic-templates and my-theme both defines `templates/partials/content.nix`,
 Any used asset that is not defined in my-theme, will be used from generic-templates.
 
 NOTE: There is no limit in the number of theme that can be combined.
-
-include::themes/generic-templates.adoc[]
 

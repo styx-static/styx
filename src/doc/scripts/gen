@@ -1,0 +1,8 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p asciidoctor
+
+scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+docDir="$(realpath "$scriptDir/../")"
+
+asciidoctor "$docDir/index.adoc"
+asciidoctor "$docDir/styx-themes.adoc"

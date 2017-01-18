@@ -37,13 +37,13 @@ stdenv.mkDerivation rec {
     cp    builder.nix $out/share/styx
 
     mkdir -p $out/share/doc/styx
-    asciidoctor doc/index.adoc    -o $out/share/doc/styx/index.html
-    asciidoctor doc/appendix.adoc -o $out/share/doc/styx/appendix.html
+    asciidoctor doc/index.adoc       -o $out/share/doc/styx/index.html
+    asciidoctor doc/styx-themes.adoc -o $out/share/doc/styx/styx-themes.html
     cp -r doc/imgs $out/share/doc/styx/
 
     substituteAllInPlace $out/bin/styx
     substituteAllInPlace $out/share/doc/styx/index.html
-    substituteAllInPlace $out/share/doc/styx/appendix.html
+    substituteAllInPlace $out/share/doc/styx/styx-themes.html
 
     mkdir $lib
     cp -r lib/* $lib

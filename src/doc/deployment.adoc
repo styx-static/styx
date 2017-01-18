@@ -20,7 +20,18 @@ This is a two step process:
 
 ==== Update the gh-pages branch
 
-`styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder folder with the generated static site and commit it to the `gh-pages` branch.
+`styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder with the generated static site and commit it to the `gh-pages` branch.
+
+Then changes can be pushed with the following commands:
+
+[source, shell]
+----
+$ (cd gh-pages && git push -u origin gh-pages) # <1>
+$ git push -u origin gh-pages # <2>
+----
+
+<1> Push the `gh-pages` folder `gh-pages` branch to the root repository.
+<2> Push the root repository `gh-pages` branch to the remote repository.
 
 
 === NixOps
