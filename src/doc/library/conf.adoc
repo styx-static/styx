@@ -6,17 +6,17 @@ This namespace contains functions related to configuration.
 
 ---
 
-[[lib.conf.extract]]
-==== extract
+[[lib.conf.parseDecls]]
+==== parseDecls
 
-Description::: Extract a keys from `mkOption` declarations in a set.
+Description::: parse configuration interface declarations.
 Parameter Type::: Attribute Set
 Parameters:::
-  * `key`: Key to extract.
-  * `set`: Set to extract keys from.
-  * `nullify` (optional): Set every non extracted key value to `null`.
+  * `decls`: Declaration set.
+  * `optionFn` (optional): Function to apply to option sets, defaults to `id`.
+  * `nullify` (optional): Function to apply to standard values, defaults to `id`.
 
-Return::: An attribute set where `mkOption` declaration have been replaced.
+Return::: A parsed declaration set.
 
 Example:::
 
@@ -24,8 +24,9 @@ Example:::
 [source, nix]
 ----
 extract {
-  key = "default";
-  set = {
+  optionFn = o: option.default;
+  valueFn  = v: v + 1;
+  decls = {
     a.b.c = mkOption {
       default = "abc";
       type = types.str;
@@ -41,7 +42,7 @@ extract {
 ----
 {
   a.b.c = "abc";
-  x.y = 1;
+  x.y = 2;
 }
 ----
 
@@ -50,13 +51,13 @@ extract {
 [[lib.conf.typeCheck]]
 ==== typeCheck
 
-Description::: Extract a keys from `mkOption` declarations in a set.
+Description::: Type check definitions against declarations.
 Parameter Type::: Standard
 Parameters:::
-  * `types`: Types attribute set.
-  * `defs`: Configuration definition set.
+  * `decls`: Declarations attribute set.
+  * `defs`: Definitions attribute set.
 
-Return::: Throw an error if `defs` do not type-check with `types`.
+Return::: Throw an error if `defs` do not type-check with `decls`.
 
 ---
 

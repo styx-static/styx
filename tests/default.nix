@@ -9,17 +9,14 @@
      $BROWSER $(nix-build -A showcase-site ./tests)/index.html
 
 */
-{ pkgs ? import <nixpkgs> {} }:
+let pkgs = import ../nixpkgs;
+in
 
 with pkgs.lib;
 let
 
-  styx-themes = pkgs.styx-themes;
-
-  styx = import ../. { inherit pkgs; };
-
-  mkThemeTest = theme: (pkgs.callPackage (import "${styx-themes."${theme}"}/example/site.nix") {
-    inherit styx;
+  mkThemeTest = theme: (pkgs.callPackage (import "${pkgs.styx-themes."${theme}"}/example/site.nix") {
+    inherit (pkgs) styx;
     extraConf = {
       siteUrl = ".";
       renderDrafts = true;
@@ -28,19 +25,14 @@ let
 
   themes-sites = fold (a: acc: acc // { "${a}-site" = mkThemeTest a; }) {} themes;
  
-  themes = [
-    "agency"
-    "hyde"
-    "orbit"
-    "showcase"
-    "generic-templates"
-  ];
+  # extracting nixpkgs styx-themes list
+  themes = attrNames (filterAttrs (k: v: isDerivation v) pkgs.styx-themes);
 
 in
 
 rec {
 
-  inherit styx;
+  inherit (pkgs) styx styx-themes;
 
   new = pkgs.runCommand "styx-new-site" {} ''
     mkdir $out

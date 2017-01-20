@@ -1,6 +1,6 @@
 /* Expression to generate the themes configuration interface doc
 */
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import ../nixpkgs }:
 
 let 
 
@@ -22,12 +22,18 @@ themes = with styxLib;
                 ) data;
   in data';
 
+prettyJSON = raw:
+  let
+    result =pkgs.runCommand "parsed-data" {
+      buildInputs = [ pkgs.jq ];
+    } "jq -M . <<< '${styxLib.replaceStrings ["'"] ["'\i'''"] (builtins.toJSON raw)}' > $out";
+  in styxLib.fileContents result;
+
 styx-doc = with styxLib;
 
 { stdenv
-, styx-themes
 , writeText
-, callPackage }:
+}:
 
 stdenv.mkDerivation rec {
   name    = "styx-docs";
@@ -71,26 +77,27 @@ stdenv.mkDerivation rec {
       :sectnums!:
 
       ---
-      ${mapTemplate (data:
-      let isSet = x: hasAttr x data && data."${x}" != null;
+      ${mapTemplate (prop:
+      let
+        data = propValue prop;
       in
       ''
-        ==== ${data.pathString} 
+        ==== ${propKey prop}
 
-        ${optionalString (isSet "description") "Description:: ${data.description}"}
-        ${optionalString (isSet "type") "Type:: ${data.type}"}
-        ${optionalString (isSet "default") ''
+        ${optionalString (data ? description) "Description:: ${data.description}"}
+        ${optionalString (data ? type) "Type:: ${data.type}"}
+        ${optionalString (data ? default) ''
         Default::
         +
         ----
-        ${toJSON data.default}
+        ${prettyJSON data.default}
         ----
         ''}
-        ${optionalString (isSet "example") ''
+        ${optionalString (data ? example) ''
         Example::
         +
         ----
-        ${toJSON data.example}
+        ${prettyJSON data.example}
         ----
 
         ''}
@@ -98,7 +105,7 @@ stdenv.mkDerivation rec {
         ---
 
 
-      '') (mkDocs { inherit (theme) docs decls; })}
+      '') (docText (mkDoc { inherit (theme) decls; }))}
 
       :sectnums:
 

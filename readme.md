@@ -22,7 +22,11 @@ To open the latest documentation in the default browser, run the following comma
 $BROWSER $(nix-build --no-out-link https://github.com/styx-static/styx/archive/latest.tar.gz)/share/doc/styx/index.html
 ```
 
-### Links
+## Links
 
 - [Official site](https://styx-static.github.io/styx-site/)
 - [Documentation](https://styx-static.github.io/styx-site/documentation.html)
+
+## Contributing
+
+Read [contributing.md](./contributing.md) for details.

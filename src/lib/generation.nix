@@ -8,10 +8,12 @@ rec {
 
   /* Generate a page
   */
+  mkPage = generatePage;
   generatePage = page: page.layout (page.template page);
 
   /* Generate a site with a list pages
   */
+  mkSite = generateSite;
   generateSite = {
     name ? "styx-site"
   , meta ? {}

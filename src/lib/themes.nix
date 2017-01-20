@@ -3,6 +3,7 @@
 lib:
 with lib;
 with import ./utils.nix lib;
+with import ./conf.nix lib;
 with import ./proplist.nix lib;
 
 let
@@ -64,46 +65,45 @@ rec {
   , templates ? {}
   }:
   let
-    themesList = map (theme: loadData { inherit theme styxLib; }) themes;
+    themesData = map (theme: loadData { inherit theme styxLib; }) themes;
+    decls = styxLib.utils.merge (getThemesAttr themesData "decls");
 
-    themesSet = fold (t: acc:
+    lib = styxLib.utils.merge ([ styxLib ] ++ (getThemesAttr themesData "lib"));
+
+    files = getThemesAttr themesData "files";
+
+    themes' = fold (t: acc:
       acc // { "${t.id}" = t; }
-    ) {} themesList;
+    ) {} themesData;
 
     conf' = 
       let
         isPath     = x: ( ! isAttrs x ) && styxLib.types.path.check x;
-        extraConf  = map (c: if isPath c then importApply c { lib = lib'; } else c) (conf.extra or []);
-        defs       = styxLib.utils.merge extraConf;
-        themesDefs = styxLib.utils.merge (getThemesAttr themesList "defs");
-        types      = styxLib.utils.merge (getThemesAttr themesList "types");
-        typeCheckResult = if defs ? theme
-                          then styxLib.conf.typeCheck types defs.theme
+        extraConf  = map (c: if isPath c then importApply c { inherit lib; } else c) (conf.extra or []);
+        defaults   = styxLib.utils.merge extraConf;
+        themesDefaults.theme  = parseDecls { inherit decls; optionFn = o: if o ? default then o.default else null; };
+        typeCheckResult = if defaults ? theme
+                          then styxLib.conf.typeCheck decls defaults.theme
                           else null;
-      in deepSeq typeCheckResult (styxLib.utils.merge [ themesDefs defs ]);
-
-    lib' = styxLib.utils.merge ([ styxLib ] ++ (getThemesAttr themesList "lib"));
-
-    files' = getThemesAttr themesList "files";
+      in deepSeq typeCheckResult (styxLib.utils.merge [ themesDefaults defaults ]);
 
     templates' =
       let
         environment = (templates.extraEnv or {}) // {
+          inherit lib;
           conf      = conf';
-          lib       = lib';
           templates = templates';
         };
-        templatesSet = styxLib.utils.merge (map (t: t.templates) themesList);
+        templatesSet = styxLib.utils.merge (getThemesAttr themesData "templates");
       in mapAttrsRecursive (path: template:
         template environment
       ) templatesSet;
   in
   {
+    inherit decls lib files;
     conf      = conf';
-    lib       = lib';
-    files     = files';
     templates = templates';
-    themes    = themesSet;
+    themes    = themes';
   };
   
   /* Load theme information, return a set with the following keys:
@@ -116,7 +116,6 @@ rec {
      - decls: configuration interface declarations
      - defs: configuration interfaces definition
      - docs: configuration interface documentation
-     - types: configuratoin interface types
      - templates: templates functions, environment not applied
      - files: static files
 
@@ -126,9 +125,9 @@ rec {
   , styxLib
   }:
     let
-      confFile = findInTheme { path = theme; } "conf.nix";
-      libFile  = findInTheme { path = theme; } "lib.nix";
-      filesDir = findInTheme { path = theme; } "files";
+      confFile     = findInTheme { path = theme; } "conf.nix";
+      libFile      = findInTheme { path = theme; } "lib.nix";
+      filesDir     = findInTheme { path = theme; } "files";
       templatesDir = findInTheme { path = theme; } "templates";
       arg = { lib = fullLib; };
       lib   = if   libFile != null
@@ -148,18 +147,6 @@ rec {
       decls = if   confFile != null
               then importApply confFile arg
               else null;
-      # configuration interfaces defaults
-      defs  = (if   decls != null
-              then (c: { theme = c; }) (styxLib.extract { key = "default"; set = decls; })
-              else null);
-      # configuration interface documentation
-      docs  = if   decls != null
-              then styxLib.extract { key = "description"; set = decls; nullify = true; }
-              else null;
-      # configuration interface types
-      types = if   decls != null
-              then styxLib.extract { key = "type"; set = decls; }
-              else null;
       # templates functions, environment not applied
       templates = if   templatesDir != null
                   then mapAttrsRecursive (path: value:
@@ -172,11 +159,55 @@ rec {
               else null;
     };
 
+  /* Generate a doc attribute set
+     remove replace types byt type description
+     and non mkOptoin to a mkOption with a default
+  */
+  mkDoc = {
+    decls
+  # function to trasform options, by default we turn type into it description
+  , optionFn ? (o: o // (if o ? type then { type = o.type.description; } else {}))
+  # function to trasform single values
+  , valueFn  ? (v: mkOption { default = v; })
+  }:
+    let
+      recurse = set:
+        let
+          g = name: value:
+            if isOption value then optionFn value
+            else if isAttrs value
+                 then recurse value
+                 else valueFn value;
+        in mapAttrs g set;
+      result = recurse set;
+  in recurse decls;
+
+  /* Format a doc set generated by mkDoc to a documentation proplist
+  */
+  docText = docSet:
+    let
+    f = path: set:
+      map (key:
+        let
+          value = set.${key};
+          newPath = path ++ [ key ];
+          pathString = concatStringsSep "." newPath;
+        in
+        if isOption value
+           then { "${pathString}" = removeAttrs value [ "_type" ]; }
+        else if isAttrs value
+           then f newPath value
+           else { "${pathString}" = value; }
+      ) (attrNames set);
+    in flatten (f [] docSet);
+
   /* Generate theme configuration interface data
   */
   mkDocs = {
     docs
   , decls
+  , optionFn
+  , valueFn
   }:
     let
     f = path: set:

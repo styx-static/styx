@@ -62,10 +62,11 @@ runTests {
   /* Conf
   */
 
-  testExtract = {
-    expr = extract {
-      key = "default";
-      set = {
+  testParseDecls = {
+    expr = parseDecls {
+      optionFn = o: o.default;
+      valueFn  = v: v + 1;
+      decls = {
         a.b.c = mkOption {
           default = "abc";
           type = types.str;
@@ -73,22 +74,7 @@ runTests {
         x.y = 1;
       };
     };
-    expected = { a.b.c = "abc"; x.y = 1; };
-  };
-
-  testExtractNull = {
-    expr = extract {
-      key = "default";
-      set = {
-        a.b.c = mkOption {
-          default = "abc";
-          type = types.str;
-        };
-        x.y = 1;
-      };
-      nullify = true;
-    };
-    expected = { a.b.c = "abc"; x.y = null; };
+    expected = { a.b.c = "abc"; x.y = 2; };
   };
 
   /* Data
