@@ -38,23 +38,37 @@ with lib;
   };
 
   site.title = mkOption {
-    default = "Generic Templates";
     description = "String to append to the site `title` tag contents.";
     type = types.string;
+    default = "Generic Templates";
   };
 
   html = {
-    /* Choose the HTML doctype declaration
-       
-         html5 | html4 | xhtml1
-    */
     doctype = mkOption {
-      default = "html5";
       description = "Doctype declaration to use.";
       type = types.enum [ "html5" "html4" "xhtml1" ];
+      default = "html5";
     };
 
-    lang = "en";
+    lang = mkOption {
+      description = "An ISO 639-1 language code to set to the `html` tag.";
+      type = types.str;
+      default = "en";
+    };
+  };
+
+  services = {
+    google-analytics.trackingID = mkOption {
+      description = "Google analytics service tracker ID, Google analytics is disabled if set to null.";
+      type = with types; nullOr str;
+      default = null;
+    };
+
+    mixpanel.key = mkOption {
+      description = "Mixpanel service key, Mixpanel service is disabled if set to null.";
+      type = with types; nullOr str;
+      default = null;
+    };
   };
 
 }
