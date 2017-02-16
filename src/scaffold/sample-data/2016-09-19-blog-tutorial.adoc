@@ -1,0 +1,365 @@
+{---
+title = "Blog tutorial";
+---}
+
+A tutorial for creating a simple blog with styx.
+
+>>>
+
+== Create a new site
+
+First, we will use the styx `new` command to generate files required for a new site:
+
+[source, shell]
+----
+$ styx new site my-blog
+$ cd my-blog
+----
+
+The `styx new site` will generate the following file structure:
+
+[source, shell]
+----
+my-blog
+├── conf.nix
+├── data
+├── readme.md
+├── site.nix
+└── themes
+----
+
+The most important file is `site.nix`, it contains all the logic to generate our site.
+
+== Declare Themes
+
+In `site.nix`, find the line declaring the themes:
+
+----
+  themes = [
+    
+  ];
+----
+
+And change it to the following to load the Hyde and generic templates themes. (Hyde requires the generic templates theme) +
+Later themes in the list have higher priority.
+
+----
+  themes = [
+    styx-themes.generic-templates
+    styx-themes.hyde
+  ];
+----
+
+=== Create an index page
+
+Next, we will create an index page, in `site.nix` find the line declaring the `pages` attribute set:
+
+----
+  pages = rec {
+    
+  };
+----
+
+And add an index page:
+
+----
+  pages = rec {
+    index = {
+      title    = "Home";
+      path     = "/index.html";
+      template = templates.index;
+      layout   = templates.layout;
+    };
+  };
+----
+
+The site can be previewed by running `styx preview`:
+
+----
+$ styx preview
+----
+
+The site will be accessible at http://127.0.0.1:8080.
+To finish the preview, hit `Ctrl+C`.
+
+
+=== Create content
+
+Our index page should list our blog posts, so we will need to generate some data and create pages in our new blog. +
+Styx has a `gen-sample-data` command that will generate some data for us:
+
+----
+$ styx gen-sample-data
+----
+
+This generate the following data:
+
+----
+data
+└── sample
+    ├── pages
+    │   └── about.md
+    └── posts
+        ├── 2016-09-11-drafts.md
+        ├── 2016-09-13-multipages.md
+        ├── 2016-09-14-pages.md
+        ├── 2016-09-15-data.md
+        ├── 2016-09-16-themes.md
+        ├── 2016-09-18-features.md
+        └── 2016-09-19-blog-tutorial.adoc
+----
+
+Next step is to load that data in `site.nix`. Find the line declaring the `data` set:
+
+----
+  data = {
+    
+  };
+----
+
+And change it to load the posts:
+
+----
+  data = {
+    posts = lib.sortBy "date" "dsc" (lib.loadDir { dir = ./data/sample/posts; });
+  };
+----
+
+=== Add some pages
+
+Now we have the blog posts data, we can create some pages:
+
+In the `pages` set, add the posts:
+
+----
+  pages = rec {
+    index = {
+      title    = "Home";
+      path     = "/index.html";
+      template = templates.index;
+      layout   = templates.layout;
+    };
+
+    posts = lib.mkPageList {
+      data       = data.posts;
+      pathPrefix = "/posts/";
+      template   = templates.post.full;
+      layout     = templates.layout;
+    };
+  };
+----
+
+Lets preview our site again:
+
+----
+$ styx preview
+----
+
+Posts are generated, but they are not listed on the index page.
+
+
+=== Index page revisited
+
+Hyde is designed so the most recent posts appears on the index page, and older posts are on archive pages. +
+So we need to split our posts between the index and archive pages.
+
+There is a `mkSplit` function that does just that. +
+So we will adapt our index page declaration to use it:
+
+----
+  pages = rec {
+    index = lib.mkSplit {
+      title        = "Home";
+      basePath     = "/index";
+      itemsPerPage = conf.theme.itemsPerPage;
+      template     = templates.index;
+      data         = posts;
+      layout       = templates.layout;
+    };
+
+    posts = lib.mkPageList {
+      data       = data.posts;
+      pathPrefix = "/posts/";
+      template   = templates.post.full;
+      layout     = templates.layout;
+    };
+  };
+----
+
+Lets preview our site again:
+
+----
+$ styx preview
+----
+
+Posts are listed on the index page, and archive pages are also generated, all good.
+
+
+=== Adding single pages
+
+In the sample data, there is an about page. Lets add it to our site.
+
+First we need to load its data, is a single file, so `loadFile` is enough:
+
+----
+  data = {
+    posts = lib.sortBy "date" "dsc" (lib.loadDir { dir = ./data/sample/posts; });
+    about = lib.loadFile { dir = ./data/sample/pages; file = "about.md"; };
+  };
+----
+
+And add create a page in the `pages` set:
+
+----
+  pages = {
+
+    ...
+
+    about = data.about // {
+      path     = "/about.html";
+      template = templates.page.full;
+      layout   = templates.layout;
+    };
+  };
+----
+
+Finally, we can add an entry in the sidebar for the about page by adding a `menu` to our `data`:
+
+----
+  data = {
+    posts = lib.sortby "date" "dsc" (lib.loaddir { dir = ./data/sample/posts; });
+    about = lib.loadfile { dir = ./data/sample/pages; file = "about.md"; };
+    menu  = [ pages.about ];
+  };
+----
+
+
+=== Adding an atom feed
+
+Next step is adding an atom feed. +
+To do so, we just need to create a page:
+
+----
+  pages = {
+
+    ...
+
+    feed = {
+      path     = "/feed.xml";
+      template = templates.feed.atom;
+      layout   = lib.id;
+      items    = lib.take 10 posts;
+    };
+  };
+----
+
+
+=== Improvements
+
+==== Multipages handling
+
+One of the sample page is using multipages, but `mkPageList` only generates the first page of multipages posts, so we have missing pages. +
+`mkPageList` does not generate multipages subpages on purpose, to avoid to have the subpages listed as full posts.
+
+There is a `mkMultiTail` function that generates only the subpages of multipages posts, let's add it to the pages:
+
+----
+  pages = rec {
+    ...
+
+    postsMultiTail = lib.mkMultiTail {
+      data       = data.posts;
+      pathPrefix = "/posts/";
+      template   = templates.post.full;
+      layout     = templates.layout;
+    };
+  };
+----
+
+==== Customizing our site
+
+The Hyde theme provide some configuration options that can be used to change our blog.
+
+The following command will generate a documentation for our site, so we can check the avalaible theme options:
+
+----
+$ styx site-doc
+----
+
+To change the theme options, edit `conf.nix` at site root and find the following line:
+
+----
+  theme = {
+  };
+----
+
+And change it to:
+
+----
+  theme = {
+    site.title   = "My Styx Blog";
+    colorScheme  = "0d";
+    itemsPerPage = 5;
+  };
+----
+
+Let's preview our site and see what changed.
+
+
+==== Cleaning up
+
+All of our pages are declaring the same `layout`. +
+It is possible to set attributes to every page when converting our page set to a page list.
+
+In `site.nix` find:
+
+----
+  pagesList = lib.pagesToList { inherit pages; };
+----
+
+Let's add the default layout here:
+
+----
+  pagesList = lib.pagesToList { inherit pages; default = { layout = templates.layout; }; };
+----
+
+And remove all the `layout` declarations of our pages:
+
+----
+  pages = rec {
+    index = lib.mkSplit {
+      title        = "Home";
+      basePath     = "/index";
+      itemsPerPage = conf.theme.itemsPerPage;
+      template     = templates.index;
+      data         = posts;
+    };
+
+    posts = lib.mkPageList {
+      data       = data.posts;
+      pathPrefix = "/posts/";
+      template   = templates.post.full;
+    };
+
+    postsMultiTail = lib.mkMultiTail {
+      data       = data.posts;
+      pathPrefix = "/posts/";
+      template   = templates.post.full;
+    };
+
+    about = data.about // {
+      path     = "/about.html";
+      template = templates.page.full;
+      layout   = templates.layout;
+    };
+
+    feed = {
+      path     = "/feed.xml";
+      template = templates.feed.atom;
+      layout   = lib.id;
+      items    = lib.take 10 posts;
+    };
+  };
+----
+
+==

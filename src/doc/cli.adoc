@@ -73,14 +73,6 @@ NOTE: The `live` mode does not automatically reload the browser.
 WARNING: If the live mode is not quitted by pressing kbd:[q], there is a possibility that the server process will stay alive in background. The server process can be found by running `ps aux | grep caddy` and killed with the `kill` command.
 
 
-=== Doc
-
-The `doc` command can be used to launch styx HTML documentation in the default browser (`$BROWSER`).
-
-`styx doc`:: Open the HTML help in the default browser.
-`BROWSER=firefox styx doc`:: Open the HTML help in firefox.
-
-
 === Serve
 
 The `serve` command is used to build a site and launch a local server. This allow to check the site without having to deploy it.
@@ -95,6 +87,27 @@ NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` 
 NOTE: Styx use the link:https://caddyserver.com/[caddy server], even if it is performant server, `styx serve` launchs it without any special settings. +
 For production environments it is recommended to use a carefully configured server over `styx serve`.
 
+
+=== Doc
+
+The `doc` command can be used to launch styx HTML documentation in the default browser (`$BROWSER`).
+
+`styx doc`:: Open the HTML help in the default browser.
+`BROWSER=firefox styx doc`:: Open the HTML help in firefox.
+
+
+=== Site-doc
+
+The `site-doc` command can be used to generate and launch in the default browser a documentation for a styx site.
+
+`styx site-doc`:: Open the HTML help in the default browser.
+`BROWSER=firefox styx site-doc`:: Open the HTML help in firefox.
+
+=== Gen-sample-data
+
+The `gen-sample-data` command can be used to generate sample data, useful to create themes example sites.
+
+`styx gen-data`:: Generate sample data in `./data`.
 
 === Deploy
 

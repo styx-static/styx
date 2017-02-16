@@ -73,6 +73,6 @@ rec {
 
   /* Generating the site
   */
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files pagesList; };
 
 }

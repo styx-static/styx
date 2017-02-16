@@ -6,7 +6,7 @@ It can be installed with `nix-env` or used in a temporary environment with `nix-
 [source, shell]
 .Starting nix-repl in a nix-shell
 ----
-$ nix-shell -p nix-repl --run nix-repl
+$ nix-shell -p nix-repl --run 'nix-repl "<nixpkgs>"'
 ----
 
 
@@ -15,7 +15,9 @@ $ nix-shell -p nix-repl --run nix-repl
 [source]
 .Inspecting the `conf` configuration set
 ----
-nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
+$ nix-repl "<nixpkgs>"
+
+nix-repl> site = callPackage (import ./site.nix) {}
 
 nix-repl> site.conf
 { siteUrl = "https://styx-static.github.io/styx-theme-showcase"; theme = { ... }; }
@@ -26,7 +28,9 @@ nix-repl> site.conf
 [source]
 .Using parseDate
 ----
-nix-repl> site = (import <nixpkgs> {}).callPackage (import ./site.nix) {}
+$ nix-repl "<nixpkgs>"
+
+nix-repl> site = callPackage (import ./site.nix) {}
 
 nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}"
 "18 May 2016, 12:40:21"
@@ -38,7 +42,9 @@ nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}
 [source]
 .Rendering a page source
 ----
-nix-repl> showcase = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
+$ nix-repl "<nixpkgs>"
+
+nix-repl> showcase = callPackage (import "${styx-themes.showcase}/example/site.nix") {}
 
 nix-repl> with showcase; lib.generatePage (pages.about // { layout = templates.layout; }) # <1>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
@@ -58,7 +64,9 @@ It is possible to generate the site in the nix store from `nix-repl`.
 [source]
 .Building a site
 ----
-nix-repl> showcase = (import <nixpkgs> {}).callPackage (import "${pkgs.styx-themes.showcase}/example/site.nix") {}
+$ nix-repl "<nixpkgs>"
+
+nix-repl> showcase = callPackage (import "${styx-themes.showcase}/example/site.nix") {}
 
 nix-repl> :b showcase.site
 ...

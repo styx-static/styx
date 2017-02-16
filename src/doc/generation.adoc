@@ -1,13 +1,13 @@
 == Site Generation
 
-Site generation consists in a call to <<lib.generation.generateSite>>, and the preparation of its arguments.
+Site generation consists in a call to link:library.html#lib.generation.mkSite[`mkSite`], and the preparation of its arguments.
 
 [source, nix]
-.Standard call to generateSite
+.Standard call to mkSite
 ----
 pagesList = pagesToList { inherit pages; }; # <1>
 
-site = generateSite { inherit conf files pagesList; } # <2>
+site = mkSite { inherit conf files pagesList; } # <2>
 ----
 
 <1> Convert the pages attribute set to a list of pages.
@@ -33,7 +33,7 @@ NOTE: Styx expects the site to be rendered in the `site` attribute of the main s
 
 Subtitutions are a way to pass variables from `site.nix` in markup or static files.
 
-Substitutions are a set that is passed to the `generateSite` function. Any value of set will be replaced in the markup or static files that `generateSite` outputs.
+Substitutions are a set that is passed to the `mkSite` function. Any value of set will be replaced in the markup or static files that `mkSite` outputs.
 
 [source, nix]
 .Simple substitution set
@@ -42,7 +42,7 @@ Substitutions are a set that is passed to the `generateSite` function. Any value
     siteUrl = conf.siteUrl;
   };
 
-  site = lib.generateSite {
+  site = lib.mkSite {
     inherit files pagesList substitutions;
   };
 ----
@@ -69,7 +69,7 @@ Styx automatically convert `sass`, `scss` and `less` files to css during site ge
 
 === Hooks
 
-`generateSite` provide two hooks to customize the site generation process:
+`mkSite` provide two hooks to customize the site generation process:
 
 - `preGen`: A string or multiline string with shell commands to run before generating the site.
 - `postGen`: A string or multiline string with shell commands to run after generating the site.
@@ -79,12 +79,12 @@ Styx automatically convert `sass`, `scss` and `less` files to css during site ge
 
 Styx creates the static site as a standard nix derivation.
 
-It is possible to set the derivation metadata by passing a `meta` set to the `generateSite` function.
+It is possible to set the derivation metadata by passing a `meta` set to the `mkSite` function.
 
 [source, nix]
 .Setting site derivation metadata
 ----
-  site = with lib; generateSite {
+  site = with lib; mkSite {
     inherit files pagesList substitutions;
     meta = {
       license = licenses.mit;

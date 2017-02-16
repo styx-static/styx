@@ -2,6 +2,7 @@
 
 lib: pkgs:
 with lib;
+with (import ./utils.nix lib);
 with (import ./proplist.nix lib);
 
 let
@@ -16,6 +17,7 @@ let
     markdown = [ "markdown" "mdown" "md" ];
     # other
     nix      = [ "nix" ];
+    image    = [ "jpeg" "jpg" "png" "gif" ];
   };
 
   markupExts = ext.asciidoc ++ ext.markdown;
@@ -23,7 +25,7 @@ let
   /* Convert commands
   */
   commands = {
-    asciidoc = "asciidoctor -s -a showtitle -o-";
+    asciidoc = "asciidoctor -b xhtml5 -s -a showtitle -o-";
     markdown = "multimarkdown";
   };
 
@@ -111,7 +113,7 @@ let
   parseFile = fileData:
     let
       m    = match "^([0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}:[0-9]{2})?)?\-?(.*)$" fileData.basename;
-      date = if m != null then { date = (elemAt m 0); } else {};
+      date = if m != null && (elemAt m 0)  != null then { date = (elemAt m 0); } else {};
       path = "${fileData.dir + "/${fileData.name}"}";
       data =      if elem fileData.ext markupExts then parseMarkupFile fileData
              else if elem fileData.ext ext.nix    then import path
@@ -152,66 +154,345 @@ let
 in
 rec {
 
-  /* load the data files from a directory that styx can handle
-  */
-  loadDir = { dir, substitutions ? {}, ... }@args:
-    let extraArgs = removeAttrs args [ "dir" "substitutions" ];
+  _documentation = _: ''
+    The data namespace contains functions to fetch and manipulate data.
+  '';
+
+# -----------------------------
+
+  loadDir = documentedFunction {
+    description = ''
+      Load a directory containing data that styx can handle.
+    '';
+
+    arguments = {
+      dir = {
+        description = "The directory to load data from.";
+        type = "Path";
+      };
+      substitutions = {
+        description = "A substitution set to apply to the loaded data.";
+        type = "Attrs";
+        default = {};
+      };
+      filterDraftsFn = {
+        description = "Function to filter the drafts.";
+        type = "Draft -> Bool";
+        default = literalExample "d: !((! renderDrafts) && (attrByPath [\"draft\"] false d))";
+      };
+      renderDrafts = {
+        description = "Whether or not to render the drafts.";
+        type = "Bool";
+        default = false;
+      };
+      asAttrs = {
+        description = "If set to true, the function will return a set instead of a list. The key will be the file basename, and the value the data set.";
+        type = "Bool";
+        default = false;
+      };
+    };
+
+    return = "A list of data attribute sets. (Or a set of data set if `asAttrs` is `true`)";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        data.posts = loadDir {
+          dir = ./data/posts;
+        });
+      '';
+    }) ];
+
+    notes = ''
+      Any extra attribute in the argument set will be added to every loaded data attribute set.
+    '';
+
+    function = {
+      dir
+    , substitutions  ? {}
+    , filterDraftsFn ? (d: !((! renderDrafts) && (attrByPath ["draft"] false d)))
+    , renderDrafts   ? false
+    , asAttrs        ? false
+    , ...
+    }@args:
+      let
+        extraArgs = removeAttrs args [ "dir" "substitutions" "filterDraftsFn" "renderDrafts" "asAttrs" ];
+        data = map (fileData:
+          (parseFile fileData) // extraArgs
+        ) (getFiles dir);
+        list  = filter filterDraftsFn data;
+        attrs = fold (d: acc: acc // { "${d.fileData.basename}" = d; }) {} list;
     in
-    map (fileData:
-      (parseFile fileData) // extraArgs
-    ) (getFiles dir);
+      if asAttrs then attrs else list;
+      #filter filterDraftsFn data;
+  };
 
-  /* load a data file
-  */
-  loadFile = { dir, file, substitutions ? {}, ... }@args:
-    let
-      extraArgs = removeAttrs args [ "dir" "file" "substitutions" ];
-      m = match "^(.*)\\.([^.]+)$" file;
-      basename = elemAt m 0;
-      ext = elemAt m 1;
-      fileData = { inherit dir basename ext; name = file; };
-    in
-      (parseFile fileData) // extraArgs;
+# -----------------------------
 
-  /* Convert a markdown string to html
-  */
-  markdownToHtml = markupToHtml "markdown";
+  loadFile = documentedFunction {
+    description = ''
+      Load a directory containing data that styx can handle.
+    '';
 
-  /* Convert an asciidoc string to html
-  */
-  asciidocToHtml = markupToHtml "asciidoc";
+    arguments = {
+      dir = {
+        description = "The directory where the file is located.";
+        type = "Path";
+      };
+      file = {
+        description = "The file to load.";
+        type = "String";
+      };
+      substitutions = {
+        description = "A substitution set to apply to the loaded file.";
+        type = "Attrs";
+        default = {};
+      };
+    };
 
-  /* Generate a taxonomy data structure
-  */
-  mkTaxonomyData = { data, taxonomies }:
-   let
-     rawTaxonomy =
-       fold (taxonomy: plist:
-         fold (set: plist:
-           fold (term: plist:
-             plist ++ [ { "${taxonomy}" = [ { "${term}" = [ set ]; } ]; } ]
-           ) plist set."${taxonomy}"
-         ) plist (filter (d: hasAttr taxonomy d) data)
-       ) [] taxonomies;
-     semiCleanTaxonomy = propFlatten rawTaxonomy;
-     cleanTaxonomy = map (pl:
-       { "${propKey pl}" = propFlatten (propValue pl); }
-     ) semiCleanTaxonomy;
-   in cleanTaxonomy;
+    return = "A data attribute set.";
 
-  /* sort terms by number of values
-  */
-  sortTerms = sort (a: b:
-    valuesNb a > valuesNb b
-  );
+    examples = [ (mkExample {
+      literalCode = ''
+        data.about = loadFile {
+          dir  = ./data/pages;
+          file = "about.md";
+        });
+      '';
+    }) ];
 
-  /* Number of values a term holds
-  */
-  valuesNb = term: length (propValue term);
+    function = {
+      dir
+    , file
+    , substitutions ? {}
+    , ...
+    }@args:
+      let
+        extraArgs = removeAttrs args [ "dir" "file" "substitutions" ];
+        m = match "^(.*)\\.([^.]+)$" file;
+        basename = elemAt m 0;
+        ext = elemAt m 1;
+        fileData = { inherit dir basename ext; name = file; };
+      in
+        (parseFile fileData) // extraArgs;
+  };
 
-  /* Group a set of data in a property list with a function
-  */
-  groupBy = list: f:
-    propFlatten (map (d: { "${f d}" = [ d ]; } ) list);
+# -----------------------------
+
+  markdownToHtml = documentedFunction {
+    description = "Convert markdown text to HTML.";
+
+    arguments = [
+      {
+        name = "text";
+        description = "Text in markdown format";
+        type = "String";
+      }
+    ];
+
+    return = "`String`";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        markdownToHtml "Hello `markdown`!"
+      '';
+      code = 
+        markdownToHtml "Hello `markdown`!"
+      ;
+    }) ];
+    
+    function = markupToHtml "markdown";
+  };
+
+# -----------------------------
+
+  asciidocToHtml = documentedFunction {
+    description = "Convert asciidoc text to HTML.";
+
+    arguments = [
+      {
+        name = "text";
+        description = "Text in asciidoc format.";
+        type = "String";
+      }
+    ];
+
+    examples = [ (mkExample {
+      literalCode = ''
+        asciidocToHtml "Hello `asciidoc`!"
+      '';
+      code = 
+        asciidocToHtml "Hello `asciidoc`!"
+      ;
+    }) ];
+
+    return = "`String`";
+    
+    function = markupToHtml "asciidoc";
+  };
+
+# -----------------------------
+
+  mkTaxonomyData = documentedFunction {
+    description = ''
+      Generate taxonomy data from a list of data attribute sets.
+    '';
+
+    arguments = {
+      data = {
+        description = "A list of data attribute sets to extract taxonomy data from.";
+        type = "[ Data ]";
+      };
+      Taxonomies = {
+        description = "A list of taxonomies to extract.";
+        type = "[ String ]";
+      };
+    };
+
+    return = "A taxonomy attribute set.";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        mkTaxonomyData {
+          data = [
+            { tags = [ "foo" "bar" ]; path = "/a.html"; }
+            { tags = [ "foo" ];       path = "/b.html"; }
+            { category = [ "baz" ];   path = "/c.html"; }
+          ];
+          taxonomies = [ "tags" "category" ];
+        }
+      '';
+      code = 
+        mkTaxonomyData {
+          data = [
+            { tags = [ "foo" "bar" ]; path = "/a.html"; }
+            { tags = [ "foo" ];       path = "/b.html"; }
+            { category = [ "baz" ];   path = "/c.html"; }
+          ];
+          taxonomies = [ "tags" "category" ];
+        }
+      ;
+    }) ];
+
+    function = { data, taxonomies }:
+      let
+        rawTaxonomy =
+          fold (taxonomy: plist:
+            fold (set: plist:
+              fold (term: plist:
+                plist ++ [ { "${taxonomy}" = [ { "${term}" = [ set ]; } ]; } ]
+              ) plist set."${taxonomy}"
+            ) plist (filter (d: hasAttr taxonomy d) data)
+          ) [] taxonomies;
+        semiCleanTaxonomy = propFlatten rawTaxonomy;
+        cleanTaxonomy = map (pl:
+          { "${propKey pl}" = propFlatten (propValue pl); }
+        ) semiCleanTaxonomy;
+      in cleanTaxonomy;
+  };
+
+# -----------------------------
+
+  sortTerms = documentedFunction {
+    description = "Sort taxonomy terms by number of occurences.";
+
+    arguments = [
+      {
+        name = "terms";
+        description = "List of taxonomy terms attribute sets.";
+        type = "[ Terms ]";
+      }
+    ];
+
+    return = "Sorted list of taxonomy terms attribute sets.";
+    
+    examples = [ (mkExample {
+      literalCode = ''
+        sortTerms [ { bar = [ {} {} ]; } { foo = [ {} {} {} ]; } ]
+      '';
+      code = 
+        sortTerms [ { bar = [ {} {} ]; } { foo = [ {} {} {} ]; } ]
+      ;
+      expected = [
+        { foo = [ {} {} {} ]; } { bar = [ {} {} ]; }
+      ];
+    }) ];
+    
+    function = sort (a: b: valuesNb a > valuesNb b);
+  };
+
+# -----------------------------
+
+  valuesNb = documentedFunction {
+    description = "Calculate the number of values in a taxonomy term attribute set.";
+
+    arguments = [
+      {
+        name = "term";
+        description = "Taxonomy terms attribute set.";
+        type = "Terms";
+      }
+    ];
+
+    return = "`Int`";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        valuesNb { foo = [ {} {} {} ]; }
+      '';
+      code = 
+        valuesNb { foo = [ {} {} {} ]; }
+      ;
+      expected = 3;
+    }) ];
+
+    function = term: length (propValue term);
+  };
+
+# -----------------------------
+
+  groupBy = documentedFunction {
+
+    description = "Group a list of attribute sets.";
+
+    arguments = [
+      {
+        name = "list";
+        description = "List of attribute sets.";
+        type = "[ Attrs ]";
+      }
+      {
+        name = "f";
+        description = "Function to generate the group name.";
+        type = "Attrs -> String";
+      }
+    ];
+
+    return = "A property list of grouped attribute sets";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        groupBy [
+          { type = "fruit"; name = "apple"; }
+          { type = "fruit"; name = "pear"; }
+          { type = "vegetable"; name = "lettuce"; }
+        ]
+        (s: s.type)
+      '';
+      code = 
+        groupBy [
+          { type = "fruit"; name = "apple"; }
+          { type = "fruit"; name = "pear"; }
+          { type = "vegetable"; name = "lettuce"; }
+        ]
+        (s: s.type)
+      ;
+      expected = [
+        { fruit = [ { type = "fruit"; name = "apple"; } { type = "fruit"; name = "pear"; } ]; }
+        { vegetable = [ { type = "vegetable"; name = "lettuce"; } ]; }
+      ];
+    }) ];
+
+    function = list: f: propFlatten (map (d: { "${f d}" = [ d ]; } ) list);
+  };
 
 }

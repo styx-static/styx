@@ -20,8 +20,8 @@ An example of such usage is a navbar declared as a list of page attributes sets.
 
 The styx data library provides functions to import external data:
 
-- `<<lib.data.loadFile>>`: load a single data file and return it as an attribute set.
-- `<<lib.data.loadDir>>`: to load all the files in a directory and return them as a list of attributes set. (non-recursive)
+- link:library.html#lib.data.loadFile[loadFile]: load a single data file and return it as an attribute set.
+- link:library.html#lib.data.loadDir[loadDir]: to load all the files in a directory and return them as a list of attributes set. (non-recursive)
 
 The data loading functions return a set per file loaded and do a few things:
 
@@ -88,7 +88,7 @@ Nix expression language is the language used in `site.nix` and in every template
 
 It is a simple functional language and fits well data that has multiple fields.
 
-[source,markdown]
+[source, nix]
 .Nix data
 ----
 [
@@ -107,6 +107,61 @@ Which one to choose is really a matter of choice but:
 - Nix is well suited for complex data structures with multiple fields.
 - Markup is well suited do content centric data.
 ====
+
+[[data.drafts]]
+=== Managing drafts
+
+There a two main approaches to manage drafts with styx:
+
+1. Managing drafts with metadata.
+2. Managing drafts in a separate directory.
+
+NOTE: Using metadata is the recommended way as it is easier to set up.
+
+==== Metadata
+
+This is the recomended way to manage draft contents. Drafts and regular posts are in the same directory, but drafts have a `draft` metadata key set to `true`.
+
+[source, markdown]
+.Mardown file marked as draft
+----
+{---
+draft = true;
+---}
+# Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
+----
+
+Then the list of posts can be fetched with link:library.html#lib.template.loadDir[loadDir] by passing the `renderDrafts` parameter.
+
+[source, nix]
+.Fetching drafts
+----
+  data = {
+    posts = loadDir { dir = ./data/posts; inherit (conf) renderDrafts; };
+  };
+----
+
+To "publish" a draft, its `draft` metadata should be set to false, or removed.
+
+NOTE: If `renderDrafts` is not set, it will be assumed as `false` and automatically filter contents that have a `draft` metadata field set to `true`.
+
+==== Directories
+
+It is also possible to manage drafts in a separate directory. In this case `optionals` is used to load the drafts only if `conf.renderDrafts` is set to true.
+
+[source, nix]
+----
+  data = {
+    posts  = let
+      posts  = loadDir { dir = ./data/posts; };
+      drafts = optionals (conf.renderDrafts) (loadDir { dir = ./data/drafts; draft = true; }); 
+    in sortBy "date" "dsc" (posts ++ drafts);
+  };
+----
+
+To "publish" a draft, the content file should be moved in the non draft directory.
 
 [[data.metadata]]
 === Metadata

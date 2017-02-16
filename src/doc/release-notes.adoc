@@ -1,5 +1,20 @@
 == Release Notes
 
+[[v0.6.0]]
+=== Styx 0.6.0 - 2017/XX/XX
+
+Highlights:
+
+* New commands:
+** `styx site-doc`: generate documentation for a styx site.
+** `styx gen-sample-data`: generate sample data.
+
+Breaking Changes:
+
+
+Upgrading:
+
+
 [[v0.5.0]]
 === Styx 0.5.0 - 2017/01/18
 

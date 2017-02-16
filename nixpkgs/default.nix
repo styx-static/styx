@@ -22,10 +22,10 @@ let
   # dev folder
   styx-dev = ../../.;
 
-  # generates a theme derivatoin from a theme folder
+  # generates a theme derivation from a theme folder
   mkTheme = themeName: pkgs.stdenv.mkDerivation {
     name = "styx-theme-${themeName}-dev";
-    src  =  styx-dev + "/styx-themes/${themeName}";
+    src  =  styx-dev + "/themes/${themeName}";
     installPhase = ''mkdir $out && cp -r $src/* $out/'';
   };
 

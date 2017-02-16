@@ -1,227 +1,110 @@
-/* Styx lib tests
+/* Library tests for Styx
 
-   run with
-   
-     nix-instantiate --eval --strict --show-trace tests/lib.nix
+   To see the tests report run:
+
+     cat $(nix-build --no-out-link -A report tests/lib-au.nix)
+
+   To check test coverage run:
+
+     cat $(nix-build --no-out-link -A coverage tests/lib-au.nix)
+
 */
 let
-  pkgs = (import <nixpkgs> {});
-  lib = pkgs.callPackage ../src/lib {};
+  pkgs = (import ../nixpkgs);
+  lib = pkgs.callPackage pkgs.styx.lib {};
 in with lib;
+let
+  namespaces = [
+    "conf"
+    "data"
+    "generation"
+    "pages"
+    "proplist"
+    "template"
+    "themes"
+    "utils"
+  ];
 
-runTests {
+  libs = map (x:
+    mapAttrs' (k: v:
+      { name = "lib.${x}.${k}"; value = v; }
+    ) lib."${x}"
+  ) namespaces;
 
-  /* Template
-  */
+  functions = fold (x: acc:
+    acc // x
+  ) {} libs;
 
-  testHtmlAttr = {
-    expr = htmlAttr "class" [ "foo" "bar" ];
-    expected = ''class="foo bar"'';
-  };
+  tests = 
+    let 
+      ex = mapAttrsToList (name: fn:
+        let
+          docFn = fn { _type = "genDoc"; };
+          extract = imap (index: ex:
+            optionalAttrs (ex ? code && ex ? expected)
+            (ex // { inherit name index; })
+          ) docFn.examples;
+        in if docFn ? examples then extract else {}) functions;
+    in filter (x: x != {}) (flatten ex);
 
-  testHtmlAttrs = {
-    expr = htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; };
-    expected = ''class="foo bar" id="baz"'';
-  };
+   missingTests = 
+    let 
+      missing = mapAttrsToList (name: fn:
+        let
+          docFn = fn { _type = "genDoc"; };
+          hasTest = any (ex: ex ? expected);
+        in if   isDocFunction docFn
+           then if   docFn ? examples && hasTest docFn.examples
+                then null
+                else name
+           else null) functions;
+    in filter (x: x != null) (flatten missing);
 
-  testMapTemplate = {
-    expr = mapTemplate (i: "<li>${i}</li>") [ "foo" "bar" ];
-    expected = ''
-      <li>foo</li>
-      <li>bar</li>'';
-  };
+   runTests = fold (test: acc:
+     if test.code == test.expected
+     then (acc // { success  = acc.success ++ [ test ]; })
+     else (acc // { failures = acc.failures ++ [ test ]; })
+   ) { success = []; failures = []; };
 
-  testMapTemplateWithIndex = {
-    expr = mapTemplateWithIndex (index: item: "<li>${toString index} - ${item}</li>") [ "foo" "bar" ];
-    expected = ''
-      <li>1 - foo</li>
-      <li>2 - bar</li>'';
-  };
+   results = runTests tests;
 
-  testMod = {
-    expr = mod 3 2;
-    expected = 1;
-  };
+   successNb  = length results.success;
+   failuresNb = length results.failures;
 
-  testIsEven = {
-    expr = isEven 3;
-    expected = false;
-  };
+   lsep  = "====================\n";
+   sep   = "---\n";
+   inSep = x: sep + x + sep;
 
-  testIsOdd = {
-    expr = isOdd 3;
-    expected = true;
-  };
+   report = pkgs.writeText "lib-tests-report.txt" ''
+     ---
+     ${toString (successNb + failuresNb)} tests run.
+     - ${toString successNb} success(es).
+     - ${toString failuresNb} failure(s).
+     ${optionalString (failuresNb > 0) ''
 
-  testParseDate = {
-    expr = with (parseDate "2012-12-21"); "${D} ${b} ${Y}";
-    expected = "21 Dec 2012";
-  };
+     Failures details:
 
+     ${lsep}${mapTemplate (failure:
+       let
+         header = "${failure.name}, example number ${toString failure.index}:\n";
+         code = optionalString (failure ? literalCode) "\ncode:\n" + inSep failure.literalCode;
+         expected = "\nexpected:\n" + inSep "${prettyNix failure.expected}\n";
+         got = "\ngot:\n" + inSep "${prettyNix failure.code}\n";
+       in
+         header + code + expected + got + lsep
+     ) results.failures}''}
+     ---
+     '';
 
-  /* Conf
-  */
+   coverage = pkgs.writeText "lib-tests-coverage.txt" ''
+     ---
+     ${toString (length missingTests)} functions missing tests:
+     
+     ${mapTemplate (f: " - ${f}") missingTests}
+     ---
+   '';
 
-  testParseDecls = {
-    expr = parseDecls {
-      optionFn = o: o.default;
-      valueFn  = v: v + 1;
-      decls = {
-        a.b.c = mkOption {
-          default = "abc";
-          type = types.str;
-        };
-        x.y = 1;
-      };
-    };
-    expected = { a.b.c = "abc"; x.y = 2; };
-  };
-
-  /* Data
-  */
-
-  testSortTerms = {
-    expr = sortTerms [ { b = [1 2]; } { a = [1]; } { c = [1 2 3]; } ];
-    expected = [ { c = [ 1 2 3 ]; } { b = [ 1 2 ]; } { a = [ 1 ]; } ];
-  };
-
-  testValuesNb = {
-    expr = valuesNb { c = [1 2 3]; };
-    expected = 3;
-  };
-
-  testMkTaxonomyData = {
-    expr = mkTaxonomyData {
-      data = [
-        { tags = [ "foo" "bar" ]; }
-        { tags = [ "foo" ]; }
-        { category = [ "baz" ]; }
-      ];
-      taxonomies = [ "tags" "category" ];
-    };
-    expected = [
-      {
-        category = [
-          { baz = [ { category = [ "baz" ]; } ]; }
-        ];
-      } 
-      { 
-        tags = [
-          { foo = [ { tags = [ "foo" ]; } { tags = [ "foo" "bar" ]; } ]; }
-          { bar = [ { tags = [ "foo" "bar" ]; } ]; }
-        ];
-      }
-    ];
-  };
-
-  /* Pages
-  */
-
-  testMkSplit = {
-    expr = mkSplit {
-      basePath = "/test";
-      itemsPerPage = 2;
-      data = range 1 4;
-    };
-    expected = let 
-      pages = [ { path = "/test.html";   index = 1; items = [ 1 2 ]; itemsNb = 2; }
-                { path = "/test-2.html"; index = 2; items = [ 3 4 ]; itemsNb = 2; } ];
-      in map (p: p // { inherit pages; }) pages;
-  };
-
-  testMkMultipages = {
-    expr = mkMultipages {
-      pages    = map (i: { content = "page ${toString i}"; }) (range 1 2);
-      pathFn   = (i: "/foo-${toString i}.html");
-      basePath = null;
-      output   = "all";
-    };
-    expected = let
-      pages = map (i:
-        { content = "page ${toString i}"; index = i; path = "/foo-${toString i}.html"; }
-      ) (range 1 2);
-    in map (p: p // { inherit pages; }) pages;
-  };
-
-  /* Generation
-  */
-
-  testPagesToList = {
-    expr = pagesToList {
-      pages = { a = { title = "foo"; }; b = [ { title = "bar"; } { title = "baz"; } ]; } ;
-      default = { layout = "test"; };
-    };
-    expected = [
-      { layout = "test"; title = "foo"; }
-      { layout = "test"; title = "bar"; }
-      { layout = "test"; title = "baz"; }
-    ];
-  };
-
-  /* Utils
-  */
-
-  testMerge = {
-    expr = merge [ { a = 1; b.c = 1; x.y = 1; } { a = 2; b.c = 2; x.z = 2; } ];
-    expected = { a = 2; b = { c = 2; }; x = { y = 1; z = 2; }; };
-  };
-
-  testChunksOf = {
-    expr = chunksOf 2 [ 1 2 3 4 5 ];
-    expected = [ [ 1 2 ] [ 3 4 ] [ 5 ] ];
-  };
-
-  testSetDefault = {
-    expr = setDefault [ { foo = 1; } { bar = 2; } ] { foo = 0; bar = 0; };
-    expected = [ { foo = 1; bar = 0; } { foo = 0; bar = 2; } ];
-  };
-
-  testSortBy = {
-    expr = sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ];
-    expected = [ { priority = 2; } { priority = 5; } ];
-  };
-
-  /* Proplist
-  */
-
-  testPropValue = {
-    expr = propValue { name = "Alice"; };
-    expected = "Alice";
-  };
-
-  testPropKey = {
-    expr = propKey { name = "Alice"; };
-    expected = "name";
-  };
-
-  testIsDefined = {
-    expr = isDefined "name" [ { name = "Alice"; } { age = 26; } ];
-    expected = true;
-  };
-
-  testGetValue = {
-    expr = getValue "name" [ { name = "Alice"; } { age = 26; } ];
-    expected = "Alice";
-  };
-
-  testGetProp = {
-    expr = getProp "name" [ { name = "Alice"; } { age = 26; } ];
-    expected = { name = "Alice"; };
-  };
-
-  testRemoveProp = {
-    expr = removeProp "name" [ { name = "Alice"; } { age = 26; } ];
-    expected = [ { age = 26; } ];
-  };
-
-  testPropFlatten = {
-    expr = propFlatten [ { tags = [ "sports" "technology" ]; } { tags = [ "food" "trip" ]; } ];
-    expected = [ { tags = [ "sports" "technology" "food" "trip" ]; } ];
-  };
-
-  testPropMap = {
-    expr = propMap (p: v: "${p}: ${toString v}") [ { name = "Alice"; } { age = 26; } ];
-    expected = [ "name: Alice" "age: 26" ];
-  };
-
+in {
+  inherit report results functions tests coverage;
+  success = failuresNb == 0;
 }

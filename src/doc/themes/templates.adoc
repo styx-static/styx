@@ -17,16 +17,16 @@ Directories are converted to nested sets.
 .Generated attribute set
 -----
 templates = {
-  archive = <<lambda>>;
+  archive = <LAMBDA>;
   posts = {
-    full = <<lambda>>;
-    list = <<lambda>>;
+    full = <LAMBDA>;
+    list = <LAMBDA>;
   };
 };
 -----
 
-NOTE: the `\<<lambda>>` notation is borrowed from the `nix-repl` tool, and means a non fully evaluated function. +
-The nix language is functional, and it allows to partially apply functions and to pass function as argument to other functions.
+NOTE: `<LAMBDA>` means a non fully evaluated function. +
+The nix language is functional, and it allows to partially apply functions, and to pass function as argument to other functions.
 
 '''
 
@@ -140,7 +140,7 @@ in
 NOTE: In some cases, it is useful to have the normal template to return the final source of the page. +
 By setting the page `layout` to the `lib.id` function, it is possible to bypass the layout template and have the normal template result being the final source source of the page.
 
-This pattern of updating the page set `content` attribute and returning page set is very common so there is a <<lib.template.normalTemplate>> function that abstract it.
+This pattern of updating the page set `content` attribute and returning page set is very common so there is a link:library.html#lib.template.normalTemplate[normalTemplate] function that abstract it.
 
 [source, nix]
 .Previous example abstracted with normalTemplate
@@ -172,7 +172,7 @@ The default template environment consists in:
 - `pages`: The pages attribute set.
 
 The template environment is set in `site.nix` <<site.nix-themes,themes loading>> section and can be easily modified upon needs. +
-`conf`, `lib` are `templates` automatically set, but `data` and `pages` are explicitly set via the `templates.extraEnv` parameter of the <<lib.themes.oad,lib.themes.load>> function.
+`conf`, `lib` are `templates` automatically set, but `data` and `pages` are explicitly set via the `templates.extraEnv` parameter of the link:library.html#lib.themes.load[load] function.
 
 [source, nix]
 .Adding custom parameters to the template environment.

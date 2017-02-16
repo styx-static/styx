@@ -28,16 +28,18 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out/share/styx
     cp -r scaffold $out/share/styx
-    cp    builder.nix $out/share/styx
+    cp -r nix $out/share/styx
 
     mkdir -p $out/share/doc/styx
     asciidoctor doc/index.adoc       -o $out/share/doc/styx/index.html
     asciidoctor doc/styx-themes.adoc -o $out/share/doc/styx/styx-themes.html
+    asciidoctor doc/library.adoc     -o $out/share/doc/styx/library.html
     cp -r doc/imgs $out/share/doc/styx/
 
     substituteAllInPlace $out/bin/styx
     substituteAllInPlace $out/share/doc/styx/index.html
     substituteAllInPlace $out/share/doc/styx/styx-themes.html
+    substituteAllInPlace $out/share/doc/styx/library.html
 
     mkdir $lib
     cp -r lib/* $lib

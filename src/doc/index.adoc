@@ -39,10 +39,10 @@ include::deployment.adoc[]
 
 include::cli.adoc[]
 
-include::library.adoc[]
-
 include::release-notes.adoc[]
 
 [appendix]
 == link:./styx-themes.html[Styx-themes]
 
+[appendix]
+== link:./library.html[Library]

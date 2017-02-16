@@ -37,6 +37,7 @@ rec {
   new = pkgs.runCommand "styx-new-site" {} ''
     mkdir $out
     ${styx}/bin/styx new site my-site --in $out
+    ${styx}/bin/styx gen-sample-data  --in $out
   '';
   
   new-build = 
@@ -60,7 +61,7 @@ rec {
     curl -I 127.0.0.1:8080/index.html > $out/result
   '';
 
-  deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" { buildInputs = [ pkgs.git ]; } ''
+  deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" { buildInputs = [ pkgs.git pkgs.tree ]; } ''
     mkdir $out
     cp -r ${styx-themes.showcase}/example/* $out/
     export HOME=$out
@@ -69,6 +70,7 @@ rec {
     git config --global user.email "styx@test.styx"
     cd $out && git init && git add . && git commit -m "init repo"
     ${styx}/bin/styx deploy --init-gh-pages --in $out
+    tree
     ${styx}/bin/styx deploy --gh-pages --in $out --build-path "${themes-sites.showcase-site}/"
   '';
 

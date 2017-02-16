@@ -39,9 +39,9 @@ In an standard `site.nix`, `template` and `layout` would be attributes from the 
 
 Page attribute sets are often augmented by various attributes or merged with data sets.
 
-NOTE: `generateSite` evaluate `page.layout (page.template page)` and output the result in `page.path` for every page in its `pagesList` argument.
+NOTE: `mkSite` evaluate `page.layout (page.template page)` and output the result in `page.path` for every page in its `pagesList` argument.
 
-TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "site" section with <<lib.generation.pagesToList,lib.generation.pagesToList>> `default` parameter. +
+TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "site" section with link:library.html#lib.pages.pagesToList[pagesToList] `default` parameter. +
 Usually, only pages that use a different layout explicitly declares it in `pages`. +
 The following examples will omit the `layout` attribute like often done in a normal `site.nix`.
 
@@ -102,7 +102,7 @@ Split pages refers to a list of data split though multiple similar pages.
 
 A common example of split page is a blog archive page, where the posts are listed through multiple pages.
 
-Split pages can be generated with the <<lib.pages.mkSplit>> or <<lib.pages.mkSplitCustom>> function. +
+Split pages can be generated with the link:library.html#lib.pages.mkSplit[mkSplit] or link:library.html#lib.pages.mkSplitCustom[mkSplitCustom] function. +
 `mkSplit` being a simpler version of `mkSplitCustom` function that should fit most of needs.
 
 [source, nix]
@@ -123,7 +123,7 @@ This will create a list of pages attribute sets with the following extra attribu
 `index`:: The position of this page in the list of split pages.
 `pages`:: The split pages lists, useful for generating a pagination.
 
-For more complex splitting needs see the <<lib.pages.mkSplitCustom>> function documentation.
+For more complex splitting needs see the link:library.html#lib.pages.mkSplitCustom[mkSplitCustom] function documentation.
 
 NOTE: `mkSplit` only requires `basePath`, `itemsPerPage` and `data` as parameters. Any extra parameter passed will be added to every split page attribute set. +
 This is on purpose and is used in the previous example to set all the split pages template in the `mkSplit` declaration.
@@ -143,7 +143,7 @@ Multipage pages are referred as:
 
 ==== Single page
 
-Multipages can be generated with the <<lib.pages.mkMultipages>> function.
+Multipages can be generated with the link:library.html#lib.pages.mkMultiPages[mkMultiPages] function.
 
 [source, nix]
 .mkMultipages example
@@ -175,7 +175,7 @@ So for multipages in a list, the generation will be separated in two steps.
 
 First step, generate the page set list with single page data and multipage first page data.
 
-This could be done using `mkMultipages` and filtering / mapping, but a <<lib.pages.mkPageList>> function is available and do exactly that.
+This could be done using `mkMultipages` and filtering / mapping, but a link:library.html#lib.pages.mkPageList[mkPageList] function is available and do exactly that.
 
 [source, nix]
 .Generating the page list with multipage head pages
@@ -207,14 +207,14 @@ pages.multiPostsTail = lib.mkMultiTail {
 
 This is very similar to the `mkPageList` function but only tail pages sets are generated. As only tail pages are rendered, the template is directly set with the `template` attribute.
 
-IMPORTANT: It is possible to set a prefix to the generated `path` attribute of <<lib.pages.mkPageList>> and <<lib.pages.mkMultiTail>> function with the `pathPrefix` argument. +
+IMPORTANT: It is possible to set a prefix to the generated `path` attribute of link:library.html#lib.pages.mkPageList[mkPageList] and link:library.html#lib.pages.mkMultiTail[mkMultiTail] function with the `pathPrefix` argument. +
 If the `pathPrefix` argument is set, it **must** be the same for the same data set, else the links between `head` and `tail` pages will be broken.
 
 === Taxonomy pages
 
 NOTE: To see how to generate taxonomy data, refer to <<Taxonomies>>.
 
-Taxonomies pages can be generated from a taxonomy data structure with the <<lib.pages.mkTaxonomyPages>> function.
+Taxonomies pages can be generated from a taxonomy data structure with the link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages] function.
 
 [source, nix]
 ----
@@ -225,11 +225,11 @@ taxonomies = lib.mkTaxonomyPages {
 };
 ----
 
-The <<lib.pages.mkTaxonomyPages>> function will create the following page attribute sets:
+The link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages] function will create the following page attribute sets:
 
 - `TAXONOMY/index.html`, the taxonomy index page set for every taxonomy. A `terms` attribute will be added to the page attribute set containing all the taxonomy terms.
 - `TAXONOMY/TERM/index.html`, the term index page set for every term in every taxonomy. A `values` attribute will be added to the page attribute set containing all the values that use the term.
 
-NOTE: If required `mkTaxonomyPages` generated pages `path` can be changed with the `taxonomyPathFun` and the `termPathFun`, for details see <<lib.pages.mkTaxonomyPages>>. +
+NOTE: If required `mkTaxonomyPages` generated pages `path` can be changed with the `taxonomyPathFun` and the `termPathFun`, for details see link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages]. +
 If any of these functions is changed, the templates should be updated accordingly.
 

@@ -4,14 +4,16 @@
 
 # usage
 
-#  ./scripts/run-tests -I nixpkgs=/PATH/TO/DEV/nixpkgs
+#  ./scripts/run-tests
 
-#  ./scripts/run-tests -I nixpkgs=/home/eric/Projects/nixos/nixpkgs
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 testsDir=$(realpath "$scriptDir/../tests")
+nixpkgsDir=$(realpath "$scriptDir/../nixpkgs")
 
-main=$(nix-build "$testsDir" --no-out-link "$@")
+main=$(nix-build "$testsDir" --no-out-link)
+
+echo ""
 
 echo "Main tests:"
 if [ $? -ne 0 ]; then
@@ -20,16 +22,11 @@ else
   echo "  success"
 fi
 
-echo "---"
+echo ""
 
-echo "Lib tests:"
-if [ "$(nix-instantiate --eval --strict --show-trace $testsDir/lib.nix)" != "[ ]" ]; then
-  echo "  failure"
-  nix-instantiate --eval --strict --show-trace $testsDir/lib.nix
-else
-  echo "  success"
-fi
+echo "Library tests:"
 
-echo "---"
+cat $(nix-build --no-out-link -A report $testsDir/lib.nix)
+
+echo ""
 echo "Finished"
-

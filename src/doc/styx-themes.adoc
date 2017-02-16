@@ -13,7 +13,7 @@
 
 This document contains automatically generated documentation for themes included in the `styx-themes` package set.
 
-It is generated with a link:https://github.com/styx-static/styx/blob/master/scripts/doc.nix[nix expression] using each theme metadata and configuration interface.
+It is generated with a link:https://github.com/styx-static/styx/blob/master/scripts/themes-doc.nix[nix expression] using each theme metadata and configuration interface.
 
 - link:./index.html[Styx documentation]
 

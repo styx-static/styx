@@ -30,6 +30,7 @@ Pros:
 - Light weight: Styx has very few dependencies.
 - Flexibility: Styx is very flexible and make it is easy to implement new features.
 - Integration with the Nix ecosystem: Styx sites can be deployed with NixOps, and continuous integration can be done with Hydra.
+- Documentation: Styx have extensive documentation and per site documentation can be generated.
 
 Cons:
 

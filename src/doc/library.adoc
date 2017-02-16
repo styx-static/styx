@@ -1,50 +1,26 @@
-[[Library]]
-== Library
+= Styx Library Documentation
+:revnumber: @version@
+:description: Library documentation
+:toc: left
+:toclevels: 3
+:icons: font
+:sectanchors:
+:nofooter:
+:experimental:
 
-The library contains various functions that are used through `site.nix` and templates.
-The functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy way.
+:sectnums:
 
-include::library/themes.adoc[]
+== Introduction
 
-include::library/template.adoc[]
+The library contains various functions that can be used through `site.nix` and templates.
 
-include::library/data.adoc[]
+This file is generated with a link:https://github.com/styx-static/styx/blob/master/scripts/library-doc.nix[nix expression].
 
-include::library/conf.adoc[]
+- link:./index.html[Styx documentation]
 
-include::library/pages.adoc[]
+== Namespaces
 
-include::library/generation.adoc[]
+Library functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy way.
 
-include::library/utils.adoc[]
-
-include::library/proplist.adoc[]
-
-include::library/nixpkgs.adoc[]
-
-////
-
-
-Function template
-
----
-
-[[lib.]]
-==== 
-
-Description::: description
-Parameter Type::: Attribute set | Standard
-Parameters:::
-  * `arg`: description
-Return::: description
-Example:::
-
-+
-[source, nix]
-----
-----
-
----
-
-////
+include::library-generated.adoc[]
 

@@ -2,12 +2,24 @@
 
 # Update documentation styx-themes chapter
 
+echo "Generating themes documentation."
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-path=$(nix-build "$scriptDir/doc.nix" --no-out-link "$@")
+path=$(nix-build "$scriptDir/themes-doc.nix" --no-out-link "$@")
 if [ $? -ne 0 ]; then 
-  echo "Error: Doc build failed"
+  echo "Error: build failed"
   exit 1
 fi
 target=$(realpath "$scriptDir/../src/doc/")
-cp -r $path/* $target --no-preserve=all
-echo "Doc updated!"
+cp $path/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
+cp -r $path/imgs $target/ --no-preserve=all
+echo "Themes documentation updated!"
+
+echo "Generating library documentation."
+path=$(nix-build "$scriptDir/library-doc.nix" --no-out-link "$@")
+if [ $? -ne 0 ]; then 
+  echo "Error: build failed"
+  exit 1
+fi
+target=$(realpath "$scriptDir/../src/doc/")
+cp $path/library-generated.adoc $target/library-generated.adoc --no-preserve=all
+echo "Library documentation updated!"

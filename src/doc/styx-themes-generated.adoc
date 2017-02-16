@@ -22,14 +22,19 @@ https://github.com/digitalcraftsman/hugo-agency-theme[Original Theme]
 image::imgs/agency.png[Agency,align="center"]
 
 
+
  
 
+
+[[agency.conf]]
 === Configuration interface
 
 :sectnums!:
 
 ---
-==== about.endpoint
+
+[[theme.about.endpoint]]
+==== theme.about.endpoint
 
 Description:: Last about bubble text.
 Type:: string
@@ -43,9 +48,8 @@ Default::
 
 ---
 
-
-
-==== about.items
+[[theme.about.items]]
+==== theme.about.items
 
 Description:: List of about events as attribute sets, requires `img`, `date`, `title`, and `content`.  
 If set to the empty list `[]`, the about area will not be displayed.
@@ -54,29 +58,26 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "content": "Lorem ipsum dolor sit amet consectetur.",
-    "date": "2009-2011",
-    "img": "1.jpg",
-    "title": "Our Humble Beginnings"
-  }
-]
+[ {
+  content = "Lorem ipsum dolor sit amet consectetur.";
+  date = "2009-2011";
+  img = "1.jpg";
+  title = "Our Humble Beginnings";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== about.subtitle
+[[theme.about.subtitle]]
+==== theme.about.subtitle
 
 Description:: Subtitle of the about area.
 Type:: string
@@ -90,9 +91,8 @@ Default::
 
 ---
 
-
-
-==== about.title
+[[theme.about.title]]
+==== theme.about.title
 
 Description:: Title of the about area.
 Type:: string
@@ -106,9 +106,8 @@ Default::
 
 ---
 
-
-
-==== clients
+[[theme.clients]]
+==== theme.clients
 
 Description:: List of clients as attribute sets, requires `logo` and `link`.  
 If set to the empty list `[]`, the clients area will not be displayed.";
@@ -117,31 +116,27 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "link": "#",
-    "logo": "envato.jpg"
-  },
-  {
-    "link": "#",
-    "logo": "designmodo.jpg"
-  }
-]
+[ {
+  link = "#";
+  logo = "envato.jpg";
+} {
+  link = "#";
+  logo = "designmodo.jpg";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== contact.buttonText
+[[theme.contact.buttonText]]
+==== theme.contact.buttonText
 
 Description:: Text of the contact area button.
 Type:: string
@@ -155,9 +150,8 @@ Default::
 
 ---
 
-
-
-==== contact.enable
+[[theme.contact.enable]]
+==== theme.contact.enable
 
 Description:: Whether to enable contact area.
 Type:: boolean
@@ -177,9 +171,8 @@ true
 
 ---
 
-
-
-==== contact.form.email
+[[theme.contact.form.email]]
+==== theme.contact.form.email
 
 Description:: Contact form email input label
 Type:: attribute set
@@ -187,8 +180,8 @@ Default::
 +
 ----
 {
-  "text": "Your Email *",
-  "warning": "Please enter your email address."
+  text = "Your Email *";
+  warning = "Please enter your email address.";
 }
 ----
 
@@ -196,9 +189,8 @@ Default::
 
 ---
 
-
-
-==== contact.form.message
+[[theme.contact.form.message]]
+==== theme.contact.form.message
 
 Description:: Contact form message input label
 Type:: attribute set
@@ -206,8 +198,8 @@ Default::
 +
 ----
 {
-  "text": "Your Message *",
-  "warning": "Please enter a message."
+  text = "Your Message *";
+  warning = "Please enter a message.";
 }
 ----
 
@@ -215,9 +207,8 @@ Default::
 
 ---
 
-
-
-==== contact.form.name
+[[theme.contact.form.name]]
+==== theme.contact.form.name
 
 Description:: Contact form name input label
 Type:: attribute set
@@ -225,8 +216,8 @@ Default::
 +
 ----
 {
-  "text": "Your Name *",
-  "warning": "Please enter your name."
+  text = "Your Name *";
+  warning = "Please enter your name.";
 }
 ----
 
@@ -234,9 +225,8 @@ Default::
 
 ---
 
-
-
-==== contact.form.phone
+[[theme.contact.form.phone]]
+==== theme.contact.form.phone
 
 Description:: Contact form phone input label
 Type:: attribute set
@@ -244,8 +234,8 @@ Default::
 +
 ----
 {
-  "text": "Your Phone *",
-  "warning": "Please enter your phone number."
+  text = "Your Phone *";
+  warning = "Please enter your phone number.";
 }
 ----
 
@@ -253,9 +243,8 @@ Default::
 
 ---
 
-
-
-==== contact.form.receiver
+[[theme.contact.form.receiver]]
+==== theme.contact.form.receiver
 
 Description:: Contact area from receiver mail address.
 Type:: string
@@ -269,9 +258,8 @@ Default::
 
 ---
 
-
-
-==== contact.subtitle
+[[theme.contact.subtitle]]
+==== theme.contact.subtitle
 
 Description:: Subtitle of the contact area.
 Type:: string
@@ -285,9 +273,8 @@ Default::
 
 ---
 
-
-
-==== contact.title
+[[theme.contact.title]]
+==== theme.contact.title
 
 Description:: Title of the contact area.
 Type:: string
@@ -301,9 +288,8 @@ Default::
 
 ---
 
-
-
-==== footer.copyright
+[[theme.footer.copyright]]
+==== theme.footer.copyright
 
 Description:: Footer copyright text.
 Type:: string
@@ -317,75 +303,65 @@ Default::
 
 ---
 
-
-
-==== footer.quicklinks
+[[theme.footer.quicklinks]]
+==== theme.footer.quicklinks
 
 Description:: Footer links.
 Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "link": "#",
-    "text": "Privacy Policy"
-  },
-  {
-    "link": "#",
-    "text": "Terms of Use"
-  }
-]
+[ {
+  link = "#";
+  text = "Privacy Policy";
+} {
+  link = "#";
+  text = "Terms of Use";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== footer.social
+[[theme.footer.social]]
+==== theme.footer.social
 
 Description:: Social media links to display in the footer.
 Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "icon": "fa-twitter",
-    "link": "#"
-  },
-  {
-    "icon": "fa-facebook",
-    "link": "#"
-  },
-  {
-    "icon": "fa-linkedin",
-    "link": "#"
-  }
-]
+[ {
+  icon = "fa-twitter";
+  link = "#";
+} {
+  icon = "fa-facebook";
+  link = "#";
+} {
+  icon = "fa-linkedin";
+  link = "#";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== hero.buttonText
+[[theme.hero.buttonText]]
+==== theme.hero.buttonText
 
 Description:: Button text of the hero area.
 Type:: string
@@ -399,25 +375,23 @@ Default::
 
 ---
 
-
-
-==== hero.subtitle
+[[theme.hero.subtitle]]
+==== theme.hero.subtitle
 
 Description:: Subtitle of the hero area.
 Type:: string
 Default::
 +
 ----
-"Itis nice to meet you"
+"It's nice to meet you"
 ----
 
 
 
 ---
 
-
-
-==== hero.title
+[[theme.hero.title]]
+==== theme.hero.title
 
 Description:: Title of the hero area.
 Type:: string
@@ -431,63 +405,56 @@ Default::
 
 ---
 
-
-
-==== menu.append
+[[theme.menu.append]]
+==== theme.menu.append
 
 Description:: Menu items to add at the end of the navigation.
 Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "name": "Styx",
-    "url": "https://styx-static.github.io/styx-site/"
-  }
-]
+[ {
+  name = "Styx";
+  url = "https://styx-static.github.io/styx-site/";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== menu.prepend
+[[theme.menu.prepend]]
+==== theme.menu.prepend
 
 Description:: Menu items to add at the beginning of the navigation.
 Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "name": "Styx",
-    "url": "https://styx-static.github.io/styx-site/"
-  }
-]
+[ {
+  name = "Styx";
+  url = "https://styx-static.github.io/styx-site/";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== portfolio.items
+[[theme.portfolio.items]]
+==== theme.portfolio.items
 
 Description:: List of portfolio projects as attribute sets, requires `title`, `subtitle`, `img`, `preview`, `client`, `clientLink`, `category` and `content`.  
 If set to the empty list `[]`, the portfolio area will not be displayed.
@@ -496,34 +463,31 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "category": "Graphic Design",
-    "client": "Start Bootstrap",
-    "clientLink": "#",
-    "content": "Lorem ipsum dolor sit amet consectetur.",
-    "date": "2014-07-05",
-    "img": "roundicons.png",
-    "preview": "roundicons-preview.png",
-    "subtitle": "Lorem ipsum dolor sit amet consectetur.",
-    "title": "Round Icons"
-  }
-]
+[ {
+  category = "Graphic Design";
+  client = "Start Bootstrap";
+  clientLink = "#";
+  content = "Lorem ipsum dolor sit amet consectetur.";
+  date = "2014-07-05";
+  img = "roundicons.png";
+  preview = "roundicons-preview.png";
+  subtitle = "Lorem ipsum dolor sit amet consectetur.";
+  title = "Round Icons";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== portfolio.subtitle
+[[theme.portfolio.subtitle]]
+==== theme.portfolio.subtitle
 
 Description:: Subtitle of the portgolio area.
 Type:: string
@@ -537,9 +501,8 @@ Default::
 
 ---
 
-
-
-==== portfolio.title
+[[theme.portfolio.title]]
+==== theme.portfolio.title
 
 Description:: Title of the portfolio area.
 Type:: string
@@ -553,9 +516,8 @@ Default::
 
 ---
 
-
-
-==== services.items
+[[theme.services.items]]
+==== theme.services.items
 
 Description:: List of services as attribute sets, requires `title`, `icon` and `content` attributes.  
 If set to the empty list `[]`, the services area will not be displayed.
@@ -564,28 +526,25 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "content": "Lorem ipsum dolor sit amet consectetur.",
-    "icon": "fa-shopping-cart",
-    "title": "E-Commerce"
-  }
-]
+[ {
+  content = "Lorem ipsum dolor sit amet consectetur.";
+  icon = "fa-shopping-cart";
+  title = "E-Commerce";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== services.subtitle
+[[theme.services.subtitle]]
+==== theme.services.subtitle
 
 Description:: Subtitle of the services area.
 Type:: string
@@ -599,9 +558,8 @@ Default::
 
 ---
 
-
-
-==== services.title
+[[theme.services.title]]
+==== theme.services.title
 
 Description:: Title of the services area.
 Type:: string
@@ -615,9 +573,8 @@ Default::
 
 ---
 
-
-
-==== site.author
+[[theme.site.author]]
+==== theme.site.author
 
 Description:: Content of the author `meta` tag.
 Type:: string
@@ -631,9 +588,8 @@ Default::
 
 ---
 
-
-
-==== site.description
+[[theme.site.description]]
+==== theme.site.description
 
 Description:: Content of the description `meta` tag.
 Type:: string
@@ -647,9 +603,8 @@ Default::
 
 ---
 
-
-
-==== site.title
+[[theme.site.title]]
+==== theme.site.title
 
 Description:: Title of the site.
 Type:: string
@@ -663,9 +618,8 @@ Default::
 
 ---
 
-
-
-==== team.description
+[[theme.team.description]]
+==== theme.team.description
 
 Description:: Description of the team
 Type:: string
@@ -679,9 +633,8 @@ Default::
 
 ---
 
-
-
-==== team.members
+[[theme.team.members]]
+==== theme.team.members
 
 Description:: List of team members as attribute sets, requires `img`, `name`, `position`, and `social`. `social` have the same format to `footer.social`.
 If set to the empty list `[]`, the team area will not be displayed.";
@@ -690,42 +643,35 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "img": "1.jpg",
-    "name": "Kay Garland",
-    "position": "Lead Designer",
-    "social": [
-      {
-        "link": "#",
-        "type": "twitter"
-      },
-      {
-        "link": "#",
-        "type": "facebook"
-      },
-      {
-        "link": "#",
-        "type": "linkedin"
-      }
-    ]
-  }
-]
+[ {
+  img = "1.jpg";
+  name = "Kay Garland";
+  position = "Lead Designer";
+  social = [ {
+    link = "#";
+    type = "twitter";
+  } {
+    link = "#";
+    type = "facebook";
+  } {
+    link = "#";
+    type = "linkedin";
+  } ];
+} ]
 ----
 
 
 
 ---
 
-
-
-==== team.subtitle
+[[theme.team.subtitle]]
+==== theme.team.subtitle
 
 Description:: Subtitle of the team area.
 Type:: string
@@ -739,9 +685,8 @@ Default::
 
 ---
 
-
-
-==== team.title
+[[theme.team.title]]
+==== theme.team.title
 
 Description:: Title of the team area.
 Type:: string
@@ -757,9 +702,130 @@ Default::
 
 
 
+ 
 
 :sectnums:
 
+
+[[agency.templates]]
+=== Templates
+
+:sectnums!:
+
+---
+
+
+[[templates.index]]
+==== templates.index
+
+
+
+---
+
+
+[[templates.partials.about]]
+==== templates.partials.about
+
+
+
+---
+
+
+[[templates.partials.clients]]
+==== templates.partials.clients
+
+
+
+---
+
+
+[[templates.partials.contact]]
+==== templates.partials.contact
+
+
+
+---
+
+
+[[templates.partials.footer]]
+==== templates.partials.footer
+
+
+
+---
+
+
+[[templates.partials.head]]
+==== templates.partials.head
+
+
+
+---
+
+
+[[templates.partials.hero]]
+==== templates.partials.hero
+
+
+
+---
+
+
+[[templates.partials.js]]
+==== templates.partials.js
+
+
+
+---
+
+
+[[templates.partials.modals]]
+==== templates.partials.modals
+
+
+
+---
+
+
+[[templates.partials.nav]]
+==== templates.partials.nav
+
+
+
+---
+
+
+[[templates.partials.portfolio]]
+==== templates.partials.portfolio
+
+
+
+---
+
+
+[[templates.partials.services]]
+==== templates.partials.services
+
+
+
+---
+
+
+[[templates.partials.team]]
+==== templates.partials.team
+
+
+
+---
+
+
+
+:sectnums:
+
+
+
+
+[[agency.example]]
 === Example site source
 
 [source, nix]
@@ -846,6 +912,8 @@ rec {
 ----
 
 
+
+
 [[generic-templates]]
 == Generic templates
 
@@ -864,6 +932,8 @@ image::imgs/generic-templates.png[Generic templates,align="center"]
 
 
 
+
+[[generic-templates.doc]]
 === Documentation
 
 :leveloffset: +2
@@ -871,7 +941,7 @@ image::imgs/generic-templates.png[Generic templates,align="center"]
 
 Generic-templates is a special theme providing a template framework and meant to be used as a base for other themes.
 
-Its main purpose is to be composed with other theme to reduce the amount of boilerplate code.
+Its main purpose is to be composed with other themes to reduce the amount of boilerplate code.
 
 Showcase and Hyde themes take advantage of generic-templates.
 
@@ -913,9 +983,9 @@ Head templates division:
 
 == Overriding a template
 
-Any template from any theme can be overriden to fit needs.
+Any template from a theme can be overriden to fit needs.
 
-To override a template, just copy it to a custom theme and edit it:
+To override a template, just copy it to a custom theme and change it to your liking:
 
 [source, bash]
 .Overriding the partials.content template
@@ -930,6 +1000,8 @@ $ cp $(nix-build -A --no-out-link styx-themes.generic-templates '<nixpkgs>')/tem
 <3> Copy the generic-templates `templates/partials/content.nix` to the foo theme. +
 This code use nix-build to directly access the generic-templates source from the nix store.
 
+NOTE: Every template of this theme use the `documentedTemplate` function that allow to generate template documentation.
+
 [source, nix]
 .Combining generic-templates and my-theme
 ----
@@ -939,260 +1011,433 @@ themes = [
 ];
 ----
 
-== Useful templates
+:sectnums:
 
-NOTE: Examples in this section use `conf.siteUrl` as `\http://domain.org`.
+
+
+:leveloffset: -2
+
+ 
+
+
+[[generic-templates.conf]]
+=== Configuration interface
 
 :sectnums!:
 
 ---
 
-=== templates.url
+[[theme.html.doctype]]
+==== theme.html.doctype
 
-Convert a path starting with `/` to a full url, default implemetation use `conf.siteUrl`.
+Description:: Doctype declaration to use.
+Type:: one of "html5", "html4", "xhtml1"
+Default::
++
+----
+"html5"
+----
 
-[source, nix]
-.Example
-----
-templates.url "/foo.html"
-----
 
-[source, html]
-.Results in
-----
-http://domain.org/foo.html
-----
 
 ---
 
-=== templates.purl
+[[theme.html.lang]]
+==== theme.html.lang
 
-`purl` is for **p**age *url*, convert a page to its full url, default implementation use `templates.url`.
+Description:: An ISO 639-1 language code to set to the `html` tag.
+Type:: string
+Default::
++
+----
+"en"
+----
 
-[source, nix]
-.Example
-----
-templates.purl pages.about
-----
 
-[source, html]
-.Results in
-----
-http://domain.org/about.html
-----
 
 ---
 
-=== templates.tag.ilink
+[[theme.lib.bootstrap.enable]]
+==== theme.lib.bootstrap.enable
 
-`ilink` is for **i**nternal **link**, takes a `content` and a `page` or a `path` and generate a link (`a` tag).
-
-[source, nix]
-.Example
+Description:: Whether to enable bootstrap.
+Type:: boolean
+Default::
++
 ----
-templates.tag.ilink { page = pages.about; content = "about"; }
-----
-
-[source, html]
-.Results in
-----
-<a href="http://domain.org/about.html">about</a>
+false
 ----
 
-[source, nix]
-.Example 2
+Example::
++
 ----
-templates.tag.ilink { path = "/foo"; content = "foo"; }
+true
 ----
 
-[source, html]
-.Results in
-----
-<a href="http://domain.org/foo">foo</a>
-----
+
 
 ---
 
-=== templates.tag.link-atom
+[[theme.lib.bootstrap.version]]
+==== theme.lib.bootstrap.version
 
-Generate a `link` tag for an atom feed.
+Description:: Selects bootstrap version to use.
+Type:: string
+Default::
++
+----
+"3.3.7"
+----
 
-[source, nix]
-.Example
-----
-templates.tag.link-atom { href = "/feed.atom"; }
-----
 
-[source, html]
-.Results in
-----
-<link href="http://domain.org/feed.atom" rel="alternate" type="application/atom+xml" />
-----
 
 ---
 
-=== templates.tag.link-css
+[[theme.lib.font-awesome.enable]]
+==== theme.lib.font-awesome.enable
 
-Generate a `link` tag for an css file.
+Description:: Whether to enable font awesome.
+Type:: boolean
+Default::
++
+----
+false
+----
 
-[source, nix]
-.Example
+Example::
++
 ----
-templates.tag.link-css { href = "/css/style.css"; }
+true
 ----
 
-[source, html]
-.Results in
-----
-<link href="http://domain.org/css/style.css" rel="stylesheet" type="text/css" />
-----
+
 
 ---
 
-=== templates.icon.bootstrap
+[[theme.lib.font-awesome.version]]
+==== theme.lib.font-awesome.version
 
-Generate a bootstrap glyphicon markup from a glyphicon code.
+Description:: Selects font-awesome version to use.
+Type:: string
+Default::
++
+----
+"4.7.0"
+----
 
-[source, nix]
-.Example
-----
-templates.icon.bootstrap "picture"
-----
 
-[source, html]
-.Results in
-----
-<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-----
 
 ---
 
-=== templates.icon.font-awesome
+[[theme.lib.jquery.enable]]
+==== theme.lib.jquery.enable
 
-Generate a font-awesome icon markup from an icon code.
+Description:: Whether to enable jQuery.
+Type:: boolean
+Default::
++
+----
+false
+----
 
-[source, nix]
+Example::
++
 ----
-templates.icon.font-awesome "code"
+true
 ----
 
-[source, html]
-.Results in
-----
-<i class="fa fa-code" aria-hidden="true"></i>
-----
+
 
 ---
+
+[[theme.lib.jquery.version]]
+==== theme.lib.jquery.version
+
+Description:: Selects jQuery version to use.
+Type:: string
+Default::
++
+----
+"3.1.1"
+----
+
+
+
+---
+
+[[theme.services.disqus.shortname]]
+==== theme.services.disqus.shortname
+
+Description:: Disqus service shortname. See link:https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-[What's a shortname?] page for details.
+Type:: null or string
+Default::
++
+----
+null
+----
+
+
+
+---
+
+[[theme.services.google-analytics.trackingID]]
+==== theme.services.google-analytics.trackingID
+
+Description:: Google analytics service tracker ID, Google analytics is disabled if set to null.
+Type:: null or string
+Default::
++
+----
+null
+----
+
+
+
+---
+
+[[theme.services.mixpanel.key]]
+==== theme.services.mixpanel.key
+
+Description:: Mixpanel service key, Mixpanel service is disabled if set to null.
+Type:: null or string
+Default::
++
+----
+null
+----
+
+
+
+---
+
+[[theme.site.title]]
+==== theme.site.title
+
+Description:: Site title.
+Type:: string
+Default::
++
+----
+"Generic Templates"
+----
+
+
+
+---
+
+
+
+ 
 
 :sectnums:
 
-== Bootstrap components
+
+[[generic-templates.templates]]
+=== Templates
 
 :sectnums!:
 
 ---
 
-=== templates.bootstrap.alert
 
-Generate a bootstrap alert.
+[[templates.bootstrap.alert]]
+==== templates.bootstrap.alert
 
+Description:: Generate a bootstrap alert.
+Arguments (Attribute Set)::
+`content`::: Content of the alert. +
+Type: `String`. 
+`type`::: Type of the alert. +
+Type: `"success" | "info" | "warning" | "danger"`. 
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
 templates.bootstrap.alert { type = "success"; content = "alert"; }
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
-<div class="alert alert-success" role="alert">alert</div>
+<div class="alert alert-success" role="alert">
+alert
+</div>
 ----
+
+
+
+
+
 
 ---
 
-=== templates.bootstrap.badge
 
-Generate a bootstrap badge.
+[[templates.bootstrap.badge]]
+==== templates.bootstrap.badge
 
+Description:: Generate a bootstrap badge.
+Arguments (Standard)::
+`content`::: Content of the badge. +
+Type: `String`. 
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
 templates.bootstrap.badge 42
 ----
 
-[source, nix]
-.Results in
++
+[source, html]
+.Result
 ----
 <span class="badge">42</span>
 ----
 
+
+
+
+
+
 ---
 
-=== templates.bootstrap.breadcrumbs
 
-Generate a page breadcrumbs, `page` page attribute set should have a `breadcrumbs` attribute containing a list of pages.
+[[templates.bootstrap.breadcrumbs]]
+==== templates.bootstrap.breadcrumbs
 
+Description:: Generate a page breadcrumbs; takes a page attribute with a `breadcrumbs` attribute containing a list of pages.
+Arguments (Standard)::
+`page`::: The page to generate breadcrumbs from. +
+Type: `Page`. 
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
-templates.bootstrap.breadcrumbs page.about
+templates.bootstrap.breadcrumbs {
+  path = "/about.html";
+  title = "About";
+  breadcrumbs = [ { path = "/"; breadcrumbTitle = "Home"; title = "My site"; } ];
+}
+
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
 <ol class="breadcrumb">
-<li><a href="http://domain.org/index.html">Home</a></li>
-<li class="active">About</li>
+  <li><a href="http://domain.org/">Home</a></li>
+  <li class="active">About</li>
 </ol>
+
 ----
+
+
+
+
+
 
 ---
 
-=== templates.bootstrap.label
 
-Generate a bootstrap label.
+[[templates.bootstrap.label]]
+==== templates.bootstrap.label
 
+Description:: Generate a bootstrap label.
+Arguments (Attribute Set)::
+`content`::: Content of the label. +
+Type: `String`. 
+`type`::: Type of the label. +
+Type: `"default" | "primary" | "success" | "info" | "warning" | "danger"`.  +
+Optional, defaults to `"default"`.
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
-templates.bootstrap.label { content = "default"; type = "default"; }
+templates.bootstrap.label { content = "my label"; type = "primary"; }
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
-<span class="label label-default">default</span>
+<span class="label label-primary">my label</span>
 ----
+
+
+
+
+
 
 ---
 
-=== templates.bootstrap.navbar.default
 
-Generates navbar, meant to be flexible it is divided in multiple parts.
+[[templates.bootstrap.navbar.brand]]
+==== templates.bootstrap.navbar.brand
 
+Description:: Template used by default as the navbar brand, can be overriden to fit needs.
+
+
+
+
+
+
+---
+
+
+[[templates.bootstrap.navbar.default]]
+==== templates.bootstrap.navbar.default
+
+Description:: Generates a navbar.
+Arguments (Attribute Set)::
+`brand`::: HTML code of the brand section. +
+Type: `String`.  +
+Optional, defaults to `templates.bootstrap.navbar.brand`.
+`content`::: Content of the navbar, usually a list of `templates.bootstrap.navbar.*` templates calls. +
+Type: `String`. 
+`extraClasses`::: Extra CSS classes to add to the navbar. +
+Type: `[ String ]`.  +
+Optional, defaults to `[  ]`.
+`id`::: HTML `id` used by the navbar. +
+Type: `String`.  +
+Optional, defaults to `"navbar"`.
+`inverted`::: Whether to make navbar inverted. +
+Type: `Boolean`.  +
+Optional, defaults to `false`.
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
 templates.bootstrap.navbar.default {
   inverted = true;
   brand = ''<a class="navbar-brand" href="#">Project Name</a>'';
   content = [
     (templates.bootstrap.navbar.nav {
-      items = [ 
+      items = [
         { title = "Home";    path = "/#"; }
         { title = "About";   path = "/#about"; }
         { title = "Contact"; path = "/#contact"; }
       ];
-      # Hack for demonstration purposes, the current page attribute set should be passed
       currentPage = { title = "Home"; path = "/#"; };
     })
   ];
-} 
+}
+
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
 <nav class="navbar navbar-inverse">
 <div class="container">
@@ -1214,25 +1459,145 @@ templates.bootstrap.navbar.default {
 </div>
 </div>
 </nav>
+
 ----
+
+
+
+
+
 
 ---
 
-=== templates.bootstrap.pager
 
-Generate a pager. `pages` should be a list of pages.
+[[templates.bootstrap.navbar.head]]
+==== templates.bootstrap.navbar.head
 
+Description:: Template used by `bootstrap.navbar.default`, not meant to be used directly.
+
+
+
+
+
+---
+
+
+[[templates.bootstrap.navbar.nav]]
+==== templates.bootstrap.navbar.nav
+
+Description:: Template to generate a navbar navigation list. Meant to be used in `bootstrap.navbar.default` `content` parameter.
+Arguments (Attribute Set)::
+`align`::: Alignment of the navigation. +
+Type: `"right", "left" or null`.  +
+Optional, defaults to `null`.
+`currentPage`::: Current page viewed, used to make active the menu corresponding to the current page. +
+Type: `Page or null`.  +
+Optional, defaults to `null`.
+`items`::: Items of the navbar. +
+Type: `[ Pages ]`. 
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
+----
+templates.bootstrap.navbar.nav {
+  items = [
+  { title = "Home";    path = "/#"; }
+  { title = "About";   path = "/#about"; }
+  { title = "Contact"; path = "/#contact"; }
+  ];
+  currentPage = { title = "Home"; path = "/#"; };
+}
+
+----
+
++
+[source, html]
+.Result
+----
+<ul class="nav navbar-nav">
+<li class="active"><a href="http://domain.org/#">Home</a></li>
+<li><a href="http://domain.org/#about">About</a></li>
+<li><a href="http://domain.org/#contact">Contact</a></li>
+</ul>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.bootstrap.navbar.text]]
+==== templates.bootstrap.navbar.text
+
+Description:: Template to generate a navbar text. Meant to be used in `bootstrap.navbar.default` `content` parameter.
+Arguments (Attribute Set)::
+`align`::: Alignment of the text. +
+Type: `"right", "left" or null`.  +
+Optional, defaults to `null`.
+`content`::: Text content. +
+Type: `String`. 
+`extraClasses`::: Extra classes to add to the text. +
+Type: `[ String ]`.  +
+Optional, defaults to `[  ]`.
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.bootstrap.navbar.text {
+  content = "Hello world!";
+  align = "right";
+}
+
+----
+
++
+[source, html]
+.Result
+----
+<p class="navbar-text navbar-right">Hello world!</p>
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.bootstrap.pager]]
+==== templates.bootstrap.pager
+
+Description:: Generate a pager
+Arguments (Attribute Set)::
+`index`::: Index of the current page. +
+Type: `Integer`. 
+`pages`::: List of pages. +
+Type: `[ Page ]`. 
+
+Example:: 
++
+[source, nix]
+.Code
 ----
 templates.bootstrap.pager {
   pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
   index = 5;
 }
+
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
 <nav aria-label="...">
 <ul class="pager">
@@ -1240,25 +1605,42 @@ templates.bootstrap.pager {
 <li><a href="http://domain.org/#6">Next</a></li>
 </ul>
 </nav>
+
 ----
+
+
+
+
+
 
 ---
 
-=== templates.bootstrap.pagination
 
-generate a pagination. `pages` should be a list of pages.
+[[templates.bootstrap.pagination]]
+==== templates.bootstrap.pagination
 
+Description:: Generate a pagination
+Arguments (Attribute Set)::
+`index`::: Index of the current page. +
+Type: `Integer`. 
+`pages`::: List of pages. +
+Type: `[ Page ]`. 
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
 templates.bootstrap.pagination {
   pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
   index = 5;
 }
+
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
 <nav aria-label="Page navigation" class="pagination">
 <ul class="pagination">
@@ -1284,232 +1666,1372 @@ templates.bootstrap.pagination {
 </li>
 </ul>
 </nav>
+
 ----
+
+
+
+
+
 
 ---
 
-=== templates.bootstrap.panel
 
-Generate a bootstrap panel.
+[[templates.bootstrap.panel]]
+==== templates.bootstrap.panel
 
+Description:: Generate a bootstrap panel.
+Arguments (Attribute Set)::
+`body`::: Content of the panel body, set to `null` to disable the body. +
+Type: `null | String`.  +
+Optional, defaults to `null`.
+`footer`::: Content of the panel footer, set to `null` to disable the footer. +
+Type: `null | String`.  +
+Optional, defaults to `null`.
+`heading`::: Content of the panel heading, set to `null` to disable the heading. +
+Type: `null | String`.  +
+Optional, defaults to `null`.
+`listGroup`::: Content of the panel list group, set to `null` to disable the body. +
+Type: `null | String`.  +
+Optional, defaults to `null`.
+`type`::: Type of the panel. +
+Type: `"default" | "primary" | "success" | "info" | "warning" | "danger"`.  +
+Optional, defaults to `"default"`.
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
 templates.bootstrap.panel {
   type    = "danger";
   heading = ''<h3 class="panel-title">Panel title</h3>'';
-  body    = "Panel content"; }
+  body    = "Panel content";
+}
+
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
 <div class="panel panel-danger">
 <div class="panel-heading"><h3 class="panel-title">Panel title</h3></div>
-<div class="panel-body"><h3 class="panel-title">Panel title</h3></div>
+<div class="panel-body">Panel content</div>
 </div>
 ----
 
+
+
+
+
+
 ---
 
-=== templates.bootstrap.progressbar
 
-Generate a bootstrap progress bar.
+[[templates.bootstrap.progress-bar]]
+==== templates.bootstrap.progress-bar
 
+Description:: Generate a bootstrap progress bar.
+Arguments (Attribute Set)::
+`type`::: Type of the progress bar. +
+Type: `"success" | "info" | "warning" | "danger"`. 
+`value`::: Value of the progress bar as percentage. +
+Type: `Integer`. 
+
+Example:: 
++
 [source, nix]
-.Example
+.Code
 ----
 templates.bootstrap.progress-bar { value = 60; }
+
 ----
 
++
 [source, html]
-.Results in
+.Result
 ----
 <div class="progress">
-<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"><span class="sr-only">60% Complete</span></div>
+  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"><span class="sr-only">60% Complete</span></div>
 </div>
+
 ----
 
+
+
+
+
+
 ---
+
+
+[[templates.e404]]
+==== templates.e404
+
+Description:: Basic template for error 404 page, can be overriden to fit needs.
+
+
+
+
+
+---
+
+
+[[templates.examples.basic]]
+==== templates.examples.basic
+
+Description:: Template for the example site, internal use only.
+
+
+
+
+
+---
+
+
+[[templates.examples.starter]]
+==== templates.examples.starter
+
+Description:: Template for the example site, internal use only.
+
+
+
+
+
+---
+
+
+[[templates.examples.theme]]
+==== templates.examples.theme
+
+Description:: Template for the example site, internal use only.
+
+
+
+
+
+---
+
+
+[[templates.feed.atom]]
+==== templates.feed.atom
+
+Description:: Template generating an Atom feed. +
+Take a page as argument. The page set can define extra attributes:
+
+* `subtitle`: If set, will be used as the feed `subtitle`.
+* `author.name`: If set, will be used as the feed `author`.
+* `author.email`: If set, will be used as the feed `author`.
+* `icon`: If set, will be used as the feed `icon`.
+* `logo`: If set, will be used as the feed `logo`.
+* `items`: The items to include in the feed as a list of pages.
+
+
+
+
+
+
+---
+
+
+[[templates.feed.atom-list]]
+==== templates.feed.atom-list
+
+Description:: Template generating an Atom feed entry. +
+Used in `templates.feed.atom`.
+
+
+
+
+
+
+---
+
+
+[[templates.icon.bootstrap]]
+==== templates.icon.bootstrap
+
+Description:: Generate a bootstrap glyphicon markup from a glyphicon code.
+Arguments (Standard)::
+`icon`::: The icon code to use without the leading `glyphicon-`. See http://getbootstrap.com/components/#glyphicons for available icons. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.icon.bootstrap "picture"
+----
+
++
+[source, html]
+.Result
+----
+<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.icon.font-awesome]]
+==== templates.icon.font-awesome
+
+Description:: Generate a font-awesome icon markup from an icon code.
+Arguments (Standard)::
+`icon`::: The icon code to use without the leading `fa-`. See http://fontawesome.io/icons/ for available icons. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.icon.font-awesome "code"
+----
+
++
+[source, html]
+.Result
+----
+<i class="fa fa-code" aria-hidden="true"></i>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.layout]]
+==== templates.layout
+
+Description:: Generic layout template, includes <<templates.partials.doctype>> and <<templates.partials.html>>.
+
+
+
+
+
+
+---
+
+
+[[templates.lib.css.bootstrap]]
+==== templates.lib.css.bootstrap
+
+Description:: Template loading the bootstrap css library. Controlled by `conf.theme.lib.bootstrap.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.lib.css.font-awesome]]
+==== templates.lib.css.font-awesome
+
+Description:: Template loading font-awesome css library. Controlled by `conf.theme.lib.font-awesome.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.lib.js.bootstrap]]
+==== templates.lib.js.bootstrap
+
+Description:: Template loading the bootstrap javascript library. Controlled by `conf.theme.lib.jquery.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.lib.js.jquery]]
+==== templates.lib.js.jquery
+
+Description:: Template loading the jQuery javascript library. Controlled by `conf.theme.lib.jquery.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.page.full]]
+==== templates.page.full
+
+Description:: Normal template for rendering a page.
+
+
+
+
+
+---
+
+
+[[templates.page.list]]
+==== templates.page.list
+
+Description:: Normal template for rendering a page as a list entry (`li` tag).
+
+
+
+
+
+---
+
+
+[[templates.page.split]]
+==== templates.page.split
+
+Description:: Normal template for rendering splitted pages.
+
+
+
+
+
+---
+
+
+[[templates.partials.body]]
+==== templates.partials.body
+
+Description:: Template responsible for `body` tag rendering. `body` is divided in the following templates:
+
+* <<templates.partials.content-pre>>
+* <<templates.partials.content>>
+* <<templates.partials.content-post>>
+* <<templates.partials.js>>
+** <<templates.lib.js.jquery>>
+** <<templates.lib.js.bootstrap>>
+** <<templates.partials.js-custom>>
+** <<templates.partials.js-extra>>
+
+
+
+
+
+
+
+---
+
+
+[[templates.partials.content]]
+==== templates.partials.content
+
+Description:: Template rendering the page `content`.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.content-post]]
+==== templates.partials.content-post
+
+Description:: Template rendering the page post-contents, usually used to render the footer. Empty by default.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.content-pre]]
+==== templates.partials.content-pre
+
+Description:: Template rendering the page pre-contents, usually used to render navigations. Empty by default.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.doctype]]
+==== templates.partials.doctype
+
+Description:: Template declaring the doctype, controlled by `conf.theme.html.doctype`.
+
+
+
+
+
+---
+
+
+[[templates.partials.head.css]]
+==== templates.partials.head.css
+
+Description:: Template loading the css files. Include the following templates:
+
+- <<templates.lib.css.bootstrap>>
+- <<templates.lib.css.font-awesome>>
+- <<templates.partials.head.css-custom>>
+- <<templates.partials.head.css-extra>>
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
+
+Description:: Template to load custom css files, empty by default. Should be overridden to fit needs.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.css-extra]]
+==== templates.partials.head.css-extra
+
+Description:: Template responsible for loading page specific css files. +
+To be used, the Page should define an `extraCSS` attribute containing a list of attribute sets.
+
+
+Example:: 
++
+[source, nix]
+.Code
+----
+pages.index = {
+  layout   = templates.layout;
+  template = templates.pages.full;
+  path     = "/index.html";
+  extraCSS = [ { href = "/css/index.css"; } ];
+};
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.default]]
+==== templates.partials.head.default
+
+Description:: Template responsible for `head` tag rendering. `head` is divided in the following templates:
+
+* <<templates.partials.head.title-pre>>
+** <<templates.partials.head.meta>>
+* <<templates.partials.head.title>>
+* <<templates.partials.head.title-post>>
+** <<templates.partials.head.feed>>
+** <<templates.partials.head.css>>
+*** <<templates.lib.css.bootstrap>>
+*** <<templates.lib.css.font-awesome>>
+*** <<templates.partials.head.css-custom>>
+*** <<templates.partials.head.css-extra>>
+** <<templates.partials.head.title-post-extra>>
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.feed]]
+==== templates.partials.head.feed
+
+Description:: Template that will automaticly load `pages.feed` if defined as an atom feed.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.meta]]
+==== templates.partials.head.meta
+
+Description:: Generic `meta` tags, should be overriden to fit needs. +
+Default contents:
+
++
+[source, html]
+----
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.title]]
+==== templates.partials.head.title
+
+Description:: Template rendering the page `head` `title` tag.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.title-post]]
+==== templates.partials.head.title-post
+
+Description:: Template loading `head` tag contents after title. +
+Includes <<templates.partials.head.feed>>, <<templates.partials.head.css>> and <<templates.partials.head.title-post-extra>>.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.title-post-extra]]
+==== templates.partials.head.title-post-extra
+
+Description:: Template to add custom extra content in `head`. Empty by default, should be overriden to fit needs.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.head.title-pre]]
+==== templates.partials.head.title-pre
+
+Description:: Template loading `head` tag contents before title. +
+Includes <<templates.partials.head.meta>>.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.html]]
+==== templates.partials.html
+
+Description:: Template responsible for generating the `html` tag, includes <<templates.partials.head.default>> and <<templates.partials.body>>.
+
+
+
+
+
+---
+
+
+[[templates.partials.js]]
+==== templates.partials.js
+
+Description:: Template loading the javascript files. Include the following templates:
+
+- <<templates.lib.js.jquery>>
+- <<templates.lib.js.bootstrap>>
+- <<templates.partials.js-custom>>
+- <<templates.partials.js-extra>>
+- <<templates.services.google-analytics>>
+- <<templates.services.mixpanel>>
+
+
+
+
+
+
+---
+
+
+[[templates.partials.js-custom]]
+==== templates.partials.js-custom
+
+Description:: Template to load custom javascript files, empty by default. Should be overridden to fit needs.
+
+
+
+
+
+
+---
+
+
+[[templates.partials.js-extra]]
+==== templates.partials.js-extra
+
+Description:: Template responsible for loading page specific javascript files. +
+To be used, the Page should define an `extraJS` attribute containing a list of attribute sets.
+
+
+Example:: 
++
+[source, nix]
+.Code
+----
+pages.index = {
+  layout   = templates.layout;
+  template = templates.pages.full;
+  path     = "/index.html";
+  extraJS = [ { src = "/index.js"; crossorigin = "anonymous"; }  ];
+};
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.services.disqus]]
+==== templates.services.disqus
+
+Description:: Template managing link:https://disqus.com/[disqus] integration. +
+Before using disqus, `conf.theme.services.disqus.shortname` configuration option should be set. +
+Page unique identifier will be automatically generated, but can be set by adding a `disqusID` attribute to the page.
+
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.services.disqus page
+
+----
+
+
++
+---
++
+[source, nix]
+.Code
+----
+templates.services.disqus (page // { disqusID = "main-thread"; })
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.services.google-analytics]]
+==== templates.services.google-analytics
+
+Description:: Template managing link:https://www.google.com/analytics/[google analytics] integration. Controlled with `conf.theme.services.google-analytics.trackingID` configuration option.
+
+
+
+
+
+---
+
+
+[[templates.services.mixpanel]]
+==== templates.services.mixpanel
+
+Description:: Template managing link:https://mixpanel.com/[mixpanel] integration. Controlled with `conf.theme.services.mixpanel.key` configuration option.
+
+
+
+
+
+---
+
+
+[[templates.sitemap]]
+==== templates.sitemap
+
+Description:: Template generating a link:https://en.wikipedia.org/wiki/Sitemaps[sitemap file]. +
+Take a page with a `pages` attribute containing the list of pages to include in the sitemap. +
+Pages in the list can define a `changefreq` attribute, else `monthly` will be used.
+
+
+Example:: 
++
+[source, nix]
+.Code
+----
+sitemap = {
+  path     = "/sitemap.xml";
+  template = templates.sitemap;
+  layout   = lib.id;
+  pages    = lib.pagesToList { inherit pages; };
+};
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.tag.codeblock]]
+==== templates.tag.codeblock
+
+Description:: Template generating a code block, automatically escape HTML characters.
+
+Arguments (Attribute Set)::
+`content`::: Codeblock content. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.codeblock {
+  content = "<p>some html</p>";
+}
+
+----
+
++
+[source, html]
+.Result
+----
+<pre><code>&lt;p&gt;some html&lt;/p&gt;</pre></code>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.tag.generic]]
+==== templates.tag.generic
+
+Description:: Template generating a generic html tag.
+
+Arguments (Attribute Set)::
+`content`::: Type: `String`. 
+`tag`::: HTML tag to render. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.generic { tag = "div"; content = "hello world!"; class = "foo"; }
+
+----
+
++
+[source, html]
+.Result
+----
+<div class="foo">hello world!</div>
+----
+
+
++
+---
++
+[source, nix]
+.Code
+----
+templates.tag.generic {
+  tag = "div";
+  content = templates.tag.generic { tag = "p"; content = "hello world!"; };
+}
+
+----
+
++
+[source, html]
+.Result
+----
+<div><p>hello world!</p></div>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.tag.ilink]]
+==== templates.tag.ilink
+
+Description:: Generate an **i**nternal **link**.
+Arguments (Attribute Set)::
+`page`::: Page to link. +
+Type: `String`.  +
+Optional, defaults to `null`.
+`path`::: Path of the link to generate. +
+Type: `String`.  +
+Optional, defaults to `null`.
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.ilink { page = { path = "/about.html"; }; content = "about"; }
+----
+
++
+[source, html]
+.Result
+----
+<a href="http://domain.org/about.html">about</a>
+----
+
+
++
+---
++
+[source, nix]
+.Code
+----
+templates.tag.ilink { path = "/files/manual.pdf"; content = "Download manual"; class = "download"; }
+----
+
++
+[source, html]
+.Result
+----
+<a class="download" href="http://domain.org/files/manual.pdf">Download manual</a>
+----
+
+
+
+[NOTE]
+====
+* `page` or `path` must be passed.
+* Any extra argument passed will be added as tag attributes.
+
+====
+
+
+
+---
+
+
+[[templates.tag.link]]
+==== templates.tag.link
+
+Description:: Template generating a `link` tag.
+
+
+
+
+
+
+---
+
+
+[[templates.tag.link-atom]]
+==== templates.tag.link-atom
+
+Description:: Generate a `link` tag for an atom feed.
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.link-atom { href = "/feed.atom"; }
+----
+
++
+[source, html]
+.Result
+----
+<link href="/feed.atom" rel="alternate" type="application/atom+xml" />
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.tag.link-css]]
+==== templates.tag.link-css
+
+Description:: Generate a `link` tag for a css file.
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.link-css { href = "/css/style.css"; }
+----
+
++
+[source, html]
+.Result
+----
+<link href="/css/style.css" rel="stylesheet" type="text/css" />
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.tag.script]]
+==== templates.tag.script
+
+Description:: Template generating a `script` tag.
+
+Arguments (Attribute Set)::
+`src`::: Script source. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.script {
+  src = "/script.js";
+}
+
+----
+
++
+[source, html]
+.Result
+----
+<script src="/script.js"></script>
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.taxonomy.full]]
+==== templates.taxonomy.full
+
+Description:: Template displaying a taxonomy information.
+
+Arguments (Attribute Set)::
+`page`::: Taxonomy page generated with `mkTaxonomyPages` function. +
+Type: `page`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+pages.taxonomies = mkTaxonomyPages {
+  data             = data.taxonomies.posts;
+  taxonomyTemplate = templates.taxonomy.full;
+  termTemplate     = templates.taxonomy.term.full;
+};
+
+----
+
+
++
+---
++
+[source, nix]
+.Code
+----
+templates.taxonomy.full (getProp "tags" (mkTaxonomyData {
+  data = [
+    { tags = [ "foo" "bar" ]; path = "/a.html"; }
+    { tags = [ "foo" ];       path = "/b.html"; }
+    { category = [ "baz" ];   path = "/c.html"; }
+  ];
+  taxonomies = [ "tags" "category" ];
+}))
+
+----
+
++
+[source, html]
+.Result
+----
+<h1>tags</h1>
+<ul>
+<li><a href="http://domain.org/tags/foo/">foo</a> (2)</li>
+<li><a href="http://domain.org/tags/bar/">bar</a> (1)</li>
+</ul>
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.taxonomy.path]]
+==== templates.taxonomy.path
+
+Description:: Template generating the path of a taxonomy page.
+
+Arguments (Standard)::
+`taxonomy`::: Taxonomy name. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.taxonomy.path "tags"
+
+----
+
++
+[source, html]
+.Result
+----
+/tags/
+----
+
+
+
+
+
+
+---
+
+
+[[templates.taxonomy.term.full]]
+==== templates.taxonomy.term.full
+
+Description:: Template displaying a taxonomy term information.
+
+Arguments (Attribute Set)::
+`page`::: Taxonomy term page generated with `mkTaxonomyPages` function. +
+Type: `page`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+pages.taxonomies = mkTaxonomyPages {
+  data             = data.taxonomies.posts;
+  taxonomyTemplate = templates.taxonomy.full;
+  termTemplate     = templates.taxonomy.term.full;
+};
+
+----
+
+
++
+---
++
+[source, nix]
+.Code
+----
+templates.taxonomy.term.full {
+  taxonomy = "tags";
+  term = "foo";
+  values = getValue "foo" (getValue "tags" (mkTaxonomyData {
+    data = [
+      { tags = [ "foo" "bar" ]; path = "/a.html"; title = "a"; }
+      { tags = [ "foo" ];       path = "/b.html"; title = "b";}
+      { category = [ "baz" ];   path = "/c.html"; title = "c";}
+    ];
+    taxonomies = [ "tags" "category" ];
+  }));
+}
+
+----
+
++
+[source, html]
+.Result
+----
+<h1>tags: foo</h1>
+<ul>
+<li><a href="http://domain.org/b.html">b</a></li>
+<li><a href="http://domain.org/a.html">a</a></li>
+</ul>
+
+----
+
+
+
+
+
+
+---
+
+
+[[templates.taxonomy.term.path]]
+==== templates.taxonomy.term.path
+
+Description:: Template generating the path of a taxonomy term page.
+
+Arguments (Attribute Set)::
+`taxonomy`::: Taxonomy name. +
+Type: `String`. 
+`term`::: Term name. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.taxonomy.term.path { taxonomy = "tags"; term = "tech"; }
+
+----
+
++
+[source, html]
+.Result
+----
+/tags/tech/
+----
+
+
+
+
+
+
+---
+
+
+[[templates.taxonomy.term-list]]
+==== templates.taxonomy.term-list
+
+Description:: Template transforming raw taxonomy data.
+
+Arguments (Standard)::
+`taxonomyData`::: Taxonomy data. +
+Type: `Taxonomy`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.taxonomy.term-list (getProp "tags" (mkTaxonomyData {
+  data = [
+    { tags = [ "foo" "bar" ]; path = "/a.html"; }
+    { tags = [ "foo" ];       path = "/b.html"; }
+    { category = [ "baz" ];   path = "/c.html"; }
+  ];
+  taxonomies = [ "tags" "category" ];
+}))
+
+----
+
++
+[source, html]
+.Result
+----
+[ {
+  count = 2;
+  path = "/tags/foo/";
+  taxonomy = "tags";
+  term = "foo";
+  values = [ {
+    path = "/b.html";
+    tags = [ "foo" ];
+  } {
+    path = "/a.html";
+    tags = [ "foo" "bar" ];
+  } ];
+} {
+  count = 1;
+  path = "/tags/bar/";
+  taxonomy = "tags";
+  term = "bar";
+  values = [ {
+    path = "/a.html";
+    tags = [ "foo" "bar" ];
+  } ];
+} ]
+----
+
+
+
+
+
+
+---
+
+
+[[templates.taxonomy.value.term-list]]
+==== templates.taxonomy.value.term-list
+
+Description:: Template generating a list of taxonomy terms data for a taxonomy value (page).
+
+Arguments (Attribute Set)::
+`page`::: Page attribute set. +
+Type: `Page`. 
+`taxonomy`::: Taxonomy name. +
+Type: `String`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.taxonomy.value.term-list {
+  taxonomy = "tags";
+  page = {
+    tags = [ "foo" "bar" ];
+  };
+}
+
+----
+
++
+[source, html]
+.Result
+----
+[ {
+  path = "/tags/foo/";
+  taxonomy = "tags";
+  term = "foo";
+} {
+  path = "/tags/bar/";
+  taxonomy = "tags";
+  term = "bar";
+} ]
+----
+
+
+
+
+
+
+---
+
+
+[[templates.url]]
+==== templates.url
+
+Description:: Generate a full url from a path or a page by using `conf.siteUrl`.
+Arguments (Standard)::
+`arg`::: Path or Page to generate the url. +
+Type: `String | Page`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.url "/foo.html"
+----
+
++
+[source, html]
+.Result
+----
+http://domain.org/foo.html
+----
+
+
++
+---
++
+[source, nix]
+.Code
+----
+templates.url { title = "About"; path = "/about.html"; }
+----
+
++
+[source, html]
+.Result
+----
+http://domain.org/about.html
+----
+
+
+
+
+
+
+---
+
+
 
 :sectnums:
 
 
 
-:leveloffset: -2
 
- 
-
-=== Configuration interface
-
-:sectnums!:
-
----
-==== html.doctype
-
-Description:: Doctype declaration to use.
-Type:: one of "html5", "html4", "xhtml1"
-Default::
-+
-----
-"html5"
-----
-
-
-
----
-
-
-
-==== html.lang
-
-
-
-Default::
-+
-----
-"en"
-----
-
-
-
----
-
-
-
-==== lib.bootstrap.enable
-
-Description:: Whether to enable bootstrap.
-Type:: boolean
-Default::
-+
-----
-false
-----
-
-Example::
-+
-----
-true
-----
-
-
-
----
-
-
-
-==== lib.bootstrap.version
-
-Description:: Selects bootstrap version to use.
-Type:: string
-Default::
-+
-----
-"3.3.7"
-----
-
-
-
----
-
-
-
-==== lib.font-awesome.enable
-
-Description:: Whether to enable font awesome.
-Type:: boolean
-Default::
-+
-----
-false
-----
-
-Example::
-+
-----
-true
-----
-
-
-
----
-
-
-
-==== lib.font-awesome.version
-
-Description:: Selects font-awesome version to use.
-Type:: string
-Default::
-+
-----
-"4.7.0"
-----
-
-
-
----
-
-
-
-==== lib.jquery.enable
-
-Description:: Whether to enable jQuery.
-Type:: boolean
-Default::
-+
-----
-false
-----
-
-Example::
-+
-----
-true
-----
-
-
-
----
-
-
-
-==== lib.jquery.version
-
-Description:: Selects jQuery version to use.
-Type:: string
-Default::
-+
-----
-"3.1.1"
-----
-
-
-
----
-
-
-
-==== site.title
-
-Description:: String to append to the site `title` tag contents.
-Type:: string
-Default::
-+
-----
-"Generic Templates"
-----
-
-
-
----
-
-
-
-
-:sectnums:
-
+[[generic-templates.example]]
 === Example site source
 
 [source, nix]
@@ -1624,6 +3146,8 @@ rec {
 ----
 
 
+
+
 [[hyde]]
 == Hyde
 
@@ -1643,14 +3167,19 @@ Requires the `generic-templates` theme.
 image::imgs/hyde.png[Hyde,align="center"]
 
 
+
  
 
+
+[[hyde.conf]]
 === Configuration interface
 
 :sectnums!:
 
 ---
-==== colorScheme
+
+[[theme.colorScheme]]
+==== theme.colorScheme
 
 Description:: Selects the color scheme. Set to `null` for default black scheme.
 Type:: null or one of "08", "09", "0a", "0b", "0c", "0d", "0e", "0f"
@@ -1664,25 +3193,8 @@ null
 
 ---
 
-
-
-==== description
-
-Description:: Content of the description `meta` tag.
-Type:: string
-Default::
-+
-----
-"An elegant open source and mobile first theme for styx made by <a href=\"http://twitter.com/mdo\">@mdo</a>. Originally made for Jekyll.\n"
-----
-
-
-
----
-
-
-
-==== itemsPerPage
+[[theme.itemsPerPage]]
+==== theme.itemsPerPage
 
 Description:: Number of posts per page.
 Type:: integer
@@ -1696,9 +3208,8 @@ Default::
 
 ---
 
-
-
-==== layout.reverse
+[[theme.layout.reverse]]
+==== theme.layout.reverse
 
 Description:: Whether to enable reverse layout.
 Type:: boolean
@@ -1718,11 +3229,139 @@ true
 
 ---
 
+[[theme.site.description]]
+==== theme.site.description
+
+Description:: Site description.
+Type:: string
+Default::
++
+----
+"An elegant open source and mobile first theme for styx made by <a href=\"http://twitter.com/mdo\">@mdo</a>. Originally made for Jekyll.
+"
+----
+
+
+
+---
+
+[[theme.site.title]]
+==== theme.site.title
+
+Description:: Site title.
+Type:: string
+Default::
++
+----
+"Hyde"
+----
+
+
+
+---
+
+
+
+ 
+
+:sectnums:
+
+
+[[hyde.templates]]
+=== Templates
+
+:sectnums!:
+
+---
+
+
+[[templates.e404]]
+==== templates.e404
+
+
+
+---
+
+
+[[templates.index]]
+==== templates.index
+
+
+
+---
+
+
+[[templates.partials.body]]
+==== templates.partials.body
+
+
+
+---
+
+
+[[templates.partials.content]]
+==== templates.partials.content
+
+
+
+---
+
+
+[[templates.partials.content-pre]]
+==== templates.partials.content-pre
+
+
+
+---
+
+
+[[templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
+
+
+
+---
+
+
+[[templates.partials.head.title-post-extra]]
+==== templates.partials.head.title-post-extra
+
+
+
+---
+
+
+[[templates.partials.pager]]
+==== templates.partials.pager
+
+
+
+---
+
+
+[[templates.post.full]]
+==== templates.post.full
+
+
+
+---
+
+
+[[templates.post.list]]
+==== templates.post.list
+
+
+
+---
 
 
 
 :sectnums:
 
+
+
+
+[[hyde.example]]
 === Example site source
 
 [source, nix]
@@ -1872,6 +3511,8 @@ rec {
 ----
 
 
+
+
 [[orbit]]
 == Orbit
 
@@ -1890,14 +3531,19 @@ http://github.com/xriley/Orbit-Theme[Orbit] theme port - great looking resume/CV
 image::imgs/orbit.png[Orbit,align="center"]
 
 
+
  
 
+
+[[orbit.conf]]
 === Configuration interface
 
 :sectnums!:
 
 ---
-==== colorScheme
+
+[[theme.colorScheme]]
+==== theme.colorScheme
 
 Description:: Theme color scheme.
 Type:: one of 1, 2, 3, 4, 5, 6
@@ -1911,9 +3557,8 @@ Default::
 
 ---
 
-
-
-==== contact.items.items
+[[theme.contact.items]]
+==== theme.contact.items
 
 Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
 If set to the empty list `[]`, the skills area will not be displayed.
@@ -1922,29 +3567,26 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "icon": "envelope",
-    "title": "john.doe@website.com",
-    "type": "email",
-    "url": "mailto: yourname@email.com"
-  }
-]
+[ {
+  icon = "envelope";
+  title = "john.doe@website.com";
+  type = "email";
+  url = "mailto: yourname@email.com";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== copyright
+[[theme.copyright]]
+==== theme.copyright
 
 Description:: Footer copyright text.
 Type:: string
@@ -1958,9 +3600,8 @@ Default::
 
 ---
 
-
-
-==== education.items
+[[theme.education.items]]
+==== theme.education.items
 
 Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
 If set to the empty list `[]`, the education area will not be displayed.
@@ -1969,28 +3610,25 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "college": "University of London",
-    "dates": "2006 - 2010",
-    "degree": "MSc in Computer Science"
-  }
-]
+[ {
+  college = "University of London";
+  dates = "2006 - 2010";
+  degree = "MSc in Computer Science";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== education.title
+[[theme.education.title]]
+==== theme.education.title
 
 Description:: Title of the education section.
 Type:: string
@@ -2004,9 +3642,8 @@ Default::
 
 ---
 
-
-
-==== experiences.icon
+[[theme.experiences.icon]]
+==== theme.experiences.icon
 
 Description:: Code of the font awesome icon of the experience title.
 Type:: string
@@ -2020,9 +3657,8 @@ Default::
 
 ---
 
-
-
-==== experiences.items
+[[theme.experiences.items]]
+==== theme.experiences.items
 
 Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
 If set to the empty list `[]`, the experiences area will not be displayed.
@@ -2031,29 +3667,26 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "company": "Startup Hubs, San Francisco",
-    "content": "lorem ipsum",
-    "dates": "2015 - Present",
-    "position": "Lead Developer"
-  }
-]
+[ {
+  company = "Startup Hubs, San Francisco";
+  content = "lorem ipsum";
+  dates = "2015 - Present";
+  position = "Lead Developer";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== experiences.title
+[[theme.experiences.title]]
+==== theme.experiences.title
 
 Description:: Title of the experiences section
 Type:: string
@@ -2067,9 +3700,8 @@ Default::
 
 ---
 
-
-
-==== interests.items
+[[theme.interests.items]]
+==== theme.interests.items
 
 Description:: List of interests. If set to the empty list `[]`, the interests area will not be displayed.
 
@@ -2077,26 +3709,21 @@ Type:: list of strings
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  "Climbing",
-  "Snowboarding",
-  "Cooking"
-]
+[ "Climbing" "Snowboarding" "Cooking" ]
 ----
 
 
 
 ---
 
-
-
-==== interests.title
+[[theme.interests.title]]
+==== theme.interests.title
 
 Description:: Title of the interests section.
 Type:: string
@@ -2110,9 +3737,8 @@ Default::
 
 ---
 
-
-
-==== languages.items
+[[theme.languages.items]]
+==== theme.languages.items
 
 Description:: List of languages as attribute sets, requires `language`, and `level`.  
 If set to the empty list `[]`, the languages area will not be displayed.
@@ -2121,27 +3747,24 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "language": "English",
-    "level": "Native"
-  }
-]
+[ {
+  language = "English";
+  level = "Native";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== languages.title
+[[theme.languages.title]]
+==== theme.languages.title
 
 Description:: Title of the languages section.
 Type:: string
@@ -2155,9 +3778,8 @@ Default::
 
 ---
 
-
-
-==== profile
+[[theme.profile]]
+==== theme.profile
 
 Description:: Profile information, must have `name`, `tagline` and `image` attributes.
 Type:: attribute set
@@ -2165,9 +3787,9 @@ Default::
 +
 ----
 {
-  "image": "profile.png",
-  "name": "John Doe",
-  "tagline": "Full Stack Developer"
+  image = "profile.png";
+  name = "John Doe";
+  tagline = "Full Stack Developer";
 }
 ----
 
@@ -2175,9 +3797,8 @@ Default::
 
 ---
 
-
-
-==== projects.icon
+[[theme.projects.icon]]
+==== theme.projects.icon
 
 Description:: Code of the font awesome icon of the projects title.
 Type:: string
@@ -2191,9 +3812,8 @@ Default::
 
 ---
 
-
-
-==== projects.items
+[[theme.projects.items]]
+==== theme.projects.items
 
 Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
 If set to the empty list `[]`, the projects area will not be displayed.
@@ -2202,28 +3822,25 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "content": "lorem ipsum",
-    "title": "Simple FAQ Theme for Hugo",
-    "url": "https://github.com/aerohub/hugo-faq-theme"
-  }
-]
+[ {
+  content = "lorem ipsum";
+  title = "Simple FAQ Theme for Hugo";
+  url = "https://github.com/aerohub/hugo-faq-theme";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== projects.title
+[[theme.projects.title]]
+==== theme.projects.title
 
 Description:: Title of the projects section
 Type:: string
@@ -2237,9 +3854,8 @@ Default::
 
 ---
 
-
-
-==== site.author
+[[theme.site.author]]
+==== theme.site.author
 
 Description:: Content of the author `meta` tag.
 Type:: string
@@ -2253,9 +3869,8 @@ Default::
 
 ---
 
-
-
-==== site.description
+[[theme.site.description]]
+==== theme.site.description
 
 Description:: Content of the description `meta` tag.
 Type:: string
@@ -2269,9 +3884,8 @@ Default::
 
 ---
 
-
-
-==== site.title
+[[theme.site.title]]
+==== theme.site.title
 
 Description:: Title of the site.
 Type:: string
@@ -2285,9 +3899,8 @@ Default::
 
 ---
 
-
-
-==== skills.icon
+[[theme.skills.icon]]
+==== theme.skills.icon
 
 Description:: Code of the font awesome icon of the skills title.
 Type:: string
@@ -2301,9 +3914,8 @@ Default::
 
 ---
 
-
-
-==== skills.items
+[[theme.skills.items]]
+==== theme.skills.items
 
 Description:: List of skills as attribute sets, requires `title` and `level`.  
 If set to the empty list `[]`, the skills area will not be displayed.
@@ -2312,31 +3924,27 @@ Type:: list of attribute sets
 Default::
 +
 ----
-[]
+[  ]
 ----
 
 Example::
 +
 ----
-[
-  {
-    "level": "98%",
-    "skill": "Python & Django"
-  },
-  {
-    "level": "50%",
-    "skill": "Javascript & jQuery"
-  }
-]
+[ {
+  level = "98%";
+  skill = "Python & Django";
+} {
+  level = "50%";
+  skill = "Javascript & jQuery";
+} ]
 ----
 
 
 
 ---
 
-
-
-==== skills.title
+[[theme.skills.title]]
+==== theme.skills.title
 
 Description:: Title of the skills section.
 Type:: string
@@ -2350,9 +3958,8 @@ Default::
 
 ---
 
-
-
-==== summary.content
+[[theme.summary.content]]
+==== theme.summary.content
 
 Description:: content of the profile area as HTML text.  
 if set to `null`, the summary area will not be displayed.
@@ -2368,9 +3975,8 @@ null
 
 ---
 
-
-
-==== summary.icon
+[[theme.summary.icon]]
+==== theme.summary.icon
 
 Description:: Code of the font awesome icon of the summary title.
 Type:: string
@@ -2384,9 +3990,8 @@ Default::
 
 ---
 
-
-
-==== summary.title
+[[theme.summary.title]]
+==== theme.summary.title
 
 Description:: Title of the summary section
 Type:: string
@@ -2402,9 +4007,154 @@ Default::
 
 
 
+ 
 
 :sectnums:
 
+
+[[orbit.templates]]
+=== Templates
+
+:sectnums!:
+
+---
+
+
+[[templates.icon.fa]]
+==== templates.icon.fa
+
+
+
+---
+
+
+[[templates.index]]
+==== templates.index
+
+
+
+---
+
+
+[[templates.partials.contact]]
+==== templates.partials.contact
+
+
+
+---
+
+
+[[templates.partials.education]]
+==== templates.partials.education
+
+
+
+---
+
+
+[[templates.partials.experiences]]
+==== templates.partials.experiences
+
+
+
+---
+
+
+[[templates.partials.footer]]
+==== templates.partials.footer
+
+
+
+---
+
+
+[[templates.partials.head]]
+==== templates.partials.head
+
+
+
+---
+
+
+[[templates.partials.interests]]
+==== templates.partials.interests
+
+
+
+---
+
+
+[[templates.partials.js]]
+==== templates.partials.js
+
+
+
+---
+
+
+[[templates.partials.lang]]
+==== templates.partials.lang
+
+
+
+---
+
+
+[[templates.partials.languages]]
+==== templates.partials.languages
+
+
+
+---
+
+
+[[templates.partials.profile]]
+==== templates.partials.profile
+
+
+
+---
+
+
+[[templates.partials.projects]]
+==== templates.partials.projects
+
+
+
+---
+
+
+[[templates.partials.sidebar]]
+==== templates.partials.sidebar
+
+
+
+---
+
+
+[[templates.partials.skills]]
+==== templates.partials.skills
+
+
+
+---
+
+
+[[templates.partials.summary]]
+==== templates.partials.summary
+
+
+
+---
+
+
+
+:sectnums:
+
+
+
+
+[[orbit.example]]
 === Example site source
 
 [source, nix]
@@ -2496,6 +4246,8 @@ rec {
 ----
 
 
+
+
 [[showcase]]
 == Showcase
 
@@ -2523,14 +4275,19 @@ This theme example site includes:
 image::imgs/showcase.png[Showcase,align="center"]
 
 
+
  
 
+
+[[showcase.conf]]
 === Configuration interface
 
 :sectnums!:
 
 ---
-==== archives.itemsPerPage
+
+[[theme.archives.itemsPerPage]]
+==== theme.archives.itemsPerPage
 
 Description:: Number of posts on the archive page.
 Type:: integer
@@ -2544,9 +4301,8 @@ Default::
 
 ---
 
-
-
-==== index.itemsPerPage
+[[theme.index.itemsPerPage]]
+==== theme.index.itemsPerPage
 
 Description:: Number of posts on the index page.
 Type:: integer
@@ -2560,9 +4316,8 @@ Default::
 
 ---
 
-
-
-==== site.copyright
+[[theme.site.copyright]]
+==== theme.site.copyright
 
 Description:: Site copyright, added in the footer.
 Type:: string
@@ -2576,9 +4331,8 @@ Default::
 
 ---
 
-
-
-==== site.description
+[[theme.site.description]]
+==== theme.site.description
 
 Description:: Site description, added in the footer.
 Type:: string
@@ -2594,9 +4348,130 @@ Default::
 
 
 
+ 
 
 :sectnums:
 
+
+[[showcase.templates]]
+=== Templates
+
+:sectnums!:
+
+---
+
+
+[[templates.archive]]
+==== templates.archive
+
+
+
+---
+
+
+[[templates.index]]
+==== templates.index
+
+
+
+---
+
+
+[[templates.partials.content]]
+==== templates.partials.content
+
+
+
+---
+
+
+[[templates.partials.content-post]]
+==== templates.partials.content-post
+
+
+
+---
+
+
+[[templates.partials.content-pre]]
+==== templates.partials.content-pre
+
+
+
+---
+
+
+[[templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
+
+
+
+---
+
+
+[[templates.partials.sidebar]]
+==== templates.partials.sidebar
+
+
+
+---
+
+
+[[templates.post.draft-icon]]
+==== templates.post.draft-icon
+
+
+
+---
+
+
+[[templates.post.full]]
+==== templates.post.full
+
+
+
+---
+
+
+[[templates.post.list]]
+==== templates.post.list
+
+
+
+---
+
+
+[[templates.post.preview]]
+==== templates.post.preview
+
+
+
+---
+
+
+[[templates.post.tags-inline]]
+==== templates.post.tags-inline
+
+
+
+---
+
+
+[[templates.taxonomy.full-section]]
+==== templates.taxonomy.full-section
+
+
+
+---
+
+
+
+:sectnums:
+
+
+
+
+[[showcase.example]]
 === Example site source
 
 [source, nix]
@@ -2655,12 +4530,11 @@ rec {
     # loading a single page
     about  = loadFile { dir = ./data/pages; file = "about.md"; };
 
-    # loading a list of contents
-    posts  = let
-      postsList = loadDir { dir = ./data/posts; };
-      # include drafts only when renderDrafts is true
-      draftsList = optionals (conf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
-    in sortBy "date" "dsc" (postsList ++ draftsList);
+    # loading posts
+    posts  = sortBy "date" "dsc" (loadDir {
+      inherit (conf) renderDrafts;
+      dir = ./data/posts;
+    });
 
     # Navbar data
     navbar = [
@@ -2809,5 +4683,8 @@ rec {
 }
 
 ----
+
+
+
 
 

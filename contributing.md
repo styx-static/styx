@@ -56,7 +56,9 @@ Loading a local version showcase example site in `nix-repl`:
 
 ```
 nix-repl ./styx/nixpkgs
+
 nix-repl> site = callPackage (import "${styx-themes.showcase}/example/site.nix") {}
+
 nix-repl> site.conf
 { siteUrl = "https://styx-static.github.io/styx-theme-showcase"; theme = { ... }; }
 ```

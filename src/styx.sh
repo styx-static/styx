@@ -18,13 +18,15 @@ Usage:
 Subcommands:
     new site DIR               Create a new Styx site in DIR.
     new theme NAME             Create a new theme NAME in themes.
+    gen-sample-data            Generate sample data in 'data'.
     build                      Build the site in the "public", can be changed with the '--output' flag.
     preview                    Build the site and serve it locally, shortcut for 'styx serve --site-url "http://HOST:PORT"'.
                                This override the configuration file 'siteUrl' to not break links.
     live                       Similar to preview, but automatically rebuild the site on changes.
     serve                      Build the site and serve it.
     deploy                     Deploy the site, must be used with a deploy option.
-    doc                        Opens the HTML documentation in BROWSER.
+    doc                        Opens styx HTML documentation in BROWSER.
+    site-doc                   Generates and open the documentation for a styx site in BROWSER.
 
 Generic options:
     -h, --help                 Show this help.
@@ -95,10 +97,14 @@ check_git () {
 
 # build the site in the nix store
 store_build () {
+  extraConf+=("renderDrafts = $renderDrafts;")
   extraFlags+=("--arg" "extraConf" "{ $(IFS=; echo "${extraConf[@]}") }"); shift 2
   nix-build -A site "$builder" --no-out-link "${extraFlags[@]}"
 }
 
+doc_build () {
+  nix-build "$doc_builder" --no-out-link "${extraFlags[@]}"
+}
 
 #-------------------------------
 
@@ -119,7 +125,9 @@ share=$(realpath "$dir/../share/styx")
 # styx html doc path
 doc=$(realpath "$dir/../share/doc/styx/index.html")
 # styx builder
-builder="$share/builder.nix"
+builder="$share/nix/site-builder.nix"
+# doc builder
+doc_builder="$share/nix/site-doc-builder.nix"
 # debug mode
 debug=
 # extra arguments to be appended to the nix-build command
@@ -130,6 +138,8 @@ extraConf=()
 siteFile="site.nix"
 # set to a path to bypass the site build
 buildPath=
+# draft rendering
+renderDrafts="false"
 
 # default new-theme name
 themeName=
@@ -230,16 +240,16 @@ while [ "$#" -gt 0 ]; do
       action="serve"
       siteUrl="PREVIEW"
       ;;
-    build|serve|deploy|live)
+    build|serve|deploy|live|gen-sample-data|site-doc)
       action="$i"
       ;;
     doc|manual)
-      $BROWSER $doc 
+      $BROWSER $doc & 
       exit 0
       ;;
 # Build options
     --drafts)
-      extraConf+=("renderDrafts = true;")
+      renderDrafts="true"
       ;;
     --out)
       output="$1"; shift 1
@@ -284,7 +294,7 @@ done
 
 if [ ! "$action" ]; then
   echo "Error: no command specified."
-  echo "Use one of 'new', 'build', 'serve', 'preview', 'deploy', 'doc'"
+  echo "Use one of 'new', 'build', 'serve', 'preview', 'deploy', 'doc', 'site-doc' or 'gen-sample-data'."
   exit 1
 fi
 
@@ -327,6 +337,39 @@ if [ "$action" = new ] && [ "$newCommand" = theme ]; then
   exit 0
 fi
 
+
+#-------------------------------
+#
+# Gen-sample-data
+#
+#-------------------------------
+
+if [ "$action" = "gen-sample-data" ]; then
+  target="$in/data/sample"
+  check_dir $target "Error: '$target' directory exists, aborting."
+  mkdir -p $target
+  cp -r $share/scaffold/sample-data/* "$target"
+  chmod -R u+rw "$target"
+  echo "Sample data created in '$target'."
+  exit 0
+fi
+
+
+#-------------------------------
+#
+# Site doc
+#
+#-------------------------------
+
+if [ "$action" = "site-doc" ]; then
+  check_styx $in $siteFile
+  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
+  path=$(doc_build)
+  if [ $? -ne 0 ]; then
+    nix_error
+  fi
+  $BROWSER $path/index.html &
+fi
 
 #-------------------------------
 #
@@ -485,6 +528,8 @@ if [ "$action" = deploy ]; then
     echo "Successfully created the 'gh-pages' branch."
     echo "You can now update the 'gh-pages' branch by running 'styx deploy --gh-pages'."
     exit 0
+
+  # gh-pages
   elif [ "$deployAction" == "gh-pages" ]; then
     check_git $in
     if [ -z $output ]; then
@@ -492,6 +537,7 @@ if [ "$action" = deploy ]; then
     else
       target=$(realpath "$output/gh-pages")
     fi
+
     inDir=$(realpath "$in")
     (
       cd $in
@@ -509,6 +555,31 @@ if [ "$action" = deploy ]; then
         path="$buildPath"
       fi
 
+      # Handle cases where the gh-pages folder is not present
+      if [ ! -d $target ]; then
+        echo "Notice: $target folder does not exists."
+        # OK, we need to do something, first check if the gh-pages branch exists
+        if git rev-parse --quiet --verify gh-pages; then
+          # gh-pages local branch exists, check it out in gh-pages
+          echo "Notice: gh-pages branch exists locally, checking it out in $target, and continuing the deployment."
+          mkdir gh-pages
+          git clone -l $(pwd) ./gh-pages
+          (cd ./gh-pages && git checkout gh-pages)
+        else
+          # Next, try remotely
+          if git show-ref --quiet --verify -- "refs/remotes/origin/gh-pages"; then
+            echo "Notice: gh-pages branch exists remotely, checking it out in $target, and continuing deployment. You might be asked for password."
+            mkdir gh-pages
+            git fetch origin gh-pages:gh-pages
+            git clone -l $(pwd) ./gh-pages
+            (cd gh-pages && git checkout gh-pages)
+          else
+            echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to create it."
+            exit 1
+          fi
+        fi
+      fi
+
       cd "$target"
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
         git checkout gh-pages
@@ -522,7 +593,7 @@ if [ "$action" = deploy ]; then
         echo "(cd gh-pages && git push -u origin gh-pages) && git push -u origin gh-pages"
         exit 0
       else
-        echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to set it."
+        echo "Error: There is no 'gh-pages' branch in the gh-pages folder, run 'styx deploy --init-gh-pages' first to set it."
         exit 1
       fi
     )
