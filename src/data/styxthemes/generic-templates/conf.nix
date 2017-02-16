@@ -38,8 +38,8 @@ with lib;
   };
 
   site.title = mkOption {
-    description = "String to append to the site `title` tag contents.";
-    type = types.string;
+    description = "Site title.";
+    type = types.str;
     default = "Generic Templates";
   };
 
@@ -66,6 +66,12 @@ with lib;
 
     mixpanel.key = mkOption {
       description = "Mixpanel service key, Mixpanel service is disabled if set to null.";
+      type = with types; nullOr str;
+      default = null;
+    };
+
+    disqus.shortname = mkOption {
+      description = "Disqus service shortname. See link:https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-[What's a shortname?] page for details.";
       type = with types; nullOr str;
       default = null;
     };
