@@ -1,12 +1,19 @@
 { lib }:
 with lib;
 {
-  description = mkOption {
-    default = ''
-      An elegant open source and mobile first theme for styx made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
-    '';
-    type = types.str;
-    description = "Content of the description `meta` tag.";
+  site = {
+    title = mkOption {
+      description = "Site title.";
+      type = types.str;
+      default = "Hyde";
+    };
+    description = mkOption {
+      description = "Site description.";
+      type = types.str;
+      default = ''
+        An elegant open source and mobile first theme for styx made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
+      '';
+    };
   };
 
   colorScheme = mkOption {
