@@ -2,15 +2,51 @@
 
      { path = ...; taxonomy = ...; term = ...; }
 */
+env:
 
-{ lib, templates, ... }:
-{ taxonomy
-, page }:
-with lib;
+let template = { lib, templates, ... }:
+  { taxonomy
+  , page }:
+  with lib;
+  
+  optionals
+    (hasAttr taxonomy page)
+    map (term: {
+      path    = templates.taxonomy.term.path { inherit taxonomy term; };
+      inherit taxonomy term;
+    }) page."${taxonomy}";
 
-optionals
-  (hasAttr taxonomy page)
-  map (term: {
-    path    = templates.taxonomy.term.path { inherit taxonomy term; };
-    inherit taxonomy term;
-  }) page."${taxonomy}"
+in with env.lib; documentedTemplate {
+  description = ''
+    Template generating a list of taxonomy terms data for a taxonomy value (page).
+  '';
+  arguments = {
+    taxonomy = {
+      description = "Taxonomy name.";
+      type = "String";
+    };
+    page = {
+      description = "Page attribute set.";
+      type = "Page";
+    };
+  };
+  examples = [ (mkExample {
+    literalCode = ''
+      templates.taxonomy.value.term-list {
+        taxonomy = "tags";
+        page = {
+          tags = [ "foo" "bar" ];
+        };
+      }
+    '';
+    code = with env;
+      templates.taxonomy.value.term-list {
+        taxonomy = "tags";
+        page = {
+          tags = [ "foo" "bar" ];
+        };
+      }
+    ;
+  }) ];
+  inherit env template;
+}
