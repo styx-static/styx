@@ -6,7 +6,7 @@ with lib;
   <div class="container sidebar-sticky">
     <div class="sidebar-about">
       ${templates.tag.ilink { path = "/"; content = "<h1>${conf.theme.site.title}</h1>"; }}
-      ${optionalString (conf.theme ? description) ''<p class="lead">${conf.theme.description}</p>''}
+      ${optionalString (conf.theme.site.description != "") ''<p class="lead">${conf.theme.site.description}</p>''}
     </div>
 
     <ul class="sidebar-nav">
