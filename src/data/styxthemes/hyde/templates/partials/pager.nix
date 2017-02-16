@@ -3,10 +3,10 @@
 with lib;
 let
   prevHref = if (index > 1)
-             then templates.purl (elemAt pages (index - 2))
+             then templates.url (elemAt pages (index - 2))
              else "#";
   nextHref = if (index < (length pages))
-             then templates.purl (elemAt pages index)
+             then templates.url (elemAt pages index)
              else "#";
 in
 optionalString ((length pages) > 1)
