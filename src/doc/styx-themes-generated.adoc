@@ -4530,11 +4530,12 @@ rec {
     # loading a single page
     about  = loadFile { dir = ./data/pages; file = "about.md"; };
 
-    # loading posts
-    posts  = sortBy "date" "dsc" (loadDir {
-      inherit (conf) renderDrafts;
-      dir = ./data/posts;
-    });
+    # loading a list of contents
+    posts  = let
+      postsList = loadDir { dir = ./data/posts; };
+      # include drafts only when renderDrafts is true
+      draftsList = optionals (conf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
+    in sortBy "date" "dsc" (postsList ++ draftsList);
 
     # Navbar data
     navbar = [

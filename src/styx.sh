@@ -119,11 +119,13 @@ origArgs=("$@")
 # action to execute
 action=
 # directory of this script
-dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
+dir=$(readlink -f -- $(dirname "${BASH_SOURCE[0]}"))
+# styx root dir
+root=$(dirname "$dir")
 # styx share directory
-share=$(realpath "$dir/../share/styx")
+share=$(readlink -f -- "$root/share/styx")
 # styx html doc path
-doc=$(realpath "$dir/../share/doc/styx/index.html")
+doc=$(readlink -f -- "$root/share/doc/styx/index.html")
 # styx builder
 builder="$share/nix/site-builder.nix"
 # doc builder
@@ -363,7 +365,7 @@ fi
 
 if [ "$action" = "site-doc" ]; then
   check_styx $in $siteFile
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
+  extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
   path=$(doc_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -380,12 +382,12 @@ fi
 if [ "$action" = build ]; then
   check_styx $in $siteFile
   if [ -z $output ]; then
-    target=$(realpath "$in/public")
+    target=$(readlink -f -- "$in/public")
   else
-    target=$(realpath "$output")
+    target=$(readlink -f -- "$output")
   fi
   echo "Building the site..."
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
+  extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
   path=$(store_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -424,7 +426,7 @@ if [ "$action" = serve ]; then
     elif [ -n "$siteUrl" ]; then
       extraConf+=("siteUrl = \"$siteUrl\";")
     fi
-    extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
+    extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
     path=$(store_build)
     if [ $? -ne 0 ]; then
       nix_error
@@ -533,19 +535,19 @@ if [ "$action" = deploy ]; then
   elif [ "$deployAction" == "gh-pages" ]; then
     check_git $in
     if [ -z $output ]; then
-      target=$(realpath "$in/gh-pages")
+      target=$(readlink -f -- "$in/gh-pages")
     else
-      target=$(realpath "$output/gh-pages")
+      target=$(readlink -f -- "$output/gh-pages")
     fi
 
-    inDir=$(realpath "$in")
+    inDir=$(readlink -f -- "$in")
     (
       cd $in
       rev=$(git rev-parse --short HEAD)
 
       if [ -z $buildPath ]; then
         echo "Building the site"
-        extraFlags+=("--arg" "siteFile" $(realpath "$inDir/$siteFile"))
+        extraFlags+=("--arg" "siteFile" $(readlink -f -- "$inDir/$siteFile"))
         path=$(store_build)
         if [ $? -ne 0 ]; then
           nix_error

@@ -1,15 +1,16 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 # Update documentation styx-themes chapter
 
 echo "Generating themes documentation."
-scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+baseDir=$(dirname "$scriptDir")
 path=$(nix-build "$scriptDir/themes-doc.nix" --no-out-link "$@")
 if [ $? -ne 0 ]; then 
   echo "Error: build failed"
   exit 1
 fi
-target=$(realpath "$scriptDir/../src/doc/")
+target=$(readlink -f -- "$baseDir/src/doc/")
 cp $path/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
 cp -r $path/imgs $target/ --no-preserve=all
 echo "Themes documentation updated!"
@@ -20,6 +21,6 @@ if [ $? -ne 0 ]; then
   echo "Error: build failed"
   exit 1
 fi
-target=$(realpath "$scriptDir/../src/doc/")
+target=$(readlink -f -- "$baseDir/src/doc/")
 cp $path/library-generated.adoc $target/library-generated.adoc --no-preserve=all
 echo "Library documentation updated!"

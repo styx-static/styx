@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 # Run the tests, should be run before every commit
 
@@ -7,24 +7,24 @@
 #  ./scripts/run-tests
 
 
-scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-testsDir=$(realpath "$scriptDir/../tests")
-nixpkgsDir=$(realpath "$scriptDir/../nixpkgs")
-
-main=$(nix-build "$testsDir" --no-out-link)
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+styxDir="$(dirname scriptDir)"
+testsDir=$(readlink -f -- "$styxDir/tests")
+nixpkgsDir=$(readlink -f -- "$styxDir/nixpkgs")
 
 echo ""
 
 echo "Main tests:"
-if [ $? -ne 0 ]; then
-  echo "  failure"
-else
+if nix-build "$testsDir" --no-out-link; then
   echo "  success"
+else
+  echo "  failure"
+  exit 1
 fi
 
 echo ""
 
-echo "Library tests:"
+echo "Library tests report:"
 
 cat $(nix-build --no-out-link -A report $testsDir/lib.nix)
 

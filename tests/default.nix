@@ -54,14 +54,16 @@ rec {
     ${styx}/bin/styx new theme my-theme --in $out/my-site/themes
   '';
 
+  /*
   serve = pkgs.runCommand "styx-serve" { buildInputs = [ pkgs.curl ]; } ''
     mkdir $out
     ${styx}/bin/styx serve --build-path ${themes-sites.showcase-site} --detach
     sleep 3
     curl -I 127.0.0.1:8080/index.html > $out/result
   '';
+  */
 
-  deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" { buildInputs = [ pkgs.git pkgs.tree ]; } ''
+  deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" { buildInputs = [ pkgs.git ]; } ''
     mkdir $out
     cp -r ${styx-themes.showcase}/example/* $out/
     export HOME=$out
@@ -70,7 +72,6 @@ rec {
     git config --global user.email "styx@test.styx"
     cd $out && git init && git add . && git commit -m "init repo"
     ${styx}/bin/styx deploy --init-gh-pages --in $out
-    tree
     ${styx}/bin/styx deploy --gh-pages --in $out --build-path "${themes-sites.showcase-site}/"
   '';
 
