@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/styx-static/styx.svg?branch=master)](https://travis-ci.org/styx-static/styx)
+
 # Styx
 
 Static site generator in Nix expression language.
