@@ -16,7 +16,7 @@ ${mapTemplate (plist:
       <li>${templates.tag.ilink {
         path = t.path;
         content = t.term;
-      }} (${toString t.number})</li>
+      }} (${toString t.count})</li>
     '') (templates.taxonomy.term-list plist)}
     </ul>
   '') taxonomyData}
