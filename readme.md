@@ -27,7 +27,7 @@ $BROWSER $(nix-build --no-out-link https://github.com/styx-static/styx/archive/l
 ## Links
 
 - [Official site](https://styx-static.github.io/styx-site/)
-- [Documentation](https://styx-static.github.io/styx-site/documentation.html)
+- [Documentation](https://styx-static.github.io/styx-site/documentation/)
 
 ## Contributing
 

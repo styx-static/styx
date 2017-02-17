@@ -1,0 +1,43 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p phantomjs2 imagemagick
+
+# This script update every theme screenshot
+
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+baseDir="$(dirname "$scriptDir")"
+themesDir="$(readlink -f -- $baseDir/themes)"
+
+styx=$(nix-build $baseDir --no-out-link)/bin/styx
+styxArgs="--arg pkgs \"import $baseDir/nixpkgs\""
+
+echo "Updating themes screenshots."
+echo "---"
+
+for d in $themesDir/*/ ; do
+  if [ -d "$d/example" ]; then
+    themeDir="$(readlink -f -- $d)"
+    siteDir="$(readlink -f -- $d)/example"
+    screenFile="$(readlink -f -- $themeDir/screen.png)"
+
+    echo "taking screen of $siteDir"
+
+    # running the preview site in background
+    eval "$styx preview --in $siteDir --detach $styxArgs > /dev/null"
+
+    # Waiting a little to be sure the server is ready
+    echo "Say cheese"; for i in {3..1}; do echo -n "$i," && sleep 1; done; echo " Snap!"
+
+    # taking the picture
+    tmpFile=$(mktemp --suffix ".png")
+    phantomjs "$scriptDir/screen.js" "$tmpFile"
+    convert "$tmpFile" -resize 1140 -gravity north -extent 1140x800 "$screenFile"
+    rm "$tmpFile"
+    echo "screenshot saved in $screenFile"
+    echo "---"
+
+    # killing the server
+    pidof caddy | xargs kill -9
+  fi
+done
+
+echo "Finished!"
