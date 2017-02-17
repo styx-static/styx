@@ -40,7 +40,7 @@ let
         buildInputs = [ pkgs.styx ];
       } ''
         # metablock separator
-        metaBlock="/^{---$/,/^---}$/p"
+        metaBlock="/^{---$/,/^---}$/!d;/^---}$/q"
         # pageSeparator
         pageSep="<<<"
         # intro separator
@@ -57,9 +57,9 @@ let
         mkdir $out/subpages
 
         # metadata
-        if [ "$(sed -n "$metaBlock" < $out/source)" ]; then
+        if [ "$(sed "$metaBlock" < $out/source)" ]; then
           echo "{" > $out/meta
-          sed -n "$metaBlock" < $out/source | sed '1d;$d' >> $out/meta
+          sed "$metaBlock" < $out/source | sed '1d;$d' >> $out/meta
           echo "}" >> $out/meta
           sed -i "1,$(cat $out/meta | wc -l)d" $out/source
         fi
