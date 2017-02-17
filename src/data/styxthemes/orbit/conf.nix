@@ -157,7 +157,7 @@ with lib;
 /* Sidebar contents
 */
 
-  contact.items = {
+  contact = {
     items = mkOption {
       description = ''
         List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
