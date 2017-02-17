@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="${conf.theme.site.description}">
 <meta name="author" content="${conf.theme.site.author}">
-${lib.generatorMeta}
 <title>${conf.theme.site.title}</title>
 <link href="${conf.siteUrl}/css/bootstrap.min.css" rel="stylesheet">
 <link href="${conf.siteUrl}/css/agency.css" rel="stylesheet">
