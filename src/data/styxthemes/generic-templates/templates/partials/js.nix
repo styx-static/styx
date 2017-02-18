@@ -4,10 +4,12 @@ let template = { templates, ... }:
   args:
     templates.lib.js.jquery
   + templates.lib.js.bootstrap
+  + templates.lib.js.highlightjs
+  + templates.services.google-analytics
+  + templates.services.mixpanel
   + (templates.partials.js-custom args)
   + (templates.partials.js-extra  args)
-  + templates.services.google-analytics
-  + templates.services.mixpanel;
+  ;
 
 in with env.lib; documentedTemplate {
   description = ''
@@ -15,10 +17,11 @@ in with env.lib; documentedTemplate {
 
     - <<templates.lib.js.jquery>>
     - <<templates.lib.js.bootstrap>>
-    - <<templates.partials.js-custom>>
-    - <<templates.partials.js-extra>>
+    - <<templates.lib.js.highlightjs>>
     - <<templates.services.google-analytics>>
     - <<templates.services.mixpanel>>
+    - <<templates.partials.js-custom>>
+    - <<templates.partials.js-extra>>
   '';
   inherit env template;
 }
