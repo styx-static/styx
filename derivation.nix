@@ -1,5 +1,6 @@
 { stdenv, caddy, asciidoctor
 , file, lessc, sass, multimarkdown
+, linkchecker
 , callPackage }:
 
 stdenv.mkDerivation rec {
@@ -9,6 +10,7 @@ stdenv.mkDerivation rec {
   src = ./src;
 
   server = "${caddy.bin}/bin/caddy";
+  linkcheck = "${linkchecker}/bin/linkchecker";
 
   nativeBuildInputs = [ asciidoctor ];
 

@@ -24,6 +24,7 @@ Subcommands:
                                This override the configuration file 'siteUrl' to not break links.
     live                       Similar to preview, but automatically rebuild the site on changes.
     serve                      Build the site and serve it.
+    linkcheck                  Check a site links.
     deploy                     Deploy the site, must be used with a deploy option.
     doc                        Opens styx HTML documentation in BROWSER.
     site-doc                   Generates and open the documentation for a styx site in BROWSER.
@@ -161,6 +162,8 @@ output=
 # clean the build
 clean=
 
+# linkchecker program
+linkchecker=@linkcheck@
 # server program
 server=@server@
 # hostname or ip the server is listening on
@@ -242,7 +245,7 @@ while [ "$#" -gt 0 ]; do
       action="serve"
       siteUrl="PREVIEW"
       ;;
-    build|serve|deploy|live|gen-sample-data|site-doc)
+    build|serve|deploy|live|gen-sample-data|site-doc|linkcheck)
       action="$i"
       ;;
     doc|manual)
@@ -443,6 +446,33 @@ if [ "$action" = serve ]; then
     echo "press Ctrl+C to stop"
     $($server --root "$path" --host "$serverHost" --port "$port")
   fi
+fi
+
+#-------------------------------
+#
+# Linkcheck
+#
+#-------------------------------
+
+if [ "$action" = linkcheck ]; then
+  if [ -z $buildPath ]; then
+    check_styx $in $siteFile
+    extraConf+=("siteUrl = \"http://$serverHost:$port\";")
+    extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+    path=$(store_build)
+    if [ $? -ne 0 ]; then
+      nix_error
+    fi
+  else
+    path="$buildPath"
+  fi
+  $server --root \"$path\" --host "$serverHost" --port "$port" >/dev/null &
+  serverPid=$!
+  sleep 3
+  echo "---"
+  $linkchecker "http://$serverHost:$port"
+  disown "$serverPid"
+  kill -9 "$serverPid"
 fi
 
 

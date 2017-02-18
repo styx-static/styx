@@ -456,11 +456,11 @@ rec {
         extraArgs = removeAttrs args [ "data" "taxonomyTemplate" "termTemplate" "taxonomyPathFn" "termPathFn" ];
         taxonomyPages = propMap (taxonomy: terms:
           (extraArgs //
-          { inherit terms taxonomy;
-            taxonomyData = { taxonomy = terms; };
-            path         = taxonomyPathFn taxonomy;
-            template     = taxonomyTemplate; })
-        ) data; 
+            { inherit terms taxonomy;
+              taxonomyData = { "${taxonomy}" = terms; };
+              path         = taxonomyPathFn taxonomy;
+              template     = taxonomyTemplate; })
+          ) data; 
         termPages = flatten (propMap (taxonomy: terms:
           propMap (term: values:
             (extraArgs //

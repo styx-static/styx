@@ -16,7 +16,13 @@ $ nix-build && ./result/bin/styx doc
 
 4. Update themes screenshots
 
+```
+$ ./scripts/update-themes-screens
+```
+
 5. Update the themes demo sites
+
+TODO: make a script
 
 6. Update the styx-themes documentation and check the documentation again
 
