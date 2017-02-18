@@ -35,6 +35,27 @@ with lib;
       };
     };
 
+    highlightjs = {
+      enable = mkEnableOption "highlightjs";
+      version = mkOption {
+        default = "9.9.0";
+        description = "Selects highlightjs version to use.";
+        type = types.string;
+      };
+      style = mkOption {
+        default = "default";
+        description = "Style used by highlight.js, for available styles see https://highlightjs.org/static/demo/.";
+        example = "agate";
+        type = types.string;
+      };
+      extraLanguages = mkOption {
+        default = [];
+        description = "Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.";
+        example = [ "nix" ];
+        type = with types; listOf str;
+      };
+    };
+
   };
 
   site.title = mkOption {
