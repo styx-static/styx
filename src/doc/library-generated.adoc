@@ -19,7 +19,7 @@ File automatically generated, do not edit
 :sectnums!:
 
 [[lib.conf.parseDecls]]
-=== parseDecls 
+=== parseDecls
 
 ==== Description
 
@@ -32,18 +32,23 @@ Parse configuration interface declarations.
 ===== decls
 
 A configuration attribute set.
+
 Type: `Attrs`. 
 
 ===== optionFn
 
 Function to convert options.
+
 Type: `Option -> a`. 
+
 Optional, defaults to `lib.id`.
 
 ===== valueFn
 
 Function to convert values.
+
 Type: `a -> b`. 
+
 Optional, defaults to `lib.id`.
 
 ==== Return
@@ -100,7 +105,7 @@ parseDecls {
 :sectnums!:
 
 [[lib.conf.typeCheck]]
-=== typeCheck 
+=== typeCheck
 
 ==== Description
 
@@ -113,16 +118,18 @@ Type check configuration declarations against definitions.
 ===== decls
 
 A configuration declarations attribute set.
+
 Type: `Attrs`. 
 
 ===== defs
 
 A configuration definitions attribute set.
+
 Type: `Attrs`. 
 
 ==== Return
 
-Throw an error if `defs` do not type-check with `decls`. 
+Throw an error if `defs` do not type-check with `decls`.
 
 
 
@@ -152,7 +159,7 @@ The data namespace contains functions to fetch and manipulate data.
 :sectnums!:
 
 [[lib.data.asciidocToHtml]]
-=== asciidocToHtml 
+=== asciidocToHtml
 
 ==== Description
 
@@ -164,6 +171,7 @@ Convert asciidoc text to HTML.
 ===== text
 
 Text in asciidoc format.
+
 Type: `String`. 
 
 ==== Return
@@ -204,7 +212,7 @@ asciidocToHtml "Hello `asciidoc`!"
 :sectnums!:
 
 [[lib.data.groupBy]]
-=== groupBy 
+=== groupBy
 
 ==== Description
 
@@ -216,11 +224,13 @@ Group a list of attribute sets.
 ===== list
 
 List of attribute sets.
+
 Type: `[ Attrs ]`. 
 
 ===== f
 
 Function to generate the group name.
+
 Type: `Attrs -> String`. 
 
 ==== Return
@@ -276,7 +286,7 @@ groupBy [
 :sectnums!:
 
 [[lib.data.loadDir]]
-=== loadDir 
+=== loadDir
 
 ==== Description
 
@@ -289,31 +299,32 @@ Load a directory containing data that styx can handle.
 ===== asAttrs
 
 If set to true, the function will return a set instead of a list. The key will be the file basename, and the value the data set.
+
 Type: `Bool`. 
+
 Optional, defaults to `false`.
 
 ===== dir
 
 The directory to load data from.
+
 Type: `Path`. 
+
+===== env
+
+The nix environment to use in loaded files.
+
+Type: `Attrs`. 
+
+Optional, defaults to `{ }`.
 
 ===== filterDraftsFn
 
 Function to filter the drafts.
+
 Type: `Draft -> Bool`. 
-Optional, defaults to `d: !((! renderDrafts) && (attrByPath ["draft"] false d))`.
 
-===== renderDrafts
-
-Whether or not to render the drafts.
-Type: `Bool`. 
-Optional, defaults to `false`.
-
-===== substitutions
-
-A substitution set to apply to the loaded data.
-Type: `Attrs`. 
-Optional, defaults to `{ }`.
+Optional, defaults to `d: !((! (attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d))`.
 
 ==== Return
 
@@ -327,7 +338,8 @@ A list of data attribute sets. (Or a set of data set if `asAttrs` is `true`)
 ----
 data.posts = loadDir {
   dir = ./data/posts;
-});
+  inherit env;
+};
 
 ----
 
@@ -351,35 +363,32 @@ Any extra attribute in the argument set will be added to every loaded data attri
 :sectnums!:
 
 [[lib.data.loadFile]]
-=== loadFile 
+=== loadFile
 
 ==== Description
 
-Load a directory containing data that styx can handle.
-
+Loads a data file
 
 ==== Arguments (Attribute Set)
 
 
-===== dir
+===== env
 
-The directory where the file is located.
-Type: `Path`. 
+The nix environment to use in loaded file.
+
+Type: `Attrs`. 
+
+Optional, defaults to `{ }`.
 
 ===== file
 
-The file to load.
-Type: `String`. 
+Path of the file to load.
 
-===== substitutions
-
-A substitution set to apply to the loaded file.
-Type: `Attrs`. 
-Optional, defaults to `{ }`.
+Type: `Path`. 
 
 ==== Return
 
-A data attribute set.
+A list of data attribute sets. (Or a set of data set if `asAttrs` is `true`)
 
 ==== Example
 
@@ -387,16 +396,21 @@ A data attribute set.
 [source, nix]
 .Code
 ----
-data.about = loadFile {
-  dir  = ./data/pages;
-  file = "about.md";
-});
+data.posts = loadFile {
+  file = ./data/pages/about.md;
+  inherit env;
+};
 
 ----
 
 
 
 
+[NOTE]
+====
+Any extra attribute in the argument set will be added to the data attribute set.
+
+====
 
 
 :sectnums:
@@ -409,7 +423,7 @@ data.about = loadFile {
 :sectnums!:
 
 [[lib.data.markdownToHtml]]
-=== markdownToHtml 
+=== markdownToHtml
 
 ==== Description
 
@@ -421,6 +435,7 @@ Convert markdown text to HTML.
 ===== text
 
 Text in markdown format
+
 Type: `String`. 
 
 ==== Return
@@ -459,7 +474,7 @@ markdownToHtml "Hello `markdown`!"
 :sectnums!:
 
 [[lib.data.mkTaxonomyData]]
-=== mkTaxonomyData 
+=== mkTaxonomyData
 
 ==== Description
 
@@ -472,11 +487,13 @@ Generate taxonomy data from a list of data attribute sets.
 ===== Taxonomies
 
 A list of taxonomies to extract.
+
 Type: `[ String ]`. 
 
 ===== data
 
 A list of data attribute sets to extract taxonomy data from.
+
 Type: `[ Data ]`. 
 
 ==== Return
@@ -543,7 +560,7 @@ mkTaxonomyData {
 :sectnums!:
 
 [[lib.data.sortTerms]]
-=== sortTerms 
+=== sortTerms
 
 ==== Description
 
@@ -555,6 +572,7 @@ Sort taxonomy terms by number of occurences.
 ===== terms
 
 List of taxonomy terms attribute sets.
+
 Type: `[ Terms ]`. 
 
 ==== Return
@@ -596,7 +614,7 @@ sortTerms [ { bar = [ {} {} ]; } { foo = [ {} {} {} ]; } ]
 :sectnums!:
 
 [[lib.data.valuesNb]]
-=== valuesNb 
+=== valuesNb
 
 ==== Description
 
@@ -608,6 +626,7 @@ Calculate the number of values in a taxonomy term attribute set.
 ===== term
 
 Taxonomy terms attribute set.
+
 Type: `Terms`. 
 
 ==== Return
@@ -658,7 +677,7 @@ valuesNb { foo = [ {} {} {} ]; }
 :sectnums!:
 
 [[lib.generation.generatePage]]
-=== generatePage 
+=== generatePage
 
 ==== Description
 
@@ -670,6 +689,7 @@ Function to generate a page source.
 ===== page
 
 A page attribute set with at least `layout` and `template` defined.
+
 Type: `Page`. 
 
 ==== Return
@@ -716,7 +736,7 @@ generatePage {
 :sectnums!:
 
 [[lib.generation.generateSite]]
-=== generateSite 
+=== generateSite
 
 ==== Description
 
@@ -737,7 +757,7 @@ Alias for `mkSite`.
 :sectnums!:
 
 [[lib.generation.mkSite]]
-=== mkSite 
+=== mkSite
 
 ==== Description
 
@@ -749,55 +769,73 @@ Generate a site, this is the main function of a styx site.
 ===== files
 
 A list of directory of static files to copy in the generated site.
+
 Type: `[ Path ]`. 
+
 Optional, defaults to `[  ]`.
 
 ===== genPageFn
 
 Function to generate a page source from a page attribute set.
+
 Type: `Page -> String`. 
+
 Optional, defaults to `generatePage`.
 
 ===== meta
 
 Meta attribute set of the generated site derivation.
+
 Type: `Attrs`. 
+
 Optional, defaults to `{ }`.
 
 ===== name
 
 Name of the store artefact generated.
+
 Type: `String`. 
+
 Optional, defaults to `"styx-site"`.
 
 ===== pagePathFn
 
 Function to generate a page from a page attribute set.
+
 Type: `Page -> String`. 
+
 Optional, defaults to `page: page.path`.
 
 ===== pagesList
 
 A list of pages attributes sets to generate.
+
 Type: `[ Page ]`. 
+
 Optional, defaults to `[  ]`.
 
 ===== postGen
 
 A set of command to execute after generating the site.
+
 Type: `String`. 
+
 Optional, defaults to `""`.
 
 ===== preGen
 
 A set of command to execute before generating the site.
+
 Type: `String`. 
+
 Optional, defaults to `""`.
 
 ===== substitutions
 
 A substitution set to apply to the generated pages and static files.
+
 Type: `Attrs`. 
+
 Optional, defaults to `{ }`.
 
 ==== Return
@@ -829,7 +867,7 @@ generateSite { pagesList = [ pages.index ]; }
 :sectnums!:
 
 [[lib.generation.pagesToList]]
-=== pagesToList 
+=== pagesToList
 
 ==== Description
 
@@ -841,12 +879,15 @@ Convert a set containing pages to a list of pages.
 ===== default
 
 Atrribute set of default values to add to every page attribute set, useful to set `layout`.
+
 Type: `Attrs`. 
+
 Optional, defaults to `{ }`.
 
 ===== pages
 
 A set of page attribute sets.
+
 Type: `Attrs`. 
 
 ==== Return
@@ -927,72 +968,8 @@ pagesToList {
 
 :sectnums!:
 
-[[lib.pages.mkMultiTail]]
-=== mkMultiTail 
-
-==== Description
-
-Generate a list of multipages subpages tail sets from a list of data set.
-
-==== Arguments (Attribute Set)
-
-
-===== data
-
-List of data sets.
-Type: `[ Data ]`. 
-
-===== pathFn
-
-Function to generate the path of the page.
-Type: `(Data -> String)`. 
-Optional, defaults to `data: "${pathPrefix}${data.fileData.basename}"`.
-
-===== pathPrefix
-
-String used by `pathFn` to generate the page path.
-Type: `String`. 
-Optional, defaults to `""`.
-
-==== Return
-
-A list of page sets.
-
-==== Example
-
-
-[source, nix]
-.Code
-----
-pages.postsMultiTail = mkMultiTail {
-  data       = data.posts;
-  pathPrefix = "/posts/";
-  template   = templates.post.full-multipage;
-};
-
-----
-
-
-
-
-[NOTE]
-====
-Any extra arguments will be forwarded to every generated page set.
-
-====
-
-
-:sectnums:
-
-
-
----
-
-
-:sectnums!:
-
 [[lib.pages.mkMultipages]]
-=== mkMultipages 
+=== mkMultipages
 
 ==== Description
 
@@ -1003,8 +980,11 @@ Create the list of pages from a multipage data set.
 
 ===== basePath
 
-String used by `pathFn` to generate the page path.
+String used by `pathFn` to generate the page path. Used in `pageFn` default, ignored if `pageFn` is set.
+
 Type: `String`. 
+
+Optional, defaults to `null`.
 
 ===== output
 
@@ -1014,23 +994,43 @@ The pages to generate:
 * `"head"`: Generate only the first page.
 * `"tail"`: Generate all but the first page.
 
+
+
 Type: `"all" | "head" | "tail"`. 
+
 Optional, defaults to `"all"`.
+
+===== pageFn
+
+Function to generate extra attributes to merge to the page.
+
+Type: `Int -> Data -> Page`. 
+
+Optional, defaults to:
+----
+index: data:
+  optionalAttrs (basePath != null) {
+    path = mkSplitPagePath { inherit index; pre = basePath; };
+  }
+
+----
+
 
 ===== pages
 
 List of subpages data.
+
 Type: `[ Attrs ]`. 
-
-===== pathFn
-
-Function to generate the path of the page.
-Type: `(Int -> String)`. 
-Optional, defaults to `i: if i == 1 then "${basePath}.html" else "${basePath}-${toString i}.html"`.
 
 ==== Return
 
-The page(s) according to the `output` argument.
+Pages according to the `output`. +
+Every page will get a `multipages` attribute containing:
+
+- `pages`: list of all the subpages.
+- `index`: Index of the page in the `subpages` list.
+
+
 
 ==== Example
 
@@ -1048,57 +1048,6 @@ pages.about = mkMultipages ({
 
 
 ---
-
-[source, nix]
-.Code
-----
-mkSplit {
-  basePath = "/test";
-  itemsPerPage = 2;
-  data = range 1 4;
-}
-
-----
-
-[source, html]
-.Result
-----
-[ {
-  index = 1;
-  items = [ 1 2 ];
-  itemsNb = 2;
-  pages = [ {
-    index = 1;
-    items = [ 1 2 ];
-    itemsNb = 2;
-    path = "/test.html";
-  } {
-    index = 2;
-    items = [ 3 4 ];
-    itemsNb = 2;
-    path = "/test-2.html";
-  } ];
-  path = "/test.html";
-} {
-  index = 2;
-  items = [ 3 4 ];
-  itemsNb = 2;
-  pages = [ {
-    index = 1;
-    items = [ 1 2 ];
-    itemsNb = 2;
-    path = "/test.html";
-  } {
-    index = 2;
-    items = [ 3 4 ];
-    itemsNb = 2;
-    path = "/test-2.html";
-  } ];
-  path = "/test-2.html";
-} ]
-----
-
-
 
 
 [NOTE]
@@ -1118,7 +1067,7 @@ Any extra arguments will be forwarded to every generated page set.
 :sectnums!:
 
 [[lib.pages.mkPageList]]
-=== mkPageList 
+=== mkPageList
 
 ==== Description
 
@@ -1130,29 +1079,47 @@ Generate a list of pages from a list of data set, generates only the first page 
 ===== data
 
 List of data sets.
+
 Type: `[ Data ]`. 
 
-===== multipageTemplate
+===== multipageFn
 
-Template used for multipage data sets.
-Type: `Template`. 
-Optional, defaults to `null`.
+Function to generate extra attributes of mutipages.
 
-===== pathFn
+Type: `Int -> Data -> Attrs`. 
 
-Function to generate the path of the page.
-Type: `(Data -> String)`. 
-Optional, defaults to `data: "${pathPrefix}${data.fileData.basename}"`.
+Optional, defaults to:
+----
+index: data: {
+  path = mKSplitPagePath { pre = "${pathPrefix}${data.fileData.basename}"; inherit index; };
+}
+
+----
+
+
+===== pageFn
+
+Function to generate extra attributes of normal pages.
+
+Type: `(Data -> Attrs)`. 
+
+Optional, defaults to `data: { path = "${pathPrefix}${data.fileData.basename}.html"; }`.
 
 ===== pathPrefix
 
-String used by `pathFn` to generate the page path.
+String used by `pathFn` and `multipagePathFn` to generate the page path.
+
 Type: `String`. 
+
 Optional, defaults to `""`.
 
 ==== Return
 
-A list of page sets.
+An attribute set with the following attributes:.
+
+- `list`: The list of contents, containing single pages and first page of multipages posts.
+- `pages`: List of all pages, including multipages subpages.
+
 
 ==== Example
 
@@ -1164,12 +1131,13 @@ pages.posts = mkPageList {
   data       = data.posts;
   pathPrefix = "/posts/";
   template   = templates.post.full;
-  multipageTemplate = templates.post.full-multipage;
 };
 
 ----
 
 
+
+---
 
 
 [NOTE]
@@ -1189,11 +1157,11 @@ pages.posts = mkPageList {
 :sectnums!:
 
 [[lib.pages.mkSplit]]
-=== mkSplit 
+=== mkSplit
 
 ==== Description
 
-Create a list of pages from a list of data. A simpler version of `mkSplitCustom` that should fit most needs.
+Create a list of pages from a list of data.
 
 ==== Arguments (Attribute Set)
 
@@ -1202,22 +1170,21 @@ Create a list of pages from a list of data. A simpler version of `mkSplitCustom`
 
 Arguments to merge with the first splitted page.
 
-* Must define `itemsNb`, the number of data items to pass to the first page.
 
 Type: `Attrs`. 
 
 ===== data
 
 List of data sets.
+
 Type: `[ Data ]`. 
 
-===== tail
+===== itemsPerPage
 
-Arguments to merge with the rest of splitted page.
+Number of data items to allocate to a page.
 
-* Must define `itemsNb`, the number of data items to pass to each page.
 
-Type: `Attrs`. 
+Type: `Int`. 
 
 ==== Return
 
@@ -1251,9 +1218,9 @@ pages.archives = mkSplit {
 .Code
 ----
 mkSplit {
-  basePath = "/test";
+  data = map (x: { id = x; }) (range 1 4);
   itemsPerPage = 2;
-  data = range 1 4;
+  basePath = "/test";
 }
 
 ----
@@ -1263,36 +1230,128 @@ mkSplit {
 ----
 [ {
   index = 1;
-  items = [ 1 2 ];
-  itemsNb = 2;
-  pages = [ {
-    index = 1;
-    items = [ 1 2 ];
-    itemsNb = 2;
-    path = "/test.html";
+  items = [ {
+    id = 1;
   } {
-    index = 2;
-    items = [ 3 4 ];
-    itemsNb = 2;
-    path = "/test-2.html";
+    id = 2;
   } ];
+  itemsNb = 2;
+  pages = [ ... ];
   path = "/test.html";
 } {
   index = 2;
-  items = [ 3 4 ];
-  itemsNb = 2;
-  pages = [ {
-    index = 1;
-    items = [ 1 2 ];
-    itemsNb = 2;
-    path = "/test.html";
+  items = [ {
+    id = 3;
   } {
-    index = 2;
-    items = [ 3 4 ];
-    itemsNb = 2;
-    path = "/test-2.html";
+    id = 4;
   } ];
+  itemsNb = 2;
+  pages = [ ... ];
   path = "/test-2.html";
+} ]
+----
+
+
+
+
+[NOTE]
+====
+Any extra arguments will be forwarded to every generated page set.
+
+====
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.pages.mkSplitCustom]]
+=== mkSplitCustom
+
+==== Description
+
+Create a list of pages from a list of data.
+
+==== Arguments (Attribute Set)
+
+
+===== data
+
+List of data sets.
+
+Type: `[ Data ]`. 
+
+===== pageFn
+
+A function to apply to each data set, takes the index of the page and a data set and return a page set. +
+Must set `itemsNb`, the number of item to have on the page, and `path` to generate valied pages.
+
+
+Type: `Int -> Data -> Page`. 
+
+Example:
+----
+index: data: {
+  itemsNb = if index == 1 then 3 else 5;
+  path = if index == 1 then "/index.html" else "/archive-${toString index}.html";
+}
+
+----
+
+
+==== Return
+
+List of pages. Each page has:
+
+* `items`: List of the page data items.
+* `itemsNb`: Number of data items of the page.
+* `pages`: List of splitted pages.
+
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+mkSplitCustom {
+  data = map (x: { id = x; }) (range 1 4);
+  pageFn = (index: data: {
+    itemsNb = if index == 1 then 3 else 5;
+    path = if index == 1 then "/index.html" else "/archive-${toString index}.html";
+  });
+}
+
+----
+
+[source, html]
+.Result
+----
+[ {
+  index = 1;
+  items = [ {
+    id = 1;
+  } {
+    id = 2;
+  } {
+    id = 3;
+  } ];
+  itemsNb = 3;
+  pages = [ ... ];
+  path = "/index.html";
+} {
+  index = 2;
+  items = [ {
+    id = 4;
+  } ];
+  itemsNb = 1;
+  pages = [ ... ];
+  path = "/archive-2.html";
 } ]
 ----
 
@@ -1310,48 +1369,39 @@ mkSplit {
 
 :sectnums!:
 
-[[lib.pages.mkSplitCustom]]
-=== mkSplitCustom 
+[[lib.pages.mkSplitPagePath]]
+=== mkSplitPagePath
 
 ==== Description
 
-Create a list of pages from a list of data.
+Function to generate the path of a splitted page.
 
 ==== Arguments (Attribute Set)
 
 
-===== data
+===== index
 
-List of data sets.
-Type: `[ Data ]`. 
+Index of the page.
 
-===== head
+Type: `Int`. 
 
-Arguments to merge with the first splitted page.
+===== post
 
-* Must define `itemsNb`, the number of data items to pass to the first page.
-* Must define `path`, the `path` of the page.
+String to add at the end of the path.
 
-Type: `Attrs`. 
+Type: `String`. 
 
-===== tail
+Optional, defaults to `".html"`.
 
-Arguments to merge with the rest of splitted page.
+===== pre
 
-* Must define `itemsNb`, the number of data items to pass to each page.
-* Should define a `basePath` that will be used to generate the pages path.
-* Can define a `pathFn` (`Attrs -> Int -> String`) function to generate the `path` of the pages, defaults to `tail: i: "${tail.basePath}-${toString i}.html"`.
+String to add at the beginning of the path.
 
-Type: `Attrs`. 
+Type: `String`. 
 
 ==== Return
 
-List of pages. Each page has:
-
-* `items`: List of the page data items.
-* `itemsNb`: Number of data items of the page.
-* `pages`: List of splitted pages.
-
+Page path.
 
 ==== Example
 
@@ -1359,20 +1409,17 @@ List of pages. Each page has:
 [source, nix]
 .Code
 ----
-pages.archives = mkSplitCustom {
-  head = {
-    itemsNb  = 3;
-    template = templates.archives.head;
-    path     = "/archives/index.html";
-  };
-  tail = {
-    itemsNb  = 5;
-    template = templates.archives.rest;
-    basePath = "/archives/page";
-  };
-  data = pages.posts;
-};
+mkSplitPagePath {
+  index = 1;
+  pre = "/foo";
+}
 
+----
+
+[source, html]
+.Result
+----
+"/foo.html"
 ----
 
 
@@ -1382,16 +1429,9 @@ pages.archives = mkSplitCustom {
 [source, nix]
 .Code
 ----
-mkSplitCustom {
-  head = {
-    itemsNb = 1;
-    path    = "/archives/index.html";
-  };
-  tail = {
-    itemsNb  = 2;
-    basePath = "/archives/page";
-  };
-  data = range 1 4;
+mkSplitPagePath {
+  index = 3;
+  pre = "/foo";
 }
 
 ----
@@ -1399,70 +1439,7 @@ mkSplitCustom {
 [source, html]
 .Result
 ----
-[ {
-  index = 1;
-  items = [ 1 ];
-  itemsNb = 1;
-  pages = [ {
-    index = 1;
-    items = [ 1 ];
-    itemsNb = 1;
-    path = "/archives/index.html";
-  } {
-    index = 2;
-    items = [ 2 3 ];
-    itemsNb = 2;
-    path = "/archives/page-2.html";
-  } {
-    index = 3;
-    items = [ 4 ];
-    itemsNb = 2;
-    path = "/archives/page-3.html";
-  } ];
-  path = "/archives/index.html";
-} {
-  index = 2;
-  items = [ 2 3 ];
-  itemsNb = 2;
-  pages = [ {
-    index = 1;
-    items = [ 1 ];
-    itemsNb = 1;
-    path = "/archives/index.html";
-  } {
-    index = 2;
-    items = [ 2 3 ];
-    itemsNb = 2;
-    path = "/archives/page-2.html";
-  } {
-    index = 3;
-    items = [ 4 ];
-    itemsNb = 2;
-    path = "/archives/page-3.html";
-  } ];
-  path = "/archives/page-2.html";
-} {
-  index = 3;
-  items = [ 4 ];
-  itemsNb = 2;
-  pages = [ {
-    index = 1;
-    items = [ 1 ];
-    itemsNb = 1;
-    path = "/archives/index.html";
-  } {
-    index = 2;
-    items = [ 2 3 ];
-    itemsNb = 2;
-    path = "/archives/page-2.html";
-  } {
-    index = 3;
-    items = [ 4 ];
-    itemsNb = 2;
-    path = "/archives/page-3.html";
-  } ];
-  path = "/archives/page-3.html";
-} ]
+"/foo-3.html"
 ----
 
 
@@ -1480,7 +1457,7 @@ mkSplitCustom {
 :sectnums!:
 
 [[lib.pages.mkTaxonomyPages]]
-=== mkTaxonomyPages 
+=== mkTaxonomyPages
 
 ==== Description
 
@@ -1492,29 +1469,36 @@ Generate taxonomy pages from a data set list.
 ===== data
 
 List of data sets.
+
 Type: `[ Data ]`. 
 
-===== taxonomyPathFn
+===== taxonomyPageFn
 
-Function to generate the paths of taxonomy pages.
-Type: `(Taxonomy -> String)`. 
-Optional, defaults to `ta: "/${ta}/index.html"`.
+Function to add extra attributes to the taxonomy page set.
+
+Type: `(String -> Page)`. 
+
+Optional, defaults to `taxonomy: {}`.
 
 ===== taxonomyTemplate
 
 Template used for taxonomy pages.
-Type: `Template`. 
 
-===== termPathFn
+Type: `Null | Template`. 
 
-Function to generate the paths of taxonomy term pages.
-Type: `(Taxonomy -> Term -> String)`. 
-Optional, defaults to `ta: te: "/${ta}/${te}index.html"`.
+===== termPageFn
+
+Function to add extra attributes to the taxonomy page set.
+
+Type: `(String -> String -> Page)`. 
+
+Optional, defaults to `taxonomy: term: {}`.
 
 ===== termTemplate
 
 Template used for taxonomy term pages.
-Type: `Template`. 
+
+Type: `Null | Template`. 
 
 ==== Return
 
@@ -1532,6 +1516,106 @@ pages.postTaxonomies = mkTaxonomyPages {
   termTemplate = templates.taxonomy.term.full;
 };
 
+----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.pages.mkTaxonomyPath]]
+=== mkTaxonomyPath
+
+==== Description
+
+Generate a taxonomy page path.
+
+==== Arguments (Standard)
+
+
+===== taxonomy
+
+Type: `String`. 
+
+==== Return
+
+Taxonomy page path.
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+mkTaxonomyPath "tags"
+
+----
+
+[source, html]
+.Result
+----
+"/tags/index.html"
+----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.pages.mkTaxonomyTermPath]]
+=== mkTaxonomyTermPath
+
+==== Description
+
+Generate a taxonomy term page path.
+
+==== Arguments (Standard)
+
+
+===== taxonomy
+
+Type: `String`. 
+
+===== term
+
+Type: `String`. 
+
+==== Return
+
+Taxonomy term page path.
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+mkTaxonomyTermPath "tags" "styx"
+
+----
+
+[source, html]
+.Result
+----
+"/tags/styx/index.html"
 ----
 
 
@@ -1572,12 +1656,26 @@ Example:
 :sectnums!:
 
 [[lib.proplist.getProp]]
-=== getProp 
+=== getProp
 
 ==== Description
 
 Get a property in a property list by the key name.
 
+==== Arguments (Standard)
+
+
+===== key
+
+Key of the property to extract.
+
+Type: `String`. 
+
+===== proplist
+
+The property list to extract the property from.
+
+Type: `PropList`. 
 
 ==== Return
 
@@ -1616,12 +1714,26 @@ getProp "name" [ { name = "Alice"; } ]
 :sectnums!:
 
 [[lib.proplist.getValue]]
-=== getValue 
+=== getValue
 
 ==== Description
 
 Get a value from a property in a property list by the key name.
 
+==== Arguments (Standard)
+
+
+===== key
+
+Key of the property to extract value.
+
+Type: `String`. 
+
+===== proplist
+
+The property list to extract the value from.
+
+Type: `PropList`. 
 
 ==== Return
 
@@ -1658,12 +1770,26 @@ getValue "name" [ { name = "Alice"; } ]
 :sectnums!:
 
 [[lib.proplist.isDefined]]
-=== isDefined 
+=== isDefined
 
 ==== Description
 
 Check if a property with a key exists in a property list.
 
+==== Arguments (Standard)
+
+
+===== key
+
+Key of the property to check existence.
+
+Type: `String`. 
+
+===== proplist
+
+The property list to check.
+
+Type: `PropList`. 
 
 ==== Return
 
@@ -1700,12 +1826,20 @@ true
 :sectnums!:
 
 [[lib.proplist.propFlatten]]
-=== propFlatten 
+=== propFlatten
 
 ==== Description
 
 Flatten a property list which values are lists.
 
+==== Arguments (Standard)
+
+
+===== proplist
+
+The property list to flatten.
+
+Type: `PropList`. 
 
 ==== Return
 
@@ -1746,12 +1880,20 @@ propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
 :sectnums!:
 
 [[lib.proplist.propKey]]
-=== propKey 
+=== propKey
 
 ==== Description
 
 Get the key of a property.
 
+==== Arguments (Standard)
+
+
+===== prop
+
+The property to extract the key from.
+
+Type: `Property`. 
 
 ==== Return
 
@@ -1788,12 +1930,26 @@ propKey { name = "Alice"; }
 :sectnums!:
 
 [[lib.proplist.propMap]]
-=== propMap 
+=== propMap
 
 ==== Description
 
 Map for property lists.
 
+==== Arguments (Standard)
+
+
+===== f
+
+Function to map to the property list.
+
+Type: `PropKey -> PropValue -> a`. 
+
+===== proplist
+
+The property list to map.
+
+Type: `PropList`. 
 
 ==== Return
 
@@ -1830,12 +1986,20 @@ propMap (k: v: "${k}: ${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
 :sectnums!:
 
 [[lib.proplist.propValue]]
-=== propValue 
+=== propValue
 
 ==== Description
 
 Get the value of a property.
 
+==== Arguments (Standard)
+
+
+===== prop
+
+The property to extract the value from.
+
+Type: `Property`. 
 
 ==== Return
 
@@ -1872,9 +2036,26 @@ propValue { name = "Alice"; }
 :sectnums!:
 
 [[lib.proplist.removeProp]]
-=== removeProp 
+=== removeProp
+
+==== Description
+
+Return a property list where the property with key `key` has been removed.
+
+==== Arguments (Standard)
 
 
+===== key
+
+Key of the property to remove.
+
+Type: `String`. 
+
+===== proplist
+
+The property list to remove the property from.
+
+Type: `PropList`. 
 
 ==== Return
 
@@ -1926,13 +2107,54 @@ removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
 :sectnums!:
 
 [[lib.template.documentedTemplate]]
-=== documentedTemplate 
+=== documentedTemplate
 
 ==== Description
 
-Generate a documented template.
+Provide a way to document a template function.
+
+==== Arguments (Attribute Set)
 
 
+===== arguments
+
+Template arguments documentation. Attrs if the arguments are an attribute set, List for standard arguments.
+
+Type: `Null | Attrs | List`. 
+
+Optional, defaults to `null`.
+
+===== description
+
+Template description, asciidoc markup can be used.
+
+Type: `String`. 
+
+===== env
+
+Template environment.
+
+===== examples
+
+Examples of usages defined with `mkExample`.
+
+Type: `Null | [ Example ]`. 
+
+===== notes
+
+Notes regarding special usages, asciidoc markup can be used.
+
+Type: `Mull | String`. 
+
+Optional, defaults to `"Null"`.
+
+===== template
+
+Template to document.
+
+==== Return
+
+The template function, or the documented template set if `env` has a `genDoc` attribute set to `true`.
 
 
 
@@ -1947,7 +2169,7 @@ Generate a documented template.
 :sectnums!:
 
 [[lib.template.escapeHTML]]
-=== escapeHTML 
+=== escapeHTML
 
 ==== Description
 
@@ -1959,6 +2181,7 @@ Escape an HTML string.
 ===== html
 
 A HTML string to escape.
+
 Type: `String`. 
 
 ==== Return
@@ -1996,7 +2219,7 @@ escapeHTML ''<p class="foo">Hello world!</p>''
 :sectnums!:
 
 [[lib.template.htmlAttr]]
-=== htmlAttr 
+=== htmlAttr
 
 ==== Description
 
@@ -2008,11 +2231,13 @@ Generates a HTML tag attribute.
 ===== attribute
 
 HTML attribute name.
+
 Type: `String`. 
 
 ===== value
 
 HTML attribute value.
+
 Type: `String | [ String ]`. 
 
 ==== Return
@@ -2067,7 +2292,7 @@ htmlAttr "class" [ "foo" "bar" ]
 :sectnums!:
 
 [[lib.template.htmlAttrs]]
-=== htmlAttrs 
+=== htmlAttrs
 
 ==== Description
 
@@ -2079,6 +2304,7 @@ Generate a HTML tag attributes.
 ===== Set
 
 An attribute set where the key is the attribute name, and the value the attribute value(s).
+
 Type: `Attrs`. 
 
 ==== Return
@@ -2132,8 +2358,43 @@ htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; }
 
 :sectnums!:
 
+[[lib.template.isDocTemplate]]
+=== isDocTemplate
+
+==== Description
+
+Check if a set is a documented template.
+
+==== Arguments (Standard)
+
+
+===== set
+
+Attribute set to check.
+
+Type: `Attrs`. 
+
+==== Return
+
+`Bool`
+
+==== Example
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
 [[lib.template.isEven]]
-=== isEven 
+=== isEven
 
 ==== Description
 
@@ -2145,6 +2406,7 @@ Checks if a number is even.
 ===== a
 
 Number to check.
+
 Type: `Int`. 
 
 ==== Return
@@ -2182,7 +2444,7 @@ false
 :sectnums!:
 
 [[lib.template.isOdd]]
-=== isOdd 
+=== isOdd
 
 ==== Description
 
@@ -2194,6 +2456,7 @@ Checks if a number is odd.
 ===== a
 
 Number to check.
+
 Type: `Int`. 
 
 ==== Return
@@ -2231,7 +2494,7 @@ true
 :sectnums!:
 
 [[lib.template.mapTemplate]]
-=== mapTemplate 
+=== mapTemplate
 
 ==== Description
 
@@ -2243,11 +2506,13 @@ Concat template functions with a new line.
 ===== template
 
 The template to apply, must return a string.
+
 Type: `Function`. 
 
 ===== items
 
 The items to apply to the template.
+
 Type: `List`. 
 
 ==== Return
@@ -2289,7 +2554,7 @@ mapTemplate (item: ''
 :sectnums!:
 
 [[lib.template.mapTemplateWithIndex]]
-=== mapTemplateWithIndex 
+=== mapTemplateWithIndex
 
 ==== Description
 
@@ -2301,11 +2566,13 @@ Concat template functions with a new line.
 ===== template
 
 The template to apply, must return a string.
+
 Type: `Function`. 
 
 ===== items
 
 The items to apply to the template.
+
 Type: `List`. 
 
 ==== Return
@@ -2347,7 +2614,7 @@ mapTemplateWithIndex (index: item: ''
 :sectnums!:
 
 [[lib.template.mod]]
-=== mod 
+=== mod
 
 ==== Description
 
@@ -2359,11 +2626,13 @@ Returns the remainder of a division.
 ===== dividend
 
 Dividend.
+
 Type: `Int`. 
 
 ===== divisor
 
 Divisor.
+
 Type: `Int`. 
 
 ==== Return
@@ -2401,7 +2670,7 @@ mod 3 2
 :sectnums!:
 
 [[lib.template.normalTemplate]]
-=== normalTemplate 
+=== normalTemplate
 
 ==== Description
 
@@ -2527,7 +2796,7 @@ in template page
 :sectnums!:
 
 [[lib.template.parseDate]]
-=== parseDate 
+=== parseDate
 
 ==== Description
 
@@ -2539,6 +2808,7 @@ Parse a date.
 ===== date
 
 A date string in format `"YYYY-MM-DD"` or `"YYYY-MM-DDThh:mm:ss"`
+
 Type: `String`. 
 
 ==== Return
@@ -2612,7 +2882,7 @@ with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
 :sectnums!:
 
 [[lib.themes.docText]]
-=== docText 
+=== docText
 
 ==== Description
 
@@ -2624,6 +2894,7 @@ Convert a documentation set to a property list to generate documention.
 ===== doc
 
 Documentation set.
+
 Type: `Attrs`. 
 
 ==== Return
@@ -2676,7 +2947,7 @@ docText (mkDoc {
 :sectnums!:
 
 [[lib.themes.load]]
-=== load 
+=== load
 
 ==== Description
 
@@ -2686,27 +2957,34 @@ Load themes data.
 ==== Arguments (Attribute Set)
 
 
-===== conf.extra
+===== extraConf
 
 A list of configuration attribute sets to merge to the result `conf` attribute.
+
 Type: `[ Attrs ]`. 
+
 Optional, defaults to `[  ]`.
+
+===== extraEnv
+
+An attribute set to merge to the template environment.
+
+Type: `Attrs`. 
+
+Optional, defaults to `{ }`.
 
 ===== styxLib
 
 The styx library.
-Type: `Attrs`. 
 
-===== templates.extraEnv
-
-An attribute set to merge to the template environment.
 Type: `Attrs`. 
-Optional, defaults to `{ }`.
 
 ===== themes
 
 List of themes, local themes or packages.
+
 Type: `[ (Path | Package) ]`. 
+
 Optional, defaults to `{ }`.
 
 ==== Return
@@ -2751,7 +3029,7 @@ themesData = styxLib.themes.load {
 :sectnums!:
 
 [[lib.themes.loadData]]
-=== loadData 
+=== loadData
 
 ==== Description
 
@@ -2764,11 +3042,13 @@ Load a theme data.
 ===== styxLib
 
 The styx library.
+
 Type: `Attrs`. 
 
 ===== theme
 
 A local theme or theme package.
+
 Type: `(Path | Package)`. 
 
 ==== Return
@@ -2799,11 +3079,11 @@ A theme data attribute set containing:
 :sectnums!:
 
 [[lib.themes.mkDoc]]
-=== mkDoc 
+=== mkDoc
 
 ==== Description
 
-Convert a theme declaration set to a documentation set.  
+Convert a theme declaration set to a documentation set.
 
 
 ==== Arguments (Standard)
@@ -2812,6 +3092,7 @@ Convert a theme declaration set to a documentation set.
 ===== decls
 
 Theme declarations set.
+
 Type: `Attrs`. 
 
 ==== Return
@@ -2881,7 +3162,7 @@ This namespace contains generic functions.
 :sectnums!:
 
 [[lib.utils.chunksOf]]
-=== chunksOf 
+=== chunksOf
 
 ==== Description
 
@@ -2893,11 +3174,13 @@ Split a list in lists multiple lists of `size` items.
 ===== size
 
 Maximum size of the splitted lists.
+
 Type: `Integer`. 
 
 ===== list
 
 List to split.
+
 Type: `List`. 
 
 ==== Return
@@ -2935,7 +3218,7 @@ chunksOf 2 [ 1 2 3 4 5 ]
 :sectnums!:
 
 [[lib.utils.dirContains]]
-=== dirContains 
+=== dirContains
 
 ==== Description
 
@@ -2956,13 +3239,56 @@ Check if a path exists in a directory.
 :sectnums!:
 
 [[lib.utils.documentedFunction]]
-=== documentedFunction 
+=== documentedFunction
 
 ==== Description
 
-Create a documented function.
+Create a documented function. A documented function is used to automatically generate documentation and tests.
+
+==== Arguments (Attribute Set)
 
 
+===== arguments
+
+Function arguments documentation. Attrs if the arguments are an attribute set, List for standard arguments.
+
+Type: `Null | Attrs | List`. 
+
+Optional, defaults to `null`.
+
+===== description
+
+Function description, asciidoc markup can be used.
+
+Type: `String`. 
+
+===== examples
+
+Examples of usages defined with `mkExample`.
+
+Type: `Null | [ Example ]`. 
+
+===== function
+
+The function to document.
+
+===== notes
+
+Notes regarding special usages, asciidoc markup can be used.
+
+Type: `Mull | String`. 
+
+Optional, defaults to `"Null"`.
+
+===== return
+
+Description of function return value, asciidoc markup can be used.
+
+Type: `String`. 
+
+==== Return
+
+The template function, or the documented template set if `env` has a `genDoc` attribute set to `true`.
 
 
 
@@ -2977,11 +3303,79 @@ Create a documented function.
 :sectnums!:
 
 [[lib.utils.importApply]]
-=== importApply 
+=== importApply
 
 ==== Description
 
-Import a nix file `file` and apply the arguments `args` if it is a function.
+Import a nix file `file` and apply the arguments `arg` if it is a function.
+
+==== Arguments (Standard)
+
+
+===== file
+
+Nix file to load.
+
+Type: `Path`. 
+
+===== arg
+
+Argument to call `file` contents with if it is a function.
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.utils.is]]
+=== is
+
+==== Description
+
+Check if an attribute set has a certain type.
+
+==== Arguments (Standard)
+
+
+===== type
+
+Type to check.
+
+Type: `String`. 
+
+===== attrs
+
+Attribute set to check.
+
+Type: `Attrs`. 
+
+==== Return
+
+`Bool`
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+is "foo" { _type = "foo"; }
+
+----
+
+[source, html]
+.Result
+----
+true
+----
 
 
 
@@ -2998,39 +3392,19 @@ Import a nix file `file` and apply the arguments `args` if it is a function.
 :sectnums!:
 
 [[lib.utils.isDocFunction]]
-=== isDocFunction 
+=== isDocFunction
 
 ==== Description
 
 Check if a set is a documented fuction.
 
-
-
-
-
-
-:sectnums:
-
-
-
----
-
-
-:sectnums!:
-
-[[lib.utils.isDocTemplate]]
-=== isDocTemplate 
-
-==== Description
-
-Check if a set is a documented template.
-
 ==== Arguments (Standard)
 
 
-===== set
+===== attrs
 
 Attribute set to check.
+
 Type: `Attrs`. 
 
 ==== Return
@@ -3050,11 +3424,40 @@ Type: `Attrs`.
 :sectnums!:
 
 [[lib.utils.isExample]]
-=== isExample 
+=== isExample
 
 ==== Description
 
 Check if a set is an example.
+
+==== Arguments (Standard)
+
+
+===== attrs
+
+Attribute set to check.
+
+Type: `Attrs`. 
+
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+isExample (mkExample {
+  literalCode = "2 + 2";
+  code = 2 + 2;
+})
+
+----
+
+[source, html]
+.Result
+----
+true
+----
 
 
 
@@ -3071,7 +3474,7 @@ Check if a set is an example.
 :sectnums!:
 
 [[lib.utils.merge]]
-=== merge 
+=== merge
 
 ==== Description
 
@@ -3129,7 +3532,7 @@ merge [ { a = 1; b = 2; } { b = "x"; c = "y"; } ]
 :sectnums!:
 
 [[lib.utils.mkExample]]
-=== mkExample 
+=== mkExample
 
 ==== Description
 
@@ -3153,7 +3556,7 @@ An example attribute set.
 :sectnums!:
 
 [[lib.utils.prettyNix]]
-=== prettyNix 
+=== prettyNix
 
 ==== Description
 
@@ -3180,7 +3583,7 @@ prettyNix [ { a.b.c = true; } { x.y.z = [ 1 2 3 ]; } ]
       c = true;
     };
   };
-} \"foo\" {
+} {
   x = {
     y = {
       z = [ 1 2 3 ];
@@ -3204,7 +3607,7 @@ prettyNix [ { a.b.c = true; } { x.y.z = [ 1 2 3 ]; } ]
 :sectnums!:
 
 [[lib.utils.setToList]]
-=== setToList 
+=== setToList
 
 ==== Description
 
@@ -3249,7 +3652,7 @@ setToList { a.b.c = true; d = "foo"; x.y.z = [ 1 2 3 ]; }
 :sectnums!:
 
 [[lib.utils.sortBy]]
-=== sortBy 
+=== sortBy
 
 ==== Description
 

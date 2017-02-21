@@ -7,18 +7,17 @@ Styx is aimed to be flexible and easy to customize. It is based on the Nix packa
 Styx was inspired by the link:https://github.com/NixOS/nixos-weekly/[NixOS weekly project] and the link:https://gohugo.io/[Hugo] static site generator.
 
 ====
-TIP: For users familiar with Nix, Styx is best described as a custom builder for `nix-build` aimed for static websites.
+TIP: For users familiar with Nix, Styx is best described as a custom nix builder to generate static websites.
 ====
 
 === Features
 
 - <<Themes>>
 - <<Deployment,Host your site anywhere>>
-- <<Data,Flexible content organization>>
+- <<Data,Flexible content>>
 - <<Taxonomies>>
 - <<Formats,Markdown and AsciiDoc support>>
 - <<Special files,Sass/Less css automatic conversion>>
-- <<Metadata,Content metadata>>
 - <<Multipage data,Multipages content>>
 
 === Styx Overview

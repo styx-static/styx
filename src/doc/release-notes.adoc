@@ -3,16 +3,43 @@
 [[v0.6.0]]
 === Styx 0.6.0 - 2017/XX/XX
 
-Highlights:
+==== Highlights:
 
-* New commands:
-** `styx site-doc`: generate documentation for a styx site.
-** `styx gen-sample-data`: generate sample data.
+Nix expressions can be <<data.embedded-nix,embedded>> in markup files.
 
-Breaking Changes:
+New commands:
 
+* `styx site-doc`: generate documentation for a styx site.
+* `styx gen-sample-data`: generate sample data.
+* `styx linkcheck`: check the internal links of a site.
 
-Upgrading:
+Generic templates theme:
+
+* Syntax highlighting support via `highlightjs`.
+* MathJax js integration.
+* `templates.media.*`: Templates to include external into content or templates.
+* Multiple external service support added.
+
+==== Improvements
+
+* `mkPageList` handle multipage pages correctly.
+* Themes templates documentation has been added.
+
+==== Breaking Changes:
+
+* Substitutions in data files have been removed in favor embedded nix. (substitutions are still used for static files)
+* `themes.load` function arguments were renamed:
+** `template.extraEnv` was renamed `extraEnv`.
+** `conf.extraConf` was renamed `extraConf`.
+* `loadDir` and `loadFile` functions have been changed.
+* `mkMultiTail` function have been removed in favor of `mkPageList`.
+
+==== Upgrading:
+
+==== Final remarks:
+
+Embedded nix support changed how markup files are handled, and results in slower site builds. +
+This especially visible with multipage content as each page will be converted in a separate process.
 
 
 [[v0.5.0]]

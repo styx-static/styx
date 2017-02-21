@@ -5,23 +5,104 @@ with lib;
 with (import ./utils.nix lib);
 rec {
 
+/*
+===============================================================
+
+ documentedTemplate
+
+===============================================================
+*/
+
   documentedTemplate = documentedFunction {
-    description = "Generate a documented template.";
+    description = "Provide a way to document a template function.";
+
+    arguments = {
+      template = {
+        description = "Template to document.";
+      };
+      env = {
+        description = "Template environment.";
+      };
+      description = {
+        description = "Template description, asciidoc markup can be used.";
+        type = "String";
+      };
+      arguments = {
+        description = "Template arguments documentation. Attrs if the arguments are an attribute set, List for standard arguments.";
+        type = "Null | Attrs | List";
+        default = null;
+      };
+      examples = {
+        description = "Examples of usages defined with `mkExample`.";
+        type = "Null | [ Example ]";
+      };
+      notes = {
+        description = "Notes regarding special usages, asciidoc markup can be used.";
+        type = "Mull | String";
+        default = "Null";
+      };
+    };
+
+    return = "The template function, or the documented template set if `env` has a `genDoc` attribute set to `true`.";
 
     function = {
       template
     , env
-    , description ? null
+    , description
     , arguments ? null
     , examples ? null
     , notes ? null
     }@attrs:
-      if   attrs.env ? genDoc
+      if   attrs.env ? genDoc && attrs.env.genDoc == true
       then (attrs // { _type = "docTemplate"; })
       else (attrs.template attrs.env);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ isDocTemplate
+
+===============================================================
+*/
+
+  isDocTemplate = documentedFunction {
+    description = "Check if a set is a documented template.";
+
+    arguments = [
+      {
+        name = "set";
+        description = "Attribute set to check.";
+        type = "Attrs";
+      }
+    ];
+
+    examples = [ (mkExample {
+      code =
+        isDocTemplate ((env: documentedTemplate {
+          description = "Template";
+          template = env: "foo";
+          inherit env;
+        }) { genDoc = true; })
+      ;
+      expected = true;
+    })];
+
+    return = "`Bool`";
+
+    function = is "docTemplate";
+  };
+
+
+
+/*
+===============================================================
+
+ htmlAttr
+
+===============================================================
+*/
 
   htmlAttr = documentedFunction {
     description = "Generates a HTML tag attribute.";
@@ -45,14 +126,14 @@ rec {
       literalCode = ''
         htmlAttr "class" "foo"
       '';
-      code = 
+      code =
         htmlAttr "class" "foo"
       ;
     }) (mkExample {
       literalCode = ''
         htmlAttr "class" [ "foo" "bar" ]
       '';
-      code = 
+      code =
         htmlAttr "class" [ "foo" "bar" ]
       ;
       expected = ''class="foo bar"'';
@@ -66,7 +147,15 @@ rec {
       in ''${attrName}="${value'}"'';
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ htmlAttrs
+
+===============================================================
+*/
 
   htmlAttrs = documentedFunction {
     description = "Generate a HTML tag attributes.";
@@ -85,23 +174,30 @@ rec {
       literalCode = ''
         htmlAttrs { class = [ "foo" "bar" ]; }
       '';
-      code = 
+      code =
         htmlAttrs { class = [ "foo" "bar" ]; }
       ;
     }) (mkExample {
       literalCode = ''
         htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; }
       '';
-      code = 
+      code =
         htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; }
       ;
       expected = ''class="foo bar" id="baz"'';
     }) ];
 
-    function = s: concatStringsSep " " (mapAttrsToList htmlAttr s); 
+    function = s: concatStringsSep " " (mapAttrsToList htmlAttr s);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ escapeHtml
+
+===============================================================
+*/
 
   escapeHTML = documentedFunction {
     description = "Escape an HTML string.";
@@ -120,7 +216,7 @@ rec {
       literalCode = ''
         escapeHTML '''<p class="foo">Hello world!</p>'''
       '';
-      code = 
+      code =
         escapeHTML ''<p class="foo">Hello world!</p>''
       ;
       expected = "&lt;p class=&quot;foo&quot;&gt;Hello world!&lt;/p&gt;";
@@ -129,7 +225,14 @@ rec {
     function = replaceStrings [ "<" ">" "\"" ] [ "&lt;" "&gt;" "&quot;" ];
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ normalTemplate
+
+===============================================================
+*/
 
   normalTemplate = documentedFunction {
     description = "Abstract the normal template pattern.";
@@ -156,7 +259,7 @@ rec {
             page = { data = "Page data."; };
         in template page
       '';
-      code = 
+      code =
         let template = normalTemplate "A simple string.";
             page = { data = "Page data."; };
         in template page
@@ -168,7 +271,7 @@ rec {
             page = { data = "Page data."; };
         in template page
       '';
-      code = 
+      code =
         let template = normalTemplate { content = "Page content."; };
             page = { data = "Page data."; };
         in template page
@@ -180,7 +283,7 @@ rec {
             page = { data = "Page data."; };
         in template page
       '';
-      code = 
+      code =
         let template = normalTemplate (page: "Page data: ${page.data}");
             page = { data = "Page data."; };
         in template page
@@ -192,7 +295,7 @@ rec {
             page = { data = "Page data."; };
         in template page
       '';
-      code = 
+      code =
         let template = normalTemplate (page: { title = "foo"; content = "Page data: ${page.data}"; });
             page = { data = "Page data."; };
         in template page
@@ -210,7 +313,14 @@ rec {
       in p // contentSet;
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ mapTemplate
+
+===============================================================
+*/
 
   mapTemplate = documentedFunction {
     description = "Concat template functions with a new line.";
@@ -236,7 +346,7 @@ rec {
           <li>''${item}</li>'''
         ) [ "foo" "bar" "baz" ]
       '';
-      code = 
+      code =
         mapTemplate (item: ''
           <li>${item}</li>''
         ) [ "foo" "bar" "baz" ]
@@ -250,7 +360,15 @@ rec {
     function = concatMapStringsSep "\n";
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ mapTemplateWithIndex
+
+===============================================================
+*/
 
   mapTemplateWithIndex = documentedFunction {
     description = "Concat template functions with a new line.";
@@ -276,7 +394,7 @@ rec {
           <li>''${toString index} - ''${item}</li>'''
         ) [ "foo" "bar" "baz" ]
       '';
-      code = 
+      code =
         mapTemplateWithIndex (index: item: ''
           <li>${toString index} - ${item}</li>''
         ) [ "foo" "bar" "baz" ]
@@ -290,7 +408,14 @@ rec {
     function = concatImapStringsSep "\n";
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ mod
+
+===============================================================
+*/
 
   mod = documentedFunction {
     description = "Returns the remainder of a division.";
@@ -314,7 +439,7 @@ rec {
       literalCode = ''
         mod 3 2
       '';
-      code = 
+      code =
         mod 3 2
       ;
       expected = 1;
@@ -323,7 +448,14 @@ rec {
     function = a: b: a - (b*(a / b));
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ isOdd
+
+===============================================================
+*/
 
   isOdd = documentedFunction {
     description = "Checks if a number is odd.";
@@ -342,7 +474,7 @@ rec {
       literalCode = ''
         isOdd 3
       '';
-      code = 
+      code =
         isOdd 3
       ;
       expected = true;
@@ -351,7 +483,15 @@ rec {
     function = a: (mod a 2) == 1;
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ isEven
+
+===============================================================
+*/
 
   isEven = documentedFunction {
     description = "Checks if a number is even.";
@@ -370,7 +510,7 @@ rec {
       literalCode = ''
         isEven 3
       '';
-      code = 
+      code =
         isEven 3
       ;
       expected = false;
@@ -379,7 +519,15 @@ rec {
     function = a: (mod a 2) == 0;
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ parseDate
+
+===============================================================
+*/
 
   parseDate = documentedFunction {
     description = "Parse a date.";
@@ -422,7 +570,7 @@ rec {
       literalCode = ''
         with (parseDate "2012-12-21"); "''${D} ''${b} ''${Y}"
       '';
-      code = 
+      code =
         with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
       ;
       expected = "21 Dec 2012";

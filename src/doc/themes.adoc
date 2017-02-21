@@ -77,7 +77,7 @@ themes
 -----
 
 <1> Theme directory.
-<2> `conf.nix` defines the theme configuration interface options (optional). 
+<2> `conf.nix` defines the theme configuration interface options (optional).
 <3> `meta.nix` defines the theme meta information, this is file is **required** and **must** define a `id` attribute.
 <4> `lib.nix` defines the theme extra library as a set (optional).
 <5> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site (optional).
@@ -136,7 +136,7 @@ WARNING: `types.submodule` type is **not** supported.
 { lib }:
 with lib;
 {
-  
+
 /* General settings
 */
   site = {

@@ -2,5 +2,5 @@
 
 ## Features to implement
 
-- [ ] Syntax highlighting
 - [ ] image galleries
+- [ ] Nix calls in markup files

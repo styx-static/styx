@@ -1,4 +1,4 @@
-let 
+let
   pkgs = import ../nixpkgs;
   lib = pkgs.callPackage pkgs.styx.lib {};
 in
@@ -8,7 +8,7 @@ with lib;
 
 let
 
-  libs = map (namespace: 
+  libs = map (namespace:
     let functions = filter (x: x != {}) (mapAttrsToList (name: fn:
       let docFn = fn { _type = "genDoc"; };
       in optionalAttrs (isDocFunction docFn)
@@ -43,8 +43,8 @@ let
     :sectnums!:
 
     [[${fn.fullname}]]
-    === ${fn.name} 
-    
+    === ${fn.name}
+
     ${optionalString (function ? description) "==== Description\n\n${function.description}\n"}
     ${optionalString (function ? arguments)   (mkFunctionArgs function.arguments)}
     ${optionalString (function ? return)      "==== Return\n\n${function.return}\n"}
@@ -52,7 +52,7 @@ let
     ${optionalString (function ? notes)       "[NOTE]\n====\n${function.notes}\n====\n"}
 
     :sectnums:
-    
+
     '';
 
   mkFunctionArgs = args:
@@ -63,20 +63,30 @@ let
       type = if isAttrs args
              then " (Attribute Set)"
              else " (Standard)";
-    in "==== Arguments${type}\n\n" + concatStringsSep "\n" (map (arg: 
-    let 
+      isMultiline = arg:
+        let arg' = if is "literalExample" arg
+                   then arg.text
+                   else arg;
+        in if isString arg'
+           then (match "^.*(\n).*$" arg') != null
+           else false;
+    in "==== Arguments${type}\n\n" + concatStringsSep "\n" (map (arg:
+    let
       description = optionalString (arg ? description) arg.description;
       type        = optionalString (arg ? type)        "Type: `${arg.type}`. ";
-      default     = optionalString (arg ? default)     "Optional, defaults to `${prettyNix arg.default}`.";
-    in "\n===== ${arg.name}\n\n" + (concatStringsSep "\n" (filter (x: x != "") [ description type default ]))
+      default     = optionalString (arg ? default)
+                    (if isMultiline arg.default
+                     then "Optional, defaults to:\n----\n${prettyNix arg.default}\n----\n"
+                     else "Optional, defaults to `${prettyNix arg.default}`.");
+      example     = optionalString (arg ? example)
+                    (if isMultiline arg.example
+                     then "Example:\n----\n${prettyNix arg.example}\n----\n"
+                     else "Example: `${prettyNix arg.example}`.");
+    in "\n===== ${arg.name}\n\n" + (concatStringsSep "\n\n" (filter (x: x != "") [ description type default example ]))
     ) args') + "\n";
-      /*
-      ${if isString example.code
-        then example.code
-        else prettyNix example.code}
-        */
 
   mkFunctionExample = example:
+    optionalString (example ? literalCode)
     ''
 
       [source, nix]
@@ -89,7 +99,7 @@ let
       [source, html]
       .Result
       ----
-      ${prettyNix example.code}
+      ${prettyNix (example.displayCode example.code)}
       ----
       ''
       }
@@ -128,14 +138,14 @@ in stdenv.mkDerivation {
     ---
 
     :leveloffset: -1
-    
+
     '') namespaces)}
 
   '';
 
   buildPhase = ''
     mkdir build
-    cp $doc build/library-generated.adoc 
+    cp $doc build/library-generated.adoc
   '';
 
   installPhase = ''

@@ -17,7 +17,7 @@ let
     markdown = [ "markdown" "mdown" "md" ];
     # other
     nix      = [ "nix" ];
-    image    = [ "jpeg" "jpg" "png" "gif" ];
+    image    = [ "jpeg" "jpg" "png" "gif" "JPEG" "JPG" "PNG" "GIF" ];
   };
 
   markupExts = ext.asciidoc ++ ext.markdown;
@@ -29,127 +29,100 @@ let
     markdown = "multimarkdown";
   };
 
-  /* Parse a markup file to an attribute set
-     Extract what it can
+  /* extract exif from an image
   */
-  parseMarkupFile = fileData:
+  parseImageFile = fileData:
     let
-      markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
       path = "${fileData.dir + "/${fileData.name}"}";
-      data = pkgs.runCommand "parsed-data" {
+      data = pkgs.runCommand "parsed-data.nix" {
         buildInputs = [ pkgs.styx ];
       } ''
-        # metablock separator
-        metaBlock="/^{---$/,/^---}$/!d;/^---}$/q"
-        # pageSeparator
-        pageSep="<<<"
-        # intro separator
-        introSep="^>>>$"
-
-        mkdir $out
-
-        # initializing files
-        cp ${path} $out/source
-        chmod u+rw $out/source
-        touch $out/intro
-        touch $out/content
-        echo "{}" > $out/meta
-        mkdir $out/subpages
-
-        # metadata
-        if [ "$(sed "$metaBlock" < $out/source)" ]; then
-          echo "{" > $out/meta
-          sed "$metaBlock" < $out/source | sed '1d;$d' >> $out/meta
-          echo "}" >> $out/meta
-          sed -i "1,$(cat $out/meta | wc -l)d" $out/source
-        fi
-
-        # intro
-        if [ "$(grep "$introSep" $out/source)" ]; then
-          csplit -s -f intro $out/source "/$introSep/"
-          cp intro00 $out/intro
-          sed -i "/$introSep/d" $out/source
-        fi
-
-        # subpages
-        if [ "$(grep -Fx "$pageSep" $out/source)" ]; then
-          csplit --suppress-matched -s -f subpage $out/source  "/^$pageSep/" '{*}'
-          cp subpage* $out/subpages
-          sed -i "/$pageSep/d" $out/source
-        fi
-
-        # Converting markup files
-        ${commands."${markupType}"} $out/source > $out/content
-
-        # intro
-        cp $out/intro tmp; ${commands."${markupType}"} tmp | tr -d '\n' > $out/intro
-
-        # subpages
-        for file in $out/subpages/*; do
-          cp $file tmp; ${commands."${markupType}"} tmp > $file
-        done
+        # dirty hack, turning floating numbers into strings as nix does not support floating numbers
+        exiftool -j ${path} | sed -r "s/(^.*)([[:digit:]]+\.[[:digit:]]+)(,?)$/\1\"\2\"\3/" > $out
       '';
-      content = let
-          rawContent = readFile "${data}/content";
-        in if rawContent == "" then {} else { content = rawContent; } ;
-      intro = let
-          rawContent = readFile "${data}/intro";
-        in if rawContent == "" then {} else { intro = rawContent; };
-      pages = let
-          dir = "${data}/subpages";
-          subpages = mapAttrsToList (k: v:
-            { content = readFile "${dir}/${k}"; }
-          ) (readDir dir);
-        in if subpages != []
-              then { pages = subpages; }
-              else { };
+  in head (fromJSON (readFile data));
 
-      meta = import "${data}/meta";
-    in
-      content // intro // meta // pages;
-
-  /* Get data from a file
+  /* parse markup file to a nix file
   */
-  parseFile = fileData:
+  parseMarkupFile = {
+    fileData
+  , env
+  }:
+    let
+      markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
+      markupAttrs = [ "intro" "pages" "content" ];
+      dataFn = pkgs.runCommand "parsed-data.nix" {
+        buildInputs = [ pkgs.styx ];
+        preferLocalBuild = true;
+      } ''
+        python ${pkgs.styx}/share/tools/parser.py < ${fileData.path} > $out
+        '';
+      data = importApply dataFn env;
+    in mapAttrs (k: v:
+      if   elem k markupAttrs
+      then if   k == "pages"
+           then map (c: { content = markupToHtml markupType c; inherit fileData; }) v
+           else markupToHtml markupType v
+      else v
+    ) data;
+
+
+  /* parse a file with the right parser
+  */
+  parseFile = {
+    fileData
+  , env }:
     let
       m    = match "^([0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}:[0-9]{2})?)?\-?(.*)$" fileData.basename;
       date = if m != null && (elemAt m 0)  != null then { date = (elemAt m 0); } else {};
-      path = "${fileData.dir + "/${fileData.name}"}";
-      data =      if elem fileData.ext markupExts then parseMarkupFile fileData
-             else if elem fileData.ext ext.nix    then import path
-             else    abort "Error: this should never happen.";
+      data =      if elem fileData.ext markupExts then parseMarkupFile { inherit fileData env; }
+             else if elem fileData.ext ext.image  then parseImageFile  fileData
+             else if elem fileData.ext ext.nix    then importApply fileData.path env
+             else trace "Warning: File '${fileData.path}' is not in a supported file format, its contents will be ignored." {};
     in
       { inherit fileData; } // date // data;
 
-  /* Get a list of files data from a directory
-     Ignore unsupported files type
-
-     Return example
-
-       [ { basename = "file"; ext = "nix"; name = "file.nix"; dir = "/foo/bar"; } ]
+  /* Convert markup code to HTML
   */
-  getFiles = from:
+  markupToHtml = markup: text:
+    let
+      data = pkgs.runCommand "markup-data.html" {
+        buildInputs = [ pkgs.styx ];
+        preferLocalBuild = true;
+        inherit text;
+        passAsFile = [ "text" ];
+      } ''
+        ${commands."${markup}"} $textPath > $out
+      '';
+    in readFile data;
+
+  /* extract a file data
+  */
+  getFileData = path:
+    let
+      m = match "^(.*/)([^/]*)\\.([^.]+)$" (toString path);
+      dir = elemAt m 0;
+      basename = elemAt m 1;
+      ext = elemAt m 2;
+    in { inherit dir basename ext path; name = "${basename}.${ext}"; };
+
+  /* get files from a directory
+  */
+  getFiles = dir:
     let
       fileList = mapAttrsToList (k: v:
-        let 
+        let
           m = match "^(.*)\\.([^.]+)$" k;
           basename = elemAt m 0;
           ext = elemAt m 1;
+          path = "${dir}/${k}";
         in
         if (v == "regular") && (m != null) && (elem ext supportedFiles)
-           then { inherit basename ext; dir = from; name = k; }
-           else trace "Warning: File '${k}' is not in a supported file format and will be ignored." null
-      ) (readDir from);
+           then getFileData path
+           else trace "Warning: File '${path}' is not in a supported file format and will be ignored." null
+      ) (readDir dir);
     in filter (x: x != null) fileList;
 
-  markupToHtml = markup: text:
-    let
-      data = pkgs.runCommand "markup-data" { buildInputs = [ pkgs.styx ]; } ''
-        mkdir $out
-        echo -n '${replaceStrings ["'"] ["'\i'''"] text}' > $out/source
-        ${commands."${markup}"} $out/source > $out/content
-      '';
-    in readFile "${data}/content";
 
 in
 rec {
@@ -158,7 +131,14 @@ rec {
     The data namespace contains functions to fetch and manipulate data.
   '';
 
-# -----------------------------
+
+/*
+===============================================================
+
+ loadDir
+
+===============================================================
+*/
 
   loadDir = documentedFunction {
     description = ''
@@ -170,25 +150,20 @@ rec {
         description = "The directory to load data from.";
         type = "Path";
       };
-      substitutions = {
-        description = "A substitution set to apply to the loaded data.";
-        type = "Attrs";
-        default = {};
-      };
       filterDraftsFn = {
         description = "Function to filter the drafts.";
         type = "Draft -> Bool";
-        default = literalExample "d: !((! renderDrafts) && (attrByPath [\"draft\"] false d))";
-      };
-      renderDrafts = {
-        description = "Whether or not to render the drafts.";
-        type = "Bool";
-        default = false;
+        default = literalExample ''d: !((! (attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d))'';
       };
       asAttrs = {
         description = "If set to true, the function will return a set instead of a list. The key will be the file basename, and the value the data set.";
         type = "Bool";
         default = false;
+      };
+      env = {
+        description = "The nix environment to use in loaded files.";
+        type = "Attrs";
+        default = {};
       };
     };
 
@@ -198,7 +173,8 @@ rec {
       literalCode = ''
         data.posts = loadDir {
           dir = ./data/posts;
-        });
+          inherit env;
+        };
       '';
     }) ];
 
@@ -208,75 +184,80 @@ rec {
 
     function = {
       dir
-    , substitutions  ? {}
-    , filterDraftsFn ? (d: !((! renderDrafts) && (attrByPath ["draft"] false d)))
-    , renderDrafts   ? false
+    , filterDraftsFn ? (d: !((! (attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d)))
     , asAttrs        ? false
+    , env            ? {}
     , ...
     }@args:
       let
-        extraArgs = removeAttrs args [ "dir" "substitutions" "filterDraftsFn" "renderDrafts" "asAttrs" ];
+        extraArgs = removeAttrs args [ "dir" "filterDraftsFn" "asAttrs" "env" ];
         data = map (fileData:
-          (parseFile fileData) // extraArgs
+          (parseFile { inherit fileData env; }) // extraArgs
         ) (getFiles dir);
         list  = filter filterDraftsFn data;
         attrs = fold (d: acc: acc // { "${d.fileData.basename}" = d; }) {} list;
     in
       if asAttrs then attrs else list;
-      #filter filterDraftsFn data;
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ loadFile
+
+===============================================================
+*/
 
   loadFile = documentedFunction {
-    description = ''
-      Load a directory containing data that styx can handle.
-    '';
+    description = "Loads a data file";
 
     arguments = {
-      dir = {
-        description = "The directory where the file is located.";
+      file = {
+        description = "Path of the file to load.";
         type = "Path";
       };
-      file = {
-        description = "The file to load.";
-        type = "String";
-      };
-      substitutions = {
-        description = "A substitution set to apply to the loaded file.";
+      env = {
+        description = "The nix environment to use in loaded file.";
         type = "Attrs";
         default = {};
       };
     };
 
-    return = "A data attribute set.";
+    return = "A list of data attribute sets. (Or a set of data set if `asAttrs` is `true`)";
 
     examples = [ (mkExample {
       literalCode = ''
-        data.about = loadFile {
-          dir  = ./data/pages;
-          file = "about.md";
-        });
+        data.posts = loadFile {
+          file = ./data/pages/about.md;
+          inherit env;
+        };
       '';
     }) ];
 
+    notes = ''
+      Any extra attribute in the argument set will be added to the data attribute set.
+    '';
+
     function = {
-      dir
+      env ? {}
     , file
-    , substitutions ? {}
-    , ...
-    }@args:
-      let
-        extraArgs = removeAttrs args [ "dir" "file" "substitutions" ];
-        m = match "^(.*)\\.([^.]+)$" file;
-        basename = elemAt m 0;
-        ext = elemAt m 1;
-        fileData = { inherit dir basename ext; name = file; };
-      in
-        (parseFile fileData) // extraArgs;
+    , ... }@args:
+    let
+      extraArgs = removeAttrs args [ "file" "env" ];
+    in (parseFile { fileData = getFileData file; inherit env; }) // extraArgs;
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ markdownToHtml
+
+===============================================================
+*/
 
   markdownToHtml = documentedFunction {
     description = "Convert markdown text to HTML.";
@@ -295,15 +276,26 @@ rec {
       literalCode = ''
         markdownToHtml "Hello `markdown`!"
       '';
-      code = 
+      code =
         markdownToHtml "Hello `markdown`!"
       ;
-    }) ];
-    
+      expected = ''
+        <p>Hello <code>markdown</code>!</p>
+      '';
+    })];
+
     function = markupToHtml "markdown";
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ asciidocToHtml
+
+===============================================================
+*/
 
   asciidocToHtml = documentedFunction {
     description = "Convert asciidoc text to HTML.";
@@ -320,17 +312,30 @@ rec {
       literalCode = ''
         asciidocToHtml "Hello `asciidoc`!"
       '';
-      code = 
+      code =
         asciidocToHtml "Hello `asciidoc`!"
       ;
+      expected = ''
+        <div class="paragraph">
+        <p>Hello <code>asciidoc</code>!</p>
+        </div>
+      '';
     }) ];
 
     return = "`String`";
-    
+
     function = markupToHtml "asciidoc";
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ mkTaxonomyData
+
+===============================================================
+*/
 
   mkTaxonomyData = documentedFunction {
     description = ''
@@ -361,7 +366,7 @@ rec {
           taxonomies = [ "tags" "category" ];
         }
       '';
-      code = 
+      code =
         mkTaxonomyData {
           data = [
             { tags = [ "foo" "bar" ]; path = "/a.html"; }
@@ -371,6 +376,20 @@ rec {
           taxonomies = [ "tags" "category" ];
         }
       ;
+      expected = [ {
+        category = [ {
+          baz = [ { category = [ "baz" ]; path = "/c.html"; } ];
+        } ];
+      } {
+        tags = [ {
+          foo = [
+            { path = "/b.html"; tags = [ "foo" ]; }
+            { path = "/a.html"; tags = [ "foo" "bar" ]; }
+          ];
+        } {
+          bar = [ {path = "/a.html"; tags = [ "foo" "bar" ]; } ];
+        } ];
+      } ];
     }) ];
 
     function = { data, taxonomies }:
@@ -390,7 +409,15 @@ rec {
       in cleanTaxonomy;
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ sortTerms
+
+===============================================================
+*/
 
   sortTerms = documentedFunction {
     description = "Sort taxonomy terms by number of occurences.";
@@ -404,23 +431,31 @@ rec {
     ];
 
     return = "Sorted list of taxonomy terms attribute sets.";
-    
+
     examples = [ (mkExample {
       literalCode = ''
         sortTerms [ { bar = [ {} {} ]; } { foo = [ {} {} {} ]; } ]
       '';
-      code = 
+      code =
         sortTerms [ { bar = [ {} {} ]; } { foo = [ {} {} {} ]; } ]
       ;
       expected = [
         { foo = [ {} {} {} ]; } { bar = [ {} {} ]; }
       ];
     }) ];
-    
+
     function = sort (a: b: valuesNb a > valuesNb b);
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ valuesNb
+
+===============================================================
+*/
 
   valuesNb = documentedFunction {
     description = "Calculate the number of values in a taxonomy term attribute set.";
@@ -439,7 +474,7 @@ rec {
       literalCode = ''
         valuesNb { foo = [ {} {} {} ]; }
       '';
-      code = 
+      code =
         valuesNb { foo = [ {} {} {} ]; }
       ;
       expected = 3;
@@ -448,7 +483,14 @@ rec {
     function = term: length (propValue term);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ groupBy
+
+===============================================================
+*/
 
   groupBy = documentedFunction {
 
@@ -478,7 +520,7 @@ rec {
         ]
         (s: s.type)
       '';
-      code = 
+      code =
         groupBy [
           { type = "fruit"; name = "apple"; }
           { type = "fruit"; name = "pear"; }

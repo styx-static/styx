@@ -9,8 +9,10 @@ The `site.nix` in this folder generate an empty site.
 
 Find the line saying `themes = [ ];` in `site.nix` and change it with the following to enable the generic-tepmplates theme:
 
-```
-  themes = [ styx-themes.generic-templates ];
+```nix
+  themes = [
+    styx-themes.generic-templates
+  ];
 ```
 
 Generic-templates theme provide a design and a set of templates, but there is no content to generate yet.
@@ -19,7 +21,7 @@ So let's create a page, pages are declared in the pages attribute set. We will s
 
 ```
   pages = {
- 
+
     index = {
       title    = "Hello world!";
       content  = "<p>Hello world!</p>";

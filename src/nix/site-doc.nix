@@ -44,7 +44,7 @@ let
       }
 
     '';
-    
+
   mkTemplateArgs = args:
     let
       args' = if isAttrs args
@@ -53,8 +53,8 @@ let
       type = if isAttrs args
              then " (Attribute Set)"
              else " (Standard)";
-    in "Arguments${type}::\n" + concatStringsSep "\n" (map (arg: 
-    let 
+    in "Arguments${type}::\n" + concatStringsSep "\n" (map (arg:
+    let
       description = optionalString (arg ? description) arg.description;
       type        = optionalString (arg ? type)        "Type: `${arg.type}`. ";
       default     = optionalString (arg ? default)     "Optional, defaults to `${prettyNix arg.default}`.";
@@ -64,7 +64,7 @@ let
   mkTemplateDoc = path: template:
     let
       template' = template { inherit (site) conf templates lib data pages; genDoc = true; };
-    in 
+    in
     ''
 
       [[templates.${path}]]
@@ -142,7 +142,7 @@ let
       ''}
 
       ${optionalString (theme.meta ? documentation) ''
-        
+
         [[${theme.meta.id}.doc]]
         === Documentation
 
@@ -152,7 +152,7 @@ let
 
         :leveloffset: -2
 
-      ''} 
+      ''}
 
       ${optionalString (theme ? decls) ''
 
@@ -165,17 +165,17 @@ let
 
       ${concatStringsSep "" (propMap mkConfDoc (docText (mkDoc theme.decls)))}
 
-      ''} 
+      ''}
 
       :sectnums:
 
       ${optionalString (theme ? templates) ''
-      
+
       [[${theme.meta.id}.templates]]
       === Templates
 
       :sectnums!:
- 
+
       ---
 
       ${concatStringsSep "" (propMap mkTemplateDoc (setToList theme.templates))}
@@ -226,9 +226,9 @@ stdenv.mkDerivation rec {
     :sectanchors:
     :nofooter:
     :experimental:
-    
+
     :sectnums:
-    
+
     ${pagesDoc}
 
     ${optionalString (themes != []) ''

@@ -23,7 +23,7 @@ image::imgs/agency.png[Agency,align="center"]
 
 
 
- 
+
 
 
 [[agency.conf]]
@@ -702,7 +702,7 @@ Default::
 
 
 
- 
+
 
 :sectnums:
 
@@ -863,13 +863,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -1017,7 +1017,7 @@ themes = [
 
 :leveloffset: -2
 
- 
+
 
 
 [[generic-templates.conf]]
@@ -1129,6 +1129,105 @@ Default::
 
 ---
 
+[[theme.lib.googlefonts]]
+==== theme.lib.googlefonts
+
+Description:: Google Fonts to load, for available fonts see https://fonts.google.com/.
+Type:: list of strings
+Default::
++
+----
+[  ]
+----
+
+Example::
++
+----
+[ "Barrio" "Fjalla One" ]
+----
+
+
+
+---
+
+[[theme.lib.highlightjs.enable]]
+==== theme.lib.highlightjs.enable
+
+Description:: Whether to enable highlightjs.
+Type:: boolean
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
+----
+
+
+
+---
+
+[[theme.lib.highlightjs.extraLanguages]]
+==== theme.lib.highlightjs.extraLanguages
+
+Description:: Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.
+Type:: list of strings
+Default::
++
+----
+[  ]
+----
+
+Example::
++
+----
+[ "nix" ]
+----
+
+
+
+---
+
+[[theme.lib.highlightjs.style]]
+==== theme.lib.highlightjs.style
+
+Description:: Style used by highlight.js, for available styles see https://highlightjs.org/static/demo/.
+Type:: string
+Default::
++
+----
+"default"
+----
+
+Example::
++
+----
+"agate"
+----
+
+
+
+---
+
+[[theme.lib.highlightjs.version]]
+==== theme.lib.highlightjs.version
+
+Description:: Selects highlightjs version to use.
+Type:: string
+Default::
++
+----
+"9.9.0"
+----
+
+
+
+---
+
 [[theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
@@ -1159,6 +1258,27 @@ Default::
 +
 ----
 "3.1.1"
+----
+
+
+
+---
+
+[[theme.lib.mathjax.enable]]
+==== theme.lib.mathjax.enable
+
+Description:: Whether to enable mathjax.
+Type:: boolean
+Default::
++
+----
+false
+----
+
+Example::
++
+----
+true
 ----
 
 
@@ -1227,7 +1347,7 @@ Default::
 
 
 
- 
+
 
 :sectnums:
 
@@ -1601,8 +1721,8 @@ templates.bootstrap.pager {
 ----
 <nav aria-label="...">
 <ul class="pager">
-<li><a href="http://domain.org/#4">Previous</a></li>
-<li><a href="http://domain.org/#6">Next</a></li>
+<li class="previous"><a href="http://domain.org/#4"><span aria-hidden="true">&larr;</span> Previous</a></li>
+<li class="next"><a href="http://domain.org/#6">Next <span aria-hidden="true">&rarr;</span></a></li>
 </ul>
 </nav>
 
@@ -1625,6 +1745,9 @@ Arguments (Attribute Set)::
 Type: `Integer`. 
 `pages`::: List of pages. +
 Type: `[ Page ]`. 
+`pagesLimit`::: Maximum number of pages to show in the pagination, if set to `null` all pages are in the pagination. +
+Type: `Null | Int`.  +
+Optional, defaults to `null`.
 
 Example:: 
 +
@@ -1948,6 +2071,30 @@ Description:: Template loading font-awesome css library. Controlled by `conf.the
 ---
 
 
+[[templates.lib.css.googlefonts]]
+==== templates.lib.css.googlefonts
+
+Description:: Template loading google fonts fonts. Controlled by `conf.theme.lib.googlefonts.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.lib.css.highlightjs]]
+==== templates.lib.css.highlightjs
+
+Description:: Template loading highlightjs required css. Controlled by `conf.theme.lib.highlightjs.*` configuration options.
+
+
+
+
+
+---
+
+
 [[templates.lib.js.bootstrap]]
 ==== templates.lib.js.bootstrap
 
@@ -1960,10 +2107,114 @@ Description:: Template loading the bootstrap javascript library. Controlled by `
 ---
 
 
+[[templates.lib.js.highlightjs]]
+==== templates.lib.js.highlightjs
+
+Description:: Template loading the highlightjs javascript library. Controlled by `conf.theme.lib.highlightjs.*` configuration options.
+
+
+
+
+
+---
+
+
 [[templates.lib.js.jquery]]
 ==== templates.lib.js.jquery
 
 Description:: Template loading the jQuery javascript library. Controlled by `conf.theme.lib.jquery.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.lib.js.mathjax]]
+==== templates.lib.js.mathjax
+
+Description:: Template loading the MathJax javascript library. Controlled by `conf.theme.lib.mathjax.*` configuration options.
+
+
+
+
+
+---
+
+
+[[templates.media.gist]]
+==== templates.media.gist
+
+Description:: Template to embed a github gist.
+Arguments (Attribute Set)::
+`file`::: Gist file. +
+Type: `Null | String`.  +
+Optional, defaults to `null`.
+`id`::: Gist id. +
+Type: `String`. 
+`user`::: Gist owner. +
+Type: `String`. 
+
+
+
+
+
+---
+
+
+[[templates.media.speakerdeck]]
+==== templates.media.speakerdeck
+
+Description:: Template to embed a speakerdeck presentation.
+Arguments (Attribute Set)::
+`id`::: Presentation id. +
+Type: `String`. 
+`slide`::: Slide to display. +
+Type: `Null | Int`.  +
+Optional, defaults to `null`.
+
+
+
+
+
+---
+
+
+[[templates.media.vimeo]]
+==== templates.media.vimeo
+
+Description:: Template to embed a Vimeo video.
+Arguments (Attribute Set)::
+`height`::: Embedded video height. +
+Type: `Int`.  +
+Optional, defaults to `360`.
+`id`::: Video id. +
+Type: `String`. 
+`width`::: Embedded video width. +
+Type: `Int`.  +
+Optional, defaults to `640`.
+
+
+
+
+
+---
+
+
+[[templates.media.youtube]]
+==== templates.media.youtube
+
+Description:: Template to embed a Youtube video.
+Arguments (Attribute Set)::
+`height`::: Embedded video height. +
+Type: `Int`.  +
+Optional, defaults to `315`.
+`id`::: Video id. +
+Type: `String`. 
+`width`::: Embedded video width. +
+Type: `Int`.  +
+Optional, defaults to `560`.
 
 
 
@@ -2089,6 +2340,8 @@ Description:: Template loading the css files. Include the following templates:
 
 - <<templates.lib.css.bootstrap>>
 - <<templates.lib.css.font-awesome>>
+- <<templates.lib.css.highlightjs>>
+- <<templates.lib.css.googlefonts>>
 - <<templates.partials.head.css-custom>>
 - <<templates.partials.head.css-extra>>
 
@@ -2276,10 +2529,12 @@ Description:: Template loading the javascript files. Include the following templ
 
 - <<templates.lib.js.jquery>>
 - <<templates.lib.js.bootstrap>>
-- <<templates.partials.js-custom>>
-- <<templates.partials.js-extra>>
+- <<templates.lib.js.highlightjs>>
+- <<templates.lib.js.mathjax>>
 - <<templates.services.google-analytics>>
 - <<templates.services.mixpanel>>
+- <<templates.partials.js-custom>>
+- <<templates.partials.js-extra>>
 
 
 
@@ -2516,19 +2771,15 @@ templates.tag.generic {
 
 Description:: Generate an **i**nternal **link**.
 Arguments (Attribute Set)::
-`page`::: Page to link. +
-Type: `String`.  +
-Optional, defaults to `null`.
-`path`::: Path of the link to generate. +
-Type: `String`.  +
-Optional, defaults to `null`.
+`to`::: Link target, can be a string or a page. +
+Type: `String | Page`. 
 
 Example:: 
 +
 [source, nix]
 .Code
 ----
-templates.tag.ilink { page = { path = "/about.html"; }; content = "about"; }
+templates.tag.ilink { to = { path = "/about.html"; }; content = "about"; }
 ----
 
 +
@@ -2545,7 +2796,7 @@ templates.tag.ilink { page = { path = "/about.html"; }; content = "about"; }
 [source, nix]
 .Code
 ----
-templates.tag.ilink { path = "/files/manual.pdf"; content = "Download manual"; class = "download"; }
+templates.tag.ilink { to = "/files/manual.pdf"; content = "Download manual"; class = "download"; }
 ----
 
 +
@@ -2559,7 +2810,6 @@ templates.tag.ilink { path = "/files/manual.pdf"; content = "Download manual"; c
 
 [NOTE]
 ====
-* `page` or `path` must be passed.
 * Any extra argument passed will be added as tag attributes.
 
 ====
@@ -2722,43 +2972,10 @@ templates.taxonomy.full (getProp "tags" (mkTaxonomyData {
 ----
 <h1>tags</h1>
 <ul>
-<li><a href="http://domain.org/tags/foo/">foo</a> (2)</li>
-<li><a href="http://domain.org/tags/bar/">bar</a> (1)</li>
+<li><a href="http://domain.org/tags/foo/index.html">foo</a> (2)</li>
+<li><a href="http://domain.org/tags/bar/index.html">bar</a> (1)</li>
 </ul>
 
-----
-
-
-
-
-
-
----
-
-
-[[templates.taxonomy.path]]
-==== templates.taxonomy.path
-
-Description:: Template generating the path of a taxonomy page.
-
-Arguments (Standard)::
-`taxonomy`::: Taxonomy name. +
-Type: `String`. 
-
-Example:: 
-+
-[source, nix]
-.Code
-----
-templates.taxonomy.path "tags"
-
-----
-
-+
-[source, html]
-.Result
-----
-/tags/
 ----
 
 
@@ -2833,41 +3050,6 @@ templates.taxonomy.term.full {
 ---
 
 
-[[templates.taxonomy.term.path]]
-==== templates.taxonomy.term.path
-
-Description:: Template generating the path of a taxonomy term page.
-
-Arguments (Attribute Set)::
-`taxonomy`::: Taxonomy name. +
-Type: `String`. 
-`term`::: Term name. +
-Type: `String`. 
-
-Example:: 
-+
-[source, nix]
-.Code
-----
-templates.taxonomy.term.path { taxonomy = "tags"; term = "tech"; }
-
-----
-
-+
-[source, html]
-.Result
-----
-/tags/tech/
-----
-
-
-
-
-
-
----
-
-
 [[templates.taxonomy.term-list]]
 ==== templates.taxonomy.term-list
 
@@ -2899,7 +3081,7 @@ templates.taxonomy.term-list (getProp "tags" (mkTaxonomyData {
 ----
 [ {
   count = 2;
-  path = "/tags/foo/";
+  path = "/tags/foo/index.html";
   taxonomy = "tags";
   term = "foo";
   values = [ {
@@ -2911,7 +3093,7 @@ templates.taxonomy.term-list (getProp "tags" (mkTaxonomyData {
   } ];
 } {
   count = 1;
-  path = "/tags/bar/";
+  path = "/tags/bar/index.html";
   taxonomy = "tags";
   term = "bar";
   values = [ {
@@ -2959,11 +3141,11 @@ templates.taxonomy.value.term-list {
 .Result
 ----
 [ {
-  path = "/tags/foo/";
+  path = "/tags/foo/index.html";
   taxonomy = "tags";
   term = "foo";
 } {
-  path = "/tags/bar/";
+  path = "/tags/bar/index.html";
   taxonomy = "tags";
   term = "bar";
 } ]
@@ -3067,8 +3249,8 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
@@ -3168,7 +3350,7 @@ image::imgs/hyde.png[Hyde,align="center"]
 
 
 
- 
+
 
 
 [[hyde.conf]]
@@ -3262,7 +3444,7 @@ Default::
 
 
 
- 
+
 
 :sectnums:
 
@@ -3400,13 +3582,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -3417,12 +3599,12 @@ rec {
 
   data = with lib; {
     # loading a single page
-    about  = loadFile { dir = ./data/pages; file = "about.md"; };
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
+
     # loading a list of contents
-    posts  = let
-      postsList = loadDir { dir = ./data/posts; };
-      draftsList = optionals (extraConf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
-    in sortBy "date" "dsc" (postsList ++ draftsList);
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+
+    # menu declaration
     menu = [ pages.about ];
   };
 
@@ -3444,7 +3626,7 @@ rec {
       basePath     = "/index";
       itemsPerPage = conf.theme.itemsPerPage;
       template     = templates.index;
-      data         = posts;
+      data         = posts.list;
     };
 
     /* About page
@@ -3462,7 +3644,7 @@ rec {
       template = templates.feed.atom;
       # Bypassing the layout
       layout   = id;
-      items    = take 10 posts;
+      items    = take 10 posts.list;
     };
 
     /* 404 error page
@@ -3472,18 +3654,9 @@ rec {
       template = templates.e404;
     };
 
-    /* Posts pages (as a list of pages)
+    /* Posts pages
     */
     posts = mkPageList {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
-      breadcrumbs = [ (head pages.index) ];
-    };
-
-    /* Multipages handling
-    */
-    postsMultiTail = mkMultiTail {
       data        = data.posts;
       pathPrefix  = "/posts/";
       template    = templates.post.full;
@@ -3532,7 +3705,7 @@ image::imgs/orbit.png[Orbit,align="center"]
 
 
 
- 
+
 
 
 [[orbit.conf]]
@@ -4007,7 +4180,7 @@ Default::
 
 
 
- 
+
 
 :sectnums:
 
@@ -4192,13 +4365,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -4276,7 +4449,7 @@ image::imgs/showcase.png[Showcase,align="center"]
 
 
 
- 
+
 
 
 [[showcase.conf]]
@@ -4348,7 +4521,7 @@ Default::
 
 
 
- 
+
 
 :sectnums:
 
@@ -4510,13 +4683,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -4528,14 +4701,10 @@ rec {
   data = with lib; {
 
     # loading a single page
-    about  = loadFile { dir = ./data/pages; file = "about.md"; };
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
 
     # loading a list of contents
-    posts  = let
-      postsList = loadDir { dir = ./data/posts; };
-      # include drafts only when renderDrafts is true
-      draftsList = optionals (conf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
-    in sortBy "date" "dsc" (postsList ++ draftsList);
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
 
     # Navbar data
     navbar = [
@@ -4547,7 +4716,7 @@ rec {
 
     # posts taxonomies
     taxonomies.posts = mkTaxonomyData {
-      data = pages.posts;
+      data = pages.posts.list;
       taxonomies = [ "tags" "level" ];
     };
 
@@ -4571,7 +4740,7 @@ rec {
       basePath        = "/index";
       itemsPerPage    = conf.theme.index.itemsPerPage;
       template        = templates.index;
-      data            = pages.posts;
+      data            = pages.posts.list;
       breadcrumbTitle = templates.icon.font-awesome "home";
     };
 
@@ -4592,7 +4761,7 @@ rec {
       template = templates.feed.atom;
       # Bypassing the layout
       layout   = lib.id;
-      items    = lib.take 10 pages.posts;
+      items    = lib.take 10 pages.posts.list;
     };
 
     /* 404 error page
@@ -4612,7 +4781,7 @@ rec {
       data        = data.posts;
       pathPrefix  = "/posts/";
       template    = templates.post.full;
-      breadcrumbs = [ (lib.head pages.index) ];
+      breadcrumbs = [ (lib.head index) ];
     };
 
     postsArchive = mkSplit {
@@ -4621,19 +4790,7 @@ rec {
       template     = templates.archive;
       breadcrumbs  = [ (lib.head index) ];
       itemsPerPage = conf.theme.archives.itemsPerPage;
-      data         = pages.posts;
-    };
-
-    /* Subpages of multi-pages posts
-
-       subpages are not included in posts because we do not want to have the
-       subpages in the rss feed or posts list
-    */
-    postsMultiTail = mkMultiTail {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
-      breadcrumbs = [ (lib.head pages.index) ];
+      data         = pages.posts.list;
     };
 
     /* Taxonomy related pages

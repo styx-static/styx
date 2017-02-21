@@ -56,12 +56,12 @@ rec {
         type = "[ (Path | Package) ]";
         default = {};
       };
-      "conf.extra" = {
+      "extraConf" = {
         description = "A list of configuration attribute sets to merge to the result `conf` attribute.";
         type = "[ Attrs ]";
         default = [];
       };
-      "templates.extraEnv" = {
+      "extraEnv" = {
         description = "An attribute set to merge to the template environment.";
         type = "Attrs";
         default = {};
@@ -91,62 +91,59 @@ rec {
     }) ];
 
     function = {
-    # styx library
       styxLib
-    # list of themes as path or packages
     , themes ? []
-    # configuration loading arguments
-    , conf ? {}
-    # templates loading arguments
-    , templates ? {}
+    , extraConf ? {}
+    , extraEnv ? {}
     }:
     let
       themesData = map (theme: loadData { inherit theme styxLib; }) themes;
-  
+
       decls = styxLib.utils.merge (getThemesAttr themesData "decls");
-  
+
       docs = styxLib.utils.merge (getThemesAttr themesData "docs");
-  
+
       lib = styxLib.utils.merge ([ styxLib ] ++ (getThemesAttr themesData "lib"));
-  
+
       files = getThemesAttr themesData "files";
-  
-      conf' = 
+
+      conf' =
         let
           isPath     = x: ( ! isAttrs x ) && styxLib.types.path.check x;
-          extraConf  = map (c: if isPath c then importApply c { inherit lib; } else c) (conf.extra or []);
-          defaults   = styxLib.utils.merge extraConf;
+          extraConf' = map (c: if isPath c then importApply c { inherit lib; } else c) extraConf;
+          defaults   = styxLib.utils.merge extraConf';
           themesDefaults.theme = parseDecls { inherit decls; optionFn = o: if o ? default then o.default else null; };
           typeCheckResult = if defaults ? theme
                             then styxLib.conf.typeCheck decls defaults.theme
                             else null;
         in deepSeq typeCheckResult (styxLib.utils.merge [ themesDefaults defaults ]);
-  
+
+      env = extraEnv // {
+        inherit lib;
+        conf      = conf';
+        templates = templates';
+      };
+
       templates' =
         let
-          environment = (templates.extraEnv or {}) // {
-            inherit lib;
-            conf      = conf';
-            templates = templates';
-          };
           templatesSet = styxLib.utils.merge (getThemesAttr themesData "templates");
         in mapAttrsRecursive (path: template:
-          template environment
+          template env
         ) templatesSet;
-  
+
       themesSet = fold (t: acc:
         acc // { "${t.id}" = t; }
       ) {} themesData;
-  
+
     in
     {
-      inherit decls docs lib files; # themesSet;
+      inherit decls docs lib files env;
       conf      = conf';
       templates = templates';
       themes    = themesData;
     };
   };
-  
+
 # -----------------------------
 
   loadData = documentedFunction {
@@ -219,7 +216,7 @@ rec {
 
   mkDoc = documentedFunction {
     description = ''
-      Convert a theme declaration set to a documentation set.  
+      Convert a theme declaration set to a documentation set.
     '';
 
     arguments = [
@@ -242,7 +239,7 @@ rec {
           foo.bar = 1;
         }
       '';
-      code = 
+      code =
         mkDoc {
           title = mkOption {
             description = "Title";
@@ -296,7 +293,7 @@ rec {
           foo.bar = 1;
         })
       '';
-      code = 
+      code =
         docText (mkDoc {
           title = mkOption {
             description = "Title";

@@ -24,20 +24,19 @@ rec {
      items at the end of the list have higher priority
   */
   themes = [
-    
   ];
 
   /* Loading the themes data
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -47,7 +46,6 @@ rec {
 -----------------------------------------------------------------------------*/
 
   data = {
-    
   };
 
 
@@ -58,7 +56,6 @@ rec {
 -----------------------------------------------------------------------------*/
 
   pages = rec {
-    
   };
 
 

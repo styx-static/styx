@@ -6,7 +6,7 @@ echo "Generating themes documentation."
 scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 baseDir=$(dirname "$scriptDir")
 path=$(nix-build "$scriptDir/themes-doc.nix" --no-out-link "$@")
-if [ $? -ne 0 ]; then 
+if [ $? -ne 0 ]; then
   echo "Error: build failed"
   exit 1
 fi
@@ -17,7 +17,7 @@ echo "Themes documentation updated!"
 
 echo "Generating library documentation."
 path=$(nix-build "$scriptDir/library-doc.nix" --no-out-link "$@")
-if [ $? -ne 0 ]; then 
+if [ $? -ne 0 ]; then
   echo "Error: build failed"
   exit 1
 fi

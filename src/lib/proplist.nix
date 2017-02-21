@@ -33,7 +33,7 @@ rec {
   propKey = documentedFunction {
     description = "Get the key of a property.";
 
-    argument = [
+    arguments = [
       {
         name = "prop";
         description = "The property to extract the key from.";
@@ -47,7 +47,7 @@ rec {
       literalCode = ''
         propKey { name = "Alice"; }
       '';
-      code = 
+      code =
         propKey { name = "Alice"; }
       ;
       expected = "name";
@@ -61,7 +61,7 @@ rec {
   propValue = documentedFunction {
     description = "Get the value of a property.";
 
-    argument = [
+    arguments = [
       {
         name = "prop";
         description = "The property to extract the value from.";
@@ -75,7 +75,7 @@ rec {
       literalCode = ''
         propValue { name = "Alice"; }
       '';
-      code = 
+      code =
         propValue { name = "Alice"; }
       ;
       expected = "Alice";
@@ -89,7 +89,7 @@ rec {
   isDefined = documentedFunction {
     description = "Check if a property with a key exists in a property list.";
 
-    argument = [
+    arguments = [
       {
         name = "key";
         description = "Key of the property to check existence.";
@@ -108,7 +108,7 @@ rec {
       literalCode = ''
         isDefined "name" [ { name = "Alice"; } ]
       '';
-      code = 
+      code =
         isDefined "name" [ { name = "Alice"; } ]
       ;
       expected = true;
@@ -125,8 +125,8 @@ rec {
 
   getValue = documentedFunction {
     description = "Get a value from a property in a property list by the key name.";
-    
-    argument = [
+
+    arguments = [
       {
         name = "key";
         description = "Key of the property to extract value.";
@@ -145,7 +145,7 @@ rec {
       literalCode = ''
         getValue "name" [ { name = "Alice"; } ]
       '';
-      code = 
+      code =
         getValue "name" [ { name = "Alice"; } ]
       ;
       expected = "Alice";
@@ -158,8 +158,8 @@ rec {
 
   getProp = documentedFunction {
     description = "Get a property in a property list by the key name.";
-    
-    argument = [
+
+    arguments = [
       {
         name = "key";
         description = "Key of the property to extract.";
@@ -178,7 +178,7 @@ rec {
       literalCode = ''
         getProp "name" [ { name = "Alice"; } ]
       '';
-      code = 
+      code =
         getProp "name" [ { name = "Alice"; } ]
       ;
       expected = { name = "Alice"; };
@@ -190,9 +190,9 @@ rec {
 # -----------------------------
 
   removeProp = documentedFunction {
-    documentation = "Return a property list where the property with key `key` has been removed.";
+    description = "Return a property list where the property with key `key` has been removed.";
 
-    argument = [
+    arguments = [
       {
         name = "key";
         description = "Key of the property to remove.";
@@ -211,7 +211,7 @@ rec {
       literalCode = ''
         removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
       '';
-      code = 
+      code =
         removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
       ;
       expected = [ { hobby = "Sports"; } ];
@@ -225,7 +225,7 @@ rec {
   propMap = documentedFunction {
     description = "Map for property lists.";
 
-    argument = [
+    arguments = [
       {
         name = "f";
         description = "Function to map to the property list.";
@@ -244,7 +244,7 @@ rec {
       literalCode = ''
         propMap (k: v: "''${k}: ''${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
       '';
-      code = 
+      code =
         propMap (k: v: "${k}: ${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
       ;
       expected = [ "name: Alice" "hobby: Sports" ];
@@ -258,7 +258,7 @@ rec {
   propFlatten = documentedFunction {
     description = "Flatten a property list which values are lists.";
 
-    argument = [
+    arguments = [
       {
         name = "proplist";
         description = "The property list to flatten.";
@@ -272,7 +272,7 @@ rec {
       literalCode = ''
         propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
       '';
-      code = 
+      code =
         propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
       ;
       expected = [

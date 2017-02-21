@@ -7,28 +7,187 @@ with import ./proplist.nix lib;
 
 rec {
 
+/*
+===============================================================
+
+ mkSplitPagePath
+
+===============================================================
+*/
+
+  mkSplitPagePath = documentedFunction {
+    description = "Function to generate the path of a splitted page.";
+
+    arguments = {
+      index = {
+        description = "Index of the page.";
+        type = "Int";
+      };
+      pre = {
+        description = "String to add at the beginning of the path.";
+        type = "String";
+      };
+      post = {
+        description = "String to add at the end of the path.";
+        type = "String";
+        default = ".html";
+      };
+    };
+
+    return = "Page path.";
+
+    examples = [(mkExample {
+      literalCode = ''
+        mkSplitPagePath {
+          index = 1;
+          pre = "/foo";
+        }
+      '';
+      code =
+        mkSplitPagePath {
+          index = 1;
+          pre = "/foo";
+        }
+      ;
+      expected = "/foo.html";
+    }) (mkExample {
+      literalCode = ''
+        mkSplitPagePath {
+          index = 3;
+          pre = "/foo";
+        }
+      '';
+      code =
+        mkSplitPagePath {
+          index = 3;
+          pre = "/foo";
+        }
+      ;
+      expected = "/foo-3.html";
+    })];
+
+    function = {
+      index
+    , pre
+    , post ? ".html"
+    }:
+      if index == 1
+      then "${pre}${post}"
+      else "${pre}-${toString index}${post}";
+  };
+
+/*
+===============================================================
+
+ mkSplitCustom
+
+===============================================================
+*/
+
   mkSplitCustom = documentedFunction {
     description = "Create a list of pages from a list of data.";
 
     arguments = {
-      head = {
+      data = {
+        description = "List of data sets.";
+        type = "[ Data ]";
+      };
+      pageFn = {
+        description = ''
+          A function to apply to each data set, takes the index of the page and a data set and return a page set. +
+          Must set `itemsNb`, the number of item to have on the page, and `path` to generate valied pages.
+        '';
+        type = "Int -> Data -> Page";
+        example = literalExample ''
+          index: data: {
+            itemsNb = if index == 1 then 3 else 5;
+            path = if index == 1 then "/index.html" else "/archive-''${toString index}.html";
+          }
+        '';
+      };
+    };
+
+    return = ''
+      List of pages. Each page has:
+
+      * `items`: List of the page data items.
+      * `itemsNb`: Number of data items of the page.
+      * `pages`: List of splitted pages.
+    '';
+
+    examples = [(mkExample {
+      literalCode = ''
+        mkSplitCustom {
+          data = map (x: { id = x; }) (range 1 4);
+          pageFn = (index: data: {
+            itemsNb = if index == 1 then 3 else 5;
+            path = if index == 1 then "/index.html" else "/archive-''${toString index}.html";
+          });
+        }
+      '';
+      displayCode = map (x: x // { pages = literalExample "[ ... ]"; });
+      code =
+        mkSplitCustom {
+          data = map (x: { id = x; }) (range 1 4);
+          pageFn = (index: data: {
+            itemsNb = if index == 1 then 3 else 5;
+            path = if index == 1 then "/index.html" else "/archive-${toString index}.html";
+          });
+        }
+      ;
+      expected = 
+        let 
+          pages = [
+            { index = 1; items = [ { id = 1; } { id = 2; } { id = 3; } ]; itemsNb = 3; path = "/index.html"; }
+            { index = 2; items = [ { id = 4; } ]; itemsNb = 1; path = "/archive-2.html"; }
+          ];
+        in map (p: p // { inherit pages; }) pages
+      ;
+    })];
+
+    function = {
+      data
+    , pageFn
+    }:
+     let
+       loop = index: data: pages:
+         let
+           index' = index + 1;
+           itemsNb = (pageFn index (head data)).itemsNb;
+           items = take itemsNb data;
+           pages' = pages ++ [ ((pageFn index data) // { inherit index items; itemsNb = length items; }) ];
+           data' = drop itemsNb data;
+         in if data == []
+            then pages
+            else loop index' data' pages';
+       pages = loop 1 data [];
+     in map (p: p // { inherit pages; }) pages;
+  };
+
+
+/*
+===============================================================
+
+ mkSplit
+
+===============================================================
+*/
+
+  mkSplit = documentedFunction {
+    description = "Create a list of pages from a list of data.";
+
+    arguments = {
+      basePath = {
         description = ''
           Arguments to merge with the first splitted page.
-
-          * Must define `itemsNb`, the number of data items to pass to the first page.
-          * Must define `path`, the `path` of the page.
         '';
         type = "Attrs";
       };
-      tail = {
+      itemsPerPage = {
         description = ''
-          Arguments to merge with the rest of splitted page.
-
-          * Must define `itemsNb`, the number of data items to pass to each page.
-          * Should define a `basePath` that will be used to generate the pages path.
-          * Can define a `pathFn` (`Attrs -> Int -> String`) function to generate the `path` of the pages, defaults to `tail: i: "''${tail.basePath}-''${toString i}.html"`.
+          Number of data items to allocate to a page.
         '';
-        type = "Attrs";
+        type = "Int";
       };
       data = {
         description = "List of data sets.";
@@ -44,104 +203,8 @@ rec {
       * `pages`: List of splitted pages.
     '';
 
-    examples = [ (mkExample {
-      literalCode = ''
-        pages.archives = mkSplitCustom {
-          head = {
-            itemsNb  = 3;
-            template = templates.archives.head;
-            path     = "/archives/index.html";
-          };
-          tail = {
-            itemsNb  = 5;
-            template = templates.archives.rest;
-            basePath = "/archives/page";
-          };
-          data = pages.posts;
-        };
-      '';
-    }) (mkExample {
-      literalCode = ''
-        mkSplitCustom {
-          head = {
-            itemsNb = 1;
-            path    = "/archives/index.html";
-          };
-          tail = {
-            itemsNb  = 2;
-            basePath = "/archives/page";
-          };
-          data = range 1 4;
-        }
-      '';
-      code = 
-        mkSplitCustom {
-          head = {
-            itemsNb = 1;
-            path    = "/archives/index.html";
-          };
-          tail = {
-            itemsNb  = 2;
-            basePath = "/archives/page";
-          };
-          data = range 1 4;
-        }
-      ;
-    }) ];
-
-    function = { 
-      head
-    , tail
-    , data
-    , ... }@args:
-      let
-        extraArgs = removeAttrs args [ "head" "tail" "data" ];
-        itemsList = [ (take head.itemsNb data) ] ++ (chunksOf tail.itemsNb (drop head.itemsNb data));
-        pathFn = tail.pathFn or (tail: i: "${tail.basePath}-${toString i}.html");
-        pages = imap (i: items:
-          { inherit items; index = i; }
-          // extraArgs
-          // (if   i ==1
-              then head
-              else (removeAttrs tail [ "basePath" "pathFn" ]) // { path = pathFn tail i; })
-        ) itemsList;
-      in map (p: p // { inherit pages; }) pages;
-  };
-
-# -----------------------------
-
-  mkSplit = documentedFunction {
-    description = "Create a list of pages from a list of data. A simpler version of `mkSplitCustom` that should fit most needs.";
-
-    arguments = {
-      basePath = {
-        description = ''
-          Arguments to merge with the first splitted page.
-
-          * Must define `itemsNb`, the number of data items to pass to the first page.
-        '';
-        type = "Attrs";
-      };
-      tail = {
-        description = ''
-          Arguments to merge with the rest of splitted page.
-
-          * Must define `itemsNb`, the number of data items to pass to each page.
-        '';
-        type = "Attrs";
-      };
-      data = {
-        description = "List of data sets.";
-        type = "[ Data ]";
-      };
-    };
-
-    return = ''
-      List of pages. Each page has:
-
-      * `items`: List of the page data items.
-      * `itemsNb`: Number of data items of the page.
-      * `pages`: List of splitted pages.
+    notes = ''
+      Any extra arguments will be forwarded to every generated page set.
     '';
 
     examples = [ (mkExample {
@@ -156,22 +219,27 @@ rec {
     }) (mkExample {
       literalCode = ''
         mkSplit {
-          basePath = "/test";
+          data = map (x: { id = x; }) (range 1 4);
           itemsPerPage = 2;
-          data = range 1 4;
+          basePath = "/test";
         }
       '';
-      code = 
+      displayCode = map (x: x // { pages = literalExample "[ ... ]"; });
+      code =
         mkSplit {
-          basePath = "/test";
+          data = map (x: { id = x; }) (range 1 4);
           itemsPerPage = 2;
-          data = range 1 4;
+          basePath = "/test";
         }
       ;
-      expected = let 
-        pages = [ { path = "/test.html";   index = 1; items = [ 1 2 ]; itemsNb = 2; }
-                  { path = "/test-2.html"; index = 2; items = [ 3 4 ]; itemsNb = 2; } ];
-        in map (p: p // { inherit pages; }) pages;
+      expected = 
+        let 
+          pages = [
+            { index = 1; items = [ { id = 1; } { id = 2; } ]; itemsNb = 2; path = "/test.html"; }
+            { index = 2; items = [ { id = 3; } { id = 4; } ]; itemsNb = 2; path = "/test-2.html"; }
+          ];
+        in map (p: p // { inherit pages; }) pages
+      ;
     }) ];
 
     function = {
@@ -184,12 +252,21 @@ rec {
         set = { itemsNb = itemsPerPage; };
       in mkSplitCustom ({
         inherit data;
-        head = set // { path = "${basePath}.html"; };
-        tail = set // { inherit basePath; };
-      } // extraArgs);
+        pageFn = (index: data:
+          extraArgs // {
+            path = mkSplitPagePath { inherit index; pre = basePath; };
+            itemsNb = itemsPerPage;
+          });
+      });
   };
 
-# -----------------------------
+/*
+===============================================================
+
+ mkMultiPages
+
+===============================================================
+*/
 
   mkMultipages = documentedFunction {
     description = "Create the list of pages from a multipage data set.";
@@ -200,8 +277,9 @@ rec {
         type = "[ Attrs ]";
       };
       basePath = {
-        description = "String used by `pathFn` to generate the page path.";
+        description = "String used by `pathFn` to generate the page path. Used in `pageFn` default, ignored if `pageFn` is set.";
         type = "String";
+        default = null;
       };
       output= {
         description = ''
@@ -210,18 +288,31 @@ rec {
           * `"all"`: Generate all the pages.
           * `"head"`: Generate only the first page.
           * `"tail"`: Generate all but the first page.
+
         '';
         type = ''"all" | "head" | "tail"'';
         default = "all";
       };
-      pathFn= {
-        description = "Function to generate the path of the page.";
-        type = ''(Int -> String)'';
-        default = literalExample ''i: if i == 1 then "''${basePath}.html" else "''${basePath}-''${toString i}.html"'';
+      pageFn= {
+        description = "Function to generate extra attributes to merge to the page.";
+        type = "Int -> Data -> Page";
+        default = literalExample ''
+          index: data:
+            optionalAttrs (basePath != null) {
+              path = mkSplitPagePath { inherit index; pre = basePath; };
+            }
+          '';
       };
     };
 
-    return = "The page(s) according to the `output` argument.";
+    return = ''
+      Pages according to the `output`. +
+      Every page will get a `multipages` attribute containing:
+
+      - `pages`: list of all the subpages.
+      - `index`: Index of the page in the `subpages` list.
+
+    '';
 
     notes = ''
       Any extra arguments will be forwarded to every generated page set.
@@ -235,49 +326,59 @@ rec {
         } // data.about);
       '';
     }) (mkExample {
-      literalCode = ''
-        mkSplit {
+      code =
+        mkMultipages {
           basePath = "/test";
-          itemsPerPage = 2;
-          data = range 1 4;
-        }
-      '';
-      code = 
-        mkSplit {
-          basePath = "/test";
-          itemsPerPage = 2;
-          data = range 1 4;
+          title = "Multipage test";
+          pages = map (x: { content = "page ${toString x}"; }) (range 1 3);
         }
       ;
-      expected = let 
-        pages = [ { path = "/test.html";   index = 1; items = [ 1 2 ]; itemsNb = 2; }
-                  { path = "/test-2.html"; index = 2; items = [ 3 4 ]; itemsNb = 2; } ];
-        in map (p: p // { inherit pages; }) pages;
+      expected = 
+        let pages = [
+          { content = "page 1"; title = "Multipage test"; path = "/test.html"; }
+          { content = "page 2"; title = "Multipage test"; path = "/test-2.html"; }
+          { content = "page 3"; title = "Multipage test"; path = "/test-3.html"; }
+        ];
+        in imap (index: page: page // { multipages = { inherit pages index; }; }) pages 
+      ;
     }) ];
 
     function = {
       pages
-    , basePath ? null
     , output   ? "all"
-    , pathFn   ? (i: if i == 1 then "${basePath}.html" else "${basePath}-${toString i}.html")
-    , ... }@args:
+    , basePath ? null
+    , pageFn   ? null
+    , ...
+    }@args:
       let
-        extraArgs = removeAttrs args [ "basePath" "pathFn" "output" "pages" ];
-        subpages = imap (index: page:
-          extraArgs // 
-          { inherit index;
-            path = pathFn index;
+        extraArgs = removeAttrs args [ "basePath" "pageFn" "output" "pages" ];
+        defPageFn = index: data: (
+          optionalAttrs (basePath != null) {
+            path = mkSplitPagePath { inherit index; pre = basePath; };
           }
+        );
+        pageFn' =  if pageFn == null then defPageFn else pageFn;
+        subpages = imap (index: page:
+             extraArgs
+          // (pageFn' index page)
           // page
          ) pages;
-        pages' = map (p: p // { pages = subpages; rootPage = head subpages; }) subpages;
+        pages' = imap (index: p: p // { multipages = { pages = subpages; inherit index; }; }) subpages;
       in      if output == "all"  then pages'
          else if output == "head" then head pages'
          else if output == "tail" then tail pages'
          else abort "mkMultipage output must be 'all', 'head' or 'tail'";
   };
 
-# -----------------------------
+
+
+/*
+===============================================================
+
+ mkPageList
+
+===============================================================
+*/
 
   mkPageList = documentedFunction {
     description = "Generate a list of pages from a list of data set, generates only the first page for multipages data set.";
@@ -288,23 +389,32 @@ rec {
         type = "[ Data ]";
       };
       pathPrefix = {
-        description = "String used by `pathFn` to generate the page path.";
+        description = "String used by `pathFn` and `multipagePathFn` to generate the page path.";
         type = "String";
         default = "";
       };
-      multipageTemplate = {
-        description = "Template used for multipage data sets.";
-        type = "Template";
-        default = null;
+      pageFn = {
+        description = "Function to generate extra attributes of normal pages.";
+        type = ''(Data -> Attrs)'';
+        default = literalExample ''data: { path = "''${pathPrefix}''${data.fileData.basename}.html"; }'';
       };
-      pathFn= {
-        description = "Function to generate the path of the page.";
-        type = ''(Data -> String)'';
-        default = literalExample ''data: "''${pathPrefix}''${data.fileData.basename}"'';
+      multipageFn = {
+        description = "Function to generate extra attributes of mutipages.";
+        type = "Int -> Data -> Attrs";
+        default = literalExample ''
+          index: data: {
+            path = mKSplitPagePath { pre = "''${pathPrefix}''${data.fileData.basename}"; inherit index; };
+          }
+        '';
       };
     };
 
-    return = "A list of page sets.";
+    return = ''
+      An attribute set with the following attributes:.
+
+      - `list`: The list of contents, containing single pages and first page of multipages posts.
+      - `pages`: List of all pages, including multipages subpages.
+    '';
 
     notes = ''
       * Any extra arguments will be forwarded to every generated page set.
@@ -316,94 +426,76 @@ rec {
           data       = data.posts;
           pathPrefix = "/posts/";
           template   = templates.post.full;
-          multipageTemplate = templates.post.full-multipage;
         };
       '';
-    }) ];
+    }) (mkExample {
+      code =
+        (mkPageList {
+          pageFn = data: { path = "/test/${data.id}.html"; };
+          multipageFn = index: data: {
+            path = "/${data.id}.html";
+          };
+          data = [
+            { content = "normal page 1"; id = "foo"; }
+            { pages = [ { content = "multi page 1"; id = "bar"; } { content = "multi page 2"; id = "buz"; } ]; }
+            { content = "normal page 2"; id = "baz"; }
+          ];
+          template = "id";
+        })
+      ;
+      expected =
+        let
+          mpages = [
+            { content = "multi page 1"; id = "bar"; path = "/bar.html"; template = "id"; } 
+            { content = "multi page 2"; id = "buz"; path = "/buz.html"; template = "id"; } 
+          ];
+          listpages = [
+            { content = "normal page 1"; id = "foo"; path = "/test/foo.html"; template = "id"; }
+            { content = "multi page 1";  id = "bar"; path = "/bar.html"; template = "id"; multipages = { index = 1; pages = mpages; }; }
+            { content = "normal page 2"; id = "baz"; path = "/test/baz.html"; template = "id"; }
+          ];
+          list = imap (index: p: p // { pageslist = { inherit index; pages = listpages; }; }) listpages;
+          extra = map (p: p // { pageslist = { index = 2; pages = listpages; }; multipages = { index = 2; pages = mpages; }; }) (tail mpages); 
+        in { _type = "pages"; inherit list; pages = list ++ extra; };
+    })];
 
-    function = { 
+    function = {
       data
     , pathPrefix ? ""
-    , pathFn ? (data: "${pathPrefix}${data.fileData.basename}")
-    , multipageTemplate ? null
+    , pageFn      ? (data: { path = "${pathPrefix}${data.fileData.basename}.html"; })
+    , multipageFn ? (index: data: { path = mkSplitPagePath { pre = "${pathPrefix}${data.fileData.basename}"; inherit index; }; })
     , ... }@args:
       let
-        extraArgs = removeAttrs args [ "data" "pathPrefix" "pathFn" "multipageTemplate" ];
-        mkPage = data: let
-          mpTemplate = if (multipageTemplate != null)
-                          then { template = multipageTemplate; }
-                          else {};
-          page =
-            if data ? pages
-               then mkMultipages (extraArgs // {
-                 output   = "head";
-                 basePath = pathFn data;
-               } // data // mpTemplate)
-               else data;
-          in extraArgs // {
-               path = "${pathFn data}.html";
-              } // page;
-      in map mkPage data;
+        extraArgs = removeAttrs args [ "data" "pathPrefix" "multipageFn" "pageFn" ];
+        base = { list = []; extra = []; _id = 0; };
+        fn = d: acc: 
+          let
+            mpages = map (p: p // { _plid = acc._id; }) (mkMultipages (extraArgs // d // { pageFn = multipageFn; }));
+            page   = (extraArgs // d // (pageFn d));
+            list   =  if d ? pages
+                      then [ (head mpages) ]
+                      else [ page ];
+            extra = optionals (d ? pages) (tail mpages);
+          in acc // { list = list ++ acc.list; extra = extra ++ acc.extra; _id = acc._id + 1; }
+        ;
+        raw = fold fn base data;
+        cleanlist = l: map (p: removeAttrs p ["_plid"]) l;
+        dirtylist = imap (index: p: p // { pageslist = { pages = cleanlist raw.list; inherit index; }; }) raw.list;
+        list = cleanlist dirtylist;
+        extra = cleanlist (map (p: p // { pageslist = (findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist).pageslist; }) raw.extra);
+      in { _type = "pages"; inherit list; pages = list ++ extra; };
+
   };
 
-# -----------------------------
 
-  mkMultiTail = documentedFunction {
-    description = "Generate a list of multipages subpages tail sets from a list of data set.";
+/*
+===============================================================
 
-    arguments = {
-      data = {
-        description = "List of data sets.";
-        type = "[ Data ]";
-      };
-      pathPrefix = {
-        description = "String used by `pathFn` to generate the page path.";
-        type = "String";
-        default = "";
-      };
-      pathFn= {
-        description = "Function to generate the path of the page.";
-        type = ''(Data -> String)'';
-        default = literalExample ''data: "''${pathPrefix}''${data.fileData.basename}"'';
-      };
-    };
+ mkTaxonomyPages
 
-    return = "A list of page sets.";
+===============================================================
+*/
 
-    notes = ''
-      Any extra arguments will be forwarded to every generated page set.
-    '';
-
-    examples = [ (mkExample {
-      literalCode = ''
-        pages.postsMultiTail = mkMultiTail {
-          data       = data.posts;
-          pathPrefix = "/posts/";
-          template   = templates.post.full-multipage;
-        };
-      '';
-    }) ];
-
-    function = { 
-      data
-    , pathPrefix ? ""
-    , pathFn ? (data: "${pathPrefix}${data.fileData.basename}")
-    , ... }@args:
-      let
-        extraArgs = removeAttrs args [ "data" "pathFn" "pathPrefix" ];
-        mpData = filter (d: (d ? pages)) data;
-        mkPage = data:
-          mkMultipages (extraArgs // {
-            output   = "tail";
-            basePath = pathFn data;
-          } // data);
-      in flatten (map mkPage mpData);
-  };
-
-# -----------------------------
-
-  /* Generate taxonomy pages
-  */
   mkTaxonomyPages = documentedFunction {
     description = "Generate taxonomy pages from a data set list.";
 
@@ -412,23 +504,23 @@ rec {
         description = "List of data sets.";
         type = "[ Data ]";
       };
+      taxonomyPageFn = {
+        description = "Function to add extra attributes to the taxonomy page set.";
+        type = ''(String -> Page)'';
+        default = literalExample ''taxonomy: {}'';
+      };
+      termPageFn = {
+        description = "Function to add extra attributes to the taxonomy page set.";
+        type = ''(String -> String -> Page)'';
+        default = literalExample ''taxonomy: term: {}'';
+      };
       taxonomyTemplate = {
         description = "Template used for taxonomy pages.";
-        type = "Template";
+        type = "Null | Template";
       };
       termTemplate = {
         description = "Template used for taxonomy term pages.";
-        type = "Template";
-      };
-      taxonomyPathFn= {
-        description = "Function to generate the paths of taxonomy pages.";
-        type = ''(Taxonomy -> String)'';
-        default = literalExample ''ta: "/''${ta}/index.html"'';
-      };
-      termPathFn= {
-        description = "Function to generate the paths of taxonomy term pages.";
-        type = ''(Taxonomy -> Term -> String)'';
-        default = literalExample ''ta: te: "/''${ta}/''${te}index.html"'';
+        type = "Null | Template";
       };
     };
 
@@ -443,33 +535,107 @@ rec {
     }) ];
 
     return = "List of taxonomy page attribute sets.";
-  
+
     function = {
       data
-    , taxonomyTemplate
-    , termTemplate
-    , taxonomyPathFn ? (ta:     "/${ta}/index.html")
-    , termPathFn     ? (ta: te: "/${ta}/${te}/index.html")
+    , taxonomyTemplate ? null
+    , termTemplate     ? null
+    , taxonomyPageFn   ? (taxonomy: {})
+    , termPageFn       ? (taxonomy: term: {})
     , ...
     }@args:
       let
-        extraArgs = removeAttrs args [ "data" "taxonomyTemplate" "termTemplate" "taxonomyPathFn" "termPathFn" ];
+        extraArgs = removeAttrs args [ "data" "taxonomyTemplate" "termTemplate" "taxonomyPageFn" "termPageFn" ];
         taxonomyPages = propMap (taxonomy: terms:
-          (extraArgs //
-            { inherit terms taxonomy;
-              taxonomyData = { "${taxonomy}" = terms; };
-              path         = taxonomyPathFn taxonomy;
-              template     = taxonomyTemplate; })
-          ) data; 
+             extraArgs
+          // (optionalAttrs (taxonomyTemplate != null) { template = taxonomyTemplate; })
+          // { path = mkTaxonomyPath taxonomy; }
+          // { inherit terms taxonomy;
+               taxonomyData = { "${taxonomy}" = terms; }; }
+          // (taxonomyPageFn taxonomy)
+        ) data;
         termPages = flatten (propMap (taxonomy: terms:
           propMap (term: values:
-            (extraArgs //
-            { inherit taxonomy term values;
-              path     = termPathFn taxonomy term;
-              template = termTemplate; })
+               extraArgs
+            // (optionalAttrs (termTemplate != null) { template = termTemplate; })
+            // { path = mkTaxonomyTermPath taxonomy term; }
+            // { inherit taxonomy term values; }
+            // (termPageFn taxonomy term)
           ) terms
         ) data);
     in (termPages ++ taxonomyPages);
+  };
+
+
+/*
+===============================================================
+
+ mkTaxonomyPath
+
+===============================================================
+*/
+
+  mkTaxonomyPath = documentedFunction {
+    description = "Generate a taxonomy page path.";
+
+    arguments = [
+      {
+        name = "taxonomy";
+        type = "String";
+      }
+    ];
+
+    return = "Taxonomy page path.";
+
+    examples = [(mkExample {
+      literalCode = ''
+        mkTaxonomyPath "tags"
+      '';
+      code =
+        mkTaxonomyPath "tags"
+      ;
+      expected = "/tags/index.html";
+    }) ];
+
+    function = taxonomy: "/${taxonomy}/index.html";
+  };
+
+
+/*
+===============================================================
+
+ mkTaxonomyTermPath
+
+===============================================================
+*/
+
+  mkTaxonomyTermPath = documentedFunction {
+    description = "Generate a taxonomy term page path.";
+
+    arguments = [
+      {
+        name = "taxonomy";
+        type = "String";
+      }
+      {
+        name = "term";
+        type = "String";
+      }
+    ];
+
+    return = "Taxonomy term page path.";
+
+    examples = [(mkExample {
+      literalCode = ''
+        mkTaxonomyTermPath "tags" "styx"
+      '';
+      code =
+        mkTaxonomyTermPath "tags" "styx"
+      ;
+      expected = "/tags/styx/index.html";
+    }) ];
+
+    function = taxonomy: term: "/${taxonomy}/${term}/index.html";
   };
 
 }

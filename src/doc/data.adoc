@@ -30,10 +30,12 @@ The data loading functions return a set per file loaded and do a few things:
 ** `ext`: The extension of the file.
 ** `dir`: The directory of the file.
 ** `name`: The name of the file, `basename` and `ext` field combined with a `.`.
+** `path`: The path of the file.
 * <<data.metadata>> is automatically parsed and merged to the set.
 * Data with <<data.introduction,introduction>> gain a `intro` attribute containing the introduction and the introduction is removed from the content.
 * <<data.multipage,Multipages>> data gain a `pages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
+* <<data.embedded-nix,Embedded nix>> expressions are evaluated.
 * If the file basename begins in a `YYYY-MM-DD-` or `YYYY-MM-DDThh:mm:ss` format, this value will be inserted in a `date` attribute.
 
 NOTE: Nix data should be imported with the `import` function, that return the data in the nix file as it is.
@@ -156,12 +158,39 @@ It is also possible to manage drafts in a separate directory. In this case `opti
   data = {
     posts  = let
       posts  = loadDir { dir = ./data/posts; };
-      drafts = optionals (conf.renderDrafts) (loadDir { dir = ./data/drafts; draft = true; }); 
+      drafts = optionals (conf.renderDrafts) (loadDir { dir = ./data/drafts; draft = true; });
     in sortBy "date" "dsc" (posts ++ drafts);
   };
 ----
 
 To "publish" a draft, the content file should be moved in the non draft directory.
+
+[[data.embedded-nix]]
+=== Embedded nix
+
+It is possible to embed nix expressions in markup files by surrounding them by `{{` and `}}`.
+
+[source, markdown]
+.Embedded nix in markdown
+----
+# Lorem ipsum
+
+{{ toString (2 + 2) }}
+----
+
+`env` parameter used in `loadFile` or `loadDir` function is insered in the scope, so `lib` functions or templates can be called. +
+This is specially useful to embed external media in content.
+
+
+[source, markdown]
+.Calling a template in a markdown file
+----
+# Lorem ipsum
+
+{{ templates.media.youtube { id = "YbUPdv03ciI"; } }}
+----
+
+NOTE: `{{` and `}}` can be escaped by prepending a `\`, `\{{` and `\}}`, to prevent nix evaluation.
 
 [[data.metadata]]
 === Metadata
@@ -209,7 +238,7 @@ NOTE: `intro` field contents are included in the `content` field.
 [[data.multipage]]
 === Multipage data
 
-It is possible to split markup file in subpages by using the `<<<` separator.
+It is possible to split markup file in multiple pages by using the `<<<` separator.
 
 [source,markdown]
 .Splitting a markdown file in 3 pages
@@ -222,7 +251,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet 
 
 # Cras malesuada metus
 
-Cras malesuada metus quis mi pulvinar faucibus. Vivamus suscipit est ante, ut auctor tortor semper nec. 
+Cras malesuada metus quis mi pulvinar faucibus. Vivamus suscipit est ante, ut auctor tortor semper nec.
 
 <<<
 
@@ -264,7 +293,7 @@ This function take a set parameter with two required attributes `data` and `taxo
 `data`:: The list of attribute sets (usually pages attribute sets) to where the `taxonomy` field will be looked for.
 
 [source, nix]
-.Creating a taxonomy structure 
+.Creating a taxonomy structure
 ----
   data.taxonomies = mkTaxonomyData {
                       data = pages.posts;
@@ -325,5 +354,5 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet 
 ----
 
 
-IMPORTANT: Tiaxonomy terms must be a list of strings.
+IMPORTANT: Taxonomy terms must be a list of strings.
 

@@ -1,8 +1,9 @@
 {---
 title = "Blog tutorial";
+tags = [ "tutorial" ];
 ---}
 
-A tutorial for creating a simple blog with styx.
+Tutorial for creating a blog.
 
 >>>
 
@@ -10,7 +11,7 @@ A tutorial for creating a simple blog with styx.
 
 First, we will use the styx `new` command to generate files required for a new site:
 
-[source, shell]
+[source, sh]
 ----
 $ styx new site my-blog
 $ cd my-blog
@@ -18,7 +19,7 @@ $ cd my-blog
 
 The `styx new site` will generate the following file structure:
 
-[source, shell]
+[source, sh]
 ----
 my-blog
 ├── conf.nix
@@ -34,6 +35,7 @@ The most important file is `site.nix`, it contains all the logic to generate our
 
 In `site.nix`, find the line declaring the themes:
 
+[source, nix]
 ----
   themes = [
     
@@ -43,6 +45,7 @@ In `site.nix`, find the line declaring the themes:
 And change it to the following to load the Hyde and generic templates themes. (Hyde requires the generic templates theme) +
 Later themes in the list have higher priority.
 
+[source, nix]
 ----
   themes = [
     styx-themes.generic-templates
@@ -50,10 +53,12 @@ Later themes in the list have higher priority.
   ];
 ----
 
-=== Create an index page
+
+== Create an index page
 
 Next, we will create an index page, in `site.nix` find the line declaring the `pages` attribute set:
 
+[source, nix]
 ----
   pages = rec {
     
@@ -62,6 +67,7 @@ Next, we will create an index page, in `site.nix` find the line declaring the `p
 
 And add an index page:
 
+[source, nix]
 ----
   pages = rec {
     index = {
@@ -75,6 +81,7 @@ And add an index page:
 
 The site can be previewed by running `styx preview`:
 
+[source, sh]
 ----
 $ styx preview
 ----
@@ -83,17 +90,19 @@ The site will be accessible at http://127.0.0.1:8080.
 To finish the preview, hit `Ctrl+C`.
 
 
-=== Create content
+== Create content
 
 Our index page should list our blog posts, so we will need to generate some data and create pages in our new blog. +
 Styx has a `gen-sample-data` command that will generate some data for us:
 
+[source, sh]
 ----
 $ styx gen-sample-data
 ----
 
 This generate the following data:
 
+[source, sh]
 ----
 data
 └── sample
@@ -111,6 +120,7 @@ data
 
 Next step is to load that data in `site.nix`. Find the line declaring the `data` set:
 
+[source, nix]
 ----
   data = {
     
@@ -119,18 +129,20 @@ Next step is to load that data in `site.nix`. Find the line declaring the `data`
 
 And change it to load the posts:
 
+[source, nix]
 ----
   data = {
-    posts = lib.sortBy "date" "dsc" (lib.loadDir { dir = ./data/sample/posts; });
+    posts = lib.sortBy "date" "dsc" (lib.loadDir { dir = ./data/sample/posts; inherit env; });
   };
 ----
 
-=== Add some pages
+== Add some pages
 
 Now we have the blog posts data, we can create some pages:
 
 In the `pages` set, add the posts:
 
+[source, nix]
 ----
   pages = rec {
     index = {
@@ -151,6 +163,7 @@ In the `pages` set, add the posts:
 
 Lets preview our site again:
 
+[source, sh]
 ----
 $ styx preview
 ----
@@ -158,7 +171,7 @@ $ styx preview
 Posts are generated, but they are not listed on the index page.
 
 
-=== Index page revisited
+== Index page revisited
 
 Hyde is designed so the most recent posts appears on the index page, and older posts are on archive pages. +
 So we need to split our posts between the index and archive pages.
@@ -166,6 +179,7 @@ So we need to split our posts between the index and archive pages.
 There is a `mkSplit` function that does just that. +
 So we will adapt our index page declaration to use it:
 
+[source, nix]
 ----
   pages = rec {
     index = lib.mkSplit {
@@ -188,6 +202,7 @@ So we will adapt our index page declaration to use it:
 
 Lets preview our site again:
 
+[source, sh]
 ----
 $ styx preview
 ----
@@ -195,12 +210,13 @@ $ styx preview
 Posts are listed on the index page, and archive pages are also generated, all good.
 
 
-=== Adding single pages
+== Adding single pages
 
 In the sample data, there is an about page. Lets add it to our site.
 
 First we need to load its data, is a single file, so `loadFile` is enough:
 
+[source, nix]
 ----
   data = {
     posts = lib.sortBy "date" "dsc" (lib.loadDir { dir = ./data/sample/posts; });
@@ -210,6 +226,7 @@ First we need to load its data, is a single file, so `loadFile` is enough:
 
 And add create a page in the `pages` set:
 
+[source, nix]
 ----
   pages = {
 
@@ -225,6 +242,7 @@ And add create a page in the `pages` set:
 
 Finally, we can add an entry in the sidebar for the about page by adding a `menu` to our `data`:
 
+[source, nix]
 ----
   data = {
     posts = lib.sortby "date" "dsc" (lib.loaddir { dir = ./data/sample/posts; });
@@ -234,14 +252,14 @@ Finally, we can add an entry in the sidebar for the about page by adding a `menu
 ----
 
 
-=== Adding an atom feed
+== Adding an atom feed
 
 Next step is adding an atom feed. +
 To do so, we just need to create a page:
 
+[source, nix]
 ----
   pages = {
-
     ...
 
     feed = {
@@ -254,40 +272,22 @@ To do so, we just need to create a page:
 ----
 
 
-=== Improvements
+== Improvements
 
-==== Multipages handling
+=== Customizing our site
 
-One of the sample page is using multipages, but `mkPageList` only generates the first page of multipages posts, so we have missing pages. +
-`mkPageList` does not generate multipages subpages on purpose, to avoid to have the subpages listed as full posts.
-
-There is a `mkMultiTail` function that generates only the subpages of multipages posts, let's add it to the pages:
-
-----
-  pages = rec {
-    ...
-
-    postsMultiTail = lib.mkMultiTail {
-      data       = data.posts;
-      pathPrefix = "/posts/";
-      template   = templates.post.full;
-      layout     = templates.layout;
-    };
-  };
-----
-
-==== Customizing our site
-
-The Hyde theme provide some configuration options that can be used to change our blog.
+The Hyde theme provide some configuration options that can be used to customize our blog.
 
 The following command will generate a documentation for our site, so we can check the avalaible theme options:
 
+[source, sh]
 ----
 $ styx site-doc
 ----
 
 To change the theme options, edit `conf.nix` at site root and find the following line:
 
+[source, nix]
 ----
   theme = {
   };
@@ -295,6 +295,7 @@ To change the theme options, edit `conf.nix` at site root and find the following
 
 And change it to:
 
+[source, nix]
 ----
   theme = {
     site.title   = "My Styx Blog";
@@ -305,26 +306,46 @@ And change it to:
 
 Let's preview our site and see what changed.
 
+There are a few posts using source code examples, it would be nice to have syntax highlighting. +
+Syntax highlighting can also be enabled via the configuration interface:
 
-==== Cleaning up
+[source, nix]
+----
+  theme = {
+    site.title   = "My Styx Blog";
+    colorScheme  = "0d";
+    itemsPerPage = 5;
+    lib.highlightjs = {
+      enable = true;
+      style = "monokai";
+      extraLanguages = [ "nix" ];
+    };
+  };
+----
+
+
+=== Cleaning up
 
 All of our pages are declaring the same `layout`. +
 It is possible to set attributes to every page when converting our page set to a page list.
 
 In `site.nix` find:
 
+[source, nix]
 ----
   pagesList = lib.pagesToList { inherit pages; };
 ----
 
 Let's add the default layout here:
 
+[source, nix]
 ----
   pagesList = lib.pagesToList { inherit pages; default = { layout = templates.layout; }; };
 ----
 
-And remove all the `layout` declarations of our pages:
+And remove all the `layout` declarations using `templates.layout` of our pages:
 
+[source, nix]
 ----
   pages = rec {
     index = lib.mkSplit {
@@ -332,16 +353,10 @@ And remove all the `layout` declarations of our pages:
       basePath     = "/index";
       itemsPerPage = conf.theme.itemsPerPage;
       template     = templates.index;
-      data         = posts;
+      data         = posts.list;
     };
 
     posts = lib.mkPageList {
-      data       = data.posts;
-      pathPrefix = "/posts/";
-      template   = templates.post.full;
-    };
-
-    postsMultiTail = lib.mkMultiTail {
       data       = data.posts;
       pathPrefix = "/posts/";
       template   = templates.post.full;
@@ -362,4 +377,4 @@ And remove all the `layout` declarations of our pages:
   };
 ----
 
-==
+

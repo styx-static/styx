@@ -61,7 +61,7 @@ NOTE: Nix expression language is lazily evaluated, so infinite data structures a
 
 === Files
 
-In its simplest form, styx just needs a `site.nix` to generate a site like presented in the <<Hello world!>> example. 
+In its simplest form, styx just needs a `site.nix` to generate a site like presented in the <<Hello world!>> example.
 
 But the `styx new` command will generate a few more files for convenience.
 
@@ -155,13 +155,13 @@ Themes are detailed in the <<Themes>> section.
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; }; # <2>
-    conf.extra = [ ./conf.nix extraConf ]; # <3>
+    extraEnv = { inherit data pages; }; # <2>
+    extraConf = [ ./conf.nix extraConf ]; # <3>
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates; # <4>
+  inherit (themesData) conf lib files templates env; # <4>
 ----
 
 <1> `themes` is a list so it is possible to set multiple themes at the same time to <<Combining Themes,combine them>>. Themes at the beginning of the list have a lower priority. +
@@ -178,7 +178,7 @@ The data section is responsible for loading the data used in the site.
 The <<Data>> section explains in detail how to manage data.
 
 [source, nix]
-.Standard data section 
+.Standard data section
 ----
 /*-----------------------------------------------------------------------------
    Data
@@ -187,7 +187,7 @@ The <<Data>> section explains in detail how to manage data.
 -----------------------------------------------------------------------------*/
 
   data = {
-    about = loadFile { dir = ./pages; file = "about.md"; }; # <1>
+    about = lib.loadFile { file = ./pages/about.md; inherit env; }; # <1>
   };
 ----
 
@@ -242,9 +242,9 @@ This is the final part and shortest section of `site.nix`. This section consists
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = pagesToList { inherit pages; }; # <1>
+  pagesList = lib.pagesToList { inherit pages; }; # <1>
 
-  site = mkSite { inherit files pagesList; }
+  site = lib.mkSite { inherit files pagesList; }
 }
 ----
 

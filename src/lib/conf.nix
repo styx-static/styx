@@ -45,7 +45,7 @@ rec {
           };
         }
       '';
-      code = 
+      code =
         parseDecls {
           optionFn = option: option.default;
           valueFn  = v: v + 1;
@@ -102,7 +102,7 @@ rec {
     ];
 
     return = ''
-      Throw an error if `defs` do not type-check with `decls`. 
+      Throw an error if `defs` do not type-check with `decls`.
     '';
 
     function = decls: defs:

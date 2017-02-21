@@ -35,8 +35,8 @@ let
     acc // x
   ) {} libs;
 
-  tests = 
-    let 
+  tests =
+    let
       ex = mapAttrsToList (name: fn:
         let
           docFn = fn { _type = "genDoc"; };
@@ -45,10 +45,10 @@ let
             (ex // { inherit name index; })
           ) docFn.examples;
         in if docFn ? examples then extract else {}) functions;
-    in filter (x: x != {}) (flatten ex);
+    in (filter (x: x != {}) (flatten ex) ++ customTests);
 
-   missingTests = 
-    let 
+   missingTests =
+    let
       missing = mapAttrsToList (name: fn:
         let
           docFn = fn { _type = "genDoc"; };
@@ -86,8 +86,8 @@ let
 
      ${lsep}${mapTemplate (failure:
        let
-         header = "${failure.name}, example number ${toString failure.index}:\n";
-         code = optionalString (failure ? literalCode) "\ncode:\n" + inSep failure.literalCode;
+         header = "${failure.name}${optionalString (failure ? index) ", example number ${toString failure.index}"}:\n";
+         code = optionalString (failure ? literalCode) ("\ncode:\n" + inSep failure.literalCode);
          expected = "\nexpected:\n" + inSep "${prettyNix failure.expected}\n";
          got = "\ngot:\n" + inSep "${prettyNix failure.code}\n";
        in
@@ -99,10 +99,80 @@ let
    coverage = pkgs.writeText "lib-tests-coverage.txt" ''
      ---
      ${toString (length missingTests)} functions missing tests:
-     
+
      ${mapTemplate (f: " - ${f}") missingTests}
      ---
    '';
+
+   mkLoadFileTest = file:
+     let data = loadFile { inherit file; env = { inherit lib; foo = "bar"; }; };
+         cleanData = removeAttrs data [ "fileData" ];
+     in mapAttrs (k: v:
+       if   k == "pages"
+       then map (x: removeAttrs x [ "fileData" ]) v
+       else v
+     ) cleanData;
+
+   customTests = [ {
+     name = "loadFile - simple";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/simple.md;
+     expected = {
+       content = "<p>Content</p>\n";
+     };
+   } {
+     name = "loadFile - meta";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/meta.md;
+     expected = {
+       content = "<p>Content</p>\n";
+       foo = "bar";
+     };
+   } {
+     name = "loadFile - pages";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/pages.md;
+     expected = {
+       pages = [
+         { content = "<p>Page 1</p>\n"; }
+         { content = "<p>Page 2</p>\n"; }
+         { content = "<p>Page 3</p>\n"; }
+       ];
+     };
+   } {
+     name = "loadFile - escape";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/escape.md;
+     expected = {
+       content = ''
+         <p>{&#8212;</p>
+
+         <p>-&#8211;}</p>
+
+         <pre><code>&lt;&lt;&lt;
+         </code></pre>
+
+         <pre><code>&gt;&gt;&gt;
+         </code></pre>
+
+         <p>{{ non evaluated nix }}</p>
+
+         <p>this }} is not evaluated</p>
+
+         <p>&#8217; &#8216;&#8217; &#8216;&#8217;&#8217; &#8216;&#8217;&#8216;&#8217;</p>
+       '';
+     };
+   } {
+     name = "loadFile - embedded";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/embedded.md;
+     expected = {
+       content = ''
+         <p>2 + 2 = 4
+         Answer is 42 and foo is bar</p>
+       '';
+     };
+   } ];
 
 in {
   inherit report results functions tests coverage;

@@ -133,17 +133,18 @@ rec {
         env = {
           meta = { platforms = lib.platforms.all; } // meta;
           buildInputs = [ pkgs.styx ];
+          preferLocalBuild = true;
         };
       in
       pkgs.runCommand name env ''
         shopt -s globstar
         mkdir -p $out
-  
+
         # check if a file is a text file
         text_file () {
           file $1 | grep text | cut -d: -f1
         }
-  
+
         # run substitutions on a file
         # output results to subs
         run_subs () {
@@ -158,31 +159,31 @@ rec {
             ''
           ) (setToList substitutions)}
         }
-  
+
         ${preGen}
-  
+
         # FILES
         # files are copied only if necessary, else they are just linked from the source
         ${concatMapStringsSep "\n" (filesDir: ''
           for file in ${filesDir}/**/*; do
-  
+
             # Ignoring folders
             if [ -d "$file" ]; then continue; fi
-  
+
             # output path
             path=$(realpath --relative-to="${filesDir}" "$file")
             mkdir -p $(dirname $out/$path)
-  
+
             if [ $(text_file $file) ]; then
               input=$file
               hasSubs=
               run_subs $file
-  
+
               if [ $(cmp --silent subs $file || echo 1) ]; then
                 input=subs
                 hasSubs=1
               fi
-  
+
               case "$file" in
                 *.less)
                   path=$(echo "$path" | sed -r 's/[^.]+$/css/')
@@ -219,14 +220,14 @@ rec {
                   fi;
                 ;;
               esac
-  
+
             else
               [ -f "$out/$path" ] && rm "$out/$path"
               ln -s "$file" "$out/$path"
             fi
           done;
         '') files}
-  
+
         # PAGES
         ${concatMapStringsSep "\n" (page: ''
           outPath="$out${pagePathFn page}"
@@ -239,7 +240,7 @@ rec {
             ln -s "$page" "$outPath"
           fi
         '') pagesList}
-  
+
         ${postGen}
       '';
   };
@@ -282,7 +283,7 @@ rec {
           };
         }
       '';
-      code = 
+      code =
         pagesToList {
           pages = {
             foo = { path = "/foo.html"; };
@@ -293,7 +294,7 @@ rec {
           };
         }
       ;
-      expected = [  
+      expected = [
         { baz = "baz"; path = "/foo.html"; }
         { baz = "baz"; path = "/bar-1.html"; }
         { baz = "baz"; path = "/bar-2.html"; }
@@ -308,7 +309,9 @@ rec {
       in fold (p: acc:
            if isList p
            then acc ++ (map (x: default // x) p)
-           else acc ++ [(default // p)]
+           else if is "pages" p 
+                then acc ++ (map (x: default // x) p.pages)
+                else acc ++ [(default // p)]
          ) [] pages';
   };
 

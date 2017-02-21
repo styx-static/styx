@@ -10,8 +10,8 @@ let
   themes = reverseList (attrValues (filterAttrs (k: v: isDerivation v) pkgs.styx-themes));
   themesData = (styxLib.themes.load {
     inherit styxLib themes;
-    conf.extra = [ { siteUrl = "http://domain.org"; } ];
-    templates.extraEnv = mockSite;
+    extraConf = [ { siteUrl = "http://domain.org"; } ];
+    extraEnv = mockSite;
   }) // mockSite;
 
 

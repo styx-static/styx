@@ -1,6 +1,8 @@
 { stdenv, caddy, asciidoctor
 , file, lessc, sass, multimarkdown
 , linkchecker
+, perlPackages
+, python27
 , callPackage }:
 
 stdenv.mkDerivation rec {
@@ -20,6 +22,8 @@ stdenv.mkDerivation rec {
     sass
     asciidoctor
     multimarkdown
+    perlPackages.ImageExifTool
+    (python27.withPackages (ps: [ ps.parsimonious ]))
   ];
 
   outputs = [ "out" "lib" ];
@@ -37,6 +41,7 @@ stdenv.mkDerivation rec {
     asciidoctor doc/styx-themes.adoc -o $out/share/doc/styx/styx-themes.html
     asciidoctor doc/library.adoc     -o $out/share/doc/styx/library.html
     cp -r doc/imgs $out/share/doc/styx/
+    cp -r tools $out/share
 
     substituteAllInPlace $out/bin/styx
     substituteAllInPlace $out/share/doc/styx/index.html

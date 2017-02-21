@@ -24,7 +24,7 @@ let
   }).site;
 
   themes-sites = fold (a: acc: acc // { "${a}-site" = mkThemeTest a; }) {} themes;
- 
+
   # extracting nixpkgs styx-themes list
   themes = attrNames (filterAttrs (k: v: isDerivation v) pkgs.styx-themes);
 
@@ -39,8 +39,8 @@ rec {
     ${styx}/bin/styx new site my-site --in $out
     ${styx}/bin/styx gen-sample-data  --in $out
   '';
-  
-  new-build = 
+
+  new-build =
     let site = pkgs.runCommand "styx-new-site" { } ''
       mkdir $out
       ${styx}/bin/styx new site my-site --in $out

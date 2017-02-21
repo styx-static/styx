@@ -90,7 +90,7 @@ check_styx () {
 
 check_git () {
   $(git rev-parse --is-inside-work-tree)
-  if [ $? -ne 0 ]; then 
+  if [ $? -ne 0 ]; then
     echo "Error: '$1' is not a git repository."
     exit 1
   fi
@@ -249,7 +249,7 @@ while [ "$#" -gt 0 ]; do
       action="$i"
       ;;
     doc|manual)
-      $BROWSER $doc & 
+      $BROWSER $doc &
       exit 0
       ;;
 # Build options
@@ -471,6 +471,7 @@ if [ "$action" = linkcheck ]; then
   sleep 3
   echo "---"
   $linkchecker "http://$serverHost:$port"
+  echo "---"
   disown "$serverPid"
   kill -9 "$serverPid"
 fi
