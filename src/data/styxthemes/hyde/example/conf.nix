@@ -4,5 +4,10 @@
 
   theme = {
     site.title = "Styx Site";
+    lib.highlightjs = {
+      enable = true;
+      style = "github";
+      extraLanguages = [ "nix" ];
+    };
   };
 }
