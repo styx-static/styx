@@ -31,13 +31,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -66,18 +66,10 @@ rec {
 
 
 /*-----------------------------------------------------------------------------
-   generateSite arguments preparation
-
------------------------------------------------------------------------------*/
-
-
-/*-----------------------------------------------------------------------------
    Site rendering
 
 -----------------------------------------------------------------------------*/
 
-  pagesList = [ pages.index ];
-
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
 
 }
