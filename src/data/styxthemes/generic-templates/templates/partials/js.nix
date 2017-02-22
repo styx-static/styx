@@ -5,6 +5,7 @@ let template = { templates, ... }:
     templates.lib.js.jquery
   + templates.lib.js.bootstrap
   + templates.lib.js.highlightjs
+  + templates.lib.js.mathjax
   + templates.services.google-analytics
   + templates.services.mixpanel
   + (templates.partials.js-custom args)
@@ -18,6 +19,7 @@ in with env.lib; documentedTemplate {
     - <<templates.lib.js.jquery>>
     - <<templates.lib.js.bootstrap>>
     - <<templates.lib.js.highlightjs>>
+    - <<templates.lib.js.mathjax>>
     - <<templates.services.google-analytics>>
     - <<templates.services.mixpanel>>
     - <<templates.partials.js-custom>>

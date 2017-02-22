@@ -12,8 +12,8 @@ let template = { lib, templates, data, ... }:
           currentPage = page;
         })
       ];
-    } 
-  
+    }
+
   + "<h1>Hello, world!</h1>"
   );
 

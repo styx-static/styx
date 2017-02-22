@@ -8,11 +8,11 @@ let template = { lib, templates, ... }:
   { taxonomy
   , page }:
   with lib;
-  
+
   optionals
     (hasAttr taxonomy page)
     map (term: {
-      path    = templates.taxonomy.term.path { inherit taxonomy term; };
+      path    = mkTaxonomyTermPath taxonomy term;
       inherit taxonomy term;
     }) page."${taxonomy}";
 

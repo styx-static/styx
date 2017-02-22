@@ -9,8 +9,7 @@ let template = { lib, templates, ... }:
       <ul>
       ${mapTemplate (value: ''
         <li>${templates.tag.ilink {
-          page = value;
-          content = value.title;
+          to = value;
         }}</li>'') page.values}
       </ul>
     '';
