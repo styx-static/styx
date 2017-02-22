@@ -9,7 +9,7 @@ optionalString (page ? tags) (
   # generating links separated by /
 + concatMapStringsSep " / " (d:
     templates.tag.ilink {
-      path    = d.path;
+      to      = d.path;
       content = d.term;
     })
   # get the tags a list of attribute sets with some data set

@@ -22,7 +22,12 @@ normalTemplate (page:
         ${page.content}
       </div>
 
-      ${optionalString (page ? pages) (templates.bootstrap.pagination { inherit (page) pages index; })}
+      ${optionalString (page ? multipages) (templates.bootstrap.pagination { inherit (page.multipages) pages index; })}
+
+      ${optionalString (page ? pageList) (
+        "<hr />"
+      + (templates.bootstrap.pager { inherit (page.pageList) pages index; })
+      )}
 
     </article>
   ''

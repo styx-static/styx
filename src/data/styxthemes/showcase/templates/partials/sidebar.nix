@@ -12,7 +12,7 @@ with lib;
     <section>
       <h2>Recent Posts</h2>
       <ul>
-      ${mapTemplate templates.post.list (take 5 pages.posts)}
+      ${mapTemplate templates.post.list (take 5 pages.posts.list)}
       </ul>
     </section>
     ''}
