@@ -105,7 +105,7 @@ with lib;
     };
     subtitle = mkOption {
       default = "Lorem ipsum dolor sit amet consectetur.";
-      description = "Subtitle of the portgolio area.";
+      description = "Subtitle of the portolio area.";
       type = types.str;
     };
     items = mkOption {
