@@ -8,13 +8,13 @@ ${mapTemplate (plist:
   in
   ''
     <header>${templates.tag.ilink {
-      path = templates.taxonomy.path taxonomy;
+      to      = mkTaxonomyPath taxonomy;
       content = taxonomy;
     }}</header>
     <ul class="terms">
     ${mapTemplate (t: ''
       <li>${templates.tag.ilink {
-        path = t.path;
+        to = t.path;
         content = t.term;
       }} (${toString t.count})</li>
     '') (templates.taxonomy.term-list plist)}
