@@ -32,13 +32,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -50,14 +50,10 @@ rec {
   data = with lib; {
 
     # loading a single page
-    about  = loadFile { dir = ./data/pages; file = "about.md"; };
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
 
     # loading a list of contents
-    posts  = let
-      postsList = loadDir { dir = ./data/posts; };
-      # include drafts only when renderDrafts is true
-      draftsList = optionals (conf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
-    in sortBy "date" "dsc" (postsList ++ draftsList);
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
 
     # Navbar data
     navbar = [
@@ -69,7 +65,7 @@ rec {
 
     # posts taxonomies
     taxonomies.posts = mkTaxonomyData {
-      data = pages.posts;
+      data = pages.posts.list;
       taxonomies = [ "tags" "level" ];
     };
 
@@ -93,7 +89,7 @@ rec {
       basePath        = "/index";
       itemsPerPage    = conf.theme.index.itemsPerPage;
       template        = templates.index;
-      data            = pages.posts;
+      data            = pages.posts.list;
       breadcrumbTitle = templates.icon.font-awesome "home";
     };
 
@@ -114,7 +110,7 @@ rec {
       template = templates.feed.atom;
       # Bypassing the layout
       layout   = lib.id;
-      items    = lib.take 10 pages.posts;
+      items    = lib.take 10 pages.posts.list;
     };
 
     /* 404 error page
@@ -134,7 +130,7 @@ rec {
       data        = data.posts;
       pathPrefix  = "/posts/";
       template    = templates.post.full;
-      breadcrumbs = [ (lib.head pages.index) ];
+      breadcrumbs = [ (lib.head index) ];
     };
 
     postsArchive = mkSplit {
@@ -143,19 +139,7 @@ rec {
       template     = templates.archive;
       breadcrumbs  = [ (lib.head index) ];
       itemsPerPage = conf.theme.archives.itemsPerPage;
-      data         = pages.posts;
-    };
-
-    /* Subpages of multi-pages posts
-
-       subpages are not included in posts because we do not want to have the
-       subpages in the rss feed or posts list
-    */
-    postsMultiTail = mkMultiTail {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
-      breadcrumbs = [ (lib.head pages.index) ];
+      data         = pages.posts.list;
     };
 
     /* Taxonomy related pages
@@ -176,7 +160,7 @@ rec {
     path     = "/sitemap.xml";
     template = templates.sitemap;
     layout   = lib.id;
-    pages    = lib.pagesToList { inherit pages; };
+    pages    = pageList;
   };
 
 /*-----------------------------------------------------------------------------
@@ -184,13 +168,11 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  pagesList = 
-    # converting pages attribute set to a list
-    (lib.pagesToList {
-      inherit pages;
-      default.layout = templates.layout;
-    })
-    ++ [ sitemap ];
+  # converting pages attribute set to a list
+  pageList = lib.pagesToList {
+    inherit pages;
+    default.layout = templates.layout;
+  };
 
   /* Substitutions
   */
@@ -198,8 +180,9 @@ rec {
     siteUrl = conf.siteUrl;
   };
 
-  site = lib.generateSite {
-    inherit files pagesList substitutions;
+  site = lib.mkSite {
+    inherit files substitutions;
+    pageList = pageList ++ [ sitemap ];
     meta = (import ./meta.nix) { inherit lib; };
   };
 

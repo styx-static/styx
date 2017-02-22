@@ -5,8 +5,17 @@
   # Theme specific settings
   # it is possible to override any of the theme configuration settings in the 'theme' set
   theme = {
-    lib.bootstrap.enable    = true;
-    lib.jquery.enable       = true;
-    lib.font-awesome.enable = true;
+    site.title = "Showcase Example";
+    lib = {
+      bootstrap.enable    = true;
+      jquery.enable       = true;
+      font-awesome.enable = true;
+      highlightjs = {
+        enable = true;
+        style = "github";
+        extraLanguages = [ "nix" ];
+      };
+      mathjax.enable = true;
+    };
   };
 }
