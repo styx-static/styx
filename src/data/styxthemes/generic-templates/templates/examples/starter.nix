@@ -2,7 +2,7 @@ env:
 
 let template = { lib, templates, data, ... }:
   lib.normalTemplate (page:
-  
+
     /* required extra css
     */
     ''
@@ -16,7 +16,7 @@ let template = { lib, templates, data, ... }:
     }
     </style>
     ''
-  
+
     /* In a normal site the navbar should be in templates.partials.content-pre
     */
   + templates.bootstrap.navbar.default {
@@ -29,8 +29,8 @@ let template = { lib, templates, data, ... }:
           currentPage = page;
         })
       ];
-    } 
-  
+    }
+
   + ''
     <div class="container">
       <div class="starter-template">

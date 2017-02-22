@@ -5,6 +5,7 @@ let template = { templates, ... }:
     templates.lib.css.bootstrap
   + templates.lib.css.font-awesome
   + templates.lib.css.highlightjs
+  + templates.lib.css.googlefonts
   + (templates.partials.head.css-custom args)
   + (templates.partials.head.css-extra  args)
   ;
@@ -16,6 +17,7 @@ in with env.lib; documentedTemplate {
     - <<templates.lib.css.bootstrap>>
     - <<templates.lib.css.font-awesome>>
     - <<templates.lib.css.highlightjs>>
+    - <<templates.lib.css.googlefonts>>
     - <<templates.partials.head.css-custom>>
     - <<templates.partials.head.css-extra>>
   '';

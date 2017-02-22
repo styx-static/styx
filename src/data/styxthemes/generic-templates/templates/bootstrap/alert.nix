@@ -22,7 +22,7 @@ in with env.lib; documentedTemplate {
   };
   examples = [ (mkExample {
     literalCode   = ''templates.bootstrap.alert { type = "success"; content = "alert"; }'';
-    code =  with env; templates.bootstrap.alert { type = "success"; content = "alert"; }; 
+    code =  with env; templates.bootstrap.alert { type = "success"; content = "alert"; };
   }) ];
   inherit env template;
 }

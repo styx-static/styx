@@ -9,7 +9,7 @@ let template = { lib, templates, data, ... }:
       </div>
     '';
   in normalTemplate (page:
-  
+
     /* required extra css
     */
     ''
@@ -23,7 +23,7 @@ let template = { lib, templates, data, ... }:
     }
     </style>
     ''
-  
+
     /* In a normal site the navbar should be in templates.partials.content-pre
     */
   + templates.bootstrap.navbar.default {
@@ -36,30 +36,38 @@ let template = { lib, templates, data, ... }:
           currentPage = page;
         })
       ];
-    } 
-  
+    }
+
+
   + ''
       <div class="container">
         ${templates.bootstrap.alert { type = "info";
         content = "This page show the bootstrap components for which this theme provide helper templates."; } }
       </div>
-  
+
+      <div class="container">
+      ${templates.media.gist { user = "datakurre"; id = "a5d95794ce73c28f6d2f"; file = "Makefile"; }}
+      ${templates.media.speakerdeck { id = "0c32d0d17488429eaf6bc3278c1d0fc8"; slide = 5; }}
+      ${templates.media.vimeo { id = "124510855"; }}
+      ${templates.media.youtube { id = "YbUPdv03ciI"; }}
+      </div>
+
       <div class="container theme-showcase" role="main">
-  
+
         ${pageHeader "Glyphicons"}
         <h3>${templates.icon.bootstrap "picture"} ${templates.icon.bootstrap "tag"}</h3>
         <h4>Code</h4>
         ${templates.tag.codeblock {
           content = (escapeHTML "<h3>") + ''''${templates.icon.bootstrap "picture"} ''${templates.icon.bootstrap "tag"}'' + (escapeHTML "</h3>");
         }}
-  
+
         ${pageHeader "Font Awesome icons"}
         <h3>${templates.icon.font-awesome "linux"} ${templates.icon.font-awesome "code"}</h3>
         <h4>Code</h4>
         ${templates.tag.codeblock {
           content = (escapeHTML "<h3>") + ''''${templates.icon.font-awesome "linux"} ''${templates.icon.font-awesome "code"}'' + (escapeHTML "</h3>");
         }}
-  
+
         ${pageHeader "Breadcrumbs"}
         ${ # meant to be used with page attribute sets
         templates.bootstrap.breadcrumbs {
@@ -75,7 +83,7 @@ let template = { lib, templates, data, ... }:
             }
           '';
         }}
-  
+
         ${pageHeader "Pager"}
         ${templates.bootstrap.pager {
           pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
@@ -90,7 +98,7 @@ let template = { lib, templates, data, ... }:
             }
           '';
         }}
-  
+
         ${pageHeader "Pagination"}
         ${templates.bootstrap.pagination {
           pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
@@ -105,7 +113,22 @@ let template = { lib, templates, data, ... }:
             }
           '';
         }}
-  
+        ${templates.bootstrap.pagination {
+          pages = genList (x: { path = "/#${toString (x + 1)}"; }) 100;
+          index = 50;
+          pagesLimit = 11;
+        }}
+        <h4>Code</h4>
+        ${templates.tag.codeblock {
+          content = ''
+            templates.bootstrap.pagination {
+              pages = genList (x: { path = "/#''${toString (x + 1)}"; }) 100;
+              index = 50;
+              pagesLimit = 11;
+            }
+          '';
+        }}
+
         ${pageHeader "Labels"}
         <h3>
           ${mapTemplate (t:
@@ -120,7 +143,7 @@ let template = { lib, templates, data, ... }:
             ) [ "default" "primary" "success" "info" "warning" "danger" ]
           '';
         }}
-  
+
         ${pageHeader "Badges"}
         <p>
           <a href="#">Inbox ${templates.bootstrap.badge 42}</a>
@@ -135,7 +158,7 @@ let template = { lib, templates, data, ... }:
           content = escapeHTML ''
             <p>
              <a href="#">Inbox ''${templates.bootstrap.badge 42}</a>
-            </p> 
+            </p>
             <ul class="nav nav-pills" role="tablist">
               <li role="presentation" class="active"><a href="#">Home ''${templates.bootstrap.badge 42}</a></li>
               <li role="presentation"><a href="#">Profile</a></li>
@@ -143,7 +166,7 @@ let template = { lib, templates, data, ... }:
             </ul>
           '';
         }}
-  
+
         ${pageHeader "Navbars"}
         ''
   +     templates.bootstrap.navbar.default {
@@ -152,7 +175,7 @@ let template = { lib, templates, data, ... }:
           brand = ''<a class="navbar-brand" href="#">Project Name</a>'';
           content = [
             (templates.bootstrap.navbar.nav {
-              items = [ 
+              items = [
                 { title = "Home";    path = "/#"; }
                 { title = "About";   path = "/#about"; }
                 { title = "Contact"; path = "/#contact"; }
@@ -161,14 +184,14 @@ let template = { lib, templates, data, ... }:
               currentPage = { title = "Home"; path = "/#"; };
             })
           ];
-        } 
-  
+        }
+
   +     templates.bootstrap.navbar.default {
           brand = ''<a class="navbar-brand" href="#">Project Name</a>'';
           id = "example2";
           content = [
             (templates.bootstrap.navbar.nav {
-              items = [ 
+              items = [
                 { title = "Home";    path = "/#"; }
                 { title = "About";   path = "/#about"; }
                 { title = "Contact"; path = "/#contact"; }
@@ -177,8 +200,8 @@ let template = { lib, templates, data, ... }:
               currentPage = { title = "Home"; path = "/#"; };
             })
           ];
-        } 
-  
+        }
+
   +     ''
         <h4>Code</h4>
         ${templates.tag.codeblock {
@@ -189,7 +212,7 @@ let template = { lib, templates, data, ... }:
               brand = '''<a class="navbar-brand" href="#">Project Name</a>''';
               content = [
                 (templates.bootstrap.navbar.nav {
-                  items = [ 
+                  items = [
                     { title = "Home";    path = "/#"; }
                     { title = "About";   path = "/#about"; }
                     { title = "Contact"; path = "/#contact"; }
@@ -198,14 +221,14 @@ let template = { lib, templates, data, ... }:
                   currentPage = { title = "Home"; path = "/#"; };
                 })
               ];
-            } 
+            }
             +
             templates.bootstrap.navbar.default {
               brand = '''<a class="navbar-brand" href="#">Project Name</a>''';
               id = "example2";
               content = [
                 (templates.bootstrap.navbar.nav {
-                  items = [ 
+                  items = [
                     { title = "Home";    path = "/#"; }
                     { title = "About";   path = "/#about"; }
                     { title = "Contact"; path = "/#contact"; }
@@ -214,11 +237,11 @@ let template = { lib, templates, data, ... }:
                   currentPage = { title = "Home"; path = "/#"; };
                 })
               ];
-            } 
+            }
           '';
         }}
-  
-  
+
+
         ${pageHeader "Alerts"}
         ${templates.bootstrap.alert { type = "success"; content = "<strong>Well done!</strong> You successfully read this important alert message."; } }
         ${templates.bootstrap.alert { type = "info";    content = "<strong>Heads up!</strong> This alert needs your attention, but it's not super important."; } }
@@ -233,7 +256,7 @@ let template = { lib, templates, data, ... }:
             ''${templates.bootstrap.alert { type = "danger";  content = "<strong>Oh snap!</strong> Change a few things up and try submitting again."; } }
           '';
         }}
-  
+
         ${pageHeader "Progress bars"}
         ${templates.bootstrap.progress-bar { value = 60; }}
         ${templates.bootstrap.progress-bar { value = 40; type = "success"; }}
@@ -252,7 +275,7 @@ let template = { lib, templates, data, ... }:
             ''${templates.bootstrap.progress-bar { value = 60; type = "stripped"; }}
           '';
         }}
-  
+
         ${pageHeader "Panels"}
         <div class="row">
           <div class="col-sm-4">

@@ -1,8 +1,8 @@
 env:
 
 let template = { templates, lib, ... }:
-  lib.normalTemplate (page: 
-    "<li>${templates.tag.ilink { content = page.title; inherit page; }}</li>"
+  lib.normalTemplate (page:
+    "<li>${templates.tag.ilink { to = page; }}</li>"
   );
 
 in env.lib.documentedTemplate {

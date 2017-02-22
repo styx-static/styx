@@ -6,7 +6,7 @@ let template = { lib, ... }:
 in with env.lib; documentedTemplate {
   description = "Generate a bootstrap badge.";
   arguments = [
-    { 
+    {
       name = "content";
       description = "Content of the badge.";
       type = "String";

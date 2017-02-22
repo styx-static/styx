@@ -1,5 +1,5 @@
 /* generic template for a tag
-   
+
    templates.tag.generic { tag = "div"; content = "hello world" }
 */
 env:

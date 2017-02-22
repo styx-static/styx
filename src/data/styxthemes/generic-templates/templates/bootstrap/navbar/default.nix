@@ -8,7 +8,7 @@ let template = { templates, lib, ... }:
   , brand ? templates.bootstrap.navbar.brand
   , content ? []
   }@args:
-  
+
   let
     baseClass = if inverted then "navbar-inverse" else "navbar-default";
     class = lib.htmlAttr "class" ([ "navbar" baseClass ] ++ extraClasses);

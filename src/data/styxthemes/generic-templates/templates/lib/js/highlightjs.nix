@@ -3,8 +3,8 @@ env:
 let template = { conf, lib, templates,  ... }:
   let cnf = conf.theme.lib.highlightjs;
   in
-  lib.optionalString (cnf.enable == true) 
-    (templates.tag.script {
+  lib.optionalString (cnf.enable == true)
+  (  (templates.tag.script {
       src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/highlight.min.js";
       crossorigin = "anonymous";
     })
@@ -12,7 +12,7 @@ let template = { conf, lib, templates,  ... }:
       src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/languages/${lang}.min.js";
       crossorigin = "anonymous";
     })) cnf.extraLanguages)
-  + ''<script>hljs.initHighlightingOnLoad();</script>''
+  + "<script>hljs.initHighlightingOnLoad();</script>\n")
   ;
 
 in env.lib.documentedTemplate {
