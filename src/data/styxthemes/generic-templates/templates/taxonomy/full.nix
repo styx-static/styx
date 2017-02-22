@@ -3,13 +3,13 @@ let template = { lib, templates, ... }:
   with lib;
   normalTemplate(page: rec {
     title = page.title or page.taxonomy;
-    content = 
+    content =
     ''
       <h1>${title}</h1>
       <ul>
       ${mapTemplate (t: ''
         <li>${templates.tag.ilink {
-          path = t.path;
+          to = t.path;
           content = t.term;
         }} (${toString t.count})</li>''
       ) (templates.taxonomy.term-list page.taxonomyData)}

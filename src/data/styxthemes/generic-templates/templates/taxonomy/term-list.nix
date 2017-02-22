@@ -11,7 +11,7 @@ let template = { templates, lib, ... }:
       let term    = proplist.propKey   prop;
           values  = proplist.propValue prop;
       in
-        { path = templates.taxonomy.term.path { inherit taxonomy term; };
+        { path = mkTaxonomyTermPath taxonomy term;
           inherit term taxonomy values;
           count = length values; }) terms;
 

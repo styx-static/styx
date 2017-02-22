@@ -2,7 +2,7 @@ env:
 
 let template = { lib, pages, templates, ... }:
   args:
-  lib.optionalString (pages ? feed) 
+  lib.optionalString (pages ? feed)
     (templates.tag.link-atom {
       href = templates.url pages.feed;
     });

@@ -56,6 +56,17 @@ with lib;
       };
     };
 
+    googlefonts = mkOption {
+      description = "Google Fonts to load, for available fonts see https://fonts.google.com/.";
+      type = with types; listOf str;
+      default = [];
+      example = [ "Barrio" "Fjalla One" ];
+    };
+
+    mathjax = {
+      enable = mkEnableOption "mathjax";
+    };
+
   };
 
   site.title = mkOption {

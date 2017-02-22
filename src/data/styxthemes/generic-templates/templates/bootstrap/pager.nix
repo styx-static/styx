@@ -4,18 +4,20 @@ let template = { lib, templates, ... }:
   { pages, index }:
   with lib;
   let
-    prevHref = if (index > 1)
-               then templates.url (elemAt pages (index - 2))
-               else "#";
-    nextHref = if (index < (length pages))
-               then templates.url (elemAt pages index)
-               else "#";
+    prevItem = if (index > 1)
+               then elemAt pages (index - 2)
+               else null;
+    nextItem = if (index < (length pages))
+               then elemAt pages index
+               else null;
   in
   ''
   <nav aria-label="...">
   <ul class="pager">
-  <li${optionalString (index == 1) " ${htmlAttr "class" "disabled"}"}><a ${htmlAttr "href" prevHref}>Previous</a></li>
-  <li${optionalString (index == (length pages)) " ${htmlAttr "class" "disabled"}"}><a ${htmlAttr "href" nextHref}>Next</a></li>
+  ${optionalString (prevItem != null)
+    ''<li class="previous">${ templates.tag.ilink { to = prevItem; content = ''<span aria-hidden="true">&larr;</span> ${prevItem.title or "Previous"}''; } }</li>'' }
+  ${optionalString (nextItem != null)
+    ''<li class="next">${ templates.tag.ilink { to = nextItem; content = ''${nextItem.title or "Next"} <span aria-hidden="true">&rarr;</span>''; } }</li>'' }
   </ul>
   </nav>
   '';
@@ -39,7 +41,7 @@ in with env.lib; documentedTemplate {
         index = 5;
       }
     '';
-    code = with env; 
+    code = with env;
       templates.bootstrap.pager {
         pages = genList (x: { path = "/#${toString (x + 1)}"; }) 10;
         index = 5;

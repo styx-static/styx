@@ -1,4 +1,4 @@
-env: 
+env:
 
 let template = { templates, lib, conf, ... }:
   args:

@@ -1,43 +1,36 @@
 env:
 
 let template = { conf, templates, ... }:
-  { path ? null
-  , page ? null
-  , content
+  { to
+  , content ? ""
   , ...
   }@args:
-  templates.tag.generic ((removeAttrs args [ "path" "page" ]) // {
+  templates.tag.generic ((removeAttrs args [ "path" "to" ]) // {
     tag = "a";
-    href = if path != null
-           then templates.url path
-           else templates.url page;
+    href = templates.url to;
+    content = if content != ""
+              then content
+              else to.title; 
   });
 
 in with env.lib; documentedTemplate {
   description = "Generate an **i**nternal **link**.";
   arguments = {
-    path = {
-      description = "Path of the link to generate.";
-      type = "String";
-      default = null;
-    };
-    page = {
-      description = "Page to link.";
-      type = "String";
-      default = null;
+    to = {
+      description = "Link target, can be a string or a page.";
+      type = "String | Page";
     };
   };
   examples = [
   (mkExample {
-    literalCode  = ''templates.tag.ilink { page = { path = "/about.html"; }; content = "about"; }'';
-    code = with env; templates.tag.ilink { page = { path = "/about.html"; }; content = "about"; };
+    literalCode  = ''templates.tag.ilink { to = { path = "/about.html"; }; content = "about"; }'';
+    code = with env; templates.tag.ilink { to = { path = "/about.html"; }; content = "about"; };
   })
   (mkExample {
-    literalCode  = ''templates.tag.ilink { path = "/files/manual.pdf"; content = "Download manual"; class = "download"; }'';
-    code = with env; templates.tag.ilink { path = "/files/manual.pdf"; content = "Download manual"; class = "download"; };
+    literalCode  = ''templates.tag.ilink { to = "/files/manual.pdf"; content = "Download manual"; class = "download"; }'';
+    code = with env; templates.tag.ilink { to = "/files/manual.pdf"; content = "Download manual"; class = "download"; };
   }) ];
   notes = ''
-    * `page` or `path` must be passed.
     * Any extra argument passed will be added as tag attributes.
   '';
   inherit env template;

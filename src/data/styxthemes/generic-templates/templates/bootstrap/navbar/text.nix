@@ -38,7 +38,7 @@ in with env.lib; documentedTemplate {
         align = "right";
       }
     '';
-    code = with env; 
+    code = with env;
       templates.bootstrap.navbar.text {
         content = "Hello world!";
         align = "right";

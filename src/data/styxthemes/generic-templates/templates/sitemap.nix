@@ -13,7 +13,7 @@ let template = { conf, lib, templates, ... }:
       <loc>${templates.url page}</loc>
       <changefreq>${page.changefreq or "monthly"}</changefreq>
     </url>'') page.pages}
-  </urlset> 
+  </urlset>
   '';
 
 in with env.lib; documentedTemplate {
