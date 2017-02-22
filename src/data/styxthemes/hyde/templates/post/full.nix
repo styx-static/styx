@@ -6,6 +6,6 @@ normalTemplate (page: ''
     <span class="post-date">${with (parseDate page.date); "${D} ${b} ${Y}"}</span>
     ${page.content}
 
-    ${optionalString (page ? pages) (templates.partials.pager { inherit (page) pages index; })} 
+    ${optionalString (page ? multipages) (templates.partials.pager { inherit (page.multipages) pages index; })} 
   </div>
 '')

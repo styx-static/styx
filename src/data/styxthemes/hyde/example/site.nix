@@ -32,13 +32,13 @@ rec {
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    templates.extraEnv = { inherit data pages; };
-    conf.extra = [ ./conf.nix extraConf ];
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates;
+  inherit (themesData) conf lib files templates env;
 
 
 /*-----------------------------------------------------------------------------
@@ -49,12 +49,12 @@ rec {
 
   data = with lib; {
     # loading a single page
-    about  = loadFile { dir = ./data/pages; file = "about.md"; };
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
+
     # loading a list of contents
-    posts  = let
-      postsList = loadDir { dir = ./data/posts; };
-      draftsList = optionals (extraConf ? renderDrafts) (loadDir { dir = ./data/drafts; isDraft = true; });
-    in sortBy "date" "dsc" (postsList ++ draftsList);
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+
+    # menu declaration
     menu = [ pages.about ];
   };
 
@@ -76,7 +76,7 @@ rec {
       basePath     = "/index";
       itemsPerPage = conf.theme.itemsPerPage;
       template     = templates.index;
-      data         = posts;
+      data         = posts.list;
     };
 
     /* About page
@@ -94,7 +94,7 @@ rec {
       template = templates.feed.atom;
       # Bypassing the layout
       layout   = id;
-      items    = take 10 posts;
+      items    = take 10 posts.list;
     };
 
     /* 404 error page
@@ -104,18 +104,9 @@ rec {
       template = templates.e404;
     };
 
-    /* Posts pages (as a list of pages)
+    /* Posts pages
     */
     posts = mkPageList {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
-      breadcrumbs = [ (head pages.index) ];
-    };
-
-    /* Multipages handling
-    */
-    postsMultiTail = mkMultiTail {
       data        = data.posts;
       pathPrefix  = "/posts/";
       template    = templates.post.full;
