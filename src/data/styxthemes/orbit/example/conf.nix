@@ -58,7 +58,7 @@ with lib;
     summary = {
       icon    = "user";
       title   = "Career Profile";
-      content = (loadFile { dir = ./data; file = "summary.md"; }).content;
+      content = (loadFile { file = ./data/summary.md; }).content;
     };
   
     /* Sidebar contents
