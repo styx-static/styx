@@ -7,7 +7,7 @@ let template = { templates, ... }:
   + templates.lib.js.highlightjs
   + templates.lib.js.mathjax
   + templates.services.google-analytics
-  + templates.services.mixpanel
+  + templates.services.piwik
   + (templates.partials.js-custom args)
   + (templates.partials.js-extra  args)
   ;
@@ -21,7 +21,7 @@ in with env.lib; documentedTemplate {
     - <<templates.lib.js.highlightjs>>
     - <<templates.lib.js.mathjax>>
     - <<templates.services.google-analytics>>
-    - <<templates.services.mixpanel>>
+    - <<templates.services.piwik>>
     - <<templates.partials.js-custom>>
     - <<templates.partials.js-extra>>
   '';
