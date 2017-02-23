@@ -96,10 +96,16 @@ with lib;
       default = null;
     };
 
-    mixpanel.key = mkOption {
-      description = "Mixpanel service key, Mixpanel service is disabled if set to null.";
-      type = with types; nullOr str;
-      default = null;
+    piwik = {
+      enable = mkEnableOption "Piwik";
+      url = mkOption {
+        description = "Piwik url.";
+        type = types.str;
+      };
+      IDsite = mkOption {
+        description = "idsite of the website you are tracking in Piwik.";
+        type = types.str;
+      };
     };
 
     disqus.shortname = mkOption {
