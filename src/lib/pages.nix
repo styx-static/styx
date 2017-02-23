@@ -16,7 +16,7 @@ rec {
 */
 
   mkSplitPagePath = documentedFunction {
-    description = "Function to generate the path of a splitted page.";
+    description = "Function to generate a splitted page path.";
 
     arguments = {
       index = {
@@ -281,18 +281,6 @@ rec {
         type = "String";
         default = null;
       };
-      output= {
-        description = ''
-          The pages to generate:
-
-          * `"all"`: Generate all the pages.
-          * `"head"`: Generate only the first page.
-          * `"tail"`: Generate all but the first page.
-
-        '';
-        type = ''"all" | "head" | "tail"'';
-        default = "all";
-      };
       pageFn= {
         description = "Function to generate extra attributes to merge to the page.";
         type = "Int -> Data -> Page";
@@ -345,7 +333,6 @@ rec {
 
     function = {
       pages
-    , output   ? "all"
     , basePath ? null
     , pageFn   ? null
     , ...
@@ -361,13 +348,10 @@ rec {
         subpages = imap (index: page:
              extraArgs
           // (pageFn' index page)
-          // page
+          // (removeAttrs page [ "pages" ])
          ) pages;
-        pages' = imap (index: p: p // { multipages = { pages = subpages; inherit index; }; }) subpages;
-      in      if output == "all"  then pages'
-         else if output == "head" then head pages'
-         else if output == "tail" then tail pages'
-         else abort "mkMultipage output must be 'all', 'head' or 'tail'";
+      in
+        imap (index: p: p // { multipages = { pages = subpages; inherit index; }; }) subpages;
   };
 
 
@@ -483,9 +467,50 @@ rec {
         dirtylist = imap (index: p: p // { pageslist = { pages = cleanlist raw.list; inherit index; }; }) raw.list;
         list = cleanlist dirtylist;
         extra = cleanlist (map (p: p // { pageslist = (findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist).pageslist; }) raw.extra);
-      in { _type = "pages"; inherit list; pages = list ++ extra; };
+      in mkPages { inherit list; pages = list ++ extra; };
 
   };
+
+
+
+/*
+===============================================================
+
+ mkPages
+
+===============================================================
+*/
+
+  mkPages = documentedFunction {
+    description = ''
+      Generate a pages attribute set. Is used to produce multiple "outputs" by pages generating functions like `mkPageList`. +
+      `pagesToList` will only generate the `pages` attribute from a pages attribute set.
+    '';
+
+    arguments = {
+      pages = {
+        description = "List of pages to generate.";
+        type = "[ Page ]";
+      };
+    };
+
+    return = "A pages attribute set.";
+
+    notes = ''
+      Any extra argument will be added to the pages set.
+    '';
+
+    function = {
+      pages
+    , ... }@args:
+      let
+        extraArgs = removeAttrs args [ "pages" ];
+      in extraArgs // {
+        _type = "pages";
+        inherit pages;
+      };
+  };
+
 
 
 /*

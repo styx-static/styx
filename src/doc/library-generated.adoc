@@ -6,12 +6,10 @@ File automatically generated, do not edit
 ////
 
 
-=== conf
+== conf
 
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -75,7 +73,7 @@ parseDecls {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -141,17 +139,14 @@ Throw an error if `defs` do not type-check with `decls`.
 
 ---
 
-:leveloffset: -1
 
 
 
-=== data
+== data
 
 The data namespace contains functions to fetch and manipulate data.
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -188,7 +183,7 @@ asciidocToHtml "Hello `asciidoc`!"
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "<div class=\"paragraph\">
@@ -252,7 +247,7 @@ groupBy [
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -324,7 +319,7 @@ Function to filter the drafts.
 
 Type: `Draft -> Bool`. 
 
-Optional, defaults to `d: !((! (attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d))`.
+Optional, defaults to `d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )`.
 
 ==== Return
 
@@ -452,7 +447,7 @@ markdownToHtml "Hello `markdown`!"
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "<p>Hello <code>markdown</code>!</p>
@@ -517,7 +512,7 @@ mkTaxonomyData {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -589,7 +584,7 @@ sortTerms [ { bar = [ {} {} ]; } { foo = [ {} {} {} ]; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -643,7 +638,7 @@ valuesNb { foo = [ {} {} {} ]; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 3
@@ -660,16 +655,13 @@ valuesNb { foo = [ {} {} {} ]; }
 
 ---
 
-:leveloffset: -1
 
 
 
-=== generation
+== generation
 
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -713,7 +705,7 @@ generatePage {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "<html><body><h1>Styx example page</h1>
@@ -926,7 +918,7 @@ pagesToList {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -952,16 +944,13 @@ pagesToList {
 
 ---
 
-:leveloffset: -1
 
 
 
-=== pages
+== pages
 
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -985,20 +974,6 @@ String used by `pathFn` to generate the page path. Used in `pageFn` default, ign
 Type: `String`. 
 
 Optional, defaults to `null`.
-
-===== output
-
-The pages to generate:
-
-* `"all"`: Generate all the pages.
-* `"head"`: Generate only the first page.
-* `"tail"`: Generate all but the first page.
-
-
-
-Type: `"all" | "head" | "tail"`. 
-
-Optional, defaults to `"all"`.
 
 ===== pageFn
 
@@ -1156,6 +1131,45 @@ pages.posts = mkPageList {
 
 :sectnums!:
 
+[[lib.pages.mkPages]]
+=== mkPages
+
+==== Description
+
+Generate a pages attribute set. Is used to produce multiple "outputs" by pages generating functions like `mkPageList`. +
+`pagesToList` will only generate the `pages` attribute from a pages attribute set.
+
+
+==== Arguments (Attribute Set)
+
+
+===== pages
+
+List of pages to generate.
+
+Type: `[ Page ]`. 
+
+==== Return
+
+A pages attribute set.
+
+
+[NOTE]
+====
+Any extra argument will be added to the pages set.
+
+====
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
 [[lib.pages.mkSplit]]
 === mkSplit
 
@@ -1225,7 +1239,7 @@ mkSplit {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -1329,7 +1343,7 @@ mkSplitCustom {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -1374,7 +1388,7 @@ mkSplitCustom {
 
 ==== Description
 
-Function to generate the path of a splitted page.
+Function to generate a splitted page path.
 
 ==== Arguments (Attribute Set)
 
@@ -1416,7 +1430,7 @@ mkSplitPagePath {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "/foo.html"
@@ -1436,7 +1450,7 @@ mkSplitPagePath {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "/foo-3.html"
@@ -1560,7 +1574,7 @@ mkTaxonomyPath "tags"
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "/tags/index.html"
@@ -1612,7 +1626,7 @@ mkTaxonomyTermPath "tags" "styx"
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "/tags/styx/index.html"
@@ -1629,11 +1643,10 @@ mkTaxonomyTermPath "tags" "styx"
 
 ---
 
-:leveloffset: -1
 
 
 
-=== proplist
+== proplist
 
 The proplist namespace contains functions to manipulate property lists, list of attribute set with only one attribute.
 
@@ -1647,8 +1660,6 @@ Example:
 ----
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -1691,7 +1702,7 @@ getProp "name" [ { name = "Alice"; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -1749,7 +1760,7 @@ getValue "name" [ { name = "Alice"; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "Alice"
@@ -1805,7 +1816,7 @@ isDefined "name" [ { name = "Alice"; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 true
@@ -1855,7 +1866,7 @@ propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -1909,7 +1920,7 @@ propKey { name = "Alice"; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "name"
@@ -1965,7 +1976,7 @@ propMap (k: v: "${k}: ${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ "name: Alice" "hobby: Sports" ]
@@ -2015,7 +2026,7 @@ propValue { name = "Alice"; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "Alice"
@@ -2071,7 +2082,7 @@ removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -2090,16 +2101,13 @@ removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
 
 ---
 
-:leveloffset: -1
 
 
 
-=== template
+== template
 
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -2198,7 +2206,7 @@ escapeHTML ''<p class="foo">Hello world!</p>''
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "&lt;p class=&quot;foo&quot;&gt;Hello world!&lt;/p&gt;"
@@ -2254,7 +2262,7 @@ htmlAttr "class" "foo"
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "class=\"foo\""
@@ -2271,7 +2279,7 @@ htmlAttr "class" [ "foo" "bar" ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "class=\"foo bar\""
@@ -2321,7 +2329,7 @@ htmlAttrs { class = [ "foo" "bar" ]; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "class=\"foo bar\""
@@ -2338,7 +2346,7 @@ htmlAttrs { class = [ "foo" "bar" ]; id = "baz"; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "class=\"foo bar\" id=\"baz\""
@@ -2423,7 +2431,7 @@ isEven 3
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 false
@@ -2473,7 +2481,7 @@ isOdd 3
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 true
@@ -2531,7 +2539,7 @@ mapTemplate (item: ''
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "<li>foo</li>
@@ -2591,7 +2599,7 @@ mapTemplateWithIndex (index: item: ''
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "<li>1 - foo</li>
@@ -2649,7 +2657,7 @@ mod 3 2
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 1
@@ -2705,7 +2713,7 @@ in template page
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -2727,7 +2735,7 @@ in template page
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -2749,7 +2757,7 @@ in template page
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -2771,7 +2779,7 @@ in template page
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -2848,7 +2856,7 @@ with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "21 Dec 2012"
@@ -2865,16 +2873,13 @@ with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
 
 ---
 
-:leveloffset: -1
 
 
 
-=== themes
+== themes
 
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -2917,7 +2922,7 @@ docText (mkDoc {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -3115,7 +3120,7 @@ mkDoc {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -3144,17 +3149,14 @@ mkDoc {
 
 ---
 
-:leveloffset: -1
 
 
 
-=== utils
+== utils
 
 This namespace contains generic functions.
 
 
-
-:leveloffset: +1
 
 ---
 
@@ -3197,7 +3199,7 @@ A list of lists of `size` size.
 chunksOf 2 [ 1 2 3 4 5 ]
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ [ 1 2 ] [ 3 4 ] [ 5 ] ]
@@ -3302,6 +3304,65 @@ The template function, or the documented template set if `env` has a `genDoc` at
 
 :sectnums!:
 
+[[lib.utils.find]]
+=== find
+
+==== Description
+
+Find a set in a list of set matching some criteria.
+
+==== Arguments (Standard)
+
+
+===== criteria
+
+Criteria to find.
+
+Type: `Attrs`. 
+
+===== list
+
+List of attributes to lookup for `criteria`.
+
+Type: `Attrs`. 
+
+==== Return
+
+The matched attribute set, or throw an error if no result has been found.
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { uid = "baz"; } ]
+
+----
+
+[source, nix]
+.Result
+----
+{
+  content = "hello!";
+  uid = "bar";
+}
+----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
 [[lib.utils.importApply]]
 === importApply
 
@@ -3371,7 +3432,7 @@ is "foo" { _type = "foo"; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 true
@@ -3453,7 +3514,7 @@ isExample (mkExample {
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 true
@@ -3507,7 +3568,7 @@ merge [ { a = 1; b = 2; } { b = "x"; c = "y"; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 {
@@ -3574,7 +3635,7 @@ prettyNix [ { a.b.c = true; } { x.y.z = [ 1 2 3 ]; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 "[ {
@@ -3625,7 +3686,7 @@ setToList { a.b.c = true; d = "foo"; x.y.z = [ 1 2 3 ]; }
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -3670,7 +3731,7 @@ sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
 
 ----
 
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -3691,7 +3752,6 @@ sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
 
 ---
 
-:leveloffset: -1
 
 
 

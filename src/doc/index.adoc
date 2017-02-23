@@ -8,6 +8,8 @@
 :sectanchors:
 :nofooter:
 :experimental:
+:source-highlighter: highlightjs
+:highlightjsdir: highlight
 
 ////
 

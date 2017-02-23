@@ -96,7 +96,7 @@ let
       ----
       ${optionalString (example ? code) ''
 
-      [source, html]
+      [source, nix]
       .Result
       ----
       ${prettyNix (example.displayCode example.code)}
@@ -107,8 +107,10 @@ let
     '';
 
 in stdenv.mkDerivation {
-
   name    = "styx-docs";
+
+  preferLocalBuild = true;
+  allowSubstitutes = false;
 
   unpackPhase = ":";
 
@@ -124,12 +126,10 @@ in stdenv.mkDerivation {
 
     ${concatStringsSep "\n" (mapAttrsToList (namespace: data: ''
 
-    === ${namespace}
+    == ${namespace}
 
     ${data.documentation}
 
-
-    :leveloffset: +1
 
     ---
 
@@ -137,7 +137,6 @@ in stdenv.mkDerivation {
 
     ---
 
-    :leveloffset: -1
 
     '') namespaces)}
 
@@ -152,5 +151,4 @@ in stdenv.mkDerivation {
     mkdir $out
     cp build/* $out
   '';
-
 }

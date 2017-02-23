@@ -54,6 +54,7 @@ let
       dataFn = pkgs.runCommand "parsed-data.nix" {
         buildInputs = [ pkgs.styx ];
         preferLocalBuild = true;
+        allowSubstitutes = false;
       } ''
         python ${pkgs.styx}/share/tools/parser.py < ${fileData.path} > $out
         '';
@@ -89,6 +90,7 @@ let
       data = pkgs.runCommand "markup-data.html" {
         buildInputs = [ pkgs.styx ];
         preferLocalBuild = true;
+        allowSubstitutes = false;
         inherit text;
         passAsFile = [ "text" ];
       } ''
@@ -153,7 +155,7 @@ rec {
       filterDraftsFn = {
         description = "Function to filter the drafts.";
         type = "Draft -> Bool";
-        default = literalExample ''d: !((! (attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d))'';
+        default = literalExample ''d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )'';
       };
       asAttrs = {
         description = "If set to true, the function will return a set instead of a list. The key will be the file basename, and the value the data set.";

@@ -21,6 +21,7 @@ $ styx new theme my-theme --in ./themes
 
 This command will generate the following files in `./themes/my-theme`:
 
+[source]
 ----
 ├── conf.nix   # <1>
 ├── meta.nix   # <2>
@@ -64,7 +65,7 @@ Themes are usually stored in a `themes` directory, or used from the `styx-themes
 
 Every theme is stored in its own directory, and themes are expected to follow a certain structure.
 
-[source, shell]
+[source]
 .Structure of a Styx theme
 -----
 themes

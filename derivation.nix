@@ -40,6 +40,7 @@ stdenv.mkDerivation rec {
     asciidoctor doc/index.adoc       -o $out/share/doc/styx/index.html
     asciidoctor doc/styx-themes.adoc -o $out/share/doc/styx/styx-themes.html
     asciidoctor doc/library.adoc     -o $out/share/doc/styx/library.html
+    cp -r doc/highlight $out/share/doc/styx/
     cp -r doc/imgs $out/share/doc/styx/
     cp -r tools $out/share
 

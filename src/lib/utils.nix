@@ -15,6 +15,49 @@ in rec {
     This namespace contains generic functions.
   '';
 
+  find = documentedFunction {
+    description = "Find a set in a list of set matching some criteria.";
+
+    arguments = [
+      {
+        name = "criteria";
+        description = "Criteria to find.";
+        type = "Attrs";
+      }
+      {
+        name = "list";
+        description = "List of attributes to lookup for `criteria`.";
+        type = "Attrs";
+      }
+    ];
+
+    return = "The matched attribute set, or throw an error if no result has been found.";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { uid = "baz"; } ]
+      '';
+      code =
+        find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { uid = "baz"; } ]
+      ;
+      expected = { uid = "bar"; content = "hello!"; };
+    })];
+
+    function = criteria: list:
+      let
+        subset = sub: super: fold (a: b: a && b) true (mapAttrsToList (k: v: hasAttr k super && (getAttr k super) == v) sub);
+        matches = filter (x: subset criteria x) list;
+      in
+        if matches == []
+        then throw ''
+          No items matched the following find criteria:
+          ---
+          ${prettyNix criteria}
+          ---
+        ''
+        else head matches;
+  };
+
 /*
 ===============================================================
 

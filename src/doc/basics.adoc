@@ -67,11 +67,11 @@ But the `styx new` command will generate a few more files for convenience.
 
 [source]
 ----
-├── conf.nix # <1>
+├── conf.nix  # <1>
 ├── readme.md # <2>
-├── site.nix # <3>
-├── data/ # <4>
-└── themes/ # <5>
+├── site.nix  # <3>
+├── data/     # <4>
+└── themes/   # <5>
 ----
 
 <1> `conf.nix` is the main configuration file, see <<Configuration>> for details.

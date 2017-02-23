@@ -49,12 +49,6 @@ Substitutions are a set that is passed to the `mkSite` function. Any value of se
 
 To be replaced, the variable as to be surrouded by `@`, for example `@siteUrl@`.
 
-[source, markdown]
-.Using a substitution in a markdown file
-----
-Learn more in the [Styx 0.1.0 Documentation](@siteUrl@/documentation-v0-1-0.html).
-----
-
 [source, css]
 .Using a substitution in a css file
 ----

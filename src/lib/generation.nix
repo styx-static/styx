@@ -134,6 +134,7 @@ rec {
           meta = { platforms = lib.platforms.all; } // meta;
           buildInputs = [ pkgs.styx ];
           preferLocalBuild = true;
+          allowSubstitutes = false;
         };
       in
       pkgs.runCommand name env ''

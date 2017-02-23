@@ -40,6 +40,7 @@ Description:: Last about bubble text.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Be part<br>of our<br>story!"
 ----
@@ -57,12 +58,14 @@ If set to the empty list `[]`, the about area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   content = "Lorem ipsum dolor sit amet consectetur.";
@@ -83,6 +86,7 @@ Description:: Subtitle of the about area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet consectetur."
 ----
@@ -98,6 +102,7 @@ Description:: Title of the about area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "About"
 ----
@@ -115,12 +120,14 @@ If set to the empty list `[]`, the clients area will not be displayed.";
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   link = "#";
@@ -142,6 +149,7 @@ Description:: Text of the contact area button.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Send message"
 ----
@@ -157,12 +165,14 @@ Description:: Whether to enable contact area.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -178,6 +188,7 @@ Description:: Contact form email input label
 Type:: attribute set
 Default::
 +
+[source, nix]
 ----
 {
   text = "Your Email *";
@@ -196,6 +207,7 @@ Description:: Contact form message input label
 Type:: attribute set
 Default::
 +
+[source, nix]
 ----
 {
   text = "Your Message *";
@@ -214,6 +226,7 @@ Description:: Contact form name input label
 Type:: attribute set
 Default::
 +
+[source, nix]
 ----
 {
   text = "Your Name *";
@@ -232,6 +245,7 @@ Description:: Contact form phone input label
 Type:: attribute set
 Default::
 +
+[source, nix]
 ----
 {
   text = "Your Phone *";
@@ -250,6 +264,7 @@ Description:: Contact area from receiver mail address.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "your@email.com"
 ----
@@ -265,6 +280,7 @@ Description:: Subtitle of the contact area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet consectetur."
 ----
@@ -280,6 +296,7 @@ Description:: Title of the contact area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet consectetur."
 ----
@@ -295,6 +312,7 @@ Description:: Footer copyright text.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Published under the Apache License 2.0."
 ----
@@ -310,12 +328,14 @@ Description:: Footer links.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   link = "#";
@@ -337,12 +357,14 @@ Description:: Social media links to display in the footer.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   icon = "fa-twitter";
@@ -367,6 +389,7 @@ Description:: Button text of the hero area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Tell me more"
 ----
@@ -382,6 +405,7 @@ Description:: Subtitle of the hero area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "It's nice to meet you"
 ----
@@ -397,6 +421,7 @@ Description:: Title of the hero area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Welcome To Our Studio!"
 ----
@@ -412,12 +437,14 @@ Description:: Menu items to add at the end of the navigation.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   name = "Styx";
@@ -436,12 +463,14 @@ Description:: Menu items to add at the beginning of the navigation.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   name = "Styx";
@@ -462,12 +491,14 @@ If set to the empty list `[]`, the portfolio area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   category = "Graphic Design";
@@ -493,6 +524,7 @@ Description:: Subtitle of the portgolio area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet consectetur."
 ----
@@ -508,6 +540,7 @@ Description:: Title of the portfolio area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Services"
 ----
@@ -525,12 +558,14 @@ If set to the empty list `[]`, the services area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   content = "Lorem ipsum dolor sit amet consectetur.";
@@ -550,6 +585,7 @@ Description:: Subtitle of the services area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet consectetur."
 ----
@@ -565,6 +601,7 @@ Description:: Title of the services area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Services"
 ----
@@ -580,6 +617,7 @@ Description:: Content of the author `meta` tag.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Your name"
 ----
@@ -595,6 +633,7 @@ Description:: Content of the description `meta` tag.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Your description"
 ----
@@ -610,6 +649,7 @@ Description:: Title of the site.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "The Agency"
 ----
@@ -625,6 +665,7 @@ Description:: Description of the team
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde."
 ----
@@ -642,12 +683,14 @@ If set to the empty list `[]`, the team area will not be displayed.";
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   img = "1.jpg";
@@ -677,6 +720,7 @@ Description:: Subtitle of the team area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum dolor sit amet consectetur."
 ----
@@ -692,6 +736,7 @@ Description:: Title of the team area.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "About"
 ----
@@ -1034,6 +1079,7 @@ Description:: Doctype declaration to use.
 Type:: one of "html5", "html4", "xhtml1"
 Default::
 +
+[source, nix]
 ----
 "html5"
 ----
@@ -1049,6 +1095,7 @@ Description:: An ISO 639-1 language code to set to the `html` tag.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "en"
 ----
@@ -1064,12 +1111,14 @@ Description:: Whether to enable bootstrap.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -1085,6 +1134,7 @@ Description:: Selects bootstrap version to use.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "3.3.7"
 ----
@@ -1100,12 +1150,14 @@ Description:: Whether to enable font awesome.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -1121,6 +1173,7 @@ Description:: Selects font-awesome version to use.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "4.7.0"
 ----
@@ -1136,12 +1189,14 @@ Description:: Google Fonts to load, for available fonts see https://fonts.google
 Type:: list of strings
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ "Barrio" "Fjalla One" ]
 ----
@@ -1157,12 +1212,14 @@ Description:: Whether to enable highlightjs.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -1178,12 +1235,14 @@ Description:: Extra languages to highlight, for available languages see https://
 Type:: list of strings
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ "nix" ]
 ----
@@ -1199,12 +1258,14 @@ Description:: Style used by highlight.js, for available styles see https://highl
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "default"
 ----
 
 Example::
 +
+[source, nix]
 ----
 "agate"
 ----
@@ -1220,6 +1281,7 @@ Description:: Selects highlightjs version to use.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "9.9.0"
 ----
@@ -1235,12 +1297,14 @@ Description:: Whether to enable jQuery.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -1256,6 +1320,7 @@ Description:: Selects jQuery version to use.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "3.1.1"
 ----
@@ -1271,12 +1336,14 @@ Description:: Whether to enable mathjax.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -1292,6 +1359,7 @@ Description:: Disqus service shortname. See link:https://help.disqus.com/custome
 Type:: null or string
 Default::
 +
+[source, nix]
 ----
 null
 ----
@@ -1307,6 +1375,7 @@ Description:: Google analytics service tracker ID, Google analytics is disabled 
 Type:: null or string
 Default::
 +
+[source, nix]
 ----
 null
 ----
@@ -1315,16 +1384,44 @@ null
 
 ---
 
-[[theme.services.mixpanel.key]]
-==== theme.services.mixpanel.key
+[[theme.services.piwik.IDsite]]
+==== theme.services.piwik.IDsite
 
-Description:: Mixpanel service key, Mixpanel service is disabled if set to null.
-Type:: null or string
+Description:: idsite of the website you are tracking in Piwik.
+Type:: string
+
+
+
+---
+
+[[theme.services.piwik.enable]]
+==== theme.services.piwik.enable
+
+Description:: Whether to enable Piwik.
+Type:: boolean
 Default::
 +
+[source, nix]
 ----
-null
+false
 ----
+
+Example::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[theme.services.piwik.url]]
+==== theme.services.piwik.url
+
+Description:: Piwik url.
+Type:: string
 
 
 
@@ -1337,6 +1434,7 @@ Description:: Site title.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Generic Templates"
 ----
@@ -2143,6 +2241,25 @@ Description:: Template loading the MathJax javascript library. Controlled by `co
 ---
 
 
+[[templates.media.giphy]]
+==== templates.media.giphy
+
+Description:: Template to embed a Youtube video.
+Arguments (Attribute Set)::
+`height`::: Embedded gif height. +
+Type: `Int`. 
+`id`::: Giphy id. +
+Type: `String`. 
+`width`::: Embedded gif width. +
+Type: `Int`. 
+
+
+
+
+
+---
+
+
 [[templates.media.gist]]
 ==== templates.media.gist
 
@@ -2532,7 +2649,7 @@ Description:: Template loading the javascript files. Include the following templ
 - <<templates.lib.js.highlightjs>>
 - <<templates.lib.js.mathjax>>
 - <<templates.services.google-analytics>>
-- <<templates.services.mixpanel>>
+- <<templates.services.piwik>>
 - <<templates.partials.js-custom>>
 - <<templates.partials.js-extra>>
 
@@ -2634,10 +2751,10 @@ Description:: Template managing link:https://www.google.com/analytics/[google an
 ---
 
 
-[[templates.services.mixpanel]]
-==== templates.services.mixpanel
+[[templates.services.piwik]]
+==== templates.services.piwik
 
-Description:: Template managing link:https://mixpanel.com/[mixpanel] integration. Controlled with `conf.theme.services.mixpanel.key` configuration option.
+Description:: Template managing link:https://piwik.org/[Piwik] integration. Controlled with `conf.theme.services.piwik.*` configuration options.
 
 
 
@@ -3367,6 +3484,7 @@ Description:: Selects the color scheme. Set to `null` for default black scheme.
 Type:: null or one of "08", "09", "0a", "0b", "0c", "0d", "0e", "0f"
 Default::
 +
+[source, nix]
 ----
 null
 ----
@@ -3382,6 +3500,7 @@ Description:: Number of posts per page.
 Type:: integer
 Default::
 +
+[source, nix]
 ----
 3
 ----
@@ -3397,12 +3516,14 @@ Description:: Whether to enable reverse layout.
 Type:: boolean
 Default::
 +
+[source, nix]
 ----
 false
 ----
 
 Example::
 +
+[source, nix]
 ----
 true
 ----
@@ -3418,6 +3539,7 @@ Description:: Site description.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "An elegant open source and mobile first theme for styx made by <a href=\"http://twitter.com/mdo\">@mdo</a>. Originally made for Jekyll.
 "
@@ -3434,6 +3556,7 @@ Description:: Site title.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Hyde"
 ----
@@ -3722,6 +3845,7 @@ Description:: Theme color scheme.
 Type:: one of 1, 2, 3, 4, 5, 6
 Default::
 +
+[source, nix]
 ----
 1
 ----
@@ -3739,12 +3863,14 @@ If set to the empty list `[]`, the skills area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   icon = "envelope";
@@ -3765,6 +3891,7 @@ Description:: Footer copyright text.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "copyright"
 ----
@@ -3782,12 +3909,14 @@ If set to the empty list `[]`, the education area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   college = "University of London";
@@ -3807,6 +3936,7 @@ Description:: Title of the education section.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Education"
 ----
@@ -3822,6 +3952,7 @@ Description:: Code of the font awesome icon of the experience title.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "briefcase"
 ----
@@ -3839,12 +3970,14 @@ If set to the empty list `[]`, the experiences area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   company = "Startup Hubs, San Francisco";
@@ -3865,6 +3998,7 @@ Description:: Title of the experiences section
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Experiences"
 ----
@@ -3881,12 +4015,14 @@ Description:: List of interests. If set to the empty list `[]`, the interests ar
 Type:: list of strings
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ "Climbing" "Snowboarding" "Cooking" ]
 ----
@@ -3902,6 +4038,7 @@ Description:: Title of the interests section.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Interests"
 ----
@@ -3919,12 +4056,14 @@ If set to the empty list `[]`, the languages area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   language = "English";
@@ -3943,6 +4082,7 @@ Description:: Title of the languages section.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Languages"
 ----
@@ -3958,6 +4098,7 @@ Description:: Profile information, must have `name`, `tagline` and `image` attri
 Type:: attribute set
 Default::
 +
+[source, nix]
 ----
 {
   image = "profile.png";
@@ -3977,6 +4118,7 @@ Description:: Code of the font awesome icon of the projects title.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "archive"
 ----
@@ -3994,12 +4136,14 @@ If set to the empty list `[]`, the projects area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   content = "lorem ipsum";
@@ -4019,6 +4163,7 @@ Description:: Title of the projects section
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Projects"
 ----
@@ -4034,6 +4179,7 @@ Description:: Content of the author `meta` tag.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "John Doe"
 ----
@@ -4049,6 +4195,7 @@ Description:: Content of the description `meta` tag.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Lorem ipsum..."
 ----
@@ -4064,6 +4211,7 @@ Description:: Title of the site.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Orbit theme"
 ----
@@ -4079,6 +4227,7 @@ Description:: Code of the font awesome icon of the skills title.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "rocket"
 ----
@@ -4096,12 +4245,14 @@ If set to the empty list `[]`, the skills area will not be displayed.
 Type:: list of attribute sets
 Default::
 +
+[source, nix]
 ----
 [  ]
 ----
 
 Example::
 +
+[source, nix]
 ----
 [ {
   level = "98%";
@@ -4123,6 +4274,7 @@ Description:: Title of the skills section.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Skills & Proficiency"
 ----
@@ -4140,6 +4292,7 @@ if set to `null`, the summary area will not be displayed.
 Type:: null or string
 Default::
 +
+[source, nix]
 ----
 null
 ----
@@ -4155,6 +4308,7 @@ Description:: Code of the font awesome icon of the summary title.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "user"
 ----
@@ -4170,6 +4324,7 @@ Description:: Title of the summary section
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Career profile"
 ----
@@ -4466,6 +4621,7 @@ Description:: Number of posts on the archive page.
 Type:: integer
 Default::
 +
+[source, nix]
 ----
 15
 ----
@@ -4481,6 +4637,7 @@ Description:: Number of posts on the index page.
 Type:: integer
 Default::
 +
+[source, nix]
 ----
 4
 ----
@@ -4496,6 +4653,7 @@ Description:: Site copyright, added in the footer.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "&copy; 2017"
 ----
@@ -4511,6 +4669,7 @@ Description:: Site description, added in the footer.
 Type:: string
 Default::
 +
+[source, nix]
 ----
 "Write a description for your new site here."
 ----
@@ -4701,7 +4860,7 @@ rec {
   data = with lib; {
 
     # loading a single page
-    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
 
     # loading a list of contents
     posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });

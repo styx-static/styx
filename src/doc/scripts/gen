@@ -6,3 +6,4 @@ docDir="$(realpath "$scriptDir/../")"
 
 asciidoctor "$docDir/index.adoc"
 asciidoctor "$docDir/styx-themes.adoc"
+asciidoctor "$docDir/library.adoc"

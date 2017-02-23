@@ -5,7 +5,8 @@
 
 ==== Highlights:
 
-Nix expressions can be <<data.embedded-nix,embedded>> in markup files.
+* Nix expressions can be <<data.embedded-nix,embedded>> in markup files.
+* Site building perfomance improvements.
 
 New commands:
 
@@ -13,17 +14,17 @@ New commands:
 * `styx gen-sample-data`: generate sample data.
 * `styx linkcheck`: check the internal links of a site.
 
+==== Improvements
+
+* `mkPageList` handle multipage pages correctly.
+* Themes templates documentation has been added.
+
 Generic templates theme:
 
 * Syntax highlighting support via `highlightjs`.
 * MathJax js integration.
 * `templates.media.*`: Templates to include external into content or templates.
 * Multiple external service support added.
-
-==== Improvements
-
-* `mkPageList` handle multipage pages correctly.
-* Themes templates documentation has been added.
 
 ==== Breaking Changes:
 
@@ -33,13 +34,10 @@ Generic templates theme:
 ** `conf.extraConf` was renamed `extraConf`.
 * `loadDir` and `loadFile` functions have been changed.
 * `mkMultiTail` function have been removed in favor of `mkPageList`.
+* `loadDir` and `loadFile` functions arguments has been modified.
 
 ==== Upgrading:
 
-==== Final remarks:
-
-Embedded nix support changed how markup files are handled, and results in slower site builds. +
-This especially visible with multipage content as each page will be converted in a separate process.
 
 
 [[v0.5.0]]

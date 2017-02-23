@@ -100,13 +100,16 @@ def toNix (meta, markup):
 
     template = Template( textwrap.dedent("""
       env:
+      let meta = rec {
+      $meta
+      }; in
       with env;
-      {
+      ({
       $meta
       $content
       $intro
       $pages
-      }
+      } // meta)
     """))
 
     return template.safe_substitute(

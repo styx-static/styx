@@ -2,15 +2,16 @@
 :revnumber: @version@
 :description: Library documentation
 :toc: left
-:toclevels: 3
+:toclevels: 2
 :icons: font
 :sectanchors:
 :nofooter:
 :experimental:
+:source-highlighter: highlightjs
+:highlightjsdir: highlight
 
-:sectnums:
-
-== Introduction
+[preface]
+== Preface
 
 The library contains various functions that can be used through `site.nix` and templates.
 
@@ -18,9 +19,10 @@ This file is generated with a link:https://github.com/styx-static/styx/blob/mast
 
 - link:./index.html[Styx documentation]
 
-== Namespaces
+Library functions are grouped in namespaces, but are also all included in the top-level scope to be easily accessible. +
+So for example, `lib.utils.chunksOf` can be shortened to `lib.chunksOf`.
 
-Library functions are grouped in namespaces, but are also all included in the top-level scope to be used in an easy way.
+:sectnums:
 
 include::library-generated.adoc[]
 

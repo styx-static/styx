@@ -90,6 +90,7 @@ let
     ${optionalString (conf ? default) ''
     Default::
     +
+    [source, nix]
     ----
     ${prettyNix conf.default}
     ----
@@ -97,6 +98,7 @@ let
     ${optionalString (conf ? example) ''
     Example::
     +
+    [source, nix]
     ----
     ${prettyNix conf.example}
     ----
@@ -111,7 +113,7 @@ let
 
     == Pages List
 
-    The site contains ${toString(length pages)} pages:
+    The site contains ${toString(length pages)} generated pages:
 
     ${mapTemplate (page: ''
     * `${page.path}`
@@ -208,6 +210,9 @@ stdenv.mkDerivation rec {
   name    = "styx-docs";
   unpackPhase = ":";
 
+  preferLocalBuild = true;
+  allowSubstitutes = false;
+
   buildInputs = [ asciidoctor ];
 
   doc = writeText "site.adoc" ''
@@ -226,6 +231,8 @@ stdenv.mkDerivation rec {
     :sectanchors:
     :nofooter:
     :experimental:
+    :source-highlighter: highlightjs
+    :highlightjsdir: highlight
 
     :sectnums:
 
@@ -258,6 +265,7 @@ stdenv.mkDerivation rec {
       ''
     ) themes}
     cp build/index.html $out/
+    cp -r ${styx}/share/doc/styx/highlight $out/
     cp ${writeText "themes.adoc" themesDoc} $out/themes-generated.adoc
   '';
 }
