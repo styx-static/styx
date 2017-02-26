@@ -16,7 +16,7 @@ with lib;
       '') (data.menu or [])}
     </ul>
 
-    <p>&copy; 2016. All rights reserved.</p>
+    ${optionalString (conf.theme.site.copyright != "") ''<p>${conf.theme.site.copyright}</p>''}
   </div>
 </div>
 ''
