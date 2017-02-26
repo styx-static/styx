@@ -24,7 +24,7 @@ This is a two step process:
 
 Then changes can be pushed with the following commands:
 
-[source, shell]
+[source, sh]
 ----
 $ (cd gh-pages && git push -u origin gh-pages) # <1>
 $ git push -u origin gh-pages # <2>
@@ -79,7 +79,7 @@ NOTE: The NixOps link:http://nixos.org/nixops/manual/[manual] provide informatio
 
 Then the site can be deployed via NixOps with the following set of commands:
 
-[source, bash]
+[source, sh]
 ----
 $ nixops create -d styx-site nixops-expression.nix # <1>
 $ nixops deploy -d styx-site # <2>

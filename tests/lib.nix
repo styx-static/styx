@@ -2,11 +2,11 @@
 
    To see the tests report run:
 
-     cat $(nix-build --no-out-link -A report tests/lib-au.nix)
+     cat $(nix-build --no-out-link -A report tests/lib.nix)
 
    To check test coverage run:
 
-     cat $(nix-build --no-out-link -A coverage tests/lib-au.nix)
+     cat $(nix-build --no-out-link -A coverage tests/lib.nix)
 
 */
 let
@@ -105,7 +105,7 @@ let
    '';
 
    mkLoadFileTest = file:
-     let data = loadFile { inherit file; env = { inherit lib; foo = "bar"; }; };
+     let data = loadFile { inherit file; env = { inherit lib; foo = "bar"; bar = [1 2 3]; buz = 2; }; };
          cleanData = removeAttrs data [ "fileData" ];
      in mapAttrs (k: v:
        if   k == "pages"
@@ -172,9 +172,21 @@ let
          Answer is 42 and foo is bar</p>
        '';
      };
+   } {
+     name = "loadFile - complex";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/complex.md;
+     expected = {
+       foo = "The answer";
+       bar = "answer";
+       baz = 40;
+       content = ''
+         <p>The answer is 42.</p>
+       '';
+     };
    } ];
 
 in {
-  inherit report results functions tests coverage;
+  inherit failures report results functions tests coverage;
   success = failuresNb == 0;
 }

@@ -66,10 +66,10 @@ rec {
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = lib.pagesToList { inherit pages; };
+  pageList = lib.pagesToList { inherit pages; };
 
   /* Generating the site
   */
-  site = lib.mkSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files pageList; };
 
 }

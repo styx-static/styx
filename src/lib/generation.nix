@@ -6,8 +6,16 @@ with import ./utils.nix lib;
 
 rec {
 
+/*
+===============================================================
+
+ generatePage
+
+===============================================================
+*/
+
   generatePage = documentedFunction {
-    description = "Function to generate a page source.";
+    description = "Function to generate a page source, used by `mkSite`.";
 
     arguments = [
       {
@@ -49,41 +57,36 @@ rec {
     function = page: page.layout (page.template page);
   };
 
-# -----------------------------
 
-  generateSite = documentedFunction {
-    description = "Alias for `mkSite`.";
-    function = mkSite;
-  };
+/*
+===============================================================
 
-# -----------------------------
+ mkSite
+
+===============================================================
+*/
 
   mkSite = documentedFunction {
     description = "Generate a site, this is the main function of a styx site.";
 
     arguments = {
-      name = {
-        description = "Name of the store artefact generated.";
-        type = "String";
-        default = "styx-site";
-      };
       meta = {
         description = "Meta attribute set of the generated site derivation.";
         type = "Attrs";
         default = {};
       };
       files = {
-        description = "A list of directory of static files to copy in the generated site.";
+        description = "A list of static files directories to copy in the site.";
         type = "[ Path ]";
         default = [];
       };
-      pagesList = {
+      pageList = {
         description = "A list of pages attributes sets to generate.";
         type = "[ Page ]";
         default = [];
       };
       substitutions = {
-        description = "A substitution set to apply to the generated pages and static files.";
+        description = "A substitution set to apply to static files.";
         type = "Attrs";
         default = {};
       };
@@ -100,7 +103,7 @@ rec {
       genPageFn = {
         description = "Function to generate a page source from a page attribute set.";
         type = "Page -> String";
-        default = literalExample "generatePage";
+        default = literalExample "lib.generation.generatePage";
       };
       pagePathFn = {
         description = "Function to generate a page from a page attribute set.";
@@ -111,21 +114,19 @@ rec {
 
     examples = [ (mkExample {
       literalCode = ''
-        generateSite { pagesList = [ pages.index ]; }
+        generateSite { pageList = [ pages.index ]; }
       '';
     }) ];
 
     return = "The site derivation.";
 
     function = {
-      name ? "styx-site"
-    , meta ? {}
+      meta ? {}
     , files ? []
-    , pagesList ? []
+    , pageList ? []
     , substitutions ? {}
     , preGen  ? ""
     , postGen ? ""
-    # extra customization options
     , genPageFn ? generatePage
     , pagePathFn ? (page: page.path)
     }:
@@ -136,6 +137,7 @@ rec {
           preferLocalBuild = true;
           allowSubstitutes = false;
         };
+        name = meta.name or "styx-site";
       in
       pkgs.runCommand name env ''
         shopt -s globstar
@@ -240,16 +242,23 @@ rec {
           else
             ln -s "$page" "$outPath"
           fi
-        '') pagesList}
+        '') pageList}
 
         ${postGen}
       '';
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ pagesToList
+
+===============================================================
+*/
 
   pagesToList = documentedFunction {
-    description = "Convert a set containing pages to a list of pages.";
+    description = "Convert a set of pages to a list of pages.";
 
     arguments = {
       pages = {
@@ -257,7 +266,7 @@ rec {
         type = "Attrs";
       };
       default = {
-        description = "Atrribute set of default values to add to every page attribute set, useful to set `layout`.";
+        description = "Attribute set of default values to add to every page set, useful to set `layout`.";
         type = "Attrs";
         default = {};
       };
@@ -267,7 +276,7 @@ rec {
 
     examples = [ (mkExample {
       literalCode = ''
-        pageslist = pagestolist {
+        pagelist = pagestolist {
           inherit pages;
           default.layout = templates.layout;
         };

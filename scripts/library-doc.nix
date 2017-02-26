@@ -76,11 +76,11 @@ let
       type        = optionalString (arg ? type)        "Type: `${arg.type}`. ";
       default     = optionalString (arg ? default)
                     (if isMultiline arg.default
-                     then "Optional, defaults to:\n----\n${prettyNix arg.default}\n----\n"
+                     then "Optional, defaults to:\n\n[source, nix]\n----\n${prettyNix arg.default}\n----\n"
                      else "Optional, defaults to `${prettyNix arg.default}`.");
       example     = optionalString (arg ? example)
                     (if isMultiline arg.example
-                     then "Example:\n----\n${prettyNix arg.example}\n----\n"
+                     then "Example:\n\n[source, nix]\n----\n${prettyNix arg.example}\n----\n"
                      else "Example: `${prettyNix arg.example}`.");
     in "\n===== ${arg.name}\n\n" + (concatStringsSep "\n\n" (filter (x: x != "") [ description type default example ]))
     ) args') + "\n";

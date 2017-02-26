@@ -1,8 +1,11 @@
-# Contribute to Styx
+# Contributing to Styx
+
+Thank you for being interested in contributing to this project!  
+Feel free to ask questions on the issue tracker.
 
 ## Setting up a development environment
 
-Setting up a development environment requires to have `nix` and to clone a few repositories.
+Setting up a development environment requires to have `nix`.
 
 ### Preparation
 
@@ -30,7 +33,7 @@ Styx is just a shell script wrapping `nix-build`, to see what used commands use 
 Previewing the dev version showcase theme example site:
 
 ```
-$(nix-build --no-out-link)/bin/styx preview --in ./themes/showcase/example --arg pkgs "import ./nixpkgs"
+$ $(nix-build --no-out-link)/bin/styx preview --in ./themes/showcase/example --arg pkgs "import ./nixpkgs"
 ```
 
 Decomposing the command:
@@ -56,6 +59,6 @@ nix-repl> site.conf
 Run the tests before any commit:
 
 ```
-$  ./styx/scripts/run-tests
+$  ./scripts/run-tests
 ```
 

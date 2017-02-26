@@ -5,22 +5,22 @@ Site generation consists in a call to link:library.html#lib.generation.mkSite[`m
 [source, nix]
 .Standard call to mkSite
 ----
-pagesList = pagesToList { inherit pages; }; # <1>
+pageList = pagesToList { inherit pages; }; # <1>
 
-site = mkSite { inherit conf files pagesList; } # <2>
+site = mkSite { inherit conf files pageList; } # <2>
 ----
 
 <1> Convert the pages attribute set to a list of pages.
 <2> Generate the site.
 
-It is possible to set default attributes to every page set during the `pages` attribute by using the `default` argument of the <<lib.generation.pagesToList>> function.
+It is possible to set default attributes to every page set during the `pages` attribute by using the `default` argument of the link:library.html#lib.generation.pagesToList[pagesToList] function.
 
 A typical example is setting a default layout to every page set that do not declares one.
 
 [source, nix]
 .Setting a default layout to every page set
 ----
-pagesList = lib.pagesToList {
+pageList = lib.pagesToList {
   inherit pages;
   default.layout = templates.layout;
 };
@@ -43,7 +43,7 @@ Substitutions are a set that is passed to the `mkSite` function. Any value of se
   };
 
   site = lib.mkSite {
-    inherit files pagesList substitutions;
+    inherit files pageList substitutions;
   };
 ----
 
@@ -52,7 +52,9 @@ To be replaced, the variable as to be surrouded by `@`, for example `@siteUrl@`.
 [source, css]
 .Using a substitution in a css file
 ----
-background: url(@siteUrl@/images/foo.png);
+.foo {
+  background: url(@siteUrl@/images/foo.png);
+}
 ----
 
 TIP: Substitutions are specially useful for resolving in-site links with `conf.siteUrl`, but they can also be used with sass or less to externalize css variables in `conf.nix`.
@@ -79,7 +81,7 @@ It is possible to set the derivation metadata by passing a `meta` set to the `mk
 .Setting site derivation metadata
 ----
   site = with lib; mkSite {
-    inherit files pagesList substitutions;
+    inherit files pageList substitutions;
     meta = {
       license = licenses.mit;
       name = "foo-1.0.0";

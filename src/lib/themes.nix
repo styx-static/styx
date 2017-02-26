@@ -41,6 +41,14 @@ let
 in
 rec {
 
+/*
+===============================================================
+
+ load
+
+===============================================================
+*/
+
   load = documentedFunction {
     description = ''
       Load themes data.
@@ -57,12 +65,12 @@ rec {
         default = {};
       };
       "extraConf" = {
-        description = "A list of configuration attribute sets to merge to the result `conf` attribute.";
+        description = "A list of configuration attribute sets or configuration files to merge to themes configuration.";
         type = "[ Attrs ]";
         default = [];
       };
       "extraEnv" = {
-        description = "An attribute set to merge to the template environment.";
+        description = "An attribute set to merge to the environment, the environment is used in templates and returned in the `env` attribute.";
         type = "Attrs";
         default = {};
       };
@@ -71,21 +79,22 @@ rec {
     return = ''
       A theme data attribute set containing:
 
-      * `conf`: The merged themes configuration.
+      * `conf`: Themes configuration merged with `extraConf`.
       * `lib`: The merged themes library.
       * `files`: List of static files folder.
       * `templates`: The merged themes template set.
       * `themes`: List of themes attribute sets.
       * `decls`: Themes declaration set.
       * `docs`: Themes documentation set.
+      * `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `template`.
     '';
 
     examples = [ (mkExample {
       literalCode = ''
         themesData = styxLib.themes.load {
           inherit styxLib themes;
-          templates.extraEnv = { inherit data pages; };
-          conf.extra = [ ./conf.nix extraConf ];
+          extraEnv  = { inherit data pages; };
+          extraConf = [ ./conf.nix extraConf ];
         };
       '';
     }) ];
@@ -144,7 +153,14 @@ rec {
     };
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ loadData
+
+===============================================================
+*/
 
   loadData = documentedFunction {
     description = ''
@@ -212,7 +228,14 @@ rec {
 
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ mkDoc
+
+===============================================================
+*/
 
   mkDoc = documentedFunction {
     description = ''
@@ -232,11 +255,11 @@ rec {
     examples = [ (mkExample {
       literalCode = ''
         mkDoc {
+          foo.bar = 1;
           title = mkOption {
             description = "Title";
             type = types.str;
           };
-          foo.bar = 1;
         }
       '';
       code =
@@ -268,7 +291,14 @@ rec {
     };
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ docText
+
+===============================================================
+*/
 
   docText = documentedFunction {
     description = "Convert a documentation set to a property list to generate documention.";

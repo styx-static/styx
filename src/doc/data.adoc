@@ -36,7 +36,7 @@ The data loading functions return a set per file loaded and do a few things:
 * <<data.multipage,Multipages>> data gain a `pages` attribute, a list containing each page content.
 * Converted markup is inserted in a `content` attribute.
 * <<data.embedded-nix,Embedded nix>> expressions are evaluated.
-* If the file basename begins in a `YYYY-MM-DD-` or `YYYY-MM-DDThh:mm:ss` format, this value will be inserted in a `date` attribute.
+* If the file basename begins in a `YYYY-MM-DD` or `YYYY-MM-DDThh:mm:ss` format, this value will be inserted in a `date` attribute.
 
 NOTE: Nix data should be imported with the `import` function, that return the data in the nix file as it is.
 
@@ -50,7 +50,7 @@ link:https://en.wikipedia.org/wiki/AsciiDoc[AsciiDoc] is a simple but complete m
 
 It is the format of choice for complex posts or pages as it has more functionalities than markdown.
 
-[source,asciidoc]
+[source, asciidoc]
 .AsciiDoc example
 ----
 = Lorem ipsum
@@ -219,7 +219,7 @@ Metadata attributes will automatically be added to the data attribute set.
 
 It is possible to declare a section on an imported markup file as the introduction.
 
-Introduction and main contents are separated by `>>>`, content prior the separator will be inserted in the `intro` attribute. +
+Introduction and main contents are separated by `>>>`, content prior the separator will be inserted in the `intro` attribute of the data set. +
 
 [source,markdown]
 .Adding an introduction to a markdown file
@@ -260,7 +260,7 @@ Cras malesuada metus quis mi pulvinar faucibus. Vivamus suscipit est ante, ut au
 Phasellus consequat a nibh sit amet ultricies. Quisque feugiat justo eu condimentum convallis.
 ----
 
-The resulting data set will have an extra `pages` field that will hold the list of subpages content in format `[ { content = ...; } ]`.
+The resulting data set will have an extra `pages` field that will hold the list of subpages content in format `[ "..." "..." ... ]` in a `pages` attribute.
 
 NOTE: The data section is only responsible for generating the data attribute set. Transforming a data attribute set in a page attribute set is done in the pages section. +
 For example, the `mkPagesList` or `mkMultipages` function can generate pages from a multipage data set.

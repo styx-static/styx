@@ -24,9 +24,14 @@ fi
 
 echo ""
 
-echo "Library tests report:"
+echo "Library tests:"
 
-cat $(nix-build --no-out-link -A report $testsDir/lib.nix)
+if [ "$(nix-instantiate --eval -A success $testsDir/lib.nix --read-write-mode)" = "true" ]; then
+  echo "  success";
+else
+  cat $(nix-build --no-out-link -A report $testsDir/lib.nix)
+  exit 1
+fi
 
 echo ""
 echo "Finished"

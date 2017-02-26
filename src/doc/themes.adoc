@@ -13,7 +13,7 @@ Styx themes that are part of the `styx-themes` package set are documented in the
 
 A new theme file structure can be created by running the `styx new theme` command.
 
-[source, shell]
+[source, sh]
 .Creating a new theme
 ----
 $ styx new theme my-theme --in ./themes
@@ -69,12 +69,12 @@ Every theme is stored in its own directory, and themes are expected to follow a 
 .Structure of a Styx theme
 -----
 themes
-└── NAME # <1>
-    ├── conf.nix # <2>
-    ├── meta.nix # <3>
-    ├── lib.nix # <4>
-    ├── files/ # <5>
-    └── templates/ # <6>
+└── NAME  # <1>
+    ├── conf.nix    # <2>
+    ├── meta.nix    # <3>
+    ├── lib.nix     # <4>
+    ├── files/      # <5>
+    └── templates/  # <6>
 -----
 
 <1> Theme directory.
@@ -88,7 +88,7 @@ themes
 [[themes.configuration]]
 === Configuration interface
 
-A theme can provide a configuration interface by having a `conf.nix` file at the theme root directory.
+Themes can provide a configuration interface by having a `conf.nix` file at the theme root directory.
 
 In its simplest form, `conf.nix` should be an attribute set defining theme options with default values.
 
@@ -123,7 +123,7 @@ See link:https://nixos.org/nixos/manual/index.html#sec-option-declarations[NixOS
 
 This have two benefits:
 
-- Site configuration, site root `site.nix`, will be type checked.
+- Site configuration, site root `conf.nix`, will be type checked.
 - Documentation will be automatically generated for the configuration interface.
 
 On the other hand, typing a theme configuration interface is verbose and can be an overkill for a private theme. +
@@ -137,20 +137,19 @@ WARNING: `types.submodule` type is **not** supported.
 { lib }:
 with lib;
 {
-
-/* General settings
-*/
   site = {
     title = mkOption {
       default = "The Agency";
       type = types.str;
       description = "Title of the site.";
     };
+
     author = mkOption {
       default = "Your name";
       type = types.str;
       description = "Content of the author `meta` tag.";
     };
+
     description = mkOption {
       default = "Your description";
       type = types.str;
@@ -269,7 +268,7 @@ In `site.nix`, themes are declared as a list. If multiple themes in the list pro
 
 This allows to build new themes based on other themes, like the showcase theme is built on the base of the generic-templates theme.
 
-To combine a theme it is just needed to declare multiple themes in `site.nix`. If multiple themes define the same asset, asset from the later theme in the list will be used.
+To combine themes, it is just needed to declare multiple themes in `site.nix`. If multiple themes define the same asset, asset from the later theme in the list will be used.
 
 [source, nix]
 .Combining generic-templates and my-theme
@@ -283,5 +282,5 @@ themes = [
 If generic-templates and my-theme both defines `templates/partials/content.nix`, the one from my-theme will be used. +
 Any used asset that is not defined in my-theme, will be used from generic-templates.
 
-NOTE: There is no limit in the number of theme that can be combined.
+NOTE: There is no limit in the number of themes that can be combined.
 

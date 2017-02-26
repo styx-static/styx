@@ -520,7 +520,7 @@ Example::
 [[theme.portfolio.subtitle]]
 ==== theme.portfolio.subtitle
 
-Description:: Subtitle of the portgolio area.
+Description:: Subtitle of the portolio area.
 Type:: string
 Default::
 +
@@ -924,7 +924,6 @@ rec {
 -----------------------------------------------------------------------------*/
 
   data = {
-    
   };
 
 
@@ -948,9 +947,7 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  pagesList = [ pages.index ];
-
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
 
 }
 
@@ -2244,7 +2241,7 @@ Description:: Template loading the MathJax javascript library. Controlled by `co
 [[templates.media.giphy]]
 ==== templates.media.giphy
 
-Description:: Template to embed a Youtube video.
+Description:: Template to embed a Giphy gif.
 Arguments (Attribute Set)::
 `height`::: Embedded gif height. +
 Type: `Int`. 
@@ -2280,6 +2277,27 @@ Type: `String`.
 ---
 
 
+[[templates.media.slideshare]]
+==== templates.media.slideshare
+
+Description:: Template to embed a slideshare presentation.
+Arguments (Attribute Set)::
+`embedCode`::: Slides embed code. +
+Type: `String`. 
+`height`::: Embedded video height. +
+Type: `Int`.  +
+Optional, defaults to `315`.
+`width`::: Embedded video width. +
+Type: `Int`.  +
+Optional, defaults to `560`.
+
+
+
+
+
+---
+
+
 [[templates.media.speakerdeck]]
 ==== templates.media.speakerdeck
 
@@ -2290,6 +2308,25 @@ Type: `String`.
 `slide`::: Slide to display. +
 Type: `Null | Int`.  +
 Optional, defaults to `null`.
+
+
+
+
+
+---
+
+
+[[templates.media.twitter]]
+==== templates.media.twitter
+
+Description:: Template to embed a twitter timeline.
+Arguments (Attribute Set)::
+`height`::: Embedded timeline height. +
+Type: `Int`. 
+`user`::: Twitter user. +
+Type: `String`. 
+`width`::: Embedded timeline width. +
+Type: `Int`. 
 
 
 
@@ -2509,6 +2546,7 @@ pages.index = {
 
 
 
+
 ---
 
 
@@ -2678,7 +2716,7 @@ Description:: Template to load custom javascript files, empty by default. Should
 ==== templates.partials.js-extra
 
 Description:: Template responsible for loading page specific javascript files. +
-To be used, the Page should define an `extraJS` attribute containing a list of attribute sets.
+To be used, the page should define an `extraJS` attribute containing a list of attribute sets that will be passed to `templates.tag.script`.
 
 
 Example:: 
@@ -2690,10 +2728,11 @@ pages.index = {
   layout   = templates.layout;
   template = templates.pages.full;
   path     = "/index.html";
-  extraJS = [ { src = "/index.js"; crossorigin = "anonymous"; }  ];
+  extraJS = [ { src = "/index.js"; }  ];
 };
 
 ----
+
 
 
 
@@ -2721,6 +2760,7 @@ templates.services.disqus page
 ----
 
 
+
 +
 ---
 +
@@ -2730,6 +2770,7 @@ templates.services.disqus page
 templates.services.disqus (page // { disqusID = "main-thread"; })
 
 ----
+
 
 
 
@@ -2784,6 +2825,7 @@ sitemap = {
 };
 
 ----
+
 
 
 
@@ -2877,6 +2919,11 @@ templates.tag.generic {
 
 
 
+[NOTE]
+====
+Any extra argument passed will be added as tag attributes.
+
+====
 
 
 
@@ -2927,7 +2974,7 @@ templates.tag.ilink { to = "/files/manual.pdf"; content = "Download manual"; cla
 
 [NOTE]
 ====
-* Any extra argument passed will be added as tag attributes.
+Any extra argument passed will be added as tag attributes.
 
 ====
 
@@ -2940,6 +2987,23 @@ templates.tag.ilink { to = "/files/manual.pdf"; content = "Download manual"; cla
 ==== templates.tag.link
 
 Description:: Template generating a `link` tag.
+
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.tag.link { href = "/feed.atom"; rel = "alternate"; type = "application/atom+xml"; }
+----
+
++
+[source, html]
+.Result
+----
+<link href="/feed.atom" rel="alternate" type="application/atom+xml" />
+
+----
 
 
 
@@ -3066,6 +3130,7 @@ pages.taxonomies = mkTaxonomyPages {
 ----
 
 
+
 +
 ---
 +
@@ -3124,6 +3189,7 @@ pages.taxonomies = mkTaxonomyPages {
 };
 
 ----
+
 
 
 +
@@ -3193,7 +3259,7 @@ templates.taxonomy.term-list (getProp "tags" (mkTaxonomyData {
 ----
 
 +
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -3254,7 +3320,7 @@ templates.taxonomy.value.term-list {
 ----
 
 +
-[source, html]
+[source, nix]
 .Result
 ----
 [ {
@@ -3434,11 +3500,11 @@ rec {
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = lib.pagesToList { inherit pages; };
+  pageList = lib.pagesToList { inherit pages; };
 
   /* Generating the site
   */
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files pageList; };
 
 }
 
@@ -3526,6 +3592,23 @@ Example::
 [source, nix]
 ----
 true
+----
+
+
+
+---
+
+[[theme.site.copyright]]
+==== theme.site.copyright
+
+Description:: Site copyright.
+Type:: string
+Default::
++
+[source, nix]
+----
+"&copy; 2017. All rights reserved. 
+"
 ----
 
 
@@ -3795,12 +3878,12 @@ rec {
 -----------------------------------------------------------------------------*/
 
   # converting pages attribute set to a list
-  pagesList = lib.pagesToList {
+  pageList = lib.pagesToList {
     inherit pages;
     default = { layout = templates.layout; };
   };
 
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files pageList; };
 
 }
 
@@ -4565,9 +4648,7 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  pagesList = [ pages.index ];
-
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
 
 }
 
@@ -4970,7 +5051,7 @@ rec {
     path     = "/sitemap.xml";
     template = templates.sitemap;
     layout   = lib.id;
-    pages    = lib.pagesToList { inherit pages; };
+    pages    = pageList;
   };
 
 /*-----------------------------------------------------------------------------
@@ -4978,13 +5059,11 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  pagesList = 
-    # converting pages attribute set to a list
-    (lib.pagesToList {
-      inherit pages;
-      default.layout = templates.layout;
-    })
-    ++ [ sitemap ];
+  # converting pages attribute set to a list
+  pageList = lib.pagesToList {
+    inherit pages;
+    default.layout = templates.layout;
+  };
 
   /* Substitutions
   */
@@ -4992,8 +5071,9 @@ rec {
     siteUrl = conf.siteUrl;
   };
 
-  site = lib.generateSite {
-    inherit files pagesList substitutions;
+  site = lib.mkSite {
+    inherit files substitutions;
+    pageList = pageList ++ [ sitemap ];
     meta = (import ./meta.nix) { inherit lib; };
   };
 

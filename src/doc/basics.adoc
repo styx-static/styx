@@ -1,12 +1,12 @@
 == Basics
 
 Styx is using the Nix expression language.
-The Nix expression language is a lazy evaluated functional language with unconventional semantics. +
+The Nix expression language is a lazy evaluated functional language with uncommon semantics. +
 It is recommended to read the link:http://nixos.org/nix/manual/#ch-expression-language[Nix expression language chapter] of the Nix manual to get more familiar with it.
 
 === Hello world!
 
-Let's look at a very basic example of a styx site.
+Let's look at a very basic example of a styx site `site.nix` file.
 
 [source, nix]
 .Hello world!
@@ -27,7 +27,7 @@ rec { # <2>
     path    = "/index.html"; # <8>
   };
 
-  site = lib.mkSite { pagesList = [ index ]; }; # <9>
+  site = lib.mkSite { pageList = [ index ]; }; # <9>
 
 }
 ----
@@ -43,18 +43,20 @@ The arguments of the function are the dependencies needed to build the site. +
 <6> This declare a `template` attribute. `template` is a function that takes the page attribute set, `page` in this case as a parameter and generate a result that will be passed to the `layout` function.
 <7> This declare a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
 <8> This declare a `path` attribute. The `path` attribute is used to specify the path of the page to be generated.
-<9> This generate the site by using the library `mkSite` function, its parameter is an attribute set with the argument `pagesList` being a list of the single `index` page.
+<9> This generate the site by using the library `mkSite` function, its parameter is an attribute set with the argument `pageList` being a list of the single `index` page.
 
 Everything is ready, the "Hello world!" site preview can be generated.
 
-[source, shell]
+
+[source, sh]
 .Generating a preview of the "Hello world!" site
 ----
 $ styx preview
 ----
 
+
 TIP: Even if this is a simple example, nix language semantics can be confusing. +
-In a nutshell to build a site, `mkSite` evaluates `page.layout (page.template page)` and output the result in `page.path` for every page in `pagesList`. +
+In a nutshell to build a site, `mkSite` evaluates `page.layout (page.template page)` and output the result in `page.path` for every page in `pageList`. +
 That is the reason `layout`, `template` and `path` are required attributes of a page set.
 
 NOTE: Nix expression language is lazily evaluated, so infinite data structures are not a problem (unless some code try to evaluate them).
@@ -242,9 +244,9 @@ This is the final part and shortest section of `site.nix`. This section consists
 
   /* Converting the pages attribute set to a list
   */
-  pagesList = lib.pagesToList { inherit pages; }; # <1>
+  pageList = lib.pagesToList { inherit pages; }; # <1>
 
-  site = lib.mkSite { inherit files pagesList; }
+  site = lib.mkSite { inherit files pageList; }
 }
 ----
 
@@ -265,7 +267,7 @@ NOTE: `files` is generated in the theme section using enabled themes. +
 ====
 `mkSite` is a function:
 
-- taking at least a list of pages to generate as the `pagesList` argument.
+- taking at least a list of pages to generate as the `pageList` argument.
 - that evaluate each page set by evaluating `page.layout (page.template page)` and output the result in `page.path`.
 - returning a generated static site directory.
 

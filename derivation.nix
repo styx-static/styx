@@ -6,6 +6,9 @@
 , callPackage }:
 
 stdenv.mkDerivation rec {
+  preferLocalBuild = true;
+  allowSubstitutes = false;
+
   name    = "styx-${version}";
   version = stdenv.lib.fileContents ./VERSION;
 

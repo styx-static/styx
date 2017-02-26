@@ -2,27 +2,38 @@
 
 # Styx
 
-Static site generator in Nix expression language.
+The purely functional static site generator in Nix expression language.
 
-Styx latest stable version can be tested with the Nix package manager `nix-shell` command:
+## Install
 
-```
-$ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
+Use nix-env to install styx, or nix-shell to just test without installing it:
+
+```sh
+$ nix-env -iA styx
 $ styx --help
 ```
 
-Styx can be installed with the `nix-env` command:
+```sh
+$ nix-shell -p styx
+$ styx --help
+```
+
+The version you will get will depend on the version of nixpkgs used, to get the latest stable release without relying on nixpkgs:
 
 ```
 $ nix-env -i $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
 $ styx --help
 ```
 
-To open the latest documentation in the default browser, run the following command:
+or
 
 ```
-$BROWSER $(nix-build --no-out-link https://github.com/styx-static/styx/archive/latest.tar.gz)/share/doc/styx/index.html
+$ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
+$ styx --help
 ```
+
+Note: When using a version of styx that is different of the one in the system active nixpkgs, call to `pkgs.styx-themes.*` might not work as versions will differ.  
+In this case themes should be fetched directly with `fetchGit` or similar.
 
 ## Links
 

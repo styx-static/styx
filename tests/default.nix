@@ -28,27 +28,32 @@ let
   # extracting nixpkgs styx-themes list
   themes = attrNames (filterAttrs (k: v: isDerivation v) pkgs.styx-themes);
 
+  defaultEnv = {
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
+
 in
 
 rec {
 
   inherit (pkgs) styx styx-themes;
 
-  new = pkgs.runCommand "styx-new-site" {} ''
+  new = pkgs.runCommand "styx-new-site" defaultEnv ''
     mkdir $out
     ${styx}/bin/styx new site my-site --in $out
     ${styx}/bin/styx gen-sample-data  --in $out
   '';
 
   new-build =
-    let site = pkgs.runCommand "styx-new-site" { } ''
+    let site = pkgs.runCommand "styx-new-site" defaultEnv ''
       mkdir $out
       ${styx}/bin/styx new site my-site --in $out
       sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
     '';
     in (pkgs.callPackage (import "${site}/my-site/site.nix") { inherit styx; }).site;
 
-  new-theme = pkgs.runCommand "styx-new-theme" {} ''
+  new-theme = pkgs.runCommand "styx-new-theme" defaultEnv ''
     mkdir $out
     ${styx}/bin/styx new site my-site --in $out
     ${styx}/bin/styx new theme my-theme --in $out/my-site/themes
@@ -63,7 +68,7 @@ rec {
   '';
   */
 
-  deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" { buildInputs = [ pkgs.git ]; } ''
+  deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" ({ buildInputs = [ pkgs.git ]; } // defaultEnv) ''
     mkdir $out
     cp -r ${styx-themes.showcase}/example/* $out/
     export HOME=$out

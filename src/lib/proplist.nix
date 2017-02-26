@@ -28,7 +28,13 @@ rec {
     ----
   '';
 
-# -----------------------------
+/*
+===============================================================
+
+ propKey
+
+===============================================================
+*/
 
   propKey = documentedFunction {
     description = "Get the key of a property.";
@@ -56,7 +62,14 @@ rec {
     function = prop: head (attrNames prop);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ propValue
+
+===============================================================
+*/
 
   propValue = documentedFunction {
     description = "Get the value of a property.";
@@ -84,7 +97,14 @@ rec {
     function = prop: head (attrValues prop);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ isDefined
+
+===============================================================
+*/
 
   isDefined = documentedFunction {
     description = "Check if a property with a key exists in a property list.";
@@ -121,7 +141,14 @@ rec {
             else false;
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ getValue
+
+===============================================================
+*/
 
   getValue = documentedFunction {
     description = "Get a value from a property in a property list by the key name.";
@@ -154,7 +181,14 @@ rec {
     function = key: list: head (catAttrs key list);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ getProp
+
+===============================================================
+*/
 
   getProp = documentedFunction {
     description = "Get a property in a property list by the key name.";
@@ -187,7 +221,14 @@ rec {
     function = key: list: head (filter (x: (propKey x) == key) list);
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ removeProp
+
+===============================================================
+*/
 
   removeProp = documentedFunction {
     description = "Return a property list where the property with key `key` has been removed.";
@@ -220,7 +261,14 @@ rec {
     function = key: list: filter (p: (propKey p) != key) list;
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ propMap
+
+===============================================================
+*/
 
   propMap = documentedFunction {
     description = "Map for property lists.";
@@ -253,7 +301,14 @@ rec {
     function = f: list: map (p: f (propKey p) (propValue p)) list;
   };
 
-# -----------------------------
+
+/*
+===============================================================
+
+ propFlatten
+
+===============================================================
+*/
 
   propFlatten = documentedFunction {
     description = "Flatten a property list which values are lists.";

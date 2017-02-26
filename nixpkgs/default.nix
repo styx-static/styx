@@ -25,7 +25,7 @@ let
 
   # generates a theme derivation from a theme folder
   mkTheme = themeName: pkgs.stdenv.mkDerivation {
-    name = "styx-theme-${themeName}-dev";
+    name = "styx-theme-${themeName}-${fileContents ./../VERSION}";
     src  =  themesDir + "/${themeName}";
     installPhase = ''mkdir $out && cp -r $src/* $out/'';
   };

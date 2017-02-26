@@ -6,7 +6,7 @@ Pages are declared in a `pages` an attribute set. Every page or list of pages de
 
 === Overview
 
-Pages are passed to the `generateFunction` through the `pagesList` argument that turn each page into a text file.
+Pages are passed to the `generateFunction` through the `pageList` argument that turn each page into a text file.
 
 TIP: Pages are usually generated as html documents, but any kind of text file can be generated from a page attribute set.
 
@@ -39,7 +39,7 @@ In an standard `site.nix`, `template` and `layout` would be attributes from the 
 
 Page attribute sets are often augmented by various attributes or merged with data sets.
 
-NOTE: `mkSite` evaluate `page.layout (page.template page)` and output the result in `page.path` for every page in its `pagesList` argument.
+NOTE: `mkSite` evaluate `page.layout (page.template page)` and output the result in `page.path` for every page in its `pageList` argument.
 
 TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "site" section with link:library.html#lib.pages.pagesToList[pagesToList] `default` parameter. +
 Usually, only pages that use a different layout explicitly declares it in `pages`. +
@@ -210,8 +210,8 @@ taxonomies = lib.mkTaxonomyPages {
 
 The link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages] function will create the following page attribute sets:
 
-- `TAXONOMY/index.html`, the taxonomy index page set for every taxonomy. A `terms` attribute will be added to the page attribute set containing all the taxonomy terms.
-- `TAXONOMY/TERM/index.html`, the term index page set for every term in every taxonomy. A `values` attribute will be added to the page attribute set containing all the values that use the term.
+- `/TAXONOMY/index.html`, the taxonomy index page set for every taxonomy. A `terms` attribute will be added to the page attribute set containing all the taxonomy terms.
+- `/TAXONOMY/TERM/index.html`, the term index page set for every term in every taxonomy. A `values` attribute will be added to the page attribute set containing all the values that use the term.
 
 NOTE: If required `mkTaxonomyPages` generated pages `path` can be changed with the `taxonomyPathFun` and the `termPathFun`, for details see link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages]. +
 If any of these functions is changed, the templates should be updated accordingly.

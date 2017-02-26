@@ -95,7 +95,7 @@ rec {
       pageFn = {
         description = ''
           A function to apply to each data set, takes the index of the page and a data set and return a page set. +
-          Must set `itemsNb`, the number of item to have on the page, and `path` to generate valied pages.
+          Must set `itemsNb`, the number of item to have on the page, and `path` to generate valid pages.
         '';
         type = "Int -> Data -> Page";
         example = literalExample ''
@@ -111,7 +111,6 @@ rec {
       List of pages. Each page has:
 
       * `items`: List of the page data items.
-      * `itemsNb`: Number of data items of the page.
       * `pages`: List of splitted pages.
     '';
 
@@ -121,7 +120,7 @@ rec {
           data = map (x: { id = x; }) (range 1 4);
           pageFn = (index: data: {
             itemsNb = if index == 1 then 3 else 5;
-            path = if index == 1 then "/index.html" else "/archive-''${toString index}.html";
+            path    = if index == 1 then "/index.html" else "/archive-''${toString index}.html";
           });
         }
       '';
@@ -130,7 +129,7 @@ rec {
         mkSplitCustom {
           data = map (x: { id = x; }) (range 1 4);
           pageFn = (index: data: {
-            itemsNb = if index == 1 then 3 else 5;
+            itemsNb = if index == 1 then 1 else 2;
             path = if index == 1 then "/index.html" else "/archive-${toString index}.html";
           });
         }
@@ -138,8 +137,9 @@ rec {
       expected = 
         let 
           pages = [
-            { index = 1; items = [ { id = 1; } { id = 2; } { id = 3; } ]; itemsNb = 3; path = "/index.html"; }
-            { index = 2; items = [ { id = 4; } ]; itemsNb = 1; path = "/archive-2.html"; }
+            { index = 1; items = [ { id = 1; } ]; path = "/index.html"; }
+            { index = 2; items = [ { id = 2; } { id = 3; } ]; path = "/archive-2.html"; }
+            { index = 3; items = [ { id = 4; } ]; path = "/archive-3.html"; }
           ];
         in map (p: p // { inherit pages; }) pages
       ;
@@ -152,11 +152,11 @@ rec {
      let
        loop = index: data: pages:
          let
-           index' = index + 1;
+           index'  = index + 1;
            itemsNb = (pageFn index (head data)).itemsNb;
-           items = take itemsNb data;
-           pages' = pages ++ [ ((pageFn index data) // { inherit index items; itemsNb = length items; }) ];
-           data' = drop itemsNb data;
+           items   = take itemsNb data;
+           pages'  = pages ++ [ ((removeAttrs (pageFn index data) [ "itemsNb" ]) // { inherit index items; }) ];
+           data'   = drop itemsNb data;
          in if data == []
             then pages
             else loop index' data' pages';
@@ -179,7 +179,7 @@ rec {
     arguments = {
       basePath = {
         description = ''
-          Arguments to merge with the first splitted page.
+          Base path of the generated pages. First page path will be "``basePath``.html", follwing pages "``basePath``-``index``.html"
         '';
         type = "Attrs";
       };
@@ -199,7 +199,6 @@ rec {
       List of pages. Each page has:
 
       * `items`: List of the page data items.
-      * `itemsNb`: Number of data items of the page.
       * `pages`: List of splitted pages.
     '';
 
@@ -210,7 +209,7 @@ rec {
     examples = [ (mkExample {
       literalCode = ''
         pages.archives = mkSplit {
-          basePath     = "archives";
+          basePath     = "/archives";
           itemsPerPage = 10;
           data         = pages.posts;
           template     = templates.archives;
@@ -235,8 +234,8 @@ rec {
       expected = 
         let 
           pages = [
-            { index = 1; items = [ { id = 1; } { id = 2; } ]; itemsNb = 2; path = "/test.html"; }
-            { index = 2; items = [ { id = 3; } { id = 4; } ]; itemsNb = 2; path = "/test-2.html"; }
+            { index = 1; items = [ { id = 1; } { id = 2; } ]; path = "/test.html"; }
+            { index = 2; items = [ { id = 3; } { id = 4; } ]; path = "/test-2.html"; }
           ];
         in map (p: p // { inherit pages; }) pages
       ;
@@ -365,7 +364,7 @@ rec {
 */
 
   mkPageList = documentedFunction {
-    description = "Generate a list of pages from a list of data set, generates only the first page for multipages data set.";
+    description = "Generate a list of pages from a list of data set.";
 
     arguments = {
       data = {
@@ -387,7 +386,7 @@ rec {
         type = "Int -> Data -> Attrs";
         default = literalExample ''
           index: data: {
-            path = mKSplitPagePath { pre = "''${pathPrefix}''${data.fileData.basename}"; inherit index; };
+            path = mkSplitPagePath { pre = "''${pathPrefix}''${data.fileData.basename}"; inherit index; };
           }
         '';
       };
@@ -438,8 +437,8 @@ rec {
             { content = "multi page 1";  id = "bar"; path = "/bar.html"; template = "id"; multipages = { index = 1; pages = mpages; }; }
             { content = "normal page 2"; id = "baz"; path = "/test/baz.html"; template = "id"; }
           ];
-          list = imap (index: p: p // { pageslist = { inherit index; pages = listpages; }; }) listpages;
-          extra = map (p: p // { pageslist = { index = 2; pages = listpages; }; multipages = { index = 2; pages = mpages; }; }) (tail mpages); 
+          list = imap (index: p: p // { pageList = { inherit index; pages = listpages; }; }) listpages;
+          extra = map (p: p // { pageList = { index = 2; pages = listpages; }; multipages = { index = 2; pages = mpages; }; }) (tail mpages); 
         in { _type = "pages"; inherit list; pages = list ++ extra; };
     })];
 
@@ -464,9 +463,9 @@ rec {
         ;
         raw = fold fn base data;
         cleanlist = l: map (p: removeAttrs p ["_plid"]) l;
-        dirtylist = imap (index: p: p // { pageslist = { pages = cleanlist raw.list; inherit index; }; }) raw.list;
+        dirtylist = imap (index: p: p // { pageList = { pages = cleanlist raw.list; inherit index; }; }) raw.list;
         list = cleanlist dirtylist;
-        extra = cleanlist (map (p: p // { pageslist = (findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist).pageslist; }) raw.extra);
+        extra = cleanlist (map (p: p // { pageList = (findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist).pageList; }) raw.extra);
       in mkPages { inherit list; pages = list ++ extra; };
 
   };
@@ -483,7 +482,7 @@ rec {
 
   mkPages = documentedFunction {
     description = ''
-      Generate a pages attribute set. Is used to produce multiple "outputs" by pages generating functions like `mkPageList`. +
+      Generate a pages attribute set. It is used to produce multiple "outputs" by pages generating functions like `mkPageList`. +
       `pagesToList` will only generate the `pages` attribute from a pages attribute set.
     '';
 

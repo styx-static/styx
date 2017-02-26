@@ -673,7 +673,7 @@ valuesNb { foo = [ {} {} {} ]; }
 
 ==== Description
 
-Function to generate a page source.
+Function to generate a page source, used by `mkSite`.
 
 ==== Arguments (Standard)
 
@@ -727,27 +727,6 @@ generatePage {
 
 :sectnums!:
 
-[[lib.generation.generateSite]]
-=== generateSite
-
-==== Description
-
-Alias for `mkSite`.
-
-
-
-
-
-
-:sectnums:
-
-
-
----
-
-
-:sectnums!:
-
 [[lib.generation.mkSite]]
 === mkSite
 
@@ -760,7 +739,7 @@ Generate a site, this is the main function of a styx site.
 
 ===== files
 
-A list of directory of static files to copy in the generated site.
+A list of static files directories to copy in the site.
 
 Type: `[ Path ]`. 
 
@@ -772,7 +751,7 @@ Function to generate a page source from a page attribute set.
 
 Type: `Page -> String`. 
 
-Optional, defaults to `generatePage`.
+Optional, defaults to `lib.generation.generatePage`.
 
 ===== meta
 
@@ -782,13 +761,13 @@ Type: `Attrs`.
 
 Optional, defaults to `{ }`.
 
-===== name
+===== pageList
 
-Name of the store artefact generated.
+A list of pages attributes sets to generate.
 
-Type: `String`. 
+Type: `[ Page ]`. 
 
-Optional, defaults to `"styx-site"`.
+Optional, defaults to `[  ]`.
 
 ===== pagePathFn
 
@@ -797,14 +776,6 @@ Function to generate a page from a page attribute set.
 Type: `Page -> String`. 
 
 Optional, defaults to `page: page.path`.
-
-===== pagesList
-
-A list of pages attributes sets to generate.
-
-Type: `[ Page ]`. 
-
-Optional, defaults to `[  ]`.
 
 ===== postGen
 
@@ -824,7 +795,7 @@ Optional, defaults to `""`.
 
 ===== substitutions
 
-A substitution set to apply to the generated pages and static files.
+A substitution set to apply to static files.
 
 Type: `Attrs`. 
 
@@ -840,7 +811,7 @@ The site derivation.
 [source, nix]
 .Code
 ----
-generateSite { pagesList = [ pages.index ]; }
+generateSite { pageList = [ pages.index ]; }
 
 ----
 
@@ -863,14 +834,14 @@ generateSite { pagesList = [ pages.index ]; }
 
 ==== Description
 
-Convert a set containing pages to a list of pages.
+Convert a set of pages to a list of pages.
 
 ==== Arguments (Attribute Set)
 
 
 ===== default
 
-Atrribute set of default values to add to every page attribute set, useful to set `layout`.
+Attribute set of default values to add to every page set, useful to set `layout`.
 
 Type: `Attrs`. 
 
@@ -892,7 +863,7 @@ Type: `Attrs`.
 [source, nix]
 .Code
 ----
-pageslist = pagestolist {
+pagelist = pagestolist {
   inherit pages;
   default.layout = templates.layout;
 };
@@ -982,6 +953,8 @@ Function to generate extra attributes to merge to the page.
 Type: `Int -> Data -> Page`. 
 
 Optional, defaults to:
+
+[source, nix]
 ----
 index: data:
   optionalAttrs (basePath != null) {
@@ -1046,7 +1019,7 @@ Any extra arguments will be forwarded to every generated page set.
 
 ==== Description
 
-Generate a list of pages from a list of data set, generates only the first page for multipages data set.
+Generate a list of pages from a list of data set.
 
 ==== Arguments (Attribute Set)
 
@@ -1064,9 +1037,11 @@ Function to generate extra attributes of mutipages.
 Type: `Int -> Data -> Attrs`. 
 
 Optional, defaults to:
+
+[source, nix]
 ----
 index: data: {
-  path = mKSplitPagePath { pre = "${pathPrefix}${data.fileData.basename}"; inherit index; };
+  path = mkSplitPagePath { pre = "${pathPrefix}${data.fileData.basename}"; inherit index; };
 }
 
 ----
@@ -1136,7 +1111,7 @@ pages.posts = mkPageList {
 
 ==== Description
 
-Generate a pages attribute set. Is used to produce multiple "outputs" by pages generating functions like `mkPageList`. +
+Generate a pages attribute set. It is used to produce multiple "outputs" by pages generating functions like `mkPageList`. +
 `pagesToList` will only generate the `pages` attribute from a pages attribute set.
 
 
@@ -1182,7 +1157,7 @@ Create a list of pages from a list of data.
 
 ===== basePath
 
-Arguments to merge with the first splitted page.
+Base path of the generated pages. First page path will be "``basePath``.html", follwing pages "``basePath``-``index``.html"
 
 
 Type: `Attrs`. 
@@ -1205,7 +1180,6 @@ Type: `Int`.
 List of pages. Each page has:
 
 * `items`: List of the page data items.
-* `itemsNb`: Number of data items of the page.
 * `pages`: List of splitted pages.
 
 
@@ -1216,7 +1190,7 @@ List of pages. Each page has:
 .Code
 ----
 pages.archives = mkSplit {
-  basePath     = "archives";
+  basePath     = "/archives";
   itemsPerPage = 10;
   data         = pages.posts;
   template     = templates.archives;
@@ -1249,7 +1223,6 @@ mkSplit {
   } {
     id = 2;
   } ];
-  itemsNb = 2;
   pages = [ ... ];
   path = "/test.html";
 } {
@@ -1259,7 +1232,6 @@ mkSplit {
   } {
     id = 4;
   } ];
-  itemsNb = 2;
   pages = [ ... ];
   path = "/test-2.html";
 } ]
@@ -1303,12 +1275,14 @@ Type: `[ Data ]`.
 ===== pageFn
 
 A function to apply to each data set, takes the index of the page and a data set and return a page set. +
-Must set `itemsNb`, the number of item to have on the page, and `path` to generate valied pages.
+Must set `itemsNb`, the number of item to have on the page, and `path` to generate valid pages.
 
 
 Type: `Int -> Data -> Page`. 
 
 Example:
+
+[source, nix]
 ----
 index: data: {
   itemsNb = if index == 1 then 3 else 5;
@@ -1323,7 +1297,6 @@ index: data: {
 List of pages. Each page has:
 
 * `items`: List of the page data items.
-* `itemsNb`: Number of data items of the page.
 * `pages`: List of splitted pages.
 
 
@@ -1337,7 +1310,7 @@ mkSplitCustom {
   data = map (x: { id = x; }) (range 1 4);
   pageFn = (index: data: {
     itemsNb = if index == 1 then 3 else 5;
-    path = if index == 1 then "/index.html" else "/archive-${toString index}.html";
+    path    = if index == 1 then "/index.html" else "/archive-${toString index}.html";
   });
 }
 
@@ -1350,22 +1323,25 @@ mkSplitCustom {
   index = 1;
   items = [ {
     id = 1;
-  } {
-    id = 2;
-  } {
-    id = 3;
   } ];
-  itemsNb = 3;
   pages = [ ... ];
   path = "/index.html";
 } {
   index = 2;
   items = [ {
-    id = 4;
+    id = 2;
+  } {
+    id = 3;
   } ];
-  itemsNb = 1;
   pages = [ ... ];
   path = "/archive-2.html";
+} {
+  index = 3;
+  items = [ {
+    id = 4;
+  } ];
+  pages = [ ... ];
+  path = "/archive-3.html";
 } ]
 ----
 
@@ -2152,7 +2128,7 @@ Type: `Null | [ Example ]`.
 
 Notes regarding special usages, asciidoc markup can be used.
 
-Type: `Mull | String`. 
+Type: `Null | String`. 
 
 Optional, defaults to `"Null"`.
 
@@ -2926,7 +2902,7 @@ docText (mkDoc {
 .Result
 ----
 [ {
-  foo.bar = {
+  "foo.bar" = {
     default = 1;
   };
 } {
@@ -2964,7 +2940,7 @@ Load themes data.
 
 ===== extraConf
 
-A list of configuration attribute sets to merge to the result `conf` attribute.
+A list of configuration attribute sets or configuration files to merge to themes configuration.
 
 Type: `[ Attrs ]`. 
 
@@ -2972,7 +2948,7 @@ Optional, defaults to `[  ]`.
 
 ===== extraEnv
 
-An attribute set to merge to the template environment.
+An attribute set to merge to the environment, the environment is used in templates and returned in the `env` attribute.
 
 Type: `Attrs`. 
 
@@ -2996,13 +2972,14 @@ Optional, defaults to `{ }`.
 
 A theme data attribute set containing:
 
-* `conf`: The merged themes configuration.
+* `conf`: Themes configuration merged with `extraConf`.
 * `lib`: The merged themes library.
 * `files`: List of static files folder.
 * `templates`: The merged themes template set.
 * `themes`: List of themes attribute sets.
 * `decls`: Themes declaration set.
 * `docs`: Themes documentation set.
+* `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `template`.
 
 
 ==== Example
@@ -3013,8 +2990,8 @@ A theme data attribute set containing:
 ----
 themesData = styxLib.themes.load {
   inherit styxLib themes;
-  templates.extraEnv = { inherit data pages; };
-  conf.extra = [ ./conf.nix extraConf ];
+  extraEnv  = { inherit data pages; };
+  extraConf = [ ./conf.nix extraConf ];
 };
 
 ----
@@ -3111,11 +3088,11 @@ A documentation set.
 .Code
 ----
 mkDoc {
+  foo.bar = 1;
   title = mkOption {
     description = "Title";
     type = types.str;
   };
-  foo.bar = 1;
 }
 
 ----
@@ -3690,11 +3667,11 @@ setToList { a.b.c = true; d = "foo"; x.y.z = [ 1 2 3 ]; }
 .Result
 ----
 [ {
-  a.b.c = true;
+  "a.b.c" = true;
 } {
   d = "foo";
 } {
-  x.y.z = [ 1 2 3 ];
+  "x.y.z" = [ 1 2 3 ];
 } ]
 ----
 

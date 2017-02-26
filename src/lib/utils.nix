@@ -491,7 +491,13 @@ in rec {
         else if isLit    x then x.text
         else if isAttrs  x then ''
         {
-        ${indent (n+1)}${concatStringsSep "\n${indent (n+1)}" (mapAttrsToList (k: v: "${k} = ${loop (n+1) v};") x)}
+        ${indent (n+1)}${concatStringsSep "\n${indent (n+1)}" (mapAttrsToList (k: v:
+          let k' = if (match "^(.+)\\.(.+)$" k) != null
+                   then ''"${k}"''
+                   else k;
+          in
+          "${k'} = ${loop (n+1) v};")
+        x)}
         ${indent n}}''
         else if isFunction x then ''<LAMBDA>''
         else if (typeOf x == "path") then ''`${toString x}`''

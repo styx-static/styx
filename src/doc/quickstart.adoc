@@ -17,7 +17,7 @@ The showcase example site will be accessible at link:http://127.0.0.1:8080[http:
 
 === Create a new site
 
-To start a new site, the following set of commands can be used:
+To create a new site, the following set of commands can be used:
 
 [source, bash]
 ----
@@ -32,9 +32,5 @@ A `readme.md` file will be available in the `my-site` directory giving basic ins
 
 It is recommended to read the <<sitenix,site.nix>> section of this documentation to get familiar on how `site.nix` is structured and works.
 
-Each theme of the `styx-themes` set provides and example site with a `site.nix` that can be checked with the following command.
+Each theme of the `styx-themes` set provides and example site with a `site.nix` that can be checked in the link:./styx-themes.html[themes documentation].
 
-[source, bash]
-----
-$ less $(nix-build --no-out-link -A styx-themes.showcase '<nixpkgs>')/example/site.nix
-----

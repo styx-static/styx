@@ -30,18 +30,25 @@ let
       ----
       ${example.literalCode}
       ----
-      ${optionalString (example ? code) ''
 
+      ${optionalString (example ? code) (
+      if isString example.code
+      then ''
       +
       [source, html]
       .Result
       ----
-      ${if isString example.code
-        then example.code
-        else prettyNix example.code}
+      ${example.code}
       ----
       ''
-      }
+      else ''
+      +
+      [source, nix]
+      .Result
+      ----
+      ${prettyNix example.code}
+      ----
+      '')}
 
     '';
 
