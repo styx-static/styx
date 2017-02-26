@@ -3,7 +3,7 @@
 :sectnums!:
 
 [[v0.6.0]]
-=== Styx 0.6.0 - 2017/XX/XX
+=== Styx 0.6.0 - 2017/02/26
 
 ==== Highlights:
 
@@ -35,7 +35,7 @@ Generic templates theme:
 
 * Substitutions in data files have been removed in favor embedded nix. (substitutions can still be used in static files)
 * `themes.load` function arguments were renamed:
-** `template.extraEnv` renamed to `extraEnv`.
+** `templates.extraEnv` renamed to `extraEnv`.
 ** `conf.extraConf` renamed to `extraConf`.
 * `loadDir` and `loadFile` functions arguments have changed.
 * `mkMultiTail` function have been removed in favor of `mkPageList`.

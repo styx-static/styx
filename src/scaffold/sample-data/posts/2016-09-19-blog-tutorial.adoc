@@ -363,14 +363,14 @@ In `site.nix` find:
 
 [source, nix]
 ----
-  pagesList = lib.pagesToList { inherit pages; };
+  pageList = lib.pagesToList { inherit pages; };
 ----
 
 Let's add the default layout here:
 
 [source, nix]
 ----
-  pagesList = lib.pagesToList { inherit pages; default = { layout = templates.layout; }; };
+  pageList = lib.pagesToList { inherit pages; default = { layout = templates.layout; }; };
 ----
 
 And remove all the `layout` declarations using `templates.layout` of our pages:

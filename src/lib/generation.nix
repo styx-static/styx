@@ -114,7 +114,7 @@ rec {
 
     examples = [ (mkExample {
       literalCode = ''
-        generateSite { pageList = [ pages.index ]; }
+        mkSite { pageList = [ pages.index ]; }
       '';
     }) ];
 

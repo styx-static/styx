@@ -811,7 +811,7 @@ The site derivation.
 [source, nix]
 .Code
 ----
-generateSite { pageList = [ pages.index ]; }
+mkSite { pageList = [ pages.index ]; }
 
 ----
 
