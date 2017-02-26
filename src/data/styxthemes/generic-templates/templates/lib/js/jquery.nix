@@ -8,7 +8,7 @@ let template = { conf, lib, templates, ... }:
   in
   lib.optionalString (cnf.enable == true)
     (templates.tag.script {
-      src = "https://code.jquery.com/jquery-${cnf.version}.min.js";
+      src = "//code.jquery.com/jquery-${cnf.version}.min.js";
      crossorigin = "anonymous";
     });
 

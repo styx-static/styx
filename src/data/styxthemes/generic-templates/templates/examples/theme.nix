@@ -45,13 +45,6 @@ let template = { lib, templates, data, ... }:
         content = "This page show the bootstrap components for which this theme provide helper templates."; } }
       </div>
 
-      <div class="container">
-      ${templates.media.gist { user = "datakurre"; id = "a5d95794ce73c28f6d2f"; file = "Makefile"; }}
-      ${templates.media.speakerdeck { id = "0c32d0d17488429eaf6bc3278c1d0fc8"; slide = 5; }}
-      ${templates.media.vimeo { id = "124510855"; }}
-      ${templates.media.youtube { id = "YbUPdv03ciI"; }}
-      </div>
-
       <div class="container theme-showcase" role="main">
 
         ${pageHeader "Glyphicons"}
@@ -71,14 +64,14 @@ let template = { lib, templates, data, ... }:
         ${pageHeader "Breadcrumbs"}
         ${ # meant to be used with page attribute sets
         templates.bootstrap.breadcrumbs {
-          breadcrumbs = [ { title = "Home"; path = "/index.thml"; } { title = "Library"; path = "/library/index.html"; } ];
+          breadcrumbs = [ { title = "Home"; path = "/index.html"; } { title = "Library"; path = "/library/index.html"; } ];
           title = "Data";
         }}
         <h4>Code</h4>
         ${templates.tag.codeblock {
           content = ''
             templates.bootstrap.breadcrumbs {
-              breadcrumbs = [ { title = "Home"; path = "/index.thml"; } { title = "Library"; path = "/library/index.html"; } ];
+              breadcrumbs = [ { title = "Home"; path = "/index.html"; } { title = "Library"; path = "/library/index.html"; } ];
               title = "Data";
             }
           '';

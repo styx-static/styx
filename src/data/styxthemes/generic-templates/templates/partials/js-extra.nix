@@ -9,7 +9,7 @@ let template = { lib, templates, ... }:
 in with env.lib; documentedTemplate {
   description = ''
     Template responsible for loading page specific javascript files. +
-    To be used, the Page should define an `extraJS` attribute containing a list of attribute sets.
+    To be used, the page should define an `extraJS` attribute containing a list of attribute sets that will be passed to `templates.tag.script`.
   '';
   examples = [ (mkExample {
     literalCode = ''
@@ -17,7 +17,7 @@ in with env.lib; documentedTemplate {
         layout   = templates.layout;
         template = templates.pages.full;
         path     = "/index.html";
-        extraJS = [ { src = "/index.js"; crossorigin = "anonymous"; }  ];
+        extraJS = [ { src = "/index.js"; }  ];
       };
     '';
   }) ];

@@ -5,7 +5,7 @@ let template = { conf, lib, templates,  ... }:
   in
   lib.optionalString (cnf.enable == true)
     (templates.tag.script {
-      src = "https://maxcdn.bootstrapcdn.com/bootstrap/${cnf.version}/js/bootstrap.min.js";
+      src = "//maxcdn.bootstrapcdn.com/bootstrap/${cnf.version}/js/bootstrap.min.js";
       crossorigin = "anonymous";
     });
 

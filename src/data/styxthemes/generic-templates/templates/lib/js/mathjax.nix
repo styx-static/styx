@@ -5,7 +5,7 @@ let template = { conf, lib, templates,  ... }:
   in
   lib.optionalString (cnf.enable == true)
     (templates.tag.script {
-      src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+      src = "//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML";
       crossorigin = "anonymous";
     });
 

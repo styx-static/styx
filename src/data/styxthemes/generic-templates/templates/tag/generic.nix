@@ -47,5 +47,8 @@ in with env.lib; documentedTemplate {
       }
     ;
   })];
+  notes = ''
+    Any extra argument passed will be added as tag attributes.
+  '';
   inherit env template;
 }

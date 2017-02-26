@@ -6,7 +6,7 @@ let template = { lib, conf, templates, ... }:
       fonts = concatStringsSep "|" (map (replaceStrings [" "] ["+"]) cnf);
   in
   lib.optionalString (cnf != [])
-    (templates.tag.link-css { href = "https://fonts.googleapis.com/css?family=${fonts}"; });
+    (templates.tag.link-css { href = "//fonts.googleapis.com/css?family=${fonts}"; });
 
 in env.lib.documentedTemplate {
   inherit template env;
