@@ -3,7 +3,7 @@ env:
 let template = { templates, lib, ... }:
   { id, slide ? null }:
     templates.tag.script ({
-      src = "https://speakerdeck.com/assets/embed.js";
+      src = "//speakerdeck.com/assets/embed.js";
       class = "speakerdeck-embed";
       data-id = id;
       async = "async";

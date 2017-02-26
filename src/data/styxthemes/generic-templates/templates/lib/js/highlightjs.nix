@@ -5,11 +5,11 @@ let template = { conf, lib, templates,  ... }:
   in
   lib.optionalString (cnf.enable == true)
   (  (templates.tag.script {
-      src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/highlight.min.js";
+      src = "//cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/highlight.min.js";
       crossorigin = "anonymous";
     })
   + (lib.mapTemplate (lang: (templates.tag.script {
-      src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/languages/${lang}.min.js";
+      src = "//cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/languages/${lang}.min.js";
       crossorigin = "anonymous";
     })) cnf.extraLanguages)
   + "<script>hljs.initHighlightingOnLoad();</script>\n")

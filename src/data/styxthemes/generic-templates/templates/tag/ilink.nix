@@ -31,7 +31,7 @@ in with env.lib; documentedTemplate {
     code = with env; templates.tag.ilink { to = "/files/manual.pdf"; content = "Download manual"; class = "download"; };
   }) ];
   notes = ''
-    * Any extra argument passed will be added as tag attributes.
+    Any extra argument passed will be added as tag attributes.
   '';
   inherit env template;
 }

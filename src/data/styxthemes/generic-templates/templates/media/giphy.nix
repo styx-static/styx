@@ -4,7 +4,7 @@ let template = { templates, lib, ... }:
     { id
     , height
     , width }:
-    ''<iframe src="//giphy.com/embed/${id}" width="${width}" height="${height}" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+    ''<iframe src="//giphy.com/embed/${id}" width="${toString width}" height="${toString height}" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
     '';
 
 in env.lib.documentedTemplate {
