@@ -122,11 +122,11 @@ rec {
 -----------------------------------------------------------------------------*/
 
   # converting pages attribute set to a list
-  pagesList = lib.pagesToList {
+  pageList = lib.pagesToList {
     inherit pages;
     default = { layout = templates.layout; };
   };
 
-  site = lib.generateSite { inherit files pagesList; };
+  site = lib.mkSite { inherit files pageList; };
 
 }

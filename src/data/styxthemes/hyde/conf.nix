@@ -14,6 +14,13 @@ with lib;
         An elegant open source and mobile first theme for styx made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
       '';
     };
+    copyright = mkOption {
+      description = "Site copyright.";
+      type = types.str;
+      default = ''
+        &copy; 2017. All rights reserved. 
+      '';
+    };
   };
 
   colorScheme = mkOption {
