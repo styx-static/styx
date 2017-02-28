@@ -190,7 +190,20 @@ This is specially useful to embed external media in content.
 {{ templates.media.youtube { id = "YbUPdv03ciI"; } }}
 ----
 
-NOTE: `{{` and `}}` can be escaped by prepending a `\`, `\{{` and `\}}`, to prevent nix evaluation.
+`{{` and `}}` can be escaped by prepending a `\`, `\{{` and `\}}`, to prevent nix evaluation.
+
+[NOTE]
+====
+Asciidoctor automatically escape HTML. This feature can be disabled by surrounding the code with `\+++`.
+
+[source, asciidoc]
+.Calling a template in an asciidoc file
+----
+= Lorem ipsum
+
++++{{ templates.media.youtube { id = "YbUPdv03ciI"; } }}+++
+----
+====
 
 [[data.metadata]]
 === Metadata

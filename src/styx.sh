@@ -53,7 +53,7 @@ Serve options:
 Deploy options:
     --init-gh-pages            If in a git repository, will create a gh-pages branch with a .styx file.
     --gh-pages                 Build the site, copy the build results in the gh-pages branch and make a commit.
-    --out DIR                  Deploy the gh-pages folder in the DIR directory.
+    --site DIR                 Deploy the site in DIR.
 
 EOF
 # Dev options:
@@ -156,6 +156,8 @@ name=
 in=
 # current dir
 curDir=$(pwd)
+# site directory
+siteDir=
 
 # output for the build action
 output=
@@ -214,7 +216,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     --in)
       if [ -e $1 ] && [ -d $1 ]; then
-        in=$1; shift 1
+        in=$(readlink -f -- "$1"); shift 1
       else
         echo "--in must be an existing directory."
         exit 1
@@ -257,7 +259,7 @@ while [ "$#" -gt 0 ]; do
       renderDrafts="true"
       ;;
     --out)
-      output="$1"; shift 1
+      output=$(readlink -f -- "$1"); shift 1
       ;;
     --clean)
       clean=1
@@ -281,6 +283,9 @@ while [ "$#" -gt 0 ]; do
       ;;
     --gh-pages)
       deployAction="gh-pages"
+      ;;
+    --site)
+      siteDir=$(readlink -f -- "$1"); shift 1
       ;;
 # Dev options
     --DEBUG)
@@ -564,21 +569,45 @@ if [ "$action" = deploy ]; then
 
   # gh-pages
   elif [ "$deployAction" == "gh-pages" ]; then
-    check_git $in
-    if [ -z $output ]; then
-      target=$(readlink -f -- "$in/gh-pages")
-    else
-      target=$(readlink -f -- "$output/gh-pages")
+    if [ -z $siteDir ]; then
+      siteDir="$in"
     fi
+    check_git $in
+    target="$in/gh-pages"
 
-    inDir=$(readlink -f -- "$in")
     (
-      cd $in
-      rev=$(git rev-parse --short HEAD)
+      cd "$in"
+      # Handle cases where the gh-pages folder is not present
+      if [ ! -d $target ]; then
+        echo "Notice: $target folder does not exists."
+        # OK, we need to do something, first check if the gh-pages branch exists
+        if git rev-parse --quiet --verify gh-pages; then
+          # gh-pages local branch exists, check it out in gh-pages
+          echo "Notice: gh-pages branch exists locally, checking it out in $target, and continuing the deployment."
+          mkdir $target
+          git clone -l $in $target
+          (cd $target && git checkout gh-pages)
+        else
+          # Next, try remotely
+          if git show-ref --quiet --verify -- "refs/remotes/origin/gh-pages"; then
+            echo "Notice: gh-pages branch exists remotely, checking it out in $target, and continuing deployment. You might be asked for password."
+            mkdir $target
+            git fetch origin gh-pages:gh-pages
+            git clone -l $in $target
+            (cd $target && git checkout gh-pages)
+          else
+            echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to create it."
+            exit 1
+          fi
+        fi
+      fi
+    )
 
+
+    (
       if [ -z $buildPath ]; then
         echo "Building the site"
-        extraFlags+=("--arg" "siteFile" $(readlink -f -- "$inDir/$siteFile"))
+        extraFlags+=("--arg" "siteFile" "$siteDir/$siteFile")
         path=$(store_build)
         if [ $? -ne 0 ]; then
           nix_error
@@ -588,30 +617,8 @@ if [ "$action" = deploy ]; then
         path="$buildPath"
       fi
 
-      # Handle cases where the gh-pages folder is not present
-      if [ ! -d $target ]; then
-        echo "Notice: $target folder does not exists."
-        # OK, we need to do something, first check if the gh-pages branch exists
-        if git rev-parse --quiet --verify gh-pages; then
-          # gh-pages local branch exists, check it out in gh-pages
-          echo "Notice: gh-pages branch exists locally, checking it out in $target, and continuing the deployment."
-          mkdir gh-pages
-          git clone -l $(pwd) ./gh-pages
-          (cd ./gh-pages && git checkout gh-pages)
-        else
-          # Next, try remotely
-          if git show-ref --quiet --verify -- "refs/remotes/origin/gh-pages"; then
-            echo "Notice: gh-pages branch exists remotely, checking it out in $target, and continuing deployment. You might be asked for password."
-            mkdir gh-pages
-            git fetch origin gh-pages:gh-pages
-            git clone -l $(pwd) ./gh-pages
-            (cd gh-pages && git checkout gh-pages)
-          else
-            echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to create it."
-            exit 1
-          fi
-        fi
-      fi
+      cd "$in"
+      rev=$(git rev-parse --short HEAD)
 
       cd "$target"
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then

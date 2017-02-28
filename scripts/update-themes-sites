@@ -1,0 +1,33 @@
+#! /usr/bin/env bash
+#
+# This script update every theme demo site
+
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+baseDir="$(dirname "$scriptDir")"
+themesDir="$(readlink -f -- $baseDir/themes)"
+
+styx=$(nix-build $baseDir --no-out-link)/bin/styx
+styxArgs="--arg pkgs \"import $baseDir/nixpkgs\""
+
+echo "Updating themes screenshots."
+echo "---"
+
+for d in $themesDir/*/ ; do
+  if [ -d "$d/example" ]; then
+    themeDir="$(readlink -f -- $d)"
+    siteDir="$(readlink -f -- $d)/example"
+
+    echo "updating demo site of $themeDir"
+    eval "$styx deploy --gh-pages --in $themeDir --site $siteDir $styxArgs"
+
+    (
+    cd $themeDir
+    (cd gh-pages && git push -u origin gh-pages) && git push -u origin gh-pages
+    )
+
+    echo "done"
+    echo "---"
+  fi
+done
+
+echo "Finished!"

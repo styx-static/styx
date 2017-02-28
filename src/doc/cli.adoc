@@ -124,5 +124,5 @@ For more details see the <<Deployment>> section.
 
 `styx deploy --init--gh-pages`:: Prepare a git repository to be able to deploy on GitHub pages.
 `styx deploy --gh-pages`:: Commit the Styx site in the current directory to the `gh-pages` branch in the `./gh-pages` folder.
-`styx deploy --gh-pages --in ./example --out ./`:: Commit the Styx site in `./example` to the `gh-pages` branch in the `./gh-pages` folder.
+`styx deploy --gh-pages --in ./example --repo ./`:: Commit the Styx site in `./example` to the `gh-pages` branch in the `./gh-pages` folder.
 

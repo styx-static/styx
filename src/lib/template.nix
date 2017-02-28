@@ -222,7 +222,7 @@ rec {
       expected = "&lt;p class=&quot;foo&quot;&gt;Hello world!&lt;/p&gt;";
     }) ];
 
-    function = replaceStrings [ "<" ">" "\"" ] [ "&lt;" "&gt;" "&quot;" ];
+    function = replaceStrings [ "<" ">" "\"" "&" ] [ "&lt;" "&gt;" "&quot;" "&amp;" ];
   };
 
 

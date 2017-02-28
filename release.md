@@ -40,7 +40,11 @@ $ git tag "vVERSION"
 $ git push HEAD origin --tag
 ```
 
-9. Make a pull request to nixpkgs, updating the `styx` expression and `styx-themes` expressions if needed
+9. Make a pull request to nixpkgs, updating the `styx` expression and `styx-themes` expressions, and test that it works:
+
+```
+$ $(nix-build -A styx --no-out-link)/bin/styx preview --in $(nix-build --no-out-link -A styx-themes.showcase)/example -I nixpkgs=./
+```
 
 10. wait until at least one unstable channel with styx gets updated, and make a release note in the styx-site
 
@@ -53,7 +57,9 @@ $ git push HEAD origin --tag --force
 
 12. Update the themes demo sites
 
-TODO: make a script
+```sh
+$ ./scripts/update-themes-sites
+```
 
 13. Make a post on the styx official site announcing the release
 

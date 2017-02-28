@@ -29,8 +29,6 @@ New features in the generic templates theme:
 * `mkPageList` automatically handle multipage pages.
 * Themes and library documentations.
 
-Generic templates theme:
-
 ==== Breaking Changes:
 
 * Substitutions in data files have been removed in favor embedded nix. (substitutions can still be used in static files)
