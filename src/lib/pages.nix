@@ -459,14 +459,20 @@ rec {
                       then [ (head mpages) ]
                       else [ page ];
             extra = optionals (d ? pages) (tail mpages);
-          in acc // { list = list ++ acc.list; extra = extra ++ acc.extra; _id = acc._id + 1; }
+          in 
+             acc
+          // { list = list ++ acc.list; extra = extra ++ acc.extra; _id = acc._id + 1; }
+          // (optionalAttrs (d ? _attrName) { "${d._attrName}" = head list; })
         ;
-        raw = fold fn base data;
+        raw = fold fn base data';
+        data' = if isAttrs data
+                then mapAttrsToList (n: v: v // { _attrName = n; }) data
+                else data;
         cleanlist = l: map (p: removeAttrs p ["_plid"]) l;
         dirtylist = imap (index: p: p // { pageList = { pages = cleanlist raw.list; inherit index; }; }) raw.list;
         list = cleanlist dirtylist;
         extra = cleanlist (map (p: p // { pageList = (findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist).pageList; }) raw.extra);
-      in mkPages { inherit list; pages = list ++ extra; };
+      in mkPages ({ inherit list; pages = list ++ extra; } // (removeAttrs raw ["list" "extra" "_id"]));
 
   };
 

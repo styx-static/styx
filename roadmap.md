@@ -1,5 +1,9 @@
 # Roadmap
 
-## Features to implement
+## Features
 
 - [ ] image galleries
+
+## Themes
+
+- Casper

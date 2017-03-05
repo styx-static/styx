@@ -3267,7 +3267,7 @@ Type: `String`.
 
 ==== Return
 
-The template function, or the documented template set if `env` has a `genDoc` attribute set to `true`.
+The documented function set.
 
 
 
@@ -3293,7 +3293,7 @@ Find a set in a list of set matching some criteria.
 
 ===== criteria
 
-Criteria to find.
+Criteria to find as an attribute set, can be a value to be compared or a function to compare the value.
 
 Type: `Attrs`. 
 
@@ -3305,7 +3305,7 @@ Type: `Attrs`.
 
 ==== Return
 
-The matched attribute set, or throw an error if no result has been found.
+The first matched attribute set, or throw an error if no result has been found.
 
 ==== Example
 
@@ -3313,7 +3313,11 @@ The matched attribute set, or throw an error if no result has been found.
 [source, nix]
 .Code
 ----
-find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { uid = "baz"; } ]
+find { uid = "bar"; } [ 
+  { uid = "foo"; }
+  { uid = "bar"; content = "hello!"; }
+  { uid = "baz"; }
+]
 
 ----
 
@@ -3323,6 +3327,30 @@ find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { 
 {
   content = "hello!";
   uid = "bar";
+}
+----
+
+
+
+---
+
+[source, nix]
+.Code
+----
+find { number = (x: x > 3); color = "blue"; } [
+  { number = 1; color = "blue"; }
+  { number = 4; color = "red"; }
+  { number = 6; color = "blue"; }
+]
+
+----
+
+[source, nix]
+.Result
+----
+{
+  color = "blue";
+  number = 6;
 }
 ----
 

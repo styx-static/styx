@@ -39,21 +39,19 @@ let
     let
       ex = mapAttrsToList (name: fn:
         let
-          docFn = fn { _type = "genDoc"; };
           extract = imap (index: ex:
             optionalAttrs (ex ? code && ex ? expected)
             (ex // { inherit name index; })
-          ) docFn.examples;
-        in if docFn ? examples then extract else {}) functions;
+          ) fn.examples;
+        in if fn ? examples then extract else {}) functions;
     in (filter (x: x != {}) (flatten ex) ++ customTests);
 
    missingTests =
     let
       missing = mapAttrsToList (name: fn:
         let
-          docFn = fn { _type = "genDoc"; };
           hasTest = any (ex: ex ? expected);
-        in if   isDocFunction docFn
+        in if   isDocFunction fn
            then if   docFn ? examples && hasTest docFn.examples
                 then null
                 else name

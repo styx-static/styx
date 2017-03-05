@@ -10,9 +10,8 @@ let
 
   libs = map (namespace:
     let functions = filter (x: x != {}) (mapAttrsToList (name: fn:
-      let docFn = fn { _type = "genDoc"; };
-      in optionalAttrs (isDocFunction docFn)
-           { fullname = "lib.${namespace}.${name}"; inherit docFn namespace name; }
+      optionalAttrs (isDocFunction fn)
+        ({ fullname = "lib.${namespace}.${name}"; inherit namespace name; } // fn)
     ) lib."${namespace}");
     in {
       "${namespace}" = {
@@ -34,16 +33,13 @@ let
     "utils"
   ]);
 
-  mkFunctionDoc = fn:
-    let
-      function = fn.docFn;
-    in
+  mkFunctionDoc = function:
     ''
 
     :sectnums!:
 
-    [[${fn.fullname}]]
-    === ${fn.name}
+    [[${function.fullname}]]
+    === ${function.name}
 
     ${optionalString (function ? description) "==== Description\n\n${function.description}\n"}
     ${optionalString (function ? arguments)   (mkFunctionArgs function.arguments)}

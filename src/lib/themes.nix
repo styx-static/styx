@@ -102,7 +102,7 @@ rec {
     function = {
       styxLib
     , themes ? []
-    , extraConf ? {}
+    , extraConf ? []
     , extraEnv ? {}
     }:
     let

@@ -3523,8 +3523,8 @@ Requires the `generic-templates` theme.
 
 ---
 
-- https://styx-static.github.io/styx-theme-generic-hyde[Demo]
-- https://github.com/styx-static/styx-theme-generic-hyde[Homepage]
+- https://styx-static.github.io/styx-theme-hyde[Demo]
+- https://github.com/styx-static/styx-theme-hyde[Homepage]
 
 
 ---

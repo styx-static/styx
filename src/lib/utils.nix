@@ -4,10 +4,8 @@ lib:
 with lib;
 
 let
-  documentedFunction' = data: arg:
-    if arg == { _type = "genDoc"; }
-    then (data // { _type = "docFunction"; })
-    else data.function arg;
+  documentedFunction' = data:
+    data // { _type = "docFunction"; __functor = _: data.function; };
 
 in rec {
 
@@ -21,7 +19,7 @@ in rec {
     arguments = [
       {
         name = "criteria";
-        description = "Criteria to find.";
+        description = "Criteria to find as an attribute set, can be a value to be compared or a function to compare the value.";
         type = "Attrs";
       }
       {
@@ -31,21 +29,51 @@ in rec {
       }
     ];
 
-    return = "The matched attribute set, or throw an error if no result has been found.";
+    return = "The first matched attribute set, or throw an error if no result has been found.";
 
     examples = [ (mkExample {
       literalCode = ''
-        find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { uid = "baz"; } ]
+        find { uid = "bar"; } [ 
+          { uid = "foo"; }
+          { uid = "bar"; content = "hello!"; }
+          { uid = "baz"; }
+        ]
       '';
       code =
-        find { uid = "bar"; } [ { uid = "foo"; } { uid = "bar"; content = "hello!"; } { uid = "baz"; } ]
+        find { uid = "bar"; } [ 
+          { uid = "foo"; }
+          { uid = "bar"; content = "hello!"; }
+          { uid = "baz"; }
+        ]
       ;
       expected = { uid = "bar"; content = "hello!"; };
-    })];
+    }) (mkExample {
+      literalCode = ''
+        find { number = (x: x > 3); color = "blue"; } [
+          { number = 1; color = "blue"; }
+          { number = 4; color = "red"; }
+          { number = 6; color = "blue"; }
+        ]
+      '';
+      code =
+        find { number = (x: x > 3); color = "blue"; } [
+          { number = 1; color = "blue"; }
+          { number = 4; color = "red"; }
+          { number = 6; color = "blue"; }
+        ]
+      ;
+      expected = { number = 6; color = "blue"; };
+    }) ];
 
     function = criteria: list:
       let
-        subset = sub: super: fold (a: b: a && b) true (mapAttrsToList (k: v: hasAttr k super && (getAttr k super) == v) sub);
+        subset = sub: super: fold (a: b: a && b) true (mapAttrsToList (k: v:
+          let
+            v'       = getAttr k super;
+            matching = if isFunction v then v v' else v == v';
+          in hasAttr k super && matching
+          ) sub
+        );
         matches = filter (x: subset criteria x) list;
       in
         if matches == []
@@ -226,7 +254,7 @@ in rec {
       };
     };
 
-    return = "The template function, or the documented template set if `env` has a `genDoc` attribute set to `true`.";
+    return = "The documented function set.";
 
     function = {
       description
@@ -235,10 +263,8 @@ in rec {
     , return ? null
     , examples ? []
     , notes ? null
-    }@data: arg:
-      if arg == { _type = "genDoc"; }
-      then (data // { _type = "docFunction"; })
-      else data.function arg;
+    }@data:
+      data // { _type = "docFunction"; __functor = _: function; };
   };
 
 
