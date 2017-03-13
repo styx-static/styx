@@ -7,7 +7,7 @@ The `site.nix` in this folder generate an empty site.
 
 ## First steps
 
-Find the line saying `themes = [ ];` in `site.nix` and change it with the following to enable the generic-tepmplates theme:
+Find the line saying `themes = [ ];` in `site.nix` and change it with the following to enable the generic-templates theme:
 
 ```nix
   themes = [

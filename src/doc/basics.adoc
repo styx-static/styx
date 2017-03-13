@@ -69,18 +69,20 @@ But the `styx new` command will generate a few more files for convenience.
 
 [source]
 ----
-├── conf.nix  # <1>
-├── readme.md # <2>
-├── site.nix  # <3>
-├── data/     # <4>
-└── themes/   # <5>
+├── conf.nix    # <1>
+├── default.nix # <2>
+├── readme.md   # <3>
+├── site.nix    # <4>
+├── data/       # <5>
+└── themes/     # <6>
 ----
 
 <1> `conf.nix` is the main configuration file, see <<Configuration>> for details.
-<2> `readme.md` provides some basic information about how to start using styx.
-<3> `site.nix` is the main file for site generation, see <<site.nix,site.nix>> for details.
-<4> `data/` is an empty directory meant to hold site data.
-<5> `themes/` is an empty directory meant to hold custom themes.
+<2> `default.nix` is a file that can be used to build a styx file directly with `nix-build`.
+<3> `readme.md` provides some basic information about how to start using styx.
+<4> `site.nix` is the main file for site generation, see <<site.nix,site.nix>> for details.
+<5> `data/` is an empty directory meant to hold site data.
+<6> `themes/` is an empty directory meant to hold custom themes.
 
 NOTE: The file structure of a styx site is totally free and can be changed according to needs. +
 It is even possible to change the name of `site.nix`. In that case the `--file` flag of the styx command can be used to specify the file name.

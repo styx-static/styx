@@ -42,7 +42,7 @@ rec {
   new = pkgs.runCommand "styx-new-site" defaultEnv ''
     mkdir $out
     ${styx}/bin/styx new site my-site --in $out
-    ${styx}/bin/styx gen-sample-data  --in $out
+    ${styx}/bin/styx gen-sample-data  --in $out/my-site
   '';
 
   new-build =
