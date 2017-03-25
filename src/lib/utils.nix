@@ -515,6 +515,7 @@ in rec {
         else if isBool   x then toJSON x
         else if x == {}    then ''{ }''
         else if isLit    x then x.text
+        else if isDerivation x then "<<derivation ${x.drvPath}>>"
         else if isAttrs  x then ''
         {
         ${indent (n+1)}${concatStringsSep "\n${indent (n+1)}" (mapAttrsToList (k: v:
