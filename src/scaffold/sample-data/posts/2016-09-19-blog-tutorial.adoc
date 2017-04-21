@@ -142,7 +142,7 @@ And change it to load the about page data:
 [source, nix]
 ----
   data = {
-    about = lib.loadFile { file = ./data/sample/pages/about.md"; inherit env; };
+    about = lib.loadFile { file = ./data/sample/pages/about.md; inherit env; };
   };
 ----
 
@@ -171,7 +171,7 @@ To make the page easily accessible, we can add an entry in the sidebar for the a
 [source, nix]
 ----
   data = {
-    about = lib.loadFile { file = ./data/sample/pages/about.md"; inherit env; };
+    about = lib.loadFile { file = ./data/sample/pages/about.md; inherit env; };
     menu  = [ pages.about ];
   };
 ----
@@ -186,7 +186,7 @@ Next we can add our posts, lets add a `posts` attribute to the `data` set:
 [source, nix]
 ----
   data = {
-    about = lib.loadFile { file = ./data/sample/pages/about.md"; inherit env; };
+    about = lib.loadFile { file = ./data/sample/pages/about.md; inherit env; };
     menu  = [ pages.about ];
     posts = lib.sortBy "date" "dsc" (lib.loadDir { dir = ./data/sample/posts; inherit env; });
   };

@@ -10,7 +10,7 @@
 
 */
 let
-  pkgs = (import ../nixpkgs);
+  pkgs = import ../nixpkgs;
   lib = pkgs.callPackage pkgs.styx.lib {};
 in with lib;
 let
