@@ -9,7 +9,7 @@ themesDir="$(readlink -f -- $baseDir/themes)"
 styx=$(nix-build $baseDir --no-out-link)/bin/styx
 styxArgs="--arg pkgs \"import $baseDir/nixpkgs\""
 
-echo "Updating themes screenshots."
+echo "Updating themes demo sites."
 echo "---"
 
 for d in $themesDir/*/ ; do
