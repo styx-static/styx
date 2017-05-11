@@ -19,7 +19,7 @@ Subcommands:
     new site DIR               Create a new Styx site in DIR.
     new theme NAME             Create a new theme NAME in themes.
     gen-sample-data            Generate sample data in 'data'.
-    build                      Build the site in the "public", can be changed with the '--output' flag.
+    build                      Build the site in the "./public" directory, can be changed with the '--output' flag.
     preview                    Build the site and serve it locally, shortcut for 'styx serve --site-url "http://HOST:PORT"'.
                                This override the configuration file 'siteUrl' to not break links.
     live                       Similar to preview, but automatically rebuild the site on changes.
@@ -28,6 +28,7 @@ Subcommands:
     deploy                     Deploy the site, must be used with a deploy option.
     doc                        Opens styx HTML documentation in BROWSER.
     site-doc                   Generates and open the documentation for a styx site in BROWSER.
+    store-path                 Build the site in the nix store and print the store path.
 
 Generic options:
     -h, --help                 Show this help.
@@ -247,7 +248,7 @@ while [ "$#" -gt 0 ]; do
       action="serve"
       siteUrl="PREVIEW"
       ;;
-    build|serve|deploy|live|gen-sample-data|site-doc|linkcheck)
+    build|serve|deploy|live|gen-sample-data|site-doc|linkcheck|store-path)
       action="$i"
       ;;
     doc|manual)
@@ -394,6 +395,9 @@ if [ "$action" = build ]; then
   else
     target=$(readlink -f -- "$output")
   fi
+  if [ -n "$siteUrl" ]; then
+    extraConf+=("siteUrl = \"$siteUrl\";")
+  fi
   echo "Building the site..."
   extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
   path=$(store_build)
@@ -419,6 +423,24 @@ if [ "$action" = build ]; then
   exit 0
 fi
 
+#-------------------------------
+#
+# Store Path
+#
+#-------------------------------
+
+if [ "$action" = store-path ]; then
+  check_styx $in $siteFile
+  extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+  if [ -n "$siteUrl" ]; then
+    extraConf+=("siteUrl = \"$siteUrl\";")
+  fi
+  path=$(store_build)
+  if [ $? -ne 0 ]; then
+    nix_error
+  fi
+  echo "$path"
+fi
 
 #-------------------------------
 #

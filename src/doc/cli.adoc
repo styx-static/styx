@@ -44,6 +44,13 @@ The `build` command is used to build a Styx site.
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `build` command.
 
+=== Store path
+
+The `store-path` command is used to build a Styx site in the nix store and return the store path.
+
+`styx store-path`:: Build the Styx site and write the output in the `public` directory.
+
+NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `store-path` command.
 
 === Preview
 
