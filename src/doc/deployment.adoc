@@ -92,6 +92,32 @@ The deployment information can be queried with the `nixops info -d styx-site`. +
 If all goes well, the website will be available by opening the deployment machine in a browser.
 The deployement machine IP can be found with the `nixops info -d styx-site`.
 
+
+=== Amazon S3 Bucket
+
+Amazon S3 buckets can be used to host static websites.
+The aws cli tool can be used in conjunction with styx to upload a styx website to a S3 bucket.
+
+[source, sh]
+.Deploying a styx website to S3
+----
+$ nix-shell -p awscli
+
+$ aws s3 sync $(styx store-path) s3://<bucket name>/
+----
+
+Site url can also be specified with the `--site-url` flag.
+
+[source, sh]
+.Deploying a styx website to S3 using a custom site-url
+----
+$ nix-shell -p awscli
+$ aws s3 sync $(styx store-path --site-url "http://<bucket name>.s3-website-<region>.amazonaws.com") s3://<bucket name>/
+----
+
+NOTE: For a S3 website to be world accessible, link:http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteAccessPermissionsReqd.html[adjusting policies might be required].
+
+
 === Other
 
 Styx does not yet provide a universal deployment method, but `rsync` can be used to deploy a Styx site to a remote server via ssh.
