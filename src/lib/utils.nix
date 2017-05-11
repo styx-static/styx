@@ -515,18 +515,19 @@ in rec {
         else if isBool   x then toJSON x
         else if x == {}    then ''{ }''
         else if isLit    x then x.text
-        else if isDerivation x then "<<derivation ${x.drvPath}>>"
+        else if isDerivation x then "(build of ${x.name})"
         else if isAttrs  x then ''
         {
         ${indent (n+1)}${concatStringsSep "\n${indent (n+1)}" (mapAttrsToList (k: v:
           let k' = if (match "^(.+)\\.(.+)$" k) != null
+                   || (match "^(.+)\\s(.+)$" k) != null
                    then ''"${k}"''
                    else k;
           in
           "${k'} = ${loop (n+1) v};")
         x)}
         ${indent n}}''
-        else if isFunction x then ''<LAMBDA>''
+        else if isFunction x then ''<function>''
         else if (typeOf x == "path") then ''`${toString x}`''
         else "";
       in loop 0 expr;
