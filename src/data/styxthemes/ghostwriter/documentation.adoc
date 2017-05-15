@@ -1,0 +1,77 @@
+== Setting a navigation
+
+Main navigation will be automatically created with the contents of `site.nix` `data.menu` contents.  
+`data.menu` should be a list of pages or equivalent attributes sets defining at least the `title` and `url` attribute.
+
+[nix, source]
+.Declaring a menu
+----
+  data = {
+    menu = [
+      (head pages.index)
+      pages.about
+      { title = "Foo"; url = "/foo.html"; }
+    ];
+  };
+----
+
+== Adding author information to posts
+
+An author is an attribute set consisting of a `name` and `url` attribute. (The `url` attribute is optional).
+It is possible to set the author per post using markup file metadata:
+
+[source, nix]
+.Setting author via metadata
+----
+{---
+title = "My post";
+author = {
+  name = "John Doe";
+};
+---}
+
+# Lorem ipsum
+----
+
+It is also possible to create author data defined in `site.nix`.
+For example, if there is the following declaration in `site.nix`:
+
+[source, nix]
+.Declaring author in site.nix
+----
+data = rec {
+  authors.john = {
+    name = "John Doe";
+  };
+
+  posts  = sortBy "date" "dsc" (loadDir { dir = ./posts; env = (env // { inherit authors; }); });
+};
+----
+
+IMPORTANT: `authors` must be passed to the `env` of the function responsible of loading the posts. 
+
+Then `authors.john` can be used in the metadata:
+
+[source, nix]
+.Setting author via metadata
+----
+{---
+title = "My post";
+author = authors.john;
+---}
+
+# Lorem ipsum
+----
+
+In case of a single author, it is possible to automatically set the same author to every post in `site.nix` during the posts pages creation.
+
+[source, nix]
+.Setting author during pages creation
+----
+posts = mkPageList {
+  data        = data.posts;
+  pathPrefix  = "/posts/";
+  template    = templates.post.full;
+  author      = { name = "John Doe"; };
+};
+----
