@@ -3,7 +3,7 @@
 Main navigation will be automatically created with the contents of `site.nix` `data.menu` contents.  
 `data.menu` should be a list of pages or equivalent attributes sets defining at least the `title` and `url` attribute.
 
-[nix, source]
+[source, nix]
 .Declaring a menu
 ----
   data = {
