@@ -13,3 +13,6 @@
 [submodule "themes/showcase"]
 	path = themes/showcase
 	url = git@github.com:styx-static/styx-theme-showcase.git
+[submodule "themes/ghostwriter"]
+	path = themes/ghostwriter
+	url = git@github.com:styx-static/styx-theme-ghostwriter.git

@@ -36,7 +36,17 @@ Note: When using a version of styx that is different of the one in the system ac
 In this case themes should be fetched directly with `fetchGit` or similar.
 
 
-## Nix usages
+## Examples
+
+The official styx site is an example of a basic software site with release news. It have some interesting features like:
+
+- generating the documentation for every version of styx
+- generating a page for every official theme
+
+Please check [site.nix](https://github.com/styx-static/styx-site/blob/master/site.nix) for implementation details.
+
+
+## As a Nix laboratory
 
 This repository is also a playground for more exotic nix usages and experiments:
 
@@ -82,3 +92,10 @@ Library function tests can print a coverage or a report (with pretty printing):
 ## Contributing
 
 Read [contributing.md](./contributing.md) for details.
+
+
+## Feedback
+
+Any question or issue should go in the github issue tracker.  
+Themes requests are also welcome.
+And please let me know if you happen to run a site on styx!

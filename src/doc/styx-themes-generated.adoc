@@ -3513,6 +3513,572 @@ rec {
 
 
 
+[[ghostwriter]]
+== Ghostwriter
+
+Port of the https://github.com/jbub/ghostwriter[Ghostwriter] theme. +
+Use the `generic-templates` theme.
+
+
+
+---
+
+- https://styx-static.github.io/styx-theme-ghostwriter[Demo]
+- https://github.com/styx-static/styx-theme-ghostwriter[Homepage]
+
+
+---
+
+image::imgs/ghostwriter.png[Ghostwriter,align="center"]
+
+
+
+
+[[ghostwriter.doc]]
+=== Documentation
+
+:leveloffset: +2
+
+== Setting a navigation
+
+Main navigation will be automatically created with the contents of `site.nix` `data.menu` contents.  
+`data.menu` should be a list of pages or equivalent attributes sets defining at least the `title` and `url` attribute.
+
+[source, nix]
+.Declaring a menu
+----
+  data = {
+    menu = [
+      (head pages.index)
+      pages.about
+      { title = "Foo"; url = "/foo.html"; }
+    ];
+  };
+----
+
+== Adding author information to posts
+
+An author is an attribute set consisting of a `name` and `url` attribute. (The `url` attribute is optional).
+It is possible to set the author per post using markup file metadata:
+
+[source, nix]
+.Setting author via metadata
+----
+{---
+title = "My post";
+author = {
+  name = "John Doe";
+};
+---}
+
+# Lorem ipsum
+----
+
+It is also possible to create author data defined in `site.nix`.
+For example, if there is the following declaration in `site.nix`:
+
+[source, nix]
+.Declaring author in site.nix
+----
+data = rec {
+  authors.john = {
+    name = "John Doe";
+  };
+
+  posts  = sortBy "date" "dsc" (loadDir { dir = ./posts; env = (env // { inherit authors; }); });
+};
+----
+
+IMPORTANT: `authors` must be passed to the `env` of the function responsible of loading the posts. 
+
+Then `authors.john` can be used in the metadata:
+
+[source, nix]
+.Setting author via metadata
+----
+{---
+title = "My post";
+author = authors.john;
+---}
+
+# Lorem ipsum
+----
+
+In case of a single author, it is possible to automatically set the same author to every post in `site.nix` during the posts pages creation.
+
+[source, nix]
+.Setting author during pages creation
+----
+posts = mkPageList {
+  data        = data.posts;
+  pathPrefix  = "/posts/";
+  template    = templates.post.full;
+  author      = { name = "John Doe"; };
+};
+----
+
+
+:leveloffset: -2
+
+
+
+
+[[ghostwriter.conf]]
+=== Configuration interface
+
+:sectnums!:
+
+---
+
+[[theme.itemsPerPage]]
+==== theme.itemsPerPage
+
+Description:: Number of posts per page.
+Type:: integer
+Default::
++
+[source, nix]
+----
+3
+----
+
+
+
+---
+
+[[theme.lib.font-awesome.enable]]
+==== theme.lib.font-awesome.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[theme.lib.jquery.enable]]
+==== theme.lib.jquery.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[theme.site.copyright]]
+==== theme.site.copyright
+
+Description:: Site copyright.
+Type:: string
+Default::
++
+[source, nix]
+----
+"&copy; 2017. All rights reserved. 
+"
+----
+
+
+
+---
+
+[[theme.site.description]]
+==== theme.site.description
+
+Description:: Site description.
+Type:: string
+Default::
++
+[source, nix]
+----
+"Ghostwriter blog description
+"
+----
+
+
+
+---
+
+[[theme.site.title]]
+==== theme.site.title
+
+Description:: Site title.
+Type:: string
+Default::
++
+[source, nix]
+----
+"Ghostwriter Blog"
+----
+
+
+
+---
+
+[[theme.social.email]]
+==== theme.social.email
+
+Description:: GitHub link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+[[theme.social.github]]
+==== theme.social.github
+
+Description:: GitHub link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+[[theme.social.gitlab]]
+==== theme.social.gitlab
+
+Description:: GitHub link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+[[theme.social.google-plus]]
+==== theme.social.google-plus
+
+Description:: Google plus link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+[[theme.social.linked-in]]
+==== theme.social.linked-in
+
+Description:: Linked in link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+[[theme.social.stack-overflow]]
+==== theme.social.stack-overflow
+
+Description:: Stack overflow link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+[[theme.social.twitter]]
+==== theme.social.twitter
+
+Description:: Twitter link
+Type:: null or string
+Default::
++
+[source, nix]
+----
+null
+----
+
+
+
+---
+
+
+
+
+
+:sectnums:
+
+
+[[ghostwriter.templates]]
+=== Templates
+
+:sectnums!:
+
+---
+
+
+[[templates.index]]
+==== templates.index
+
+
+
+---
+
+
+[[templates.partials.content]]
+==== templates.partials.content
+
+
+
+---
+
+
+[[templates.partials.content-post]]
+==== templates.partials.content-post
+
+
+
+---
+
+
+[[templates.partials.content-pre]]
+==== templates.partials.content-pre
+
+
+
+---
+
+
+[[templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
+
+
+
+---
+
+
+[[templates.partials.head.title-post-extra]]
+==== templates.partials.head.title-post-extra
+
+
+
+---
+
+
+[[templates.partials.html]]
+==== templates.partials.html
+
+
+
+---
+
+
+[[templates.partials.pager]]
+==== templates.partials.pager
+
+
+
+---
+
+
+[[templates.post.full]]
+==== templates.post.full
+
+
+
+---
+
+
+[[templates.post.list]]
+==== templates.post.list
+
+
+
+---
+
+
+
+:sectnums:
+
+
+
+
+[[ghostwriter.example]]
+=== Example site source
+
+[source, nix]
+----
+/*-----------------------------------------------------------------------------
+   Init
+
+   Initialization of Styx, should not be edited
+-----------------------------------------------------------------------------*/
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
+}@args:
+
+rec {
+
+  /* Library loading
+  */
+  styxLib = import styx.lib args;
+
+
+/*-----------------------------------------------------------------------------
+   Themes setup
+
+-----------------------------------------------------------------------------*/
+
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
+  */
+  themes = [ 
+    styx-themes.generic-templates
+    ../.
+  ];
+
+  /* Loading the themes data
+  */
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
+  };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates env;
+
+
+/*-----------------------------------------------------------------------------
+   Data
+
+   This section declares the data used by the site
+-----------------------------------------------------------------------------*/
+
+  data = with lib; {
+    # loading a single page
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
+
+    # loading a list of contents
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+
+    menu = [
+      (head pages.index)
+      pages.about
+    ];
+
+    # Create an author data
+    author = {
+      name = "John Doe";
+      # It is possible to set a link to the author
+      # url = "http://john-doe.org/";
+    };
+  };
+
+
+/*-----------------------------------------------------------------------------
+   Pages
+
+   This section declares the pages that will be generated
+-----------------------------------------------------------------------------*/
+
+  pages = with lib; rec {
+    index = mkSplit {
+      title        = "Home";
+      basePath     = "/index";
+      itemsPerPage = conf.theme.itemsPerPage;
+      template     = templates.index;
+      data         = posts.list;
+    };
+    
+    /* Feed page
+    */
+    feed = {
+      path     = "/feed.xml";
+      template = templates.feed.atom;
+      # Bypassing the layout
+      layout   = id;
+      items    = take 10 posts.list;
+    };
+
+    about = {
+      path     = "/about.html";
+      template = templates.page.full;
+    } // data.about;
+
+    posts = mkPageList {
+      data        = data.posts;
+      pathPrefix  = "/posts/";
+      template    = templates.post.full;
+      # Attach the author to every blog post
+      author      = data.author;
+    };
+  };
+
+
+/*-----------------------------------------------------------------------------
+   Site
+
+-----------------------------------------------------------------------------*/
+
+  /* Converting the pages attribute set to a list
+  */
+  pageList = lib.pagesToList {
+    inherit pages;
+    default = { layout = templates.layout; };
+  };
+
+  /* Generating the site
+  */
+  site =  (lib.mkSite { inherit files pageList; });
+
+}
+
+----
+
+
+
+
 [[hyde]]
 == Hyde
 
