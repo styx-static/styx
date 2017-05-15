@@ -8,7 +8,7 @@ let template = { templates, lib, ... }:
     dataHeight = optionalString (height != null) (" " + htmlAttr "data-height" (toString height));
   in
   ''<a class="twitter-timeline"${dataWidth + dataHeight} href="https://twitter.com/${user}">Tweets by ${user}</a>
-    <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script> 
+    <script async="async" src="//platform.twitter.com/widgets.js" charset="utf-8"></script> 
   ''
   ;
 
