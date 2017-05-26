@@ -673,7 +673,7 @@ if [ "$action" = deploy ]; then
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
         git checkout gh-pages
         git rm -rf .
-        cp -r -L "$path"/* ./
+        cp -RL "$path"/* ./
         chmod -R u+rw ./
         git add .
         git commit -m "Styx update - $rev"
