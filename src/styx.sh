@@ -108,6 +108,10 @@ doc_build () {
   nix-build "$doc_builder" --no-out-link "${extraFlags[@]}"
 }
 
+realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
 #-------------------------------
 
 # Variables
@@ -121,13 +125,13 @@ origArgs=("$@")
 # action to execute
 action=
 # directory of this script
-dir=$(readlink -f -- $(dirname "${BASH_SOURCE[0]}"))
+dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx root dir
 root=$(dirname "$dir")
 # styx share directory
-share=$(readlink -f -- "$root/share/styx")
+share=$(realpath "$root/share/styx")
 # styx html doc path
-doc=$(readlink -f -- "$root/share/doc/styx/index.html")
+doc=$(realpath "$root/share/doc/styx/index.html")
 # styx builder
 builder="$share/nix/site-builder.nix"
 # doc builder
@@ -217,7 +221,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     --in)
       if [ -e $1 ] && [ -d $1 ]; then
-        in=$(readlink -f -- "$1"); shift 1
+        in=$(realpath "$1"); shift 1
       else
         echo "--in must be an existing directory."
         exit 1
@@ -260,7 +264,7 @@ while [ "$#" -gt 0 ]; do
       renderDrafts="true"
       ;;
     --out)
-      output=$(readlink -f -- "$1"); shift 1
+      output=$(realpath "$1"); shift 1
       ;;
     --clean)
       clean=1
@@ -286,7 +290,7 @@ while [ "$#" -gt 0 ]; do
       deployAction="gh-pages"
       ;;
     --site)
-      siteDir=$(readlink -f -- "$1"); shift 1
+      siteDir=$(realpath "$1"); shift 1
       ;;
 # Dev options
     --DEBUG)
@@ -374,7 +378,7 @@ fi
 
 if [ "$action" = "site-doc" ]; then
   check_styx $in $siteFile
-  extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   path=$(doc_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -391,15 +395,15 @@ fi
 if [ "$action" = build ]; then
   check_styx $in $siteFile
   if [ -z $output ]; then
-    target=$(readlink -f -- "$in/public")
+    target=$(realpath "$in/public")
   else
-    target=$(readlink -f -- "$output")
+    target=$(realpath "$output")
   fi
   if [ -n "$siteUrl" ]; then
     extraConf+=("siteUrl = \"$siteUrl\";")
   fi
   echo "Building the site..."
-  extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   path=$(store_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -431,7 +435,7 @@ fi
 
 if [ "$action" = store-path ]; then
   check_styx $in $siteFile
-  extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   if [ -n "$siteUrl" ]; then
     extraConf+=("siteUrl = \"$siteUrl\";")
   fi
@@ -456,7 +460,7 @@ if [ "$action" = serve ]; then
     elif [ -n "$siteUrl" ]; then
       extraConf+=("siteUrl = \"$siteUrl\";")
     fi
-    extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+    extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
     path=$(store_build)
     if [ $? -ne 0 ]; then
       nix_error
@@ -485,7 +489,7 @@ if [ "$action" = linkcheck ]; then
   if [ -z $buildPath ]; then
     check_styx $in $siteFile
     extraConf+=("siteUrl = \"http://$serverHost:$port\";")
-    extraFlags+=("--arg" "siteFile" $(readlink -f -- "$in/$siteFile"))
+    extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
     path=$(store_build)
     if [ $? -ne 0 ]; then
       nix_error
@@ -646,8 +650,8 @@ if [ "$action" = deploy ]; then
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
         git checkout gh-pages
         git rm -rf .
-        cp -L -r "$path"/* ./
-        chmod u+rw -R ./
+        cp -r "$path"/* ./
+        chmod -R u+rw ./
         git add .
         git commit -m "Styx update - $rev"
         echo "Successfully updated the gh-pages branch in the 'gh-pages' folder."

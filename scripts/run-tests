@@ -6,11 +6,14 @@
 
 #  ./scripts/run-tests
 
+realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
 
 scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 styxDir="$(dirname scriptDir)"
-testsDir=$(readlink -f -- "$styxDir/tests")
-nixpkgsDir=$(readlink -f -- "$styxDir/nixpkgs")
+testsDir=$(realpath "$styxDir/tests")
+nixpkgsDir=$(realpath "$styxDir/nixpkgs")
 
 echo ""
 
