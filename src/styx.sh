@@ -235,6 +235,7 @@ while [ "$#" -gt 0 ]; do
     --in)
       if [ -e $1 ] && [ -d $1 ]; then
         in=$(realpath "$1"); shift 1
+        in=${in%/}
       else
         echo "--in must be an existing directory."
         exit 1
@@ -616,6 +617,7 @@ if [ "$action" = deploy ]; then
     check_git $in
     target="$in/gh-pages"
 
+    # Precheck of gh-pages
     (
       cd "$in"
       # Handle cases where the gh-pages folder is not present
@@ -646,6 +648,7 @@ if [ "$action" = deploy ]; then
 
 
     (
+      # building
       if [ -z $buildPath ]; then
         echo "Building the site"
         extraFlags+=("--arg" "siteFile" "$siteDir/$siteFile")
@@ -658,6 +661,11 @@ if [ "$action" = deploy ]; then
         path="$buildPath"
       fi
 
+      if [ -z "$(ls -A "$path")" ]; then
+        echo "Error: The build produced no files, the gh-pages branch will not be updated."
+        exit 1
+      fi
+
       cd "$in"
       rev=$(git rev-parse --short HEAD)
 
@@ -665,7 +673,7 @@ if [ "$action" = deploy ]; then
       if [ -n "$(git show-ref refs/heads/gh-pages)" ]; then
         git checkout gh-pages
         git rm -rf .
-        cp -r "$path"/* ./
+        cp -r -L "$path"/* ./
         chmod -R u+rw ./
         git add .
         git commit -m "Styx update - $rev"
