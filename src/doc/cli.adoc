@@ -108,6 +108,7 @@ The `doc` command can be used to launch styx HTML documentation in the default b
 `styx doc`:: Open the HTML help in the default browser.
 `BROWSER=firefox styx doc`:: Open the HTML help in firefox.
 
+NOTE: On macOS, run `BROWSER=open styx doc` to use the default browser.
 
 === Site-doc
 
@@ -115,6 +116,8 @@ The `site-doc` command can be used to generate and launch in the default browser
 
 `styx site-doc`:: Open the HTML help in the default browser.
 `BROWSER=firefox styx site-doc`:: Open the HTML help in firefox.
+
+NOTE: On macOS, run `BROWSER=open styx site-doc` to use the default browser.
 
 === Gen-sample-data
 

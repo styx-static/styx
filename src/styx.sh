@@ -97,6 +97,19 @@ check_git () {
   fi
 }
 
+check_browser () {
+  if [ -z "$BROWSER" ]; then
+    cat << EOF
+Error: The 'BROWSER' environment variable is not set, try to re-run the command explicitely setting it:
+  BROWSER=firefox styx doc
+
+On macOS 'BROWSER=open' will use the default browser:
+  BROWSER=open styx doc
+EOF
+    exit 1
+  fi
+}
+
 # build the site in the nix store
 store_build () {
   extraConf+=("renderDrafts = $renderDrafts;")
@@ -256,6 +269,7 @@ while [ "$#" -gt 0 ]; do
       action="$i"
       ;;
     doc|manual)
+      check_browser
       $BROWSER $doc &
       exit 0
       ;;
@@ -383,6 +397,7 @@ if [ "$action" = "site-doc" ]; then
   if [ $? -ne 0 ]; then
     nix_error
   fi
+  check_browser
   $BROWSER $path/index.html &
 fi
 
