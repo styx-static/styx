@@ -1,5 +1,5 @@
 { conf, lib, templates, data, ... }:
-page:
+{ page }:
 with lib;
 ''
 <div class="sidebar">
