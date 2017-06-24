@@ -4,6 +4,7 @@ let template = { templates, lib, ... }:
   {
     id ? "navbar"
   , inverted ? false
+  , fluid ? false
   , extraClasses ? []
   , brand ? templates.bootstrap.navbar.brand
   , content ? []
@@ -15,7 +16,7 @@ let template = { templates, lib, ... }:
   in
   ''
   <nav ${class}>
-  <div class="container">
+  <div class="container${lib.optionalString fluid "-fluid"}">
   ${templates.bootstrap.navbar.head { inherit id brand; }}
   <div class="collapse navbar-collapse" id="${id}">
   ${lib.concatStringsSep "\n" content}
