@@ -7,8 +7,8 @@ page:
 <meta name="description" content="Ghostwriter example description">
 <meta name="HandheldFriendly" content="True">
 <meta name="MobileOptimized" content="320">
-<meta property="og:title" content="Ghostwriter example">
-<meta property="og:description" content="Ghostwriter example description">
+<meta property="og:title" content="${conf.theme.site.title}">
+<meta property="og:description" content="${conf.theme.site.description}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${templates.url "/"}">
 ''

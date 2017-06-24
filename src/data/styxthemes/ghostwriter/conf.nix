@@ -77,5 +77,6 @@ with lib;
   # defaults
   lib.jquery.enable = true;
   lib.font-awesome.enable = true;
+  lib.googlefonts = [ "Open Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic" ];
 
 }
