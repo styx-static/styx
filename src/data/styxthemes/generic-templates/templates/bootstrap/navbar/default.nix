@@ -15,10 +15,10 @@ let template = { templates, lib, ... }:
     class = lib.htmlAttr "class" ([ "navbar" baseClass ] ++ extraClasses);
   in
   ''
-  <nav ${class}>
+  <nav ${class} id="${id}">
   <div class="container${lib.optionalString fluid "-fluid"}">
   ${templates.bootstrap.navbar.head { inherit id brand; }}
-  <div class="collapse navbar-collapse" id="${id}">
+  <div class="collapse navbar-collapse" id="${id}-collapse">
   ${lib.concatStringsSep "\n" content}
   </div>
   </div>

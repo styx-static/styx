@@ -17,11 +17,12 @@ let template = { lib, conf, templates, ... }:
   <ul class="nav navbar-nav${extraClasses}">
   ${mapTemplate (item:
     let
-      class = optionalString (isCurrent item) (" " + htmlAttr "class" "active");
-      href  = htmlAttr "href" (if (item ? url) then item.url else templates.url item);
-      title = item.navbarTitle or item.title;
+      active = optionalString (isCurrent item) (" " + htmlAttr "class" "active");
+      title  = item.navbarTitle or item.title;
+      href   = htmlAttr "href" (templates.url (attrByPath ["url"] item item));
+      class  = optionalString (item ? navbarClass) (" " + htmlAttr "class" item.navbarClass);
     in ''
-    <li${class}><a ${href}>${title}</a></li>''
+    <li${active}><a ${href}${class}>${title}</a></li>''
   ) items}
   </ul>'';
 
