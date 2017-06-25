@@ -3,7 +3,9 @@ env:
 let template = { conf, lib, ... }:
   arg: if   lib.isAttrs arg
        then "${conf.siteUrl}${arg.path}"
-       else "${conf.siteUrl}${arg}";
+       else if   (lib.match "^(http|https|ftp|mailto)://.*$" arg) != null
+            then arg
+            else "${conf.siteUrl}${arg}";
 
 in with env.lib; documentedTemplate {
   description = "Generate a full url from a path or a page by using `conf.siteUrl`.";
