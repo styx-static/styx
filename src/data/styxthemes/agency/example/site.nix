@@ -24,6 +24,7 @@ rec {
      items at the end of the list have higher priority
   */
   themes = [
+    styx-themes.generic-templates
     ../.
   ];
 
@@ -46,8 +47,22 @@ rec {
    This section declares the data used by the site
 -----------------------------------------------------------------------------*/
 
-  data = {
-  };
+  data = with lib; {
+
+    /* Menu using blocks
+    */
+    menu = let
+      indexBlocks = pages.index.blocks;
+      bItems = map (n:
+        let block = find { id = n; } indexBlocks;
+        in block // { navbarClass = "page-scroll"; url = "/#${block.id}"; }
+      ) [ "services" "portfolio" "about" "team" "contact" ];
+    in bItems
+    ++ [
+      { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
+    ];
+
+  } // (lib.loadDir { dir = ./data; inherit env; asAttrs = true; });
 
 
 /*-----------------------------------------------------------------------------
@@ -58,9 +73,21 @@ rec {
 
   pages = rec {
     index = {
+      title    = "Home";
       path     = "/index.html";
-      template = templates.index;
-      layout   = lib.id;
+      template = templates.block-page.full;
+      layout   = templates.layout;
+      blocks   = let
+        darken = d: d // { class = "bg-light-gray"; };
+      in with templates.blocks; [
+        (banner data.main-banner)
+        (services data.services)
+        (portfolio (darken data.portfolio))
+        (timeline data.about)
+        (team (darken data.team))
+        (clients data.clients)
+        (contact data.contact) 
+      ];
     };
   };
 
@@ -70,6 +97,12 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
+  # converting pages attribute set to a list
+  pageList = lib.pagesToList {
+    inherit pages;
+    default = { layout = templates.layout; };
+  };
+
+  site = lib.mkSite { inherit files pageList; };
 
 }

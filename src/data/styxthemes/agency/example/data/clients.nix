@@ -1,6 +1,17 @@
-[
-  { logo = "envato.jpg"; link = "#"; }
-  { logo = "designmodo.jpg"; link = "#"; }
-  { logo = "themeforest.jpg"; link = "#"; }
-  { logo = "creative-market.jpg"; link = "#"; }
-]
+{
+  id = "clients";
+
+  items = [ {
+    img  = "/img/logos/envato.jpg";
+    link = "#";
+  } {
+    img  = "/img/logos/designmodo.jpg";
+    link = "#";
+  } {
+    img  = "/img/logos/themeforest.jpg";
+    link = "#";
+  } {
+    img  = "/img/logos/creative-market.jpg";
+    link = "#";
+  } ];
+}
