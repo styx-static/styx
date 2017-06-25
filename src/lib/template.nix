@@ -95,6 +95,34 @@ rec {
   };
 
 
+/*
+===============================================================
+
+ processBlocks
+
+===============================================================
+*/
+
+  processBlocks = documentedFunction { 
+    description = "Merge blocks data.";
+
+    arguments = [
+      {
+        name = "blocks";
+        description = "List of blocks attributes set";
+        type = "[ Block ]";
+      }
+    ];
+
+    return = "Block";
+
+    function = blocks: {
+      content  = mapTemplate (b: b.content) blocks;
+      extraJS  = flatten (getAttrs "extraJS" blocks);
+      extraCSS = flatten (getAttrs "extraCSS" blocks);
+    };
+  };
+
 
 /*
 ===============================================================

@@ -34,10 +34,6 @@ let
   */
   findInTheme = t: f: if dirContains t.path f then t.path + "/${f}" else null;
 
-  /* extract an attribute key from a list of theme and remove null values
-  */
-  getThemesAttr = themes: attr: (map (x: getAttr attr x) (filter (x: hasAttr attr x) themes));
-
 in
 rec {
 
@@ -86,7 +82,7 @@ rec {
       * `themes`: List of themes attribute sets.
       * `decls`: Themes declaration set.
       * `docs`: Themes documentation set.
-      * `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `template`.
+      * `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `templates`.
     '';
 
     examples = [ (mkExample {
@@ -108,13 +104,13 @@ rec {
     let
       themesData = map (theme: loadData { inherit theme styxLib; }) themes;
 
-      decls = styxLib.utils.merge (getThemesAttr themesData "decls");
+      decls = styxLib.utils.merge (getAttrs "decls" themesData);
 
-      docs = styxLib.utils.merge (getThemesAttr themesData "docs");
+      docs = styxLib.utils.merge (getAttrs "docs" themesData);
 
-      lib = styxLib.utils.merge ([ styxLib ] ++ (getThemesAttr themesData "lib"));
+      lib = styxLib.utils.merge ([ styxLib ] ++ (getAttrs "lib" themesData));
 
-      files = getThemesAttr themesData "files";
+      files = getAttrs "files" themesData;
 
       conf' =
         let
@@ -135,7 +131,7 @@ rec {
 
       templates' =
         let
-          templatesSet = styxLib.utils.merge (getThemesAttr themesData "templates");
+          templatesSet = styxLib.utils.merge (getAttrs "templates" themesData);
         in mapAttrsRecursive (path: template:
           template env
         ) templatesSet;

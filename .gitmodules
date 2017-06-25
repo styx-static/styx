@@ -16,3 +16,6 @@
 [submodule "themes/ghostwriter"]
 	path = themes/ghostwriter
 	url = git@github.com:styx-static/styx-theme-ghostwriter.git
+[submodule "themes/nix"]
+	path = themes/nix
+	url = git@github.com:styx-static/styx-theme-nix.git

@@ -13,6 +13,14 @@ in rec {
     This namespace contains generic functions.
   '';
 
+/*
+===============================================================
+
+ find
+
+===============================================================
+*/
+
   find = documentedFunction {
     description = "Find a set in a list of set matching some criteria.";
 
@@ -85,6 +93,7 @@ in rec {
         ''
         else head matches;
   };
+
 
 /*
 ===============================================================
@@ -268,7 +277,6 @@ in rec {
   };
 
 
-
 /*
 ===============================================================
 
@@ -311,6 +319,43 @@ in rec {
       in f [];
   };
 
+
+/*
+===============================================================
+
+ getAttrs
+
+===============================================================
+*/
+
+  getAttrs = documentedFunction {
+    description = "Get the attribute values for the `n` attribute name from a `l` list of attribute sets.";
+
+    arguments = [
+      {
+        name = "n";
+        description = "Attribute name.";
+        type = "String";
+      }
+      {
+        name = "l";
+        description = "List of attribute sets.";
+        type = "[ Attrs ]";
+      }
+    ];
+
+    return = ''
+      A list containing the values of `n`.
+    '';
+
+    examples = [ (mkExample {
+      literalCode = "chunksOf 2 [ 1 2 3 4 5 ]";
+      code        = getAttrs "a" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ];
+      expected    = [ 1 2 4 ];
+    })];
+
+    function = n: l: map (x: getAttr n x) (filter (x: hasAttr n x) l);
+  };
 
 /*
 ===============================================================
