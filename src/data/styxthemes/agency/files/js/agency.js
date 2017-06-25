@@ -13,6 +13,20 @@ $(function() {
         }, 1500, 'easeInOutExpo');
         event.preventDefault();
     });
+
+  /* Fixing full urls for scrollspy
+  */
+  var url = location.href.replace(/#.*/,'');
+  $(".navbar-fixed-top").find('a[href]').each(function(i,a) {
+    var $a = $(a);
+    var href = $a.attr('href');
+    if (href.indexOf(url+'#') == 0) {
+      href = href.replace(url,'');
+      $a.attr('href',href);
+    }
+    $('body').scrollspy('refresh')
+  });
+
 });
 
 // Highlight the top nav as scrolling occurs
