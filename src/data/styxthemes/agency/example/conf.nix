@@ -7,18 +7,6 @@ with lib;
 
   theme = {
     site.title = "Styx Agency";
-    menu.append = [
-      { url  = "https://styx-static.github.io/styx-site/";
-        name = "Styx"; }
-    ];
-
-    services.items  = sortBy "index" "asc" (loadDir { dir = ./data/services; });
-    portfolio.items = sortBy "date"  "dsc" (loadDir { dir = ./data/projects; });
-    about.items     = sortBy "index" "asc" (loadDir { dir = ./data/events; });
-    team.members    = import ./data/team.nix;
-    clients         = import ./data/clients.nix;
-
-    contact.enable = true;
 
     footer = {
       social = [

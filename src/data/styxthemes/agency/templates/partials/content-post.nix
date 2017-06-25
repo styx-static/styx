@@ -1,7 +1,7 @@
-{ lib, conf, ... }:
+{ lib, conf, templates, ... }:
+args:
 with lib;
 ''
-<!-- Footer section -->
 <footer>
   <div class="container">
     <div class="row">
