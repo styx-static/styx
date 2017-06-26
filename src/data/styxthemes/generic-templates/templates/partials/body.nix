@@ -1,8 +1,13 @@
 env:
 
-let template = { templates, ... }:
-  args:
-  ''
+let template = { templates, lib, ... }:
+  { page, ... }@args:
+  with lib;
+  let
+    id = optionalString (hasAttrByPath [ "body" "id" ] page) " ${htmlAttr "id" page.body.id}";
+    class = optionalString (hasAttrByPath [ "body" "class" ] page) " ${htmlAttr "class" page.body.class}";
+  in ''
+  <body${id}${class}>
   <body>
   ${(templates.partials.content-pre  args)
   + (templates.partials.content      args)
