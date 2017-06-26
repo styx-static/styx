@@ -349,7 +349,7 @@ in rec {
     '';
 
     examples = [ (mkExample {
-      literalCode = "chunksOf 2 [ 1 2 3 4 5 ]";
+      literalCode = "getAttrs \"a\" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ]";
       code        = getAttrs "a" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ];
       expected    = [ 1 2 4 ];
     })];
