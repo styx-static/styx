@@ -318,10 +318,10 @@ rec {
       let pages' = attrValues pages;
       in fold (p: acc:
            if isList p
-           then acc ++ (map (x: default // x) p)
+           then acc ++ (map (x: recursiveUpdate default x) p)
            else if is "pages" p 
-                then acc ++ (map (x: default // x) p.pages)
-                else acc ++ [(default // p)]
+                then acc ++ (map (x: recursiveUpdate default x) p.pages)
+                else acc ++ [(recursiveUpdate default p)]
          ) [] pages';
   };
 
