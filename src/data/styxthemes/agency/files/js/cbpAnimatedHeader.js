@@ -40,5 +40,6 @@ var cbpAnimatedHeader = (function() {
 	}
 
 	init();
+  scrollPage();
 
 })();
