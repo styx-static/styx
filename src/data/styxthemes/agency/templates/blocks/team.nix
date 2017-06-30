@@ -1,7 +1,7 @@
 { templates, lib, ... }:
 with lib;
-normalTemplate (data:
-  templates.blocks.basic (data // {
+normalTemplate (data: {
+  content = templates.blocks.basic (data // {
     content = ''
       <div class="row">
         ${mapTemplate (member: ''
@@ -27,5 +27,6 @@ normalTemplate (data:
         </div>
       </div>''}
     '';
-  })
-)
+  });
+  extraCSS = { href = templates.url "/css/team.css"; };
+})

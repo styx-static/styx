@@ -11,7 +11,7 @@ normalTemplate (data:
             <i class="fa ${item.icon} fa-stack-1x fa-inverse"></i>
           </span>
           <h4 class="service-heading">${item.title}</h4>
-          <div class="text-muted">${item.content}</div>
+          ${optionalString (item ? content) ''<div class="text-muted">${item.content}</div>''}
         </div>
         '') data.items}
       </div>
