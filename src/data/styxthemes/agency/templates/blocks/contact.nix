@@ -42,4 +42,5 @@ normalTemplate (data: {
     { src = templates.url "/js/jqBootstrapValidation.js"; }
     { src = templates.url "/js/contact_me.js"; }
   ];
+  extraCSS = { href = templates.url "/css/contact.css"; };
 })

@@ -1,7 +1,7 @@
 { templates, lib, ... }:
 with lib;
-normalTemplate (data:
-  templates.blocks.basic (data // {
+normalTemplate (data: {
+  content = templates.blocks.basic (data // {
     content = ''
       <div class="row">
         <div class="col-lg-12">
@@ -33,5 +33,6 @@ normalTemplate (data:
         </div>
       </div>
     '';
-  })
-)
+  });
+  extraCSS = { href = templates.url "/css/timeline.css"; };
+})
