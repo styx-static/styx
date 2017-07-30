@@ -16,13 +16,9 @@ let template = { lib, conf, templates, ... }:
   ''
   <ul class="nav navbar-nav${extraClasses}">
   ${mapTemplate (item:
-    let
-      active = optionalString (isCurrent item) (" " + htmlAttr "class" "active");
-      title  = item.navbarTitle or item.title;
-      href   = htmlAttr "href" (templates.url (attrByPath ["url"] item item));
-      class  = optionalString (item ? navbarClass) (" " + htmlAttr "class" item.navbarClass);
-    in ''
-    <li${active}><a ${href}${class}>${title}</a></li>''
+    if isString item
+       then     item
+       else     templates.bootstrap.navbar.nav_item { inherit item currentPage; }
   ) items}
   </ul>'';
 
