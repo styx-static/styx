@@ -8,7 +8,6 @@ let template = { templates, lib, ... }:
     class = optionalString (hasAttrByPath [ "body" "class" ] page) " ${htmlAttr "class" page.body.class}";
   in ''
   <body${id}${class}>
-  <body>
   ${(templates.partials.content-pre  args)
   + (templates.partials.content      args)
   + (templates.partials.content-post args)
