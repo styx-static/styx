@@ -1,9 +1,16 @@
 env:
 
-let template = { templates, lib, conf, ... }:
+let template = { templates, lib, conf, html ? {}, ... }:
   args:
   with lib;
-  ''<html ${htmlAttr "lang" conf.theme.html.lang}>
+  let lang = 
+    if html ? lang
+    then html.lang
+    else if hasAttrByPath [ "html" "lang" ] conf.theme
+         then conf.theme.html.lang
+         else "en";
+  in
+  ''<html ${htmlAttr "lang" lang}>
   ${(templates.partials.head.default args)
   + (templates.partials.body         args)
   }</html>'';
