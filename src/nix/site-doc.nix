@@ -70,7 +70,12 @@ let
 
   mkTemplateDoc = path: template:
     let
-      template' = template { inherit (site) conf templates lib data pages; genDoc = true; };
+      env' = if   site ? env
+             then site.env
+             else { inherit (site) conf templates lib data pages; };
+             #template' = template { inherit (site) conf templates lib data pages; genDoc = true; };
+      template' = trace "${path}" (template (env' // { genDoc = true; }));
+             #{ inherit (site) conf templates lib data pages; genDoc = true; };
     in
     ''
 

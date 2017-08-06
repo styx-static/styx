@@ -33,278 +33,6 @@ image::imgs/agency.png[Agency,align="center"]
 
 ---
 
-[[theme.about.endpoint]]
-==== theme.about.endpoint
-
-Description:: Last about bubble text.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Be part<br>of our<br>story!"
-----
-
-
-
----
-
-[[theme.about.items]]
-==== theme.about.items
-
-Description:: List of about events as attribute sets, requires `img`, `date`, `title`, and `content`.  
-If set to the empty list `[]`, the about area will not be displayed.
-
-Type:: list of attribute sets
-Default::
-+
-[source, nix]
-----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  content = "Lorem ipsum dolor sit amet consectetur.";
-  date = "2009-2011";
-  img = "1.jpg";
-  title = "Our Humble Beginnings";
-} ]
-----
-
-
-
----
-
-[[theme.about.subtitle]]
-==== theme.about.subtitle
-
-Description:: Subtitle of the about area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet consectetur."
-----
-
-
-
----
-
-[[theme.about.title]]
-==== theme.about.title
-
-Description:: Title of the about area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"About"
-----
-
-
-
----
-
-[[theme.clients]]
-==== theme.clients
-
-Description:: List of clients as attribute sets, requires `logo` and `link`.  
-If set to the empty list `[]`, the clients area will not be displayed.";
-
-Type:: list of attribute sets
-Default::
-+
-[source, nix]
-----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  link = "#";
-  logo = "envato.jpg";
-} {
-  link = "#";
-  logo = "designmodo.jpg";
-} ]
-----
-
-
-
----
-
-[[theme.contact.buttonText]]
-==== theme.contact.buttonText
-
-Description:: Text of the contact area button.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Send message"
-----
-
-
-
----
-
-[[theme.contact.enable]]
-==== theme.contact.enable
-
-Description:: Whether to enable contact area.
-Type:: boolean
-Default::
-+
-[source, nix]
-----
-false
-----
-
-Example::
-+
-[source, nix]
-----
-true
-----
-
-
-
----
-
-[[theme.contact.form.email]]
-==== theme.contact.form.email
-
-Description:: Contact form email input label
-Type:: attribute set
-Default::
-+
-[source, nix]
-----
-{
-  text = "Your Email *";
-  warning = "Please enter your email address.";
-}
-----
-
-
-
----
-
-[[theme.contact.form.message]]
-==== theme.contact.form.message
-
-Description:: Contact form message input label
-Type:: attribute set
-Default::
-+
-[source, nix]
-----
-{
-  text = "Your Message *";
-  warning = "Please enter a message.";
-}
-----
-
-
-
----
-
-[[theme.contact.form.name]]
-==== theme.contact.form.name
-
-Description:: Contact form name input label
-Type:: attribute set
-Default::
-+
-[source, nix]
-----
-{
-  text = "Your Name *";
-  warning = "Please enter your name.";
-}
-----
-
-
-
----
-
-[[theme.contact.form.phone]]
-==== theme.contact.form.phone
-
-Description:: Contact form phone input label
-Type:: attribute set
-Default::
-+
-[source, nix]
-----
-{
-  text = "Your Phone *";
-  warning = "Please enter your phone number.";
-}
-----
-
-
-
----
-
-[[theme.contact.form.receiver]]
-==== theme.contact.form.receiver
-
-Description:: Contact area from receiver mail address.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"your@email.com"
-----
-
-
-
----
-
-[[theme.contact.subtitle]]
-==== theme.contact.subtitle
-
-Description:: Subtitle of the contact area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet consectetur."
-----
-
-
-
----
-
-[[theme.contact.title]]
-==== theme.contact.title
-
-Description:: Title of the contact area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet consectetur."
-----
-
-
-
----
-
 [[theme.footer.copyright]]
 ==== theme.footer.copyright
 
@@ -382,228 +110,64 @@ Example::
 
 ---
 
-[[theme.hero.buttonText]]
-==== theme.hero.buttonText
+[[theme.lib.bootstrap.enable]]
+==== theme.lib.bootstrap.enable
 
-Description:: Button text of the hero area.
-Type:: string
+
+
 Default::
 +
 [source, nix]
 ----
-"Tell me more"
+true
 ----
 
 
 
 ---
 
-[[theme.hero.subtitle]]
-==== theme.hero.subtitle
+[[theme.lib.font-awesome.enable]]
+==== theme.lib.font-awesome.enable
 
-Description:: Subtitle of the hero area.
-Type:: string
+
+
 Default::
 +
 [source, nix]
 ----
-"It's nice to meet you"
+true
 ----
 
 
 
 ---
 
-[[theme.hero.title]]
-==== theme.hero.title
+[[theme.lib.googlefonts]]
+==== theme.lib.googlefonts
 
-Description:: Title of the hero area.
-Type:: string
+
+
 Default::
 +
 [source, nix]
 ----
-"Welcome To Our Studio!"
+[ "Montserrat:400,700" "Kaushan Script" "Droid Serif:400,700,400italic,700italic" "Roboto Slab:400,100,300,700" ]
 ----
 
 
 
 ---
 
-[[theme.menu.append]]
-==== theme.menu.append
+[[theme.lib.jquery.enable]]
+==== theme.lib.jquery.enable
 
-Description:: Menu items to add at the end of the navigation.
-Type:: list of attribute sets
+
+
 Default::
 +
 [source, nix]
 ----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  name = "Styx";
-  url = "https://styx-static.github.io/styx-site/";
-} ]
-----
-
-
-
----
-
-[[theme.menu.prepend]]
-==== theme.menu.prepend
-
-Description:: Menu items to add at the beginning of the navigation.
-Type:: list of attribute sets
-Default::
-+
-[source, nix]
-----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  name = "Styx";
-  url = "https://styx-static.github.io/styx-site/";
-} ]
-----
-
-
-
----
-
-[[theme.portfolio.items]]
-==== theme.portfolio.items
-
-Description:: List of portfolio projects as attribute sets, requires `title`, `subtitle`, `img`, `preview`, `client`, `clientLink`, `category` and `content`.  
-If set to the empty list `[]`, the portfolio area will not be displayed.
-
-Type:: list of attribute sets
-Default::
-+
-[source, nix]
-----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  category = "Graphic Design";
-  client = "Start Bootstrap";
-  clientLink = "#";
-  content = "Lorem ipsum dolor sit amet consectetur.";
-  date = "2014-07-05";
-  img = "roundicons.png";
-  preview = "roundicons-preview.png";
-  subtitle = "Lorem ipsum dolor sit amet consectetur.";
-  title = "Round Icons";
-} ]
-----
-
-
-
----
-
-[[theme.portfolio.subtitle]]
-==== theme.portfolio.subtitle
-
-Description:: Subtitle of the portolio area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet consectetur."
-----
-
-
-
----
-
-[[theme.portfolio.title]]
-==== theme.portfolio.title
-
-Description:: Title of the portfolio area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Services"
-----
-
-
-
----
-
-[[theme.services.items]]
-==== theme.services.items
-
-Description:: List of services as attribute sets, requires `title`, `icon` and `content` attributes.  
-If set to the empty list `[]`, the services area will not be displayed.
-
-Type:: list of attribute sets
-Default::
-+
-[source, nix]
-----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  content = "Lorem ipsum dolor sit amet consectetur.";
-  icon = "fa-shopping-cart";
-  title = "E-Commerce";
-} ]
-----
-
-
-
----
-
-[[theme.services.subtitle]]
-==== theme.services.subtitle
-
-Description:: Subtitle of the services area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet consectetur."
-----
-
-
-
----
-
-[[theme.services.title]]
-==== theme.services.title
-
-Description:: Title of the services area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Services"
+true
 ----
 
 
@@ -658,93 +222,6 @@ Default::
 
 ---
 
-[[theme.team.description]]
-==== theme.team.description
-
-Description:: Description of the team
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde."
-----
-
-
-
----
-
-[[theme.team.members]]
-==== theme.team.members
-
-Description:: List of team members as attribute sets, requires `img`, `name`, `position`, and `social`. `social` have the same format to `footer.social`.
-If set to the empty list `[]`, the team area will not be displayed.";
-
-Type:: list of attribute sets
-Default::
-+
-[source, nix]
-----
-[  ]
-----
-
-Example::
-+
-[source, nix]
-----
-[ {
-  img = "1.jpg";
-  name = "Kay Garland";
-  position = "Lead Designer";
-  social = [ {
-    link = "#";
-    type = "twitter";
-  } {
-    link = "#";
-    type = "facebook";
-  } {
-    link = "#";
-    type = "linkedin";
-  } ];
-} ]
-----
-
-
-
----
-
-[[theme.team.subtitle]]
-==== theme.team.subtitle
-
-Description:: Subtitle of the team area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"Lorem ipsum dolor sit amet consectetur."
-----
-
-
-
----
-
-[[theme.team.title]]
-==== theme.team.title
-
-Description:: Title of the team area.
-Type:: string
-Default::
-+
-[source, nix]
-----
-"About"
-----
-
-
-
----
-
 
 
 
@@ -760,104 +237,96 @@ Default::
 ---
 
 
-[[templates.index]]
-==== templates.index
+[[templates.blocks.banner]]
+==== templates.blocks.banner
 
 
 
 ---
 
 
-[[templates.partials.about]]
-==== templates.partials.about
+[[templates.blocks.basic]]
+==== templates.blocks.basic
 
 
 
 ---
 
 
-[[templates.partials.clients]]
-==== templates.partials.clients
+[[templates.blocks.clients]]
+==== templates.blocks.clients
 
 
 
 ---
 
 
-[[templates.partials.contact]]
-==== templates.partials.contact
+[[templates.blocks.contact]]
+==== templates.blocks.contact
 
 
 
 ---
 
 
-[[templates.partials.footer]]
-==== templates.partials.footer
+[[templates.blocks.portfolio]]
+==== templates.blocks.portfolio
 
 
 
 ---
 
 
-[[templates.partials.head]]
-==== templates.partials.head
+[[templates.blocks.services]]
+==== templates.blocks.services
 
 
 
 ---
 
 
-[[templates.partials.hero]]
-==== templates.partials.hero
+[[templates.blocks.team]]
+==== templates.blocks.team
 
 
 
 ---
 
 
-[[templates.partials.js]]
-==== templates.partials.js
+[[templates.blocks.timeline]]
+==== templates.blocks.timeline
 
 
 
 ---
 
 
-[[templates.partials.modals]]
-==== templates.partials.modals
+[[templates.partials.content-post]]
+==== templates.partials.content-post
 
 
 
 ---
 
 
-[[templates.partials.nav]]
-==== templates.partials.nav
+[[templates.partials.content-pre]]
+==== templates.partials.content-pre
 
 
 
 ---
 
 
-[[templates.partials.portfolio]]
-==== templates.partials.portfolio
+[[templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
 
 
 
 ---
 
 
-[[templates.partials.services]]
-==== templates.partials.services
-
-
-
----
-
-
-[[templates.partials.team]]
-==== templates.partials.team
+[[templates.partials.js-custom]]
+==== templates.partials.js-custom
 
 
 
@@ -901,6 +370,7 @@ rec {
      items at the end of the list have higher priority
   */
   themes = [
+    styx-themes.generic-templates
     ../.
   ];
 
@@ -923,8 +393,22 @@ rec {
    This section declares the data used by the site
 -----------------------------------------------------------------------------*/
 
-  data = {
-  };
+  data = with lib; {
+
+    /* Menu using blocks
+    */
+    menu = let
+      indexBlocks = pages.index.blocks;
+      bItems = map (n:
+        let block = find { id = n; } indexBlocks;
+        in block // { navbarClass = "page-scroll"; url = "/#${block.id}"; }
+      ) [ "services" "portfolio" "about" "team" "contact" ];
+    in bItems
+    ++ [
+      { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
+    ];
+
+  } // (lib.loadDir { dir = ./data; inherit env; asAttrs = true; });
 
 
 /*-----------------------------------------------------------------------------
@@ -935,9 +419,21 @@ rec {
 
   pages = rec {
     index = {
+      title    = "Home";
       path     = "/index.html";
-      template = templates.index;
-      layout   = lib.id;
+      template = templates.block-page.full;
+      layout   = templates.layout;
+      blocks   = let
+        darken = d: d // { class = "bg-light-gray"; };
+      in with templates.blocks; [
+        (banner data.main-banner)
+        (services data.services)
+        (portfolio (darken data.portfolio))
+        (timeline data.about)
+        (team (darken data.team))
+        (clients data.clients)
+        (contact data.contact) 
+      ];
     };
   };
 
@@ -947,7 +443,13 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
-  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
+  # converting pages attribute set to a list
+  pageList = lib.pagesToList {
+    inherit pages;
+    default = { layout = templates.layout; };
+  };
+
+  site = lib.mkSite { inherit files pageList; };
 
 }
 
@@ -1455,6 +957,14 @@ Default::
 ---
 
 
+[[templates.block-page.full]]
+==== templates.block-page.full
+
+
+
+---
+
+
 [[templates.bootstrap.alert]]
 ==== templates.bootstrap.alert
 
@@ -1654,10 +1164,10 @@ templates.bootstrap.navbar.default {
 [source, html]
 .Result
 ----
-<nav class="navbar navbar-inverse">
+<nav class="navbar navbar-inverse" id="navbar">
 <div class="container">
 <div class="navbar-header">
-  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
     <span class="sr-only">Toggle navigation</span>
     <span class="icon-bar"></span>
     <span class="icon-bar"></span>
@@ -1665,7 +1175,7 @@ templates.bootstrap.navbar.default {
   </button>
   <a class="navbar-brand" href="#">Project Name</a>
 </div>
-<div class="collapse navbar-collapse" id="navbar">
+<div class="collapse navbar-collapse" id="navbar-collapse">
 <ul class="nav navbar-nav">
 <li class="active"><a href="http://domain.org/#">Home</a></li>
 <li><a href="http://domain.org/#about">About</a></li>
@@ -1736,6 +1246,81 @@ templates.bootstrap.navbar.nav {
 <li><a href="http://domain.org/#about">About</a></li>
 <li><a href="http://domain.org/#contact">Contact</a></li>
 </ul>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.bootstrap.navbar.nav_dropdown]]
+==== templates.bootstrap.navbar.nav_dropdown
+
+Description:: Generate a navbar nav dropdown menu. Meant to be used in `bootstrap.navbar.nav` context
+Arguments (Standard)::
+`title`::: Title +
+Type: `String`. 
+`items`::: Items of the dropdown menu +
+Type: `[ Page ]`. 
+`caret`::: Code added after the dropdown title +
+Type: `String`.  +
+Optional, defaults to `"<span class=\"caret\"></span>"`.
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.bootstrap.navbar.nav_dropdown { title = "Languages"; items = [ { title = "English"; path = "/eng"; } { title = "French"; path = "/fre"; } ]; }
+----
+
++
+[source, html]
+.Result
+----
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Languages<span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="http://domain.org/eng">English</a></li>
+<li><a href="http://domain.org/fre">French</a></li>
+</ul>
+</li>
+----
+
+
+
+
+
+
+---
+
+
+[[templates.bootstrap.navbar.nav_item]]
+==== templates.bootstrap.navbar.nav_item
+
+Description:: Generate a navbar nav item. Used internally by `bootstrap.navbar.nav`.
+Arguments (Standard)::
+`item`::: Item +
+Type: `Page`. 
+`currentPage`::: Current page displayed. +
+Type: `[ Page ]`. 
+
+Example:: 
++
+[source, nix]
+.Code
+----
+templates.bootstrap.navbar.nav_item { item = { title = "Home"; path = "/"; }; }
+----
+
++
+[source, html]
+.Result
+----
+<li><a href="http://domain.org/">Home</a></li>
 ----
 
 
@@ -3662,6 +3247,22 @@ true
 
 ---
 
+[[theme.lib.googlefonts]]
+==== theme.lib.googlefonts
+
+
+
+Default::
++
+[source, nix]
+----
+[ "Open Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic" ]
+----
+
+
+
+---
+
 [[theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
@@ -4450,6 +4051,394 @@ rec {
   };
 
   site = lib.mkSite { inherit files pageList; };
+
+}
+
+----
+
+
+
+
+[[nix]]
+== Nix
+
+Port of the https://github.com/LordMathis/hugo-theme-nix[nix] theme. +
+Requires the `generic-templates` theme.
+
+
+
+---
+
+- https://styx-static.github.io/styx-theme-nix[Demo]
+- https://github.com/styx-static/styx-theme-nix[Homepage]
+
+
+---
+
+image::imgs/nix.png[Nix,align="center"]
+
+
+
+
+
+
+[[nix.conf]]
+=== Configuration interface
+
+:sectnums!:
+
+---
+
+[[theme.lib.bootstrap.enable]]
+==== theme.lib.bootstrap.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[theme.lib.font-awesome.enable]]
+==== theme.lib.font-awesome.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[theme.lib.googlefonts]]
+==== theme.lib.googlefonts
+
+
+
+Default::
++
+[source, nix]
+----
+[ "Inconsolata" "Open+Sans" "Roboto" "Montserrat" "Concert One" ]
+----
+
+
+
+---
+
+[[theme.lib.jquery.enable]]
+==== theme.lib.jquery.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[theme.site.copyright]]
+==== theme.site.copyright
+
+Description:: Site copyright.
+Type:: string
+Default::
++
+[source, nix]
+----
+"&copy; 2017. All rights reserved. 
+"
+----
+
+
+
+---
+
+[[theme.site.description]]
+==== theme.site.description
+
+Description:: Site description.
+Type:: string
+Default::
++
+[source, nix]
+----
+"Nix blog description
+"
+----
+
+
+
+---
+
+[[theme.site.title]]
+==== theme.site.title
+
+Description:: Site title.
+Type:: string
+Default::
++
+[source, nix]
+----
+"styx@styx ~ $"
+----
+
+
+
+---
+
+
+
+
+
+:sectnums:
+
+
+[[nix.templates]]
+=== Templates
+
+:sectnums!:
+
+---
+
+
+[[templates.page.full]]
+==== templates.page.full
+
+
+
+---
+
+
+[[templates.partials.content]]
+==== templates.partials.content
+
+
+
+---
+
+
+[[templates.partials.content-post]]
+==== templates.partials.content-post
+
+
+
+---
+
+
+[[templates.partials.content-pre]]
+==== templates.partials.content-pre
+
+
+
+---
+
+
+[[templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
+
+
+
+---
+
+
+[[templates.post.full]]
+==== templates.post.full
+
+
+
+---
+
+
+[[templates.post.list]]
+==== templates.post.list
+
+
+
+---
+
+
+[[templates.posts-list]]
+==== templates.posts-list
+
+
+
+---
+
+
+
+:sectnums:
+
+
+
+
+[[nix.example]]
+=== Example site source
+
+[source, nix]
+----
+/*-----------------------------------------------------------------------------
+   Init
+
+   Initialization of Styx, should not be edited
+-----------------------------------------------------------------------------*/
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
+}@args:
+
+rec {
+
+  /* Library loading
+  */
+  styxLib = import styx.lib args;
+
+
+/*-----------------------------------------------------------------------------
+   Themes setup
+
+-----------------------------------------------------------------------------*/
+
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
+  */
+  themes = [
+    styx-themes.generic-templates
+    ../.
+  ];
+
+  /* Loading the themes data
+  */
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    extraEnv  = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
+  };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates env;
+
+
+/*-----------------------------------------------------------------------------
+   Data
+
+   This section declares the data used by the site
+-----------------------------------------------------------------------------*/
+
+  data = with lib; {
+    # Loading the index page data 
+    index = loadFile { file = ./data/index.nix; inherit env; };
+
+    # loading a single page
+    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+
+    # loading a list of contents
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+
+    # menu declaration
+    menu = with pages; [
+      (about // { navbarTitle = "~/about"; })
+      ((head postsList) // { navbarTitle = "~/posts"; })
+    ];
+  };
+
+
+/*-----------------------------------------------------------------------------
+   Pages
+
+   This section declares the pages that will be generated
+-----------------------------------------------------------------------------*/
+
+  pages = with lib; rec {
+
+    /* Custom index page
+       See data/index.nix for the details
+    */
+    index = {
+      title    = "styx@styx ~ $";
+      path     = "/index.html";
+      template = id;
+    } // data.index;
+
+    /* About page
+       Example of generating a page from imported data
+    */
+    about = {
+      path     = "/about.html";
+      template = templates.page.full;
+    } // data.about;
+
+    /* Feed page
+    */
+    feed = {
+      path     = "/feed.xml";
+      template = templates.feed.atom;
+      # Bypassing the layout
+      layout   = id;
+      items    = take 10 posts.list;
+    };
+
+    /* 404 error page
+    */
+    e404 = {
+      path     = "/404.html";
+      template = templates.e404;
+    };
+
+    /* Posts lists
+    */
+    postsList = mkSplit {
+      title        = "Posts";
+      basePath     = "/posts/index";
+      itemsPerPage = 3;
+      template     = templates.posts-list;
+      data         = posts.list;
+    };
+
+    /* Posts pages
+    */
+    posts = mkPageList {
+      data        = data.posts;
+      pathPrefix  = "/posts/";
+      template    = templates.post.full;
+    };
+
+  };
+
+
+/*-----------------------------------------------------------------------------
+   Site rendering
+
+-----------------------------------------------------------------------------*/
+
+  # converting pages attribute set to a list
+  pageList = lib.pagesToList {
+    inherit pages;
+    default = { layout = templates.layout; };
+  };
+
+  site = lib.mkSite {
+    inherit pageList;
+    # Loading custom files
+    files = files ++ [ ./files ];
+  };
 
 }
 

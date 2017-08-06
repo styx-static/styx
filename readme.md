@@ -4,6 +4,56 @@
 
 The purely functional static site generator in Nix expression language.
 
+
+## Features
+
+Among others, styx have the following features:
+
+## Easy to install
+
+Styx has no other depency than nix, if nix is installed `nix-env -iA styx` is all that is required to install.
+
+## Multiple content support
+
+Styx support content in markdown, asciidoc and nix.  
+Styx also provides some special tags that can be used in markup language to add an introduction or to split a markup file in multiple html pages.
+
+## Embedded nix
+
+Nix can be embedded in markup files!  
+For example a youtube video can be embedded in a mardown file like this:
+
+## Handling of sass/scss
+
+Upon site rendering, styx will automatically convert sass and scss files.
+
+## Template framework
+
+The generic-template theme provide a template framework that can be leveraged to easily create new themes or sites.
+Thank to this a theme like hyde consists only in about 120 lines of nix templates.
+
+## Configuration interface
+
+Styx sites use a configuration interface a la NixOS modules.  
+Every configuration declaration is type-checked, and documentation can be generated from that interface.
+
+## Linkcheck
+
+Linkcheck functionality is available out of the box, just run `styx linkcheck` to run linkcheker on a site.
+
+## Themes
+
+Styx support themes. Multiple themes can be used, mixed and extended at the same time.  
+This make it very easy to adapt an existing theme.  
+Official themes can also be used without any implicit installation, declaring the used theme(s) in `site.nix` is enough!
+
+## Documentation
+
+Styx fetaure complete documentation that can be viewed at any time by running `styx doc`.  
+A very unique feature of styx is that it can generate the documentation for a particuliar site with the `styx site-doc`,
+this documentation consists of used themes documentations, rendered pages list url and more.
+
+
 ## Install
 
 Use nix-env to install styx, or nix-shell to just test without installing it:

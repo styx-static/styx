@@ -1,0 +1,230 @@
+== Multi-locale sites
+
+While not being natively supported, Styx is flexible enough to generate multi-language sites.
+
+For multi-locale sites, it is recommended to change `site.nix` structure to fit the locales. The following example is just a suggestion and should be adapted to needs:
+
+The https://github.com/fractalide/fractalide-website-styx[Fractalide website] is an example of a fully multi-locale Styx site.
+
+NOTE: Multi-locale sites make it easy to mix namespace
+
+[source, nix]
+.Multi-locale site.nix
+----
+/*-----------------------------------------------------------------------------
+   Init
+
+   Initialization of Styx, should not be edited
+-----------------------------------------------------------------------------*/
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
+}@args:
+
+rec {
+
+  /* Base library
+  */
+  styxLib = import styx.lib args;
+
+
+/*-----------------------------------------------------------------------------
+   Themes setup
+
+-----------------------------------------------------------------------------*/
+
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
+  */
+  themes = [
+    styx-themes.hyde
+  ];
+
+
+  /* Loading the themes data for each locale
+  */
+  themesData = styxLib.mapAttrs (name: value:              <1>
+    styxLib.themes.load {
+      inherit styxLib themes;
+      extraConf = [ ./conf.nix extraConf ];
+      extraEnv = value;
+    }
+  ) locales;
+
+  /* Bringing locale independent theme data to scope
+  */
+  inherit (themesData.eng) conf lib files env;             <2>
+
+
+/*-----------------------------------------------------------------------------
+   English
+
+   This section declares English locale data and pages
+-----------------------------------------------------------------------------*/
+
+  locales.eng = rec {                                      <3>
+    # Locale code
+    locale = "eng";
+
+    # Html lang
+    html.lang = "en";                                      <4>
+
+    # Prefix
+    prefix = "";                                           <5>
+
+    # Environment
+    inherit (themesData."${locale}") env;                  <6>
+
+    /*------------
+      Data
+    ------------*/
+    data = with env; {                                     <7>
+      # loading a single page
+      about  = lib.loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    };
+
+    /*------------
+      Pages
+    ------------*/
+    pages = with env; rec {                                <8>
+      about = {
+        path     = prefix + "/about.html";
+        template = templates.page.full;
+      } // data.about;
+    };
+  };
+
+
+/*-----------------------------------------------------------------------------
+   French
+
+   This section declares English locale data and pages
+-----------------------------------------------------------------------------*/
+
+  locales.fre = rec {                                      <9>
+    # Locale code
+    locale = "fre";
+
+    # Html lang
+    html.lang = "fr";
+
+    # Prefix
+    prefix = "/${locale}";                                 <10>
+
+    # Environment
+    inherit (themesData."${locale}") env;
+
+    /*------------
+      Data
+    ------------*/
+    data = with env; {
+      # loading a single page
+      about  = lib.loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    };
+
+    /*------------
+      Pages
+    ------------*/
+    pages = with env; rec {
+      about = {
+        path     = prefix + "/about.html";
+        template = templates.page.full;
+      } // data.about;
+    };
+  };
+
+/*-----------------------------------------------------------------------------
+   Site
+
+-----------------------------------------------------------------------------*/
+
+  /* converting pages attribute set to a list
+  */
+  pageList = lib.localesToPageList {                      <11>
+    inherit locales;
+    default = locale: {
+      layout  = locale.env.templates.layout;
+    };
+  };
+
+  /* Generating the site
+  */
+  site = lib.mkSite { inherit files pageList; };
+
+}
+----
+
+<1> Load the themes for each locale. The themes are loaded for each locale to ensure the theme `env` is using the correct `data` and `pages`.
+<2> Put locale independent theme data to the main scope. `env` is brung the in main namespace to ensure `styx sit-doc` works well.
+<3> The English locale attribute set, holds the `pages` and `data` set and any other required attribute. This set attributes are merged in the theme `env`.
+<4> If the generic templates theme is used, `html.lang` in the environment will be used to set the `lang` attribute of the `html` tag ensuring the correct locale is declared.
+<5> Prefix is used on the `pages` set, and prepended to every pages path. For the default language, `prefix` should be an empty string.
+<6> Inheriting the theme data environment for the current locale.
+<7> English locale data set.
+<8> English locale pages set.
+<9> The French locale attribute set.
+<10> French locale pages prefix.
+<11> The page list generated by combining every locale pages.
+
+
+NOTE: This example use https://en.wikipedia.org/wiki/ISO_639-3[ISO-639-3] for language codes, but any format can be used.
+
+
+=== Using different configuration per locale
+
+The previous example use the same `conf.nix` for every locale. In some cases, it can be useful to use a different `conf.nix` per locale. +
+This can be easily achieved by changing the theme loading section in the following manner:
+
+[source, nix]
+----
+  /* Loading the themes data for each locale
+  */
+  themesData = styxLib.mapAttrs (name: value:
+    styxLib.themes.load {
+      inherit styxLib themes;
+      extraConf = [ ./conf."${name}".nix extraConf ];    <1>
+      extraEnv = value;
+    }
+  ) locales;
+----
+
+<1> By changing `./conf.nix` to `./conf.${name}.nix`, each locale will use a separate configuration file, eg: `conf.eng.nix`, `conf.fre.nix`, ...
+
+
+=== Translating strings in templates
+
+To translate strings in templates, eg *Read more*, a custom theme library with a `i18n` function can be used:
+
+[source, nix]
+.themes/THEME_NAME/lib.nix
+----
+{ lib }:
+with lib;
+{
+  i18n = text: locale:
+    let translations = {
+      "Read More" = {           <1>
+        jpn = "続きを読む";
+        fre = "Lire la suite";
+      };
+    };
+  in attrByPath [ text locale ] text translations;
+}
+----
+
+<1> Strings to translate shoule be defined as an attribute set, the attribute name being the string used in the template and the value an attribute set in format `{ LOCALE = "TRANSLATION"; };`.
+
+
+
+[source, nix]
+.Example of usage in a template
+----
+{ lib, locale, ... }:                  <1>
+with lib;
+''<p>${i18n "Read More" locale}<p>''   <2>
+----
+
+<1> `locale` is coming from `site.nix` `extraEnv` and is the ISO-639-3 code of the locale in the example.
+<2> calling `i18n` to translate the string.
+
+NOTE: `i18n` stands for internationalization.

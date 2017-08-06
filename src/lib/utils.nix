@@ -258,7 +258,7 @@ in rec {
       };
       notes = {
         description = "Notes regarding special usages, asciidoc markup can be used.";
-        type = "Mull | String";
+        type = "Null | String";
         default = "Null";
       };
     };

@@ -114,7 +114,44 @@ rec {
       }
     ];
 
-    return = "Block";
+    return = "`Block`";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        processBlocks [ {
+          content = "Block A";
+          extraJS = "js/a.js";
+        } {
+          content = "Block B";
+          extraJS = "js/b.js";
+          extraCSS = "css/b.css";
+        } {
+          content = "Block C";
+          extraCSS = "css/c.css";
+        } ]
+      '';
+      code =
+        processBlocks [ {
+          content = "Block A";
+          extraJS = "js/a.js";
+        } {
+          content = "Block B";
+          extraJS = "js/b.js";
+          extraCSS = "css/b.css";
+        } {
+          content = "Block C";
+          extraCSS = "css/c.css";
+        } ]
+      ;
+      expected = {
+        content = ''
+          Block A
+          Block B
+          Block C'';
+        extraCSS = [ "css/b.css" "css/c.css" ];
+        extraJS = [ "js/a.js" "js/b.js" ];
+      };
+    })];
 
     function = blocks: {
       content  = mapTemplate (b: b.content) blocks;

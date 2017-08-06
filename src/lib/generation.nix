@@ -208,6 +208,7 @@ rec {
                     sass $input 2>/dev/null > "$out/$path"
                     if [ ! -s "$out/$path" ]; then
                       echo "Warning: could not build '$path'"
+                      rm $out/$path
                     fi
                   ) || (
                     [ -f "$out/$path" ] && rm "$out/$path"
@@ -325,4 +326,110 @@ rec {
          ) [] pages';
   };
 
+/*
+===============================================================
+
+ localesToPageList
+
+===============================================================
+*/
+
+  localesToPageList = documentedFunction {
+    description = "Convert a set of locales to a list of pages.";
+
+    arguments = {
+      locales = {
+        description = "A set of locales, each having a `pages` attribute set.";
+        type = "Attrs";
+      };
+      default = {
+        description = "A function to set default values to the pages, eg: to set the default `layout` template.";
+        type = "Locale -> Attrs";
+        default = literalExample "locale: {}";
+      };
+    };
+
+    return = "`[ Page ]`";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        pagelist = localesToPageList {
+          inherit locales;
+          default = locale: {
+            layout = locale.env.templates.layout;
+          };
+        };
+      '';
+    }) (mkExample {
+      literalCode = ''
+        localesToPageList {
+          locales = {
+            eng = rec { 
+              code   = "eng";
+              prefix = "/''${code}";
+              pages = {
+                foo = { path = "/foo.html"; };
+                bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
+              };
+            };
+            fre = rec {
+              code = "fre";
+              prefix = "/''${code}";
+              pages = {
+                foo = { path = prefix + "/foo.html"; };
+                bar = [ { path = prefix + "/bar-1.html"; } { path = prefix + "/bar-2.html"; } ];
+              };
+            };
+          };
+          default = locale: {
+            baz = "''${locale.code}-baz";
+          };
+        }
+      '';
+      code =
+        localesToPageList {
+          locales = {
+            eng = rec { 
+              code   = "eng";
+              prefix = "/${code}";
+              pages = {
+                foo = { path = "/foo.html"; };
+                bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
+              };
+            };
+            fre = rec {
+              code = "fre";
+              prefix = "/${code}";
+              pages = {
+                foo = { path = prefix + "/foo.html"; };
+                bar = [ { path = prefix + "/bar-1.html"; } { path = prefix + "/bar-2.html"; } ];
+              };
+            };
+          };
+          default = locale: {
+            baz = "${locale.code}-baz";
+          };
+        }
+      ;
+      expected = [ 
+        { baz = "eng-baz"; path = "/foo.html"; }
+        { baz = "eng-baz"; path = "/bar-1.html"; }
+        { baz = "eng-baz"; path = "/bar-2.html"; }
+        { baz = "fre-baz"; path = "/fre/foo.html"; }
+        { baz = "fre-baz"; path = "/fre/bar-1.html"; }
+        { baz = "fre-baz"; path = "/fre/bar-2.html"; }
+      ];
+    }) ];
+
+    function = {
+      locales
+    , default ? (locale: {})
+    }:
+      flatten (mapAttrsToList (_: locale:
+        pagesToList {
+          pages   = locale.pages;
+          default = default locale;
+        }
+      ) locales);
+  };
 }

@@ -727,6 +727,120 @@ generatePage {
 
 :sectnums!:
 
+[[lib.generation.localesToPageList]]
+=== localesToPageList
+
+==== Description
+
+Convert a set of locales to a list of pages.
+
+==== Arguments (Attribute Set)
+
+
+===== default
+
+A function to set default values to the pages, eg: to set the default `layout` template.
+
+Type: `Locale -> Attrs`. 
+
+Optional, defaults to `locale: {}`.
+
+===== locales
+
+A set of locales, each having a `pages` attribute set.
+
+Type: `Attrs`. 
+
+==== Return
+
+`[ Page ]`
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+pagelist = localesToPageList {
+  inherit locales;
+  default = locale: {
+    layout = locale.env.templates.layout;
+  };
+};
+
+----
+
+
+
+---
+
+[source, nix]
+.Code
+----
+localesToPageList {
+  locales = {
+    eng = rec { 
+      code   = "eng";
+      prefix = "/${code}";
+      pages = {
+        foo = { path = "/foo.html"; };
+        bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
+      };
+    };
+    fre = rec {
+      code = "fre";
+      prefix = "/${code}";
+      pages = {
+        foo = { path = prefix + "/foo.html"; };
+        bar = [ { path = prefix + "/bar-1.html"; } { path = prefix + "/bar-2.html"; } ];
+      };
+    };
+  };
+  default = locale: {
+    baz = "${locale.code}-baz";
+  };
+}
+
+----
+
+[source, nix]
+.Result
+----
+[ {
+  baz = "eng-baz";
+  path = "/foo.html";
+} {
+  baz = "eng-baz";
+  path = "/bar-1.html";
+} {
+  baz = "eng-baz";
+  path = "/bar-2.html";
+} {
+  baz = "fre-baz";
+  path = "/fre/foo.html";
+} {
+  baz = "fre-baz";
+  path = "/fre/bar-1.html";
+} {
+  baz = "fre-baz";
+  path = "/fre/bar-2.html";
+} ]
+----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
 [[lib.generation.mkSite]]
 === mkSite
 
@@ -2850,6 +2964,72 @@ with (parseDate "2012-12-21"); "${D} ${b} ${Y}"
 ---
 
 
+:sectnums!:
+
+[[lib.template.processBlocks]]
+=== processBlocks
+
+==== Description
+
+Merge blocks data.
+
+==== Arguments (Standard)
+
+
+===== blocks
+
+List of blocks attributes set
+
+Type: `[ Block ]`. 
+
+==== Return
+
+`Block`
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+processBlocks [ {
+  content = "Block A";
+  extraJS = "js/a.js";
+} {
+  content = "Block B";
+  extraJS = "js/b.js";
+  extraCSS = "css/b.css";
+} {
+  content = "Block C";
+  extraCSS = "css/c.css";
+} ]
+
+----
+
+[source, nix]
+.Result
+----
+{
+  content = "Block A
+Block B
+Block C";
+  extraCSS = [ "css/b.css" "css/c.css" ];
+  extraJS = [ "js/a.js" "js/b.js" ];
+}
+----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
 
 
 == themes
@@ -2979,7 +3159,7 @@ A theme data attribute set containing:
 * `themes`: List of themes attribute sets.
 * `decls`: Themes declaration set.
 * `docs`: Themes documentation set.
-* `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `template`.
+* `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `templates`.
 
 
 ==== Example
@@ -3255,7 +3435,7 @@ The function to document.
 
 Notes regarding special usages, asciidoc markup can be used.
 
-Type: `Mull | String`. 
+Type: `Null | String`. 
 
 Optional, defaults to `"Null"`.
 
@@ -3352,6 +3532,62 @@ find { number = (x: x > 3); color = "blue"; } [
   color = "blue";
   number = 6;
 }
+----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.utils.getAttrs]]
+=== getAttrs
+
+==== Description
+
+Get the attribute values for the `n` attribute name from a `l` list of attribute sets.
+
+==== Arguments (Standard)
+
+
+===== n
+
+Attribute name.
+
+Type: `String`. 
+
+===== l
+
+List of attribute sets.
+
+Type: `[ Attrs ]`. 
+
+==== Return
+
+A list containing the values of `n`.
+
+
+==== Example
+
+
+[source, nix]
+.Code
+----
+getAttrs "a" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ]
+----
+
+[source, nix]
+.Result
+----
+[ 1 2 4 ]
 ----
 
 
