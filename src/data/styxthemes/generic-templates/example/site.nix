@@ -3,16 +3,15 @@
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ lib, styx, runCommand, writeText
-, styx-themes
+{ styx
 , extraConf ? {}
 }@args:
 
 rec {
 
-  /* Library loading
+  /* Importing styx library
   */
-  styxLib = import styx.lib args;
+  styxLib = import styx.lib styx;
 
 
 /*-----------------------------------------------------------------------------
@@ -20,10 +19,15 @@ rec {
 
 -----------------------------------------------------------------------------*/
 
+  /* Importing styx themes from styx
+  */
+  styx-themes = import styx.themes;
+
   /* list the themes to load, paths or packages can be used
      items at the end of the list have higher priority
   */
   themes = [ ../. ];
+
 
   /* Loading the themes data
   */
