@@ -1,21 +1,21 @@
 [submodule "themes/generic-templates"]
 	path = themes/generic-templates
-	url = git@github.com:styx-static/styx-theme-generic-templates.git
+	url = https://github.com/styx-static/styx-theme-generic-templates.git
 [submodule "themes/hyde"]
 	path = themes/hyde
-	url = git@github.com:styx-static/styx-theme-hyde.git
+	url = https://github.com/styx-static/styx-theme-hyde.git
 [submodule "themes/agency"]
 	path = themes/agency
-	url = git@github.com:styx-static/styx-theme-agency.git
+	url = https://github.com/styx-static/styx-theme-agency.git
 [submodule "themes/orbit"]
 	path = themes/orbit
-	url = git@github.com:styx-static/styx-theme-orbit.git
+	url = https://github.com/styx-static/styx-theme-orbit.git
 [submodule "themes/showcase"]
 	path = themes/showcase
-	url = git@github.com:styx-static/styx-theme-showcase.git
+	url = https://github.com/styx-static/styx-theme-showcase.git
 [submodule "themes/ghostwriter"]
 	path = themes/ghostwriter
-	url = git@github.com:styx-static/styx-theme-ghostwriter.git
+	url = https://github.com/styx-static/styx-theme-ghostwriter.git
 [submodule "themes/nix"]
 	path = themes/nix
-	url = git@github.com:styx-static/styx-theme-nix.git
+	url = https://github.com/styx-static/styx-theme-nix.git
