@@ -15,18 +15,17 @@ in
 with pkgs.lib;
 let
 
-  mkThemeTest = theme: (pkgs.callPackage (import "${pkgs.styx-themes."${theme}"}/example/site.nix") {
-    inherit (pkgs) styx;
-    extraConf = {
-      siteUrl = ".";
-      renderDrafts = true;
-    };
-  }).site;
+  styx-themes = import pkgs.styx.themes;
 
-  themes-sites = fold (a: acc: acc // { "${a}-site" = mkThemeTest a; }) {} themes;
-
-  # extracting nixpkgs styx-themes list
-  themes = attrNames (filterAttrs (k: v: isDerivation v) pkgs.styx-themes);
+  themes-sites = mapAttrs' (n: v:
+    nameValuePair "${n}-site"
+    (pkgs.callPackage (import "${v}/example/site.nix") {
+      extraConf = {
+        siteUrl = ".";
+        renderDrafts = true;
+      };
+    }).site
+  ) styx-themes;
 
   defaultEnv = {
     preferLocalBuild = true;
@@ -51,22 +50,13 @@ rec {
       ${styx}/bin/styx new site my-site --in $out
       sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
     '';
-    in (pkgs.callPackage (import "${site}/my-site/site.nix") { inherit styx; }).site;
+    in (pkgs.callPackage (import "${site}/my-site/site.nix") {}).site;
 
   new-theme = pkgs.runCommand "styx-new-theme" defaultEnv ''
     mkdir $out
     ${styx}/bin/styx new site my-site --in $out
     ${styx}/bin/styx new theme my-theme --in $out/my-site/themes
   '';
-
-  /*
-  serve = pkgs.runCommand "styx-serve" { buildInputs = [ pkgs.curl ]; } ''
-    mkdir $out
-    ${styx}/bin/styx serve --build-path ${themes-sites.showcase-site} --detach
-    sleep 3
-    curl -I 127.0.0.1:8080/index.html > $out/result
-  '';
-  */
 
   deploy-gh-pages = pkgs.runCommand "styx-deploy-gh" ({ buildInputs = [ pkgs.git ]; } // defaultEnv) ''
     mkdir $out

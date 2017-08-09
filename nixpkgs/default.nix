@@ -16,30 +16,11 @@
 let
   pkgs = import <nixpkgs> {};
 
-in 
-with pkgs.lib;
-with builtins;
-let
-
-  themesDir = ../themes;
-
-  # generates a theme derivation from a theme folder
-  mkTheme = themeName: pkgs.stdenv.mkDerivation {
-    name = "styx-theme-${themeName}-${fileContents ./../VERSION}";
-    src  =  themesDir + "/${themeName}";
-    installPhase = ''mkdir $out && cp -r $src/* $out/'';
-  };
-
   pkgs' = pkgs // styx-pkgs;
 
-  styx-pkgs = {
+  styx-pkgs = rec {
     # styx dev version
     styx = pkgs.callPackage ../derivation.nix {};
-
-    # styx-themes dev version
-    styx-themes = mapAttrs (n: v:
-      mkTheme n
-    ) (readDir ../themes);
 
     # updating callPackage so styx builder use the dev versions
     callPackage = pkgs.lib.callPackageWith (pkgs');

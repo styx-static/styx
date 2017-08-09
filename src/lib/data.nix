@@ -56,7 +56,7 @@ let
         preferLocalBuild = true;
         allowSubstitutes = false;
       } ''
-        python ${pkgs.styx}/share/tools/parser.py < ${fileData.path} > $out
+        python ${pkgs.styx}/share/styx/tools/parser.py < ${fileData.path} > $out
         '';
       data = importApply dataFn env;
     in mapAttrs (k: v:

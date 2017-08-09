@@ -1,8 +1,11 @@
-{ lib, styx, runCommand, writeText, ... }:
+styx:
 let
+  # For runCommand and writeText
+  nixpkgs = import <nixpkgs> {};
+
   # nixpkgs lib
-  base = lib // builtins;
-  pkgs = { inherit styx runCommand writeText; };
+  base = nixpkgs.lib // builtins;
+  pkgs = { inherit styx; inherit (nixpkgs) runCommand writeText; };
 
   # Styx lib
   data       = (import ./data.nix) base pkgs;

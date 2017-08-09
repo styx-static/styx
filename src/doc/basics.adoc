@@ -11,11 +11,11 @@ Let's look at a very basic example of a styx site `site.nix` file.
 [source, nix]
 .Hello world!
 ----
-{ lib, styx, runCommand, writeText, ... }@args: # <1>
+{ styx, ... }@args: # <1>
 
 rec { # <2>
 
-  lib = import styx.lib args; # <3>
+  lib = import styx.lib styx; # <3>
 
   index = { # <4>
     layout   = template: "<html><body>${template}</body></html>"; # <5>
@@ -118,8 +118,7 @@ This section is the basic setup of styx, it should not be changed and used as is
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
 
-{ lib, styx, runCommand, writeText
-, styx-themes
+{ styx
 , extraConf ? {}
 }@args:
 
@@ -127,7 +126,7 @@ rec {
 
   /* Styx library
   */
-  styxLib = import styx.lib args; <1>
+  styxLib = import styx.lib styx; <1>
 ----
 
 <1> Load the styx library, library functions are documented in link:./library.html[library documentation].
@@ -148,10 +147,14 @@ Themes are detailed in the <<Themes>> section.
 
 -----------------------------------------------------------------------------*/
 
+  /* Importing styx themes from styx
+  */
+  styx-themes = import styx.themes; # <1>
+
   /* list the themes to load, paths or packages can be used
      items at the end of the list have higher priority
   */
-  themes = [ # <1>
+  themes = [ # <2>
     styx-themes.generic-templates
   ];
 
@@ -159,20 +162,21 @@ Themes are detailed in the <<Themes>> section.
   */
   themesData = styxLib.themes.load {
     inherit styxLib themes;
-    extraEnv = { inherit data pages; }; # <2>
-    extraConf = [ ./conf.nix extraConf ]; # <3>
+    extraEnv = { inherit data pages; }; # <3>
+    extraConf = [ ./conf.nix extraConf ]; # <4>
   };
 
   /* Bringing the themes data to the scope
   */
-  inherit (themesData) conf lib files templates env; # <4>
+  inherit (themesData) conf lib files templates env; # <5>
 ----
 
-<1> `themes` is a list so it is possible to set multiple themes at the same time to <<Combining Themes,combine them>>. Themes at the beginning of the list have a lower priority. +
+<1> Importing the styx-themes.
+<2> `themes` is a list so it is possible to set multiple themes at the same time to <<Combining Themes,combine them>>. Themes at the beginning of the list have a lower priority. +
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
-<2> Extra variables to add to the template environment.
-<3> Extra configuration sets to merge with the themes configurations, can be files or paths, head of the list have lower priority.
-<4> Bringing the `themesData` attributes in the scope.
+<3> Extra variables to add to the template environment.
+<4> Extra configuration sets to merge with the themes configurations, can be files or paths, head of the list have lower priority.
+<5> Bringing the `themesData` attributes in the scope.
 
 [[site.nix-data]]
 ==== Data

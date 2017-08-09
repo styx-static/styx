@@ -2,6 +2,65 @@
 
 :sectnums!:
 
+[[v0.7.0]]
+=== Styx 0.7.0 - 2017/XX/XX
+
+==== Highlights:
+
+* Styx use its own version without relying on global `<nixpkgs>`, this enforce that `site,nix` format, used styx-themes and styx versions are matching.
+* Instructions and helpers for multi-locale sites.
+* Block feature for flexible single page websites, used in the Agency theme.
+* Better support for Darwin platforms.
+* Themes matching are tied to the styx version avoiding versions mismatchs.
+
+==== New themes:
+
+* Nix
+* Ghostwriter
+
+==== Breaking Changes:
+
+`site.nix` format have been simplified. Required arguments are `styx` and `extraConf` only.
+The themes set `styx-themes`, can be accessed with `import styx.themes` and is tied to the styx version.
+
+[source, nix]
+.Pre 0.7.0 site.nix
+----
+{ lib, styx, runCommand, writeText
+, styx-themes
+, extraConf ? {}
+}@args:
+
+rec {
+
+  /* Base library
+  /* Importing styx library
+  */
+  styxLib = import styx.lib styx;
+----
+
+[source, nix]
+.Post 0.7.0 site.nix
+----
+{ styx
+, extraConf ? {}
+}:
+
+rec {
+
+  /* Base library
+  /* Importing styx library
+  */
+  styxLib = import styx.lib styx;
+
+
+  /* Importing styx themes from styx
+  */
+  styx-themes = import styx.themes;
+----
+
+
+---
 [[v0.6.0]]
 === Styx 0.6.0 - 2017/02/26
 

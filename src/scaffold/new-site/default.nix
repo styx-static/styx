@@ -7,6 +7,9 @@
 
     $ nix-build /path/to/the/styx/site/
 
+  WARNING: This file use the system wide installed nixpkgs, and will pass styx version matching <nixpkgs>.
+  In case styx was installed directly with nix-env, you MUST explicitely set the styx version here.
+
 */
 { pkgs ? import <nixpkgs> {} }:
 

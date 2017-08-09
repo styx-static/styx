@@ -141,14 +141,14 @@ action=
 dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx root dir
 root=$(dirname "$dir")
-# styx share directory
-share=$(realpath "$root/share/styx")
+# styx src directory
+srcdir=$(realpath "$root/share/styx-src/src")
 # styx html doc path
 doc=$(realpath "$root/share/doc/styx/index.html")
 # styx builder
-builder="$share/nix/site-builder.nix"
+builder="$srcdir/nix/site-builder.nix"
 # doc builder
-doc_builder="$share/nix/site-doc-builder.nix"
+doc_builder="$srcdir/nix/site-doc-builder.nix"
 # debug mode
 debug=
 # extra arguments to be appended to the nix-build command
@@ -344,7 +344,7 @@ if [ "$action" = new ] && [ "$newCommand" = site ]; then
   check_dir $target "Error: Cannot create a new site in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{themes,data}
-  cp -r $share/scaffold/new-site/* "$target/"
+  cp -r $srcdir/scaffold/new-site/* "$target/"
   chmod -R u+rw "$target"
   echo "Styx site initialized in '$target'."
   exit 0
@@ -378,7 +378,7 @@ if [ "$action" = "gen-sample-data" ]; then
   target="$in/data/sample"
   check_dir $target "Error: '$target' directory exists, aborting."
   mkdir -p $target
-  cp -r $share/scaffold/sample-data/* "$target"
+  cp -r $srcdir/scaffold/sample-data/* "$target"
   chmod -R u+rw "$target"
   echo "Sample data created in '$target'."
   exit 0
