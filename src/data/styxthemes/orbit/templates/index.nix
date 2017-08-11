@@ -2,7 +2,6 @@
 page:
 ''
 <!DOCTYPE html>
-  ${templates.partials.lang}
 <head>
   ${templates.partials.head}
 </head>
