@@ -9,7 +9,7 @@ normalTemplate (page: ''
         <p class="post-description" itemprop="description">${page.intro}</p>
       ''}
       <p class="post-date">
-        <span>Published <time datetime="2014-09-28" itemprop="datePublished">Sun, Sep 28, 2014</time></span>
+        <span>Published <time datetime="${(parseDate page.date).date.num}" itemprop="datePublished">${with (parseDate page.date); "${b} ${D}, ${YYYY}"}</time></span>
         ${optionalString (page ? author) ''
         <span>by</span>
         <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
