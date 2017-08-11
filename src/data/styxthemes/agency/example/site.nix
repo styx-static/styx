@@ -55,15 +55,15 @@ rec {
     /* Menu using blocks
     */
     menu = let
-      indexBlocks = pages.index.blocks;
-      bItems = map (n:
-        let block = find { id = n; } indexBlocks;
-        in block // { navbarClass = "page-scroll"; url = "/#${block.id}"; }
-      ) [ "services" "portfolio" "about" "team" "contact" ];
-    in bItems
-    ++ [
-      { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
-    ];
+      mkBlockSet = blocks:
+        map (id:
+          (lib.find { inherit id; } blocks) // { navbarClass = "page-scroll"; url = "/#${id}"; }
+        );
+    in
+      (mkBlockSet pages.index.blocks [ "services" "portfolio" "about" "team" "contact" ])
+      ++ [
+        { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
+      ];
 
   } // (lib.loadDir { dir = ./data; inherit env; asAttrs = true; });
 
@@ -83,13 +83,13 @@ rec {
       blocks   = let
         darken = d: d // { class = "bg-light-gray"; };
       in with templates.blocks; [
-        (banner data.main-banner)
-        (services data.services)
+        (banner            data.main-banner)
+        (services          data.services)
         (portfolio (darken data.portfolio))
-        (timeline data.about)
-        (team (darken data.team))
-        (clients data.clients)
-        (contact data.contact) 
+        (timeline          data.about)
+        (team      (darken data.team))
+        (clients           data.clients)
+        (contact           data.contact) 
       ];
     };
   };
