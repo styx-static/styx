@@ -1,6 +1,6 @@
 let
   pkgs = import ../nixpkgs;
-  lib = pkgs.callPackage pkgs.styx.lib {};
+  lib = with pkgs; callPackage styx.lib styx;
 in
 
 with pkgs;

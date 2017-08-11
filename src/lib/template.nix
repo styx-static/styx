@@ -122,12 +122,16 @@ rec {
           content = "Block A";
           extraJS = "js/a.js";
         } {
-          content = "Block B";
-          extraJS = "js/b.js";
+          content  = "Block B";
+          extraJS  = "js/b.js";
           extraCSS = "css/b.css";
         } {
-          content = "Block C";
+          content  = "Block C";
           extraCSS = "css/c.css";
+        } {
+          content  = "Block D";
+          extraJS  = [ "js/d.js"   "js/d-1.js" ];
+          extraCSS = [ "css/d.css" "css/d-1.css" ];
         } ]
       '';
       code =
@@ -135,12 +139,16 @@ rec {
           content = "Block A";
           extraJS = "js/a.js";
         } {
-          content = "Block B";
-          extraJS = "js/b.js";
+          content  = "Block B";
+          extraJS  = "js/b.js";
           extraCSS = "css/b.css";
         } {
-          content = "Block C";
+          content  = "Block C";
           extraCSS = "css/c.css";
+        } {
+          content  = "Block D";
+          extraJS  = [ "js/d.js"   "js/d-1.js" ];
+          extraCSS = [ "css/d.css" "css/d-1.css" ];
         } ]
       ;
       expected = {
@@ -148,8 +156,8 @@ rec {
           Block A
           Block B
           Block C'';
-        extraCSS = [ "css/b.css" "css/c.css" ];
-        extraJS = [ "js/a.js" "js/b.js" ];
+        extraCSS = [ "css/b.css" "css/c.css" "css/d.css" "css/d-1.css" ];
+        extraJS = [ "js/a.js" "js/b.js" "js/d.js" "js/d-1.js" ];
       };
     })];
 

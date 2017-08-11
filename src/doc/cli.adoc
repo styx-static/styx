@@ -54,7 +54,7 @@ NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` 
 
 === Preview
 
-The `preview` command is used to launch a server that will list on localhost (127.0.0.1) port 8080 by default. The preview command will override `conf.siteUrl` to preserve links.
+The `preview` command is used to launch a server that will listen on localhost (127.0.0.1) port 8080 by default. The preview command will override `conf.siteUrl` to preserve links.
 
 The server can be stopped by pressing kbd:[Ctrl+C].
 
@@ -64,6 +64,15 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 
 NOTE: Drafts are rendered only if the related logic is present in `site.nix`. The `--drafts` flag just make styx pass `extraConf.renderDrafts` as `true` to `site.nix`.
 
+=== Preview theme
+
+The `preview-theme` command is used to launch a server that will listen on localhost (127.0.0.1) port 8080 by default and preview the selected theme bundled with styx.
+
+The server can be stopped by pressing kbd:[Ctrl+C].
+
+`styx preview-theme generic-templates`:: Start a preview server for the generic-templates theme on 127.0.0.1:8080.
+`styx preview-theme generic-templates --port 9090`:: Start a preview server for the generic-templates theme on 127.0.0.1:9090.
+`styx preview-theme generic-templates --port 9090 --drafts`:: Start a preview server for the generic-templates theme on 127.0.0.1:9090 with drafts rendered.
 
 === Live
 

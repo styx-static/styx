@@ -10,10 +10,11 @@ if [ $? -ne 0 ]; then
   echo "Error: build failed"
   exit 1
 fi
+
 target=$(readlink -f -- "$baseDir/src/doc/")
 cp $path/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
-cp -r $path/imgs $target/ --no-preserve=all
 echo "Themes documentation updated!"
+
 
 echo "Generating library documentation."
 path=$(nix-build "$scriptDir/library-doc.nix" --no-out-link "$@")

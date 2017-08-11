@@ -29,6 +29,7 @@ Subcommands:
     doc                        Opens styx HTML documentation in BROWSER.
     site-doc                   Generates and open the documentation for a styx site in BROWSER.
     store-path                 Build the site in the nix store and print the store path.
+    preview-theme THEME        Launch a preview of a the THEME theme.
 
 Generic options:
     -h, --help                 Show this help.
@@ -262,11 +263,15 @@ while [ "$#" -gt 0 ]; do
         exit 1
       fi
       ;;
+    preview-theme)
+      action="$i"
+      theme=$1; shift 1;
+      ;;
     preview)
       action="serve"
       siteUrl="PREVIEW"
       ;;
-    build|serve|deploy|live|gen-sample-data|site-doc|linkcheck|store-path)
+    buildi|serve|deploy|live|gen-sample-data|site-doc|linkcheck|store-path)
       action="$i"
       ;;
     doc|manual)
@@ -384,6 +389,33 @@ if [ "$action" = "gen-sample-data" ]; then
   exit 0
 fi
 
+#-------------------------------
+#
+# Preview theme
+#
+#-------------------------------
+
+if [ "$action" = "preview-theme" ]; then
+  themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
+  themedir="$themesdir/$theme"
+  if [ -z "$theme" ]; then
+    echo "Please select a theme, available themes are:"
+    for dir in $themesdir/*/; do
+      echo "- $(basename "$dir")"
+    done
+    exit 1
+  fi
+  if [ ! -d "$themedir" ]; then
+    echo "Theme '$theme' is not available, available themes are:"
+    for dir in $themesdir/*/; do
+      echo "- $(basename "$dir")"
+    done
+    exit 1
+  fi
+  in="$themedir/example"
+  action="serve"
+  siteUrl="PREVIEW"
+fi
 
 #-------------------------------
 #

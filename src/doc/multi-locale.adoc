@@ -1,3 +1,4 @@
+[[multilocale]]
 == Multi-locale sites
 
 While not being natively supported, Styx is flexible enough to generate multi-language sites.

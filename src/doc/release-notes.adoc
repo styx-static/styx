@@ -7,16 +7,19 @@
 
 ==== Highlights:
 
-* Styx use its own version without relying on global `<nixpkgs>`, this enforce that `site,nix` format, used styx-themes and styx versions are matching.
-* Instructions and helpers for multi-locale sites.
+* Styx use its own version without relying on global `<nixpkgs>`, this ensure that `site.nix` format, used styx-themes and styx versions are matching.
+* Instructions and helpers for <<multilocale,multi-locale>> sites.
 * Block feature for flexible single page websites, used in the Agency theme.
 * Better support for Darwin platforms.
-* Themes matching are tied to the styx version avoiding versions mismatchs.
 
 ==== New themes:
 
 * Nix
 * Ghostwriter
+
+==== New commands:
+
+* `styx preview-theme`: Preview a styx-theme theme, eg: `styx preview-theme ghostwriter`.
 
 ==== Breaking Changes:
 
@@ -33,7 +36,6 @@ The themes set `styx-themes`, can be accessed with `import styx.themes` and is t
 
 rec {
 
-  /* Base library
   /* Importing styx library
   */
   styxLib = import styx.lib styx;

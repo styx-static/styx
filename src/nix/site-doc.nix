@@ -73,9 +73,7 @@ let
       env' = if   site ? env
              then site.env
              else { inherit (site) conf templates lib data pages; };
-             #template' = template { inherit (site) conf templates lib data pages; genDoc = true; };
-      template' = trace "${path}" (template (env' // { genDoc = true; }));
-             #{ inherit (site) conf templates lib data pages; genDoc = true; };
+      template' = template (env' // { genDoc = true; });
     in
     ''
 

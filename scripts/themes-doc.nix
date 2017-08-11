@@ -5,16 +5,17 @@
 with pkgs.lib;
 
 let
-  styxLib = pkgs.callPackage pkgs.styx.lib {};
+  styxLib = with pkgs; callPackage styx.lib styx;
+
   mockSite = { data = {}; pages = {}; };
-  themes = reverseList (attrValues (filterAttrs (k: v: isDerivation v) pkgs.styx-themes));
+
+  themes = reverseList (attrValues (import pkgs.styx.themes));
+
   themesData = (styxLib.themes.load {
-    inherit styxLib themes;
+    inherit themes styxLib;
     extraConf = [ { siteUrl = "http://domain.org"; } ];
     extraEnv = mockSite;
-  }) // mockSite;
-
-
+  });
 in pkgs.callPackage ../src/nix/site-doc.nix {
   site = {
     inherit (themesData) conf lib files templates;
