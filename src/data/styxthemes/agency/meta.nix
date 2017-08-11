@@ -6,6 +6,7 @@
   demoPage = https://styx-static.github.io/styx-theme-agency;
   homepage = https://github.com/styx-static/styx-theme-agency;
   screenshot = ./screen.png;
+  documentation = lib.readFile ./documentation.adoc;
   description = ''
     Port of the https://github.com/digitalcraftsman/hugo-agency-theme[Agency] theme for Styx.
   '';
