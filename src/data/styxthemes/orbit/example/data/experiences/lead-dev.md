@@ -1,5 +1,4 @@
 {---
-index    = 1;
 position = "Lead Developer";
 dates    = "2015 - Present";
 company  = "Startup Hubs, San Francisco";

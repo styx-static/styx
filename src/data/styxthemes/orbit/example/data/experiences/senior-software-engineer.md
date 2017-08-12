@@ -1,5 +1,4 @@
 {---
-index    = 2;
 position = "Senior Software Engineer";
 dates    = "2014 - 2015";
 company  = "Google, London";
