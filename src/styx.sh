@@ -29,7 +29,8 @@ Subcommands:
     doc                        Opens styx HTML documentation in BROWSER.
     site-doc                   Generates and open the documentation for a styx site in BROWSER.
     store-path                 Build the site in the nix store and print the store path.
-    preview-theme THEME        Launch a preview of a the THEME theme.
+    preview-theme THEME        Launch a preview of the THEME theme.
+    theme-path THEME           Print the store path of the THEME theme.
 
 Generic options:
     -h, --help                 Show this help.
@@ -263,16 +264,20 @@ while [ "$#" -gt 0 ]; do
         exit 1
       fi
       ;;
-    preview-theme)
+    build|serve|deploy|live|gen-sample-data|site-doc|linkcheck|store-path)
       action="$i"
-      theme=$1; shift 1;
       ;;
     preview)
       action="serve"
       siteUrl="PREVIEW"
       ;;
-    buildi|serve|deploy|live|gen-sample-data|site-doc|linkcheck|store-path)
+    preview-theme)
       action="$i"
+      theme=$1; shift 1;
+      ;;
+    theme-path)
+      action="$i"
+      theme=$1; shift 1;
       ;;
     doc|manual)
       check_browser
@@ -408,6 +413,26 @@ if [ "$action" = "preview-theme" ]; then
   fi
   action="serve"
   siteUrl="PREVIEW"
+fi
+
+#-------------------------------
+#
+# Theme path
+#
+#-------------------------------
+
+if [ "$action" = "theme-path" ]; then
+  themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
+  path="$(nix-build --no-out-link -A $theme $themesdir 2> /dev/null)"
+  if [ $? -ne 0 ] || [ -z "$theme" ]; then
+    echo "Please select an available theme, available themes are:"
+    while IFS=, read theme rev
+    do
+      echo "- $theme"
+    done < $themesdir/revs.csv
+    exit 1
+  fi
+  echo $path
 fi
 
 #-------------------------------

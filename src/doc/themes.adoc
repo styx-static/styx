@@ -47,6 +47,8 @@ Path or packages can be used.
 [source, nix]
 .Using a local my-site theme and the generic-templates theme
 ----
+  styx-themes = import styx.themes;
+
   /* list the themes to load, paths or packages can be used
      items at the end of the list have higher priority
   */

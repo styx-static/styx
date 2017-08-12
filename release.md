@@ -1,37 +1,33 @@
 # Releasing a new version of styx
 
-1. Run the tests
+## Themes update
+
+1. Manually update the themes in `themes/rev.csv`
+
+2. Generate the theme version hashes
+
+```sh
+$ ./scripts/update-themes-hashes
+```
+
+3. Update the documentation
+
+```sh
+./scripts/update-doc
+```
+
+
+## Styx
+
+1. Write release notes in `src/doc/release-notes.adoc`
+
+2. Run the tests
 
 ```sh
 $ ./scripts/run-tests
 ```
 
-2. Write release notes in `src/doc/release-notes.adoc`
-
-3. Check the documentation, fix what needs to be
-
-```sh
-$ nix-build && ./result/bin/styx doc
-```
-
-4. Update themes screenshots
-
-```sh
-$ ./scripts/update-themes-screens
-```
-
-5. Update the styx-themes documentation and check the documentation again
-
-```sh
-$ ./scripts/update-docs
-$ nix-build && ./result/bin/styx doc
-```
-
-6. Commit each theme repository and tag the commit with `vVERSION`, eg: `v0.5.0`
-
-7. Update the version in `VERSION` file
-
-8. Make a commit, and tag it with `vVERSION`, eg: `v0.5.0`
+3. Make a commit, and tag it with `vVERSION`, eg: `v0.5.0`
 
 ```sh
 $ git add .
@@ -40,28 +36,34 @@ $ git tag "vVERSION"
 $ git push HEAD origin --tag
 ```
 
-9. Make a pull request to nixpkgs, updating the `styx` expression and `styx-themes` expressions, and test that it works:
+## nixpkgs
 
+1. Updating the `styx` expression and test that it works:
+
+```sh
+$ $(nix-build -A styx --no-out-link)/bin/styx preview-theme showcase
 ```
-$ $(nix-build -A styx --no-out-link)/bin/styx preview --in $(nix-build --no-out-link -A styx-themes.showcase)/example -I nixpkgs=./
-```
 
-10. wait until at least one unstable channel with styx gets updated, and make a release note in the styx-site
+2. Submit a pull request to nixpkgs
 
-11. Update the `latest` tag
+3. wait until at least one unstable channel with styx gets updated, and make a release note in the styx-site
+
+
+## Announcements
+
+1. Update the `latest` tag in the styx repo
 
 ```sh
 $ git tag "latest" --force
 $ git push HEAD origin --tag --force
 ```
 
-12. Update the themes demo sites
+2. Update the themes demo sites, run the following in the [themes repo](https://github.com/styx-static/themes)
 
 ```sh
-$ ./scripts/update-themes-sites
+$ ./scripts/demo-sites
 ```
 
-13. Make a post on the styx official site announcing the release
+13. Make a [post](https://github.com/styx-static/styx-site/tree/master/posts) on the [styx official site](https://github.com/styx-static/styx-site) announcing the release
 
 14. Done
-

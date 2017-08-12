@@ -6,7 +6,7 @@ The styx showcase theme example site can be previewed by the following command:
 
 [source, bash]
 ----
-$ styx preview --in $(nix-build --no-out-link -A styx-themes.showcase '<nixpkgs>')/example
+$ styx preview-theme showcase
 ----
 
 This command download the showcase theme in the nix store, build the site also in the nix store and launch the preview from there. +

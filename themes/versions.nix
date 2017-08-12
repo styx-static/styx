@@ -8,8 +8,8 @@
   generic-templates = {
     owner  = "styx-static";
     repo   = "styx-theme-generic-templates";
-    rev    = "920d53e";
-    sha256 = "0dnph5hc2n8njfx4k64m3hnhclgyw185sb5zi11nr98l3pq5r5zm";
+    rev    = "a276f19";
+    sha256 = "1ilazhqgrr1l554xr1sdvnhcb460qs19cdbfj77k5762px0nvk9g";
   };
   ghostwriter = {
     owner  = "styx-static";
@@ -32,8 +32,8 @@
   orbit = {
     owner  = "styx-static";
     repo   = "styx-theme-orbit";
-    rev    = "0ae824a";
-    sha256 = "0nlp1hbgv18idypsdrq1wx7j9222axlg5qf16ba8bhnz2bykwnyy";
+    rev    = "974b91a";
+    sha256 = "0mrf4xa9rhm0435y20iv9mvpg48z4m5jxp7mrr0c4ri8xyf6yqm4";
   };
   showcase = {
     owner  = "styx-static";

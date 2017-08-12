@@ -44,7 +44,7 @@ nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}
 ----
 $ nix-repl "<nixpkgs>"
 
-nix-repl> showcase = callPackage (import "${styx-themes.showcase}/example/site.nix") {}
+nix-repl> showcase = callPackage (import "${(import styx.themes).showcase}/example/site.nix") {}
 
 nix-repl> with showcase; lib.generatePage (pages.about // { layout = templates.layout; }) # <1>
 "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\">...."
@@ -66,7 +66,7 @@ It is possible to generate the site in the nix store from `nix-repl`.
 ----
 $ nix-repl "<nixpkgs>"
 
-nix-repl> showcase = callPackage (import "${styx-themes.showcase}/example/site.nix") {}
+nix-repl> showcase = callPackage (import "${(import styx.themes).showcase}/example/site.nix") {}
 
 nix-repl> :b showcase.site
 ...

@@ -74,6 +74,12 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 `styx preview-theme generic-templates --port 9090`:: Start a preview server for the generic-templates theme on 127.0.0.1:9090.
 `styx preview-theme generic-templates --port 9090 --drafts`:: Start a preview server for the generic-templates theme on 127.0.0.1:9090 with drafts rendered.
 
+=== Theme path
+
+The `theme-path` command is used to print the store path a a theme from the `styx-themes`.
+
+`styx theme-path generic-templates`:: Print the store path for the generic-templates theme.
+
 === Live
 
 The `live` command is similar to `preview`, with the unique difference that the site is automatically rebuilt when a change is made.

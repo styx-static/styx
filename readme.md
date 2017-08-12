@@ -9,49 +9,47 @@ The purely functional static site generator in Nix expression language.
 
 Among others, styx have the following features:
 
-## Easy to install
+### Easy to install
 
-Styx has no other depency than nix, if nix is installed `nix-env -iA styx` is all that is required to install.
+Styx has no other depency than nix, if nix is installed `nix-env -iA styx` is all that is required to install styx.
 
-## Multiple content support
+### Multiple content support
 
-Styx support content in markdown, asciidoc and nix.  
-Styx also provides some special tags that can be used in markup language to add an introduction or to split a markup file in multiple html pages.
+Styx support content in markdown, asciidoc and nix format.  
+Styx also extends asciidoc and markdown with custom operators that can split a single markup file into many pages.
 
-## Embedded nix
+### Embedded nix
 
-Nix can be embedded in markup files!  
-For example a youtube video can be embedded in a mardown file like this:
+Nix can be [embedded in markup files](https://styx-static.github.io/styx-theme-showcase/posts/2016-09-17-media.html)!  
 
-## Handling of sass/scss
+### Handling of sass/scss
 
 Upon site rendering, styx will automatically convert sass and scss files.
 
-## Template framework
+### Template framework
 
 The generic-template theme provide a template framework that can be leveraged to easily create new themes or sites.
 Thank to this a theme like hyde consists only in about 120 lines of nix templates.
 
-## Configuration interface
+### Configuration interface
 
 Styx sites use a configuration interface a la NixOS modules.  
 Every configuration declaration is type-checked, and documentation can be generated from that interface.
 
-## Linkcheck
+### Linkcheck
 
-Linkcheck functionality is available out of the box, just run `styx linkcheck` to run linkcheker on a site.
+Linkcheck functionality is available out of the box, just run `styx linkcheck` to run [linkchecker](https://wummel.github.io/linkchecker/) on a site.
 
-## Themes
+### Themes
 
 Styx support themes. Multiple themes can be used, mixed and extended at the same time.  
 This make it very easy to adapt an existing theme.  
 Official themes can also be used without any implicit installation, declaring the used theme(s) in `site.nix` is enough!
 
-## Documentation
+### Documentation
 
-Styx fetaure complete documentation that can be viewed at any time by running `styx doc`.  
-A very unique feature of styx is that it can generate the documentation for a particuliar site with the `styx site-doc`,
-this documentation consists of used themes documentations, rendered pages list url and more.
+Styx embeds its complete documentation that can be viewed at any time by running `styx doc`.  
+A very unique feature of styx is that it can generate the documentation for a site with the `styx site-doc`.
 
 
 ## Install
@@ -82,10 +80,6 @@ $ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.ta
 $ styx --help
 ```
 
-Note: When using a version of styx that is different of the one in the system active nixpkgs, call to `pkgs.styx-themes.*` might not work as versions will differ.  
-In this case themes should be fetched directly with `fetchGit` or similar.
-
-
 ## Examples
 
 The official styx site is an example of a basic software site with release news. It have some interesting features like:
@@ -93,21 +87,15 @@ The official styx site is an example of a basic software site with release news.
 - generating the documentation for every version of styx
 - generating a page for every official theme
 
-Please check [site.nix](https://github.com/styx-static/styx-site/blob/master/site.nix) for implementation details.
+See [site.nix](https://github.com/styx-static/styx-site/blob/master/site.nix) for implementation details.
 
 
 ## As a Nix laboratory
 
 This repository is also a playground for more exotic nix usages and experiments:
 
-- [derivation.nix](./derivation.nix) is the main builder for styx, it builds the command line interface, the library and the documentation.
+- [derivation.nix](./derivation.nix) is the main builder for styx, it builds the command line interface, the library, styx themes and the documentation.
 
-- [nixpkgs/default.nix](./nixpkgs/default.nix) extend the system nixpkgs with the styx related packages making it easy to build or install dev versions with the correct set of dependencies:
-
-    ```
-    $ nix-build nixpkgs -A styx
-    $ nix-build nixpkgs -A styx-themes.showcase
-    ```
 
 - [script/run-tests](./scripts/run-tests) is a thin wrapper to `nix-build` that will run [library](./tests/lib.nix) and [functionality tests](./tests/default.nix).
 
@@ -121,8 +109,6 @@ Library function tests can print a coverage or a report (with pretty printing):
     ```
 
 - [scripts/library-doc.nix](./scripts/library-doc.nix) is a nix expression that generate an asciidoc documentation from the library `documentedFunction`s ([example](https://styx-static.github.io/styx-site/documentation/library.html)).
-
-- [scripts/update-themes-screens](https://github.com/styx-static/themes/blob/master/scripts/screens) is a shell script using a `nix-shell` shebang that automatically take care of external dependencies (PhantomJS and image magick) that build every theme site, run it on a local server and take a screenshot with PhantomJS. neat!
 
 - [scripts/themes-doc.nix](./scripts/themes-doc.nix) and [src/nix/site-doc.nix](./src/nix/site-doc.nix) are nix expressions that automatically generate documentation for styx themes, including configuration interface and templates ([example](https://styx-static.github.io/styx-site/documentation/styx-themes.html)). This feature is leveraged in the `styx site-doc` command to dynamically generate the documentation for a site according to used themes.
 
@@ -141,11 +127,11 @@ Library function tests can print a coverage or a report (with pretty printing):
 
 ## Contributing
 
-Read [contributing.md](./contributing.md) for details.
+See [contributing.md](./contributing.md).
 
 
 ## Feedback
 
-Any question or issue should go in the github issue tracker.  
-Themes requests are also welcome.
+Any question or issue should be posted in the [github issue tracker](https://github.com/styx-static/styx/issues).  
+Themes and features requests are welcome!
 And please let me know if you happen to run a site on styx!
