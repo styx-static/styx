@@ -6,22 +6,16 @@ git:
 matrix:
   include:
     - os: linux
-      before_install:
-        - git submodule update --init --recursive
       script:
         - nix-build
         - ./scripts/run-tests
     - os: linux
       dist: trusty
-      before_install:
-        - git submodule update --init --recursive
       script:
         - nix-build
         - ./scripts/run-tests
     - os: osx
       osx_image: xcode7.3
-      before_install:
-        - git submodule update --init --recursive
       script:
         - nix-build
         - ./scripts/run-tests

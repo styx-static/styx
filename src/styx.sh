@@ -397,22 +397,15 @@ fi
 
 if [ "$action" = "preview-theme" ]; then
   themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
-  themedir="$themesdir/$theme"
-  if [ -z "$theme" ]; then
-    echo "Please select a theme, available themes are:"
-    for dir in $themesdir/*/; do
-      echo "- $(basename "$dir")"
-    done
+  in="$(nix-build --no-out-link -A $theme $themesdir 2> /dev/null)/example"
+  if [ $? -ne 0 ] || [ -z "$theme" ]; then
+    echo "Please select an available theme, available themes are:"
+    while IFS=, read theme rev
+    do
+      echo "- $theme"
+    done < $themesdir/revs.csv
     exit 1
   fi
-  if [ ! -d "$themedir" ]; then
-    echo "Theme '$theme' is not available, available themes are:"
-    for dir in $themesdir/*/; do
-      echo "- $(basename "$dir")"
-    done
-    exit 1
-  fi
-  in="$themedir/example"
   action="serve"
   siteUrl="PREVIEW"
 fi

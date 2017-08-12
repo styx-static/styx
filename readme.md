@@ -122,7 +122,7 @@ Library function tests can print a coverage or a report (with pretty printing):
 
 - [scripts/library-doc.nix](./scripts/library-doc.nix) is a nix expression that generate an asciidoc documentation from the library `documentedFunction`s ([example](https://styx-static.github.io/styx-site/documentation/library.html)).
 
-- [scripts/update-themes-screens](./scripts/update-themes-screens) is a shell script using a `nix-shell` shebang that automatically take care of external dependencies (PhantomJS and image magick) that build every theme site, run it on a local server and take a screenshot with PhantomJS. neat!
+- [scripts/update-themes-screens](https://github.com/styx-static/themes/blob/master/scripts/screens) is a shell script using a `nix-shell` shebang that automatically take care of external dependencies (PhantomJS and image magick) that build every theme site, run it on a local server and take a screenshot with PhantomJS. neat!
 
 - [scripts/themes-doc.nix](./scripts/themes-doc.nix) and [src/nix/site-doc.nix](./src/nix/site-doc.nix) are nix expressions that automatically generate documentation for styx themes, including configuration interface and templates ([example](https://styx-static.github.io/styx-site/documentation/styx-themes.html)). This feature is leveraged in the `styx site-doc` command to dynamically generate the documentation for a site according to used themes.
 

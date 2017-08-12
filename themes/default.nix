@@ -1,8 +1,6 @@
 let
   pkgs = import <nixpkgs> {};
 in
-  with pkgs.lib;
-  with builtins;
-  mapAttrs (themeName: v:
-    import (./. + "/${themeName}") {}
-  ) (filterAttrs (n: v: v == "directory") (readDir ./.))
+  pkgs.lib.mapAttrs (n: v:
+    pkgs.callPackage (pkgs.fetchFromGitHub v) {}
+  ) (import ./versions.nix)
