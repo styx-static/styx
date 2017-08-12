@@ -52,13 +52,13 @@ To override a template, just copy it to a custom theme and change it to your lik
 ----
 $ styx new theme foo --in ./themes # <1>
 $ mkdir -p themes/foo/templates/partials/ # <2>
-$ cp $(nix-build -A --no-out-link styx-themes.generic-templates '<nixpkgs>')/templates/partials/content.nix themes/foo/templates/partials/content.nix # <3>
+$ cp $(styx theme-path generic-templates)/templates/partials/content.nix themes/foo/templates/partials/content.nix # <3>
 ----
 
 <1> Creating a new `foo` theme.
 <2> Create the `themes/foo/templates/partials/` directory.
 <3> Copy the generic-templates `templates/partials/content.nix` to the foo theme. +
-This code use nix-build to directly access the generic-templates source from the nix store.
+This code use the generic-templates bundled with styx, to use another version clone the link:https://github.com/styx-static/styx-theme-generic-templates[generic-templates repo], select the desired version, and copy the file from there.
 
 NOTE: Every template of this theme use the `documentedTemplate` function that allow to generate template documentation.
 
