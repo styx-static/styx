@@ -6,15 +6,15 @@
 
 2. Generate the theme version hashes
 
-```sh
-$ ./scripts/update-themes-hashes
-```
+    ```sh
+    $ ./scripts/update-themes-hashes
+    ```
 
 3. Update the documentation
 
-```sh
-./scripts/update-doc
-```
+    ```sh
+    ./scripts/update-doc
+    ```
 
 
 ## Styx
@@ -23,26 +23,26 @@ $ ./scripts/update-themes-hashes
 
 2. Run the tests
 
-```sh
-$ ./scripts/run-tests
-```
+    ```sh
+    $ ./scripts/run-tests
+    ```
 
 3. Make a commit, and tag it with `vVERSION`, eg: `v0.5.0`
 
-```sh
-$ git add .
-$ git commit
-$ git tag "vVERSION"
-$ git push HEAD origin --tag
-```
+    ```sh
+    $ git add .
+    $ git commit
+    $ git tag "vVERSION"
+    $ git push HEAD origin --tag
+    ```
 
 ## nixpkgs
 
 1. Updating the `styx` expression and test that it works:
 
-```sh
-$ $(nix-build -A styx --no-out-link)/bin/styx preview-theme showcase
-```
+    ```sh
+    $ $(nix-build -A styx --no-out-link)/bin/styx preview-theme showcase
+    ```
 
 2. Submit a pull request to nixpkgs
 
@@ -53,17 +53,17 @@ $ $(nix-build -A styx --no-out-link)/bin/styx preview-theme showcase
 
 1. Update the `latest` tag in the styx repo
 
-```sh
-$ git tag "latest" --force
-$ git push HEAD origin --tag --force
-```
+    ```sh
+    $ git tag "latest" --force
+    $ git push HEAD origin --tag --force
+    ```
 
 2. Update the themes demo sites, run the following in the [themes repo](https://github.com/styx-static/themes)
 
-```sh
-$ ./scripts/demo-sites
-```
+    ```sh
+    $ ./scripts/demo-sites
+    ```
 
-13. Make a [post](https://github.com/styx-static/styx-site/tree/master/posts) on the [styx official site](https://github.com/styx-static/styx-site) announcing the release
+3. Make a [post](https://github.com/styx-static/styx-site/tree/master/posts) on the [styx official site](https://github.com/styx-static/styx-site) announcing the release
 
-14. Done
+4. Done
