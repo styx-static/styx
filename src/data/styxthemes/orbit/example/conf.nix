@@ -22,14 +22,17 @@ with lib;
     profile = {
       name    = "John Doe";
       tagline = "Full Stack Developer";
-      image   = "profile.png";
+      image   = "/assets/images/profile.png";
     };
   
   
     /* Experiences
     */
     experiences = {
-      items = sortBy "index" "asc" (loadDir { dir = ./data/experiences; }); 
+      items = [
+        (loadFile { file = ./data/experiences/lead-dev.md; })
+        (loadFile { file = ./data/experiences/senior-software-engineer.md; })
+      ];
     };
   
     /* Projects
@@ -37,7 +40,11 @@ with lib;
     projects = {
       title = "Projects";
       icon  = "archive";
-      items = sortBy "index" "asc" (loadDir { dir = ./data/projects; }); 
+      items = [
+        (loadFile { file = ./data/projects/hugrid.md; })
+        (loadFile { file = ./data/projects/faq.md; })
+        (loadFile { file = ./data/projects/identity.md; })
+      ];
     };
   
     /* Skills
