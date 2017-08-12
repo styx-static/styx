@@ -27,6 +27,7 @@ rec {
      items at the end of the list have higher priority
   */
   themes = [
+    styx-themes.generic-templates
     ../.
   ];
 
@@ -61,9 +62,23 @@ rec {
 
   pages = {
     index = {
+      title    = "Home";
       path     = "/index.html";
-      template = templates.index;
-      layout   = lib.id;
+      template = templates.block-page.full;
+      layout   = templates.layout;
+      blocks   = [
+        (templates.blocks.summary conf.theme.summary)
+        (templates.blocks.experiences conf.theme.experiences)
+        (templates.blocks.projects conf.theme.projects)
+        (templates.blocks.skills conf.theme.skills)
+      ];
+      sidebar-blocks = [
+        (templates.blocks.profile conf.theme.profile)
+        (templates.blocks.contact conf.theme.contact)
+        (templates.blocks.education conf.theme.education)
+        (templates.blocks.languages conf.theme.languages)
+        (templates.blocks.interests conf.theme.interests)
+      ];
     };
   };
 

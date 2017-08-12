@@ -39,7 +39,7 @@ with lib;
     default = {
       name    = "John Doe";
       tagline = "Full Stack Developer";
-      image   = "profile.png";
+      image   = "/assets/images/profile.png";
     };
   };
 
@@ -60,7 +60,6 @@ with lib;
     content = mkOption {
       description = ''
         content of the profile area as HTML text.  
-        if set to `null`, the summary area will not be displayed.
       '';
       default = null;
       type = with types; nullOr str;
@@ -82,7 +81,6 @@ with lib;
     items = mkOption {
       description = ''
         List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
-        If set to the empty list `[]`, the experiences area will not be displayed.
       '';
       type = with types; listOf attrs;
       default = [];
@@ -111,7 +109,6 @@ with lib;
     items = mkOption {
       description = ''
         List of projects as attribute sets, requires `title`, `url` and `content`.  
-        If set to the empty list `[]`, the projects area will not be displayed.
       '';
       type = with types; listOf attrs;
       default = [];
@@ -141,7 +138,6 @@ with lib;
     items = mkOption {
       description = ''
         List of skills as attribute sets, requires `title` and `level`.  
-        If set to the empty list `[]`, the skills area will not be displayed.
       '';
       type = with types; listOf attrs;
       default = [];
@@ -161,7 +157,6 @@ with lib;
     items = mkOption {
       description = ''
         List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
-        If set to the empty list `[]`, the skills area will not be displayed.
       '';
       type = with types; listOf attrs;
       default = [];
@@ -183,7 +178,6 @@ with lib;
     items = mkOption {
       description = ''
         List of education items as attribute sets, requires `degree`, `college` and `dates`.  
-        If set to the empty list `[]`, the education area will not be displayed.
       '';
       type = with types; listOf attrs;
       default = [];
@@ -204,7 +198,6 @@ with lib;
     items = mkOption {
       description = ''
         List of languages as attribute sets, requires `language`, and `level`.  
-        If set to the empty list `[]`, the languages area will not be displayed.
       '';
       type = with types; listOf attrs;
       default = [];
@@ -223,7 +216,7 @@ with lib;
     };
     items = mkOption {
       description = ''
-        List of interests. If set to the empty list `[]`, the interests area will not be displayed.
+        List of interests.
       '';
       type = with types; listOf str;
       default = [];
@@ -234,5 +227,14 @@ with lib;
       ];
     };
   };
+
+  /* Defaults
+  */
+  lib.jquery.enable = true;
+  lib.bootstrap.enable = true;
+  lib.font-awesome.enable = true;
+  lib.googlefonts = [
+    "Roboto:400,500,400italic,300italic,300,500italic,700,700italic,900,900italic"
+  ];
 
 }
