@@ -13,6 +13,7 @@ fi
 
 target=$(readlink -f -- "$baseDir/src/doc/")
 cp $path/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
+cp $path/imgs/* $target/imgs/ --no-preserve=all
 echo "Themes documentation updated!"
 
 
