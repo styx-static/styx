@@ -3,7 +3,7 @@
 :sectnums!:
 
 [[v0.7.0]]
-=== Styx 0.7.0 - 2017/XX/XX
+=== Styx 0.7.0 - 2017/08/26
 
 ==== Highlights:
 
@@ -38,7 +38,7 @@ rec {
 
   /* Importing styx library
   */
-  styxLib = import styx.lib styx;
+  styxLib = import styx.lib args;
 ----
 
 [source, nix]
@@ -50,7 +50,6 @@ rec {
 
 rec {
 
-  /* Base library
   /* Importing styx library
   */
   styxLib = import styx.lib styx;

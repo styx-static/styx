@@ -320,7 +320,7 @@ rec {
             * `String`: The argument will be added to the page set `content`.
             * `Attribute Set`: The argument will be merged to the page set.
             * `Page -> String`: The `String` argument will be added to the page set `content` attribute.
-            * `Page -> Attrs`: The `Attra` parameter will be merged to the page set.
+            * `Page -> Attrs`: The `Attrs` parameter will be merged to the page set.
         '';
       }
     ];
