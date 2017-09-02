@@ -55,7 +55,7 @@
 
     ```sh
     $ git tag "latest" --force
-    $ git push HEAD origin --tag --force
+    $ git push origin HEAD --tag --force
     ```
 
 2. Update the themes demo sites, run the following in the [themes repo](https://github.com/styx-static/themes)

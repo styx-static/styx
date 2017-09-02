@@ -36,7 +36,7 @@ in
 
 rec {
 
-  inherit (pkgs) styx styx-themes;
+  inherit (pkgs) styx;
 
   new = pkgs.runCommand "styx-new-site" defaultEnv ''
     mkdir $out
