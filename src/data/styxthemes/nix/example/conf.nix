@@ -1,6 +1,6 @@
 {
   # URL of the site, must be set to the url of the domain the site will be deployed
-  siteUrl = "https://styx-static.github.io/styx-theme-hyde";
+  siteUrl = "https://styx-static.github.io/styx-theme-nix";
 
   theme = {
     site.title = "Styx Site";
