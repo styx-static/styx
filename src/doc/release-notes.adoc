@@ -2,6 +2,14 @@
 
 :sectnums!:
 
+[[v0.7.1]]
+=== Styx 0.7.1 - 2018/01/26
+
+==== Fixes
+
+* Fixed `styx` command path resolution when styx was installed globally.
+
+
 [[v0.7.0]]
 === Styx 0.7.0 - 2017/08/26
 

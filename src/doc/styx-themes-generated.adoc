@@ -100,7 +100,7 @@ NOTE: Blocks are meant to be flexible. For custom needs it is possible to use a 
 
 ---
 
-[[theme.footer.copyright]]
+[[agency.conf.theme.footer.copyright]]
 ==== theme.footer.copyright
 
 Description:: Footer copyright text.
@@ -116,7 +116,7 @@ Default::
 
 ---
 
-[[theme.footer.quicklinks]]
+[[agency.conf.theme.footer.quicklinks]]
 ==== theme.footer.quicklinks
 
 Description:: Footer links.
@@ -145,7 +145,7 @@ Example::
 
 ---
 
-[[theme.footer.social]]
+[[agency.conf.theme.footer.social]]
 ==== theme.footer.social
 
 Description:: Social media links to display in the footer.
@@ -177,7 +177,7 @@ Example::
 
 ---
 
-[[theme.lib.bootstrap.enable]]
+[[agency.conf.theme.lib.bootstrap.enable]]
 ==== theme.lib.bootstrap.enable
 
 
@@ -193,7 +193,7 @@ true
 
 ---
 
-[[theme.lib.font-awesome.enable]]
+[[agency.conf.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 
@@ -209,7 +209,7 @@ true
 
 ---
 
-[[theme.lib.googlefonts]]
+[[agency.conf.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 
@@ -225,7 +225,7 @@ Default::
 
 ---
 
-[[theme.lib.jquery.enable]]
+[[agency.conf.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 
@@ -241,7 +241,7 @@ true
 
 ---
 
-[[theme.site.author]]
+[[agency.conf.theme.site.author]]
 ==== theme.site.author
 
 Description:: Content of the author `meta` tag.
@@ -257,7 +257,7 @@ Default::
 
 ---
 
-[[theme.site.description]]
+[[agency.conf.theme.site.description]]
 ==== theme.site.description
 
 Description:: Content of the description `meta` tag.
@@ -273,7 +273,7 @@ Default::
 
 ---
 
-[[theme.site.title]]
+[[agency.conf.theme.site.title]]
 ==== theme.site.title
 
 Description:: Title of the site.
@@ -304,7 +304,7 @@ Default::
 ---
 
 
-[[templates.blocks.banner]]
+[[agency.templates.blocks.banner]]
 ==== templates.blocks.banner
 
 
@@ -312,7 +312,7 @@ Default::
 ---
 
 
-[[templates.blocks.basic]]
+[[agency.templates.blocks.basic]]
 ==== templates.blocks.basic
 
 
@@ -320,7 +320,7 @@ Default::
 ---
 
 
-[[templates.blocks.clients]]
+[[agency.templates.blocks.clients]]
 ==== templates.blocks.clients
 
 
@@ -328,7 +328,7 @@ Default::
 ---
 
 
-[[templates.blocks.contact]]
+[[agency.templates.blocks.contact]]
 ==== templates.blocks.contact
 
 
@@ -336,7 +336,7 @@ Default::
 ---
 
 
-[[templates.blocks.portfolio]]
+[[agency.templates.blocks.portfolio]]
 ==== templates.blocks.portfolio
 
 
@@ -344,7 +344,7 @@ Default::
 ---
 
 
-[[templates.blocks.services]]
+[[agency.templates.blocks.services]]
 ==== templates.blocks.services
 
 
@@ -352,7 +352,7 @@ Default::
 ---
 
 
-[[templates.blocks.team]]
+[[agency.templates.blocks.team]]
 ==== templates.blocks.team
 
 
@@ -360,7 +360,7 @@ Default::
 ---
 
 
-[[templates.blocks.timeline]]
+[[agency.templates.blocks.timeline]]
 ==== templates.blocks.timeline
 
 
@@ -368,7 +368,7 @@ Default::
 ---
 
 
-[[templates.partials.content-post]]
+[[agency.templates.partials.content-post]]
 ==== templates.partials.content-post
 
 
@@ -376,7 +376,7 @@ Default::
 ---
 
 
-[[templates.partials.content-pre]]
+[[agency.templates.partials.content-pre]]
 ==== templates.partials.content-pre
 
 
@@ -384,7 +384,7 @@ Default::
 ---
 
 
-[[templates.partials.head.css-custom]]
+[[agency.templates.partials.head.css-custom]]
 ==== templates.partials.head.css-custom
 
 
@@ -392,7 +392,7 @@ Default::
 ---
 
 
-[[templates.partials.js-custom]]
+[[agency.templates.partials.js-custom]]
 ==== templates.partials.js-custom
 
 
@@ -641,7 +641,7 @@ themes = [
 
 ---
 
-[[theme.html.doctype]]
+[[generic-templates.conf.theme.html.doctype]]
 ==== theme.html.doctype
 
 Description:: Doctype declaration to use.
@@ -657,7 +657,7 @@ Default::
 
 ---
 
-[[theme.html.lang]]
+[[generic-templates.conf.theme.html.lang]]
 ==== theme.html.lang
 
 Description:: An ISO 639-1 language code to set to the `html` tag.
@@ -673,7 +673,7 @@ Default::
 
 ---
 
-[[theme.lib.bootstrap.enable]]
+[[generic-templates.conf.theme.lib.bootstrap.enable]]
 ==== theme.lib.bootstrap.enable
 
 Description:: Whether to enable bootstrap.
@@ -696,7 +696,7 @@ true
 
 ---
 
-[[theme.lib.bootstrap.version]]
+[[generic-templates.conf.theme.lib.bootstrap.version]]
 ==== theme.lib.bootstrap.version
 
 Description:: Selects bootstrap version to use.
@@ -712,7 +712,7 @@ Default::
 
 ---
 
-[[theme.lib.font-awesome.enable]]
+[[generic-templates.conf.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 Description:: Whether to enable font awesome.
@@ -735,7 +735,7 @@ true
 
 ---
 
-[[theme.lib.font-awesome.version]]
+[[generic-templates.conf.theme.lib.font-awesome.version]]
 ==== theme.lib.font-awesome.version
 
 Description:: Selects font-awesome version to use.
@@ -751,7 +751,7 @@ Default::
 
 ---
 
-[[theme.lib.googlefonts]]
+[[generic-templates.conf.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 Description:: Google Fonts to load, for available fonts see https://fonts.google.com/.
@@ -774,7 +774,7 @@ Example::
 
 ---
 
-[[theme.lib.highlightjs.enable]]
+[[generic-templates.conf.theme.lib.highlightjs.enable]]
 ==== theme.lib.highlightjs.enable
 
 Description:: Whether to enable highlightjs.
@@ -797,7 +797,7 @@ true
 
 ---
 
-[[theme.lib.highlightjs.extraLanguages]]
+[[generic-templates.conf.theme.lib.highlightjs.extraLanguages]]
 ==== theme.lib.highlightjs.extraLanguages
 
 Description:: Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.
@@ -820,7 +820,7 @@ Example::
 
 ---
 
-[[theme.lib.highlightjs.style]]
+[[generic-templates.conf.theme.lib.highlightjs.style]]
 ==== theme.lib.highlightjs.style
 
 Description:: Style used by highlight.js, for available styles see https://highlightjs.org/static/demo/.
@@ -843,7 +843,7 @@ Example::
 
 ---
 
-[[theme.lib.highlightjs.version]]
+[[generic-templates.conf.theme.lib.highlightjs.version]]
 ==== theme.lib.highlightjs.version
 
 Description:: Selects highlightjs version to use.
@@ -859,7 +859,7 @@ Default::
 
 ---
 
-[[theme.lib.jquery.enable]]
+[[generic-templates.conf.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 Description:: Whether to enable jQuery.
@@ -882,7 +882,7 @@ true
 
 ---
 
-[[theme.lib.jquery.version]]
+[[generic-templates.conf.theme.lib.jquery.version]]
 ==== theme.lib.jquery.version
 
 Description:: Selects jQuery version to use.
@@ -898,7 +898,7 @@ Default::
 
 ---
 
-[[theme.lib.mathjax.enable]]
+[[generic-templates.conf.theme.lib.mathjax.enable]]
 ==== theme.lib.mathjax.enable
 
 Description:: Whether to enable mathjax.
@@ -921,7 +921,7 @@ true
 
 ---
 
-[[theme.services.disqus.shortname]]
+[[generic-templates.conf.theme.services.disqus.shortname]]
 ==== theme.services.disqus.shortname
 
 Description:: Disqus service shortname. See link:https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-[What's a shortname?] page for details.
@@ -937,7 +937,7 @@ null
 
 ---
 
-[[theme.services.google-analytics.trackingID]]
+[[generic-templates.conf.theme.services.google-analytics.trackingID]]
 ==== theme.services.google-analytics.trackingID
 
 Description:: Google analytics service tracker ID, Google analytics is disabled if set to null.
@@ -953,7 +953,7 @@ null
 
 ---
 
-[[theme.services.piwik.IDsite]]
+[[generic-templates.conf.theme.services.piwik.IDsite]]
 ==== theme.services.piwik.IDsite
 
 Description:: idsite of the website you are tracking in Piwik.
@@ -963,7 +963,7 @@ Type:: string
 
 ---
 
-[[theme.services.piwik.enable]]
+[[generic-templates.conf.theme.services.piwik.enable]]
 ==== theme.services.piwik.enable
 
 Description:: Whether to enable Piwik.
@@ -986,7 +986,7 @@ true
 
 ---
 
-[[theme.services.piwik.url]]
+[[generic-templates.conf.theme.services.piwik.url]]
 ==== theme.services.piwik.url
 
 Description:: Piwik url.
@@ -996,7 +996,7 @@ Type:: string
 
 ---
 
-[[theme.site.title]]
+[[generic-templates.conf.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -1027,7 +1027,7 @@ Default::
 ---
 
 
-[[templates.block-page.full]]
+[[generic-templates.templates.block-page.full]]
 ==== templates.block-page.full
 
 
@@ -1035,7 +1035,7 @@ Default::
 ---
 
 
-[[templates.bootstrap.alert]]
+[[generic-templates.templates.bootstrap.alert]]
 ==== templates.bootstrap.alert
 
 Description:: Generate a bootstrap alert.
@@ -1070,7 +1070,7 @@ alert
 ---
 
 
-[[templates.bootstrap.badge]]
+[[generic-templates.templates.bootstrap.badge]]
 ==== templates.bootstrap.badge
 
 Description:: Generate a bootstrap badge.
@@ -1101,7 +1101,7 @@ templates.bootstrap.badge 42
 ---
 
 
-[[templates.bootstrap.breadcrumbs]]
+[[generic-templates.templates.bootstrap.breadcrumbs]]
 ==== templates.bootstrap.breadcrumbs
 
 Description:: Generate a page breadcrumbs; takes a page attribute with a `breadcrumbs` attribute containing a list of pages.
@@ -1141,7 +1141,7 @@ templates.bootstrap.breadcrumbs {
 ---
 
 
-[[templates.bootstrap.label]]
+[[generic-templates.templates.bootstrap.label]]
 ==== templates.bootstrap.label
 
 Description:: Generate a bootstrap label.
@@ -1175,7 +1175,7 @@ templates.bootstrap.label { content = "my label"; type = "primary"; }
 ---
 
 
-[[templates.bootstrap.navbar.brand]]
+[[generic-templates.templates.bootstrap.navbar.brand]]
 ==== templates.bootstrap.navbar.brand
 
 Description:: Template used by default as the navbar brand, can be overriden to fit needs.
@@ -1188,7 +1188,7 @@ Description:: Template used by default as the navbar brand, can be overriden to 
 ---
 
 
-[[templates.bootstrap.navbar.default]]
+[[generic-templates.templates.bootstrap.navbar.default]]
 ==== templates.bootstrap.navbar.default
 
 Description:: Generates a navbar.
@@ -1265,7 +1265,7 @@ templates.bootstrap.navbar.default {
 ---
 
 
-[[templates.bootstrap.navbar.head]]
+[[generic-templates.templates.bootstrap.navbar.head]]
 ==== templates.bootstrap.navbar.head
 
 Description:: Template used by `bootstrap.navbar.default`, not meant to be used directly.
@@ -1277,7 +1277,7 @@ Description:: Template used by `bootstrap.navbar.default`, not meant to be used 
 ---
 
 
-[[templates.bootstrap.navbar.nav]]
+[[generic-templates.templates.bootstrap.navbar.nav]]
 ==== templates.bootstrap.navbar.nav
 
 Description:: Template to generate a navbar navigation list. Meant to be used in `bootstrap.navbar.default` `content` parameter.
@@ -1326,7 +1326,7 @@ templates.bootstrap.navbar.nav {
 ---
 
 
-[[templates.bootstrap.navbar.nav_dropdown]]
+[[generic-templates.templates.bootstrap.navbar.nav_dropdown]]
 ==== templates.bootstrap.navbar.nav_dropdown
 
 Description:: Generate a navbar nav dropdown menu. Meant to be used in `bootstrap.navbar.nav` context
@@ -1368,7 +1368,7 @@ templates.bootstrap.navbar.nav_dropdown { title = "Languages"; items = [ { title
 ---
 
 
-[[templates.bootstrap.navbar.nav_item]]
+[[generic-templates.templates.bootstrap.navbar.nav_item]]
 ==== templates.bootstrap.navbar.nav_item
 
 Description:: Generate a navbar nav item. Used internally by `bootstrap.navbar.nav`.
@@ -1401,7 +1401,7 @@ templates.bootstrap.navbar.nav_item { item = { title = "Home"; path = "/"; }; }
 ---
 
 
-[[templates.bootstrap.navbar.text]]
+[[generic-templates.templates.bootstrap.navbar.text]]
 ==== templates.bootstrap.navbar.text
 
 Description:: Template to generate a navbar text. Meant to be used in `bootstrap.navbar.default` `content` parameter.
@@ -1443,7 +1443,7 @@ templates.bootstrap.navbar.text {
 ---
 
 
-[[templates.bootstrap.pager]]
+[[generic-templates.templates.bootstrap.pager]]
 ==== templates.bootstrap.pager
 
 Description:: Generate a pager
@@ -1486,7 +1486,7 @@ templates.bootstrap.pager {
 ---
 
 
-[[templates.bootstrap.pagination]]
+[[generic-templates.templates.bootstrap.pagination]]
 ==== templates.bootstrap.pagination
 
 Description:: Generate a pagination
@@ -1550,7 +1550,7 @@ templates.bootstrap.pagination {
 ---
 
 
-[[templates.bootstrap.panel]]
+[[generic-templates.templates.bootstrap.panel]]
 ==== templates.bootstrap.panel
 
 Description:: Generate a bootstrap panel.
@@ -1602,7 +1602,7 @@ templates.bootstrap.panel {
 ---
 
 
-[[templates.bootstrap.progress-bar]]
+[[generic-templates.templates.bootstrap.progress-bar]]
 ==== templates.bootstrap.progress-bar
 
 Description:: Generate a bootstrap progress bar.
@@ -1639,7 +1639,7 @@ templates.bootstrap.progress-bar { value = 60; }
 ---
 
 
-[[templates.e404]]
+[[generic-templates.templates.e404]]
 ==== templates.e404
 
 Description:: Basic template for error 404 page, can be overriden to fit needs.
@@ -1651,7 +1651,7 @@ Description:: Basic template for error 404 page, can be overriden to fit needs.
 ---
 
 
-[[templates.examples.basic]]
+[[generic-templates.templates.examples.basic]]
 ==== templates.examples.basic
 
 Description:: Template for the example site, internal use only.
@@ -1663,7 +1663,7 @@ Description:: Template for the example site, internal use only.
 ---
 
 
-[[templates.examples.starter]]
+[[generic-templates.templates.examples.starter]]
 ==== templates.examples.starter
 
 Description:: Template for the example site, internal use only.
@@ -1675,7 +1675,7 @@ Description:: Template for the example site, internal use only.
 ---
 
 
-[[templates.examples.theme]]
+[[generic-templates.templates.examples.theme]]
 ==== templates.examples.theme
 
 Description:: Template for the example site, internal use only.
@@ -1687,7 +1687,7 @@ Description:: Template for the example site, internal use only.
 ---
 
 
-[[templates.feed.atom]]
+[[generic-templates.templates.feed.atom]]
 ==== templates.feed.atom
 
 Description:: Template generating an Atom feed. +
@@ -1708,7 +1708,7 @@ Take a page as argument. The page set can define extra attributes:
 ---
 
 
-[[templates.feed.atom-list]]
+[[generic-templates.templates.feed.atom-list]]
 ==== templates.feed.atom-list
 
 Description:: Template generating an Atom feed entry. +
@@ -1722,7 +1722,7 @@ Used in `templates.feed.atom`.
 ---
 
 
-[[templates.icon.bootstrap]]
+[[generic-templates.templates.icon.bootstrap]]
 ==== templates.icon.bootstrap
 
 Description:: Generate a bootstrap glyphicon markup from a glyphicon code.
@@ -1753,7 +1753,7 @@ templates.icon.bootstrap "picture"
 ---
 
 
-[[templates.icon.font-awesome]]
+[[generic-templates.templates.icon.font-awesome]]
 ==== templates.icon.font-awesome
 
 Description:: Generate a font-awesome icon markup from an icon code.
@@ -1784,7 +1784,7 @@ templates.icon.font-awesome "code"
 ---
 
 
-[[templates.layout]]
+[[generic-templates.templates.layout]]
 ==== templates.layout
 
 Description:: Generic layout template, includes <<templates.partials.doctype>> and <<templates.partials.html>>.
@@ -1797,7 +1797,7 @@ Description:: Generic layout template, includes <<templates.partials.doctype>> a
 ---
 
 
-[[templates.lib.css.bootstrap]]
+[[generic-templates.templates.lib.css.bootstrap]]
 ==== templates.lib.css.bootstrap
 
 Description:: Template loading the bootstrap css library. Controlled by `conf.theme.lib.bootstrap.*` configuration options.
@@ -1809,7 +1809,7 @@ Description:: Template loading the bootstrap css library. Controlled by `conf.th
 ---
 
 
-[[templates.lib.css.font-awesome]]
+[[generic-templates.templates.lib.css.font-awesome]]
 ==== templates.lib.css.font-awesome
 
 Description:: Template loading font-awesome css library. Controlled by `conf.theme.lib.font-awesome.*` configuration options.
@@ -1821,7 +1821,7 @@ Description:: Template loading font-awesome css library. Controlled by `conf.the
 ---
 
 
-[[templates.lib.css.googlefonts]]
+[[generic-templates.templates.lib.css.googlefonts]]
 ==== templates.lib.css.googlefonts
 
 Description:: Template loading google fonts fonts. Controlled by `conf.theme.lib.googlefonts.*` configuration options.
@@ -1833,7 +1833,7 @@ Description:: Template loading google fonts fonts. Controlled by `conf.theme.lib
 ---
 
 
-[[templates.lib.css.highlightjs]]
+[[generic-templates.templates.lib.css.highlightjs]]
 ==== templates.lib.css.highlightjs
 
 Description:: Template loading highlightjs required css. Controlled by `conf.theme.lib.highlightjs.*` configuration options.
@@ -1845,7 +1845,7 @@ Description:: Template loading highlightjs required css. Controlled by `conf.the
 ---
 
 
-[[templates.lib.js.bootstrap]]
+[[generic-templates.templates.lib.js.bootstrap]]
 ==== templates.lib.js.bootstrap
 
 Description:: Template loading the bootstrap javascript library. Controlled by `conf.theme.lib.jquery.*` configuration options.
@@ -1857,7 +1857,7 @@ Description:: Template loading the bootstrap javascript library. Controlled by `
 ---
 
 
-[[templates.lib.js.highlightjs]]
+[[generic-templates.templates.lib.js.highlightjs]]
 ==== templates.lib.js.highlightjs
 
 Description:: Template loading the highlightjs javascript library. Controlled by `conf.theme.lib.highlightjs.*` configuration options.
@@ -1869,7 +1869,7 @@ Description:: Template loading the highlightjs javascript library. Controlled by
 ---
 
 
-[[templates.lib.js.jquery]]
+[[generic-templates.templates.lib.js.jquery]]
 ==== templates.lib.js.jquery
 
 Description:: Template loading the jQuery javascript library. Controlled by `conf.theme.lib.jquery.*` configuration options.
@@ -1881,7 +1881,7 @@ Description:: Template loading the jQuery javascript library. Controlled by `con
 ---
 
 
-[[templates.lib.js.mathjax]]
+[[generic-templates.templates.lib.js.mathjax]]
 ==== templates.lib.js.mathjax
 
 Description:: Template loading the MathJax javascript library. Controlled by `conf.theme.lib.mathjax.*` configuration options.
@@ -1893,7 +1893,7 @@ Description:: Template loading the MathJax javascript library. Controlled by `co
 ---
 
 
-[[templates.media.giphy]]
+[[generic-templates.templates.media.giphy]]
 ==== templates.media.giphy
 
 Description:: Template to embed a Giphy gif.
@@ -1912,7 +1912,7 @@ Type: `Int`.
 ---
 
 
-[[templates.media.gist]]
+[[generic-templates.templates.media.gist]]
 ==== templates.media.gist
 
 Description:: Template to embed a github gist.
@@ -1932,7 +1932,7 @@ Type: `String`.
 ---
 
 
-[[templates.media.slideshare]]
+[[generic-templates.templates.media.slideshare]]
 ==== templates.media.slideshare
 
 Description:: Template to embed a slideshare presentation.
@@ -1953,7 +1953,7 @@ Optional, defaults to `560`.
 ---
 
 
-[[templates.media.speakerdeck]]
+[[generic-templates.templates.media.speakerdeck]]
 ==== templates.media.speakerdeck
 
 Description:: Template to embed a speakerdeck presentation.
@@ -1971,7 +1971,7 @@ Optional, defaults to `null`.
 ---
 
 
-[[templates.media.twitter]]
+[[generic-templates.templates.media.twitter]]
 ==== templates.media.twitter
 
 Description:: Template to embed a twitter timeline.
@@ -1990,7 +1990,7 @@ Type: `Int`.
 ---
 
 
-[[templates.media.vimeo]]
+[[generic-templates.templates.media.vimeo]]
 ==== templates.media.vimeo
 
 Description:: Template to embed a Vimeo video.
@@ -2011,7 +2011,7 @@ Optional, defaults to `640`.
 ---
 
 
-[[templates.media.youtube]]
+[[generic-templates.templates.media.youtube]]
 ==== templates.media.youtube
 
 Description:: Template to embed a Youtube video.
@@ -2032,7 +2032,7 @@ Optional, defaults to `560`.
 ---
 
 
-[[templates.page.full]]
+[[generic-templates.templates.page.full]]
 ==== templates.page.full
 
 Description:: Normal template for rendering a page.
@@ -2044,7 +2044,7 @@ Description:: Normal template for rendering a page.
 ---
 
 
-[[templates.page.list]]
+[[generic-templates.templates.page.list]]
 ==== templates.page.list
 
 Description:: Normal template for rendering a page as a list entry (`li` tag).
@@ -2056,7 +2056,7 @@ Description:: Normal template for rendering a page as a list entry (`li` tag).
 ---
 
 
-[[templates.page.split]]
+[[generic-templates.templates.page.split]]
 ==== templates.page.split
 
 Description:: Normal template for rendering splitted pages.
@@ -2068,7 +2068,7 @@ Description:: Normal template for rendering splitted pages.
 ---
 
 
-[[templates.partials.body]]
+[[generic-templates.templates.partials.body]]
 ==== templates.partials.body
 
 Description:: Template responsible for `body` tag rendering. `body` is divided in the following templates:
@@ -2091,7 +2091,7 @@ Description:: Template responsible for `body` tag rendering. `body` is divided i
 ---
 
 
-[[templates.partials.content]]
+[[generic-templates.templates.partials.content]]
 ==== templates.partials.content
 
 Description:: Template rendering the page `content`.
@@ -2104,7 +2104,7 @@ Description:: Template rendering the page `content`.
 ---
 
 
-[[templates.partials.content-post]]
+[[generic-templates.templates.partials.content-post]]
 ==== templates.partials.content-post
 
 Description:: Template rendering the page post-contents, usually used to render the footer. Empty by default.
@@ -2117,7 +2117,7 @@ Description:: Template rendering the page post-contents, usually used to render 
 ---
 
 
-[[templates.partials.content-pre]]
+[[generic-templates.templates.partials.content-pre]]
 ==== templates.partials.content-pre
 
 Description:: Template rendering the page pre-contents, usually used to render navigations. Empty by default.
@@ -2130,7 +2130,7 @@ Description:: Template rendering the page pre-contents, usually used to render n
 ---
 
 
-[[templates.partials.doctype]]
+[[generic-templates.templates.partials.doctype]]
 ==== templates.partials.doctype
 
 Description:: Template declaring the doctype, controlled by `conf.theme.html.doctype`.
@@ -2142,7 +2142,7 @@ Description:: Template declaring the doctype, controlled by `conf.theme.html.doc
 ---
 
 
-[[templates.partials.head.css]]
+[[generic-templates.templates.partials.head.css]]
 ==== templates.partials.head.css
 
 Description:: Template loading the css files. Include the following templates:
@@ -2162,7 +2162,7 @@ Description:: Template loading the css files. Include the following templates:
 ---
 
 
-[[templates.partials.head.css-custom]]
+[[generic-templates.templates.partials.head.css-custom]]
 ==== templates.partials.head.css-custom
 
 Description:: Template to load custom css files, empty by default. Should be overridden to fit needs.
@@ -2175,7 +2175,7 @@ Description:: Template to load custom css files, empty by default. Should be ove
 ---
 
 
-[[templates.partials.head.css-extra]]
+[[generic-templates.templates.partials.head.css-extra]]
 ==== templates.partials.head.css-extra
 
 Description:: Template responsible for loading page specific css files. +
@@ -2205,7 +2205,7 @@ pages.index = {
 ---
 
 
-[[templates.partials.head.default]]
+[[generic-templates.templates.partials.head.default]]
 ==== templates.partials.head.default
 
 Description:: Template responsible for `head` tag rendering. `head` is divided in the following templates:
@@ -2230,7 +2230,7 @@ Description:: Template responsible for `head` tag rendering. `head` is divided i
 ---
 
 
-[[templates.partials.head.feed]]
+[[generic-templates.templates.partials.head.feed]]
 ==== templates.partials.head.feed
 
 Description:: Template that will automaticly load `pages.feed` if defined as an atom feed.
@@ -2243,7 +2243,7 @@ Description:: Template that will automaticly load `pages.feed` if defined as an 
 ---
 
 
-[[templates.partials.head.meta]]
+[[generic-templates.templates.partials.head.meta]]
 ==== templates.partials.head.meta
 
 Description:: Generic `meta` tags, should be overriden to fit needs. +
@@ -2266,7 +2266,7 @@ Default contents:
 ---
 
 
-[[templates.partials.head.title]]
+[[generic-templates.templates.partials.head.title]]
 ==== templates.partials.head.title
 
 Description:: Template rendering the page `head` `title` tag.
@@ -2279,7 +2279,7 @@ Description:: Template rendering the page `head` `title` tag.
 ---
 
 
-[[templates.partials.head.title-post]]
+[[generic-templates.templates.partials.head.title-post]]
 ==== templates.partials.head.title-post
 
 Description:: Template loading `head` tag contents after title. +
@@ -2293,7 +2293,7 @@ Includes <<templates.partials.head.feed>>, <<templates.partials.head.css>> and <
 ---
 
 
-[[templates.partials.head.title-post-extra]]
+[[generic-templates.templates.partials.head.title-post-extra]]
 ==== templates.partials.head.title-post-extra
 
 Description:: Template to add custom extra content in `head`. Empty by default, should be overriden to fit needs.
@@ -2306,7 +2306,7 @@ Description:: Template to add custom extra content in `head`. Empty by default, 
 ---
 
 
-[[templates.partials.head.title-pre]]
+[[generic-templates.templates.partials.head.title-pre]]
 ==== templates.partials.head.title-pre
 
 Description:: Template loading `head` tag contents before title. +
@@ -2320,7 +2320,7 @@ Includes <<templates.partials.head.meta>>.
 ---
 
 
-[[templates.partials.html]]
+[[generic-templates.templates.partials.html]]
 ==== templates.partials.html
 
 Description:: Template responsible for generating the `html` tag, includes <<templates.partials.head.default>> and <<templates.partials.body>>.
@@ -2332,7 +2332,7 @@ Description:: Template responsible for generating the `html` tag, includes <<tem
 ---
 
 
-[[templates.partials.js]]
+[[generic-templates.templates.partials.js]]
 ==== templates.partials.js
 
 Description:: Template loading the javascript files. Include the following templates:
@@ -2354,7 +2354,7 @@ Description:: Template loading the javascript files. Include the following templ
 ---
 
 
-[[templates.partials.js-custom]]
+[[generic-templates.templates.partials.js-custom]]
 ==== templates.partials.js-custom
 
 Description:: Template to load custom javascript files, empty by default. Should be overridden to fit needs.
@@ -2367,7 +2367,7 @@ Description:: Template to load custom javascript files, empty by default. Should
 ---
 
 
-[[templates.partials.js-extra]]
+[[generic-templates.templates.partials.js-extra]]
 ==== templates.partials.js-extra
 
 Description:: Template responsible for loading page specific javascript files. +
@@ -2397,7 +2397,7 @@ pages.index = {
 ---
 
 
-[[templates.services.disqus]]
+[[generic-templates.templates.services.disqus]]
 ==== templates.services.disqus
 
 Description:: Template managing link:https://disqus.com/[disqus] integration. +
@@ -2435,7 +2435,7 @@ templates.services.disqus (page // { disqusID = "main-thread"; })
 ---
 
 
-[[templates.services.google-analytics]]
+[[generic-templates.templates.services.google-analytics]]
 ==== templates.services.google-analytics
 
 Description:: Template managing link:https://www.google.com/analytics/[google analytics] integration. Controlled with `conf.theme.services.google-analytics.trackingID` configuration option.
@@ -2447,7 +2447,7 @@ Description:: Template managing link:https://www.google.com/analytics/[google an
 ---
 
 
-[[templates.services.piwik]]
+[[generic-templates.templates.services.piwik]]
 ==== templates.services.piwik
 
 Description:: Template managing link:https://piwik.org/[Piwik] integration. Controlled with `conf.theme.services.piwik.*` configuration options.
@@ -2459,7 +2459,7 @@ Description:: Template managing link:https://piwik.org/[Piwik] integration. Cont
 ---
 
 
-[[templates.sitemap]]
+[[generic-templates.templates.sitemap]]
 ==== templates.sitemap
 
 Description:: Template generating a link:https://en.wikipedia.org/wiki/Sitemaps[sitemap file]. +
@@ -2490,7 +2490,7 @@ sitemap = {
 ---
 
 
-[[templates.tag.codeblock]]
+[[generic-templates.templates.tag.codeblock]]
 ==== templates.tag.codeblock
 
 Description:: Template generating a code block, automatically escape HTML characters.
@@ -2525,7 +2525,7 @@ templates.tag.codeblock {
 ---
 
 
-[[templates.tag.generic]]
+[[generic-templates.templates.tag.generic]]
 ==== templates.tag.generic
 
 Description:: Template generating a generic html tag.
@@ -2585,7 +2585,7 @@ Any extra argument passed will be added as tag attributes.
 ---
 
 
-[[templates.tag.ilink]]
+[[generic-templates.templates.tag.ilink]]
 ==== templates.tag.ilink
 
 Description:: Generate an **i**nternal **link**.
@@ -2638,7 +2638,7 @@ Any extra argument passed will be added as tag attributes.
 ---
 
 
-[[templates.tag.link]]
+[[generic-templates.templates.tag.link]]
 ==== templates.tag.link
 
 Description:: Template generating a `link` tag.
@@ -2668,7 +2668,7 @@ templates.tag.link { href = "/feed.atom"; rel = "alternate"; type = "application
 ---
 
 
-[[templates.tag.link-atom]]
+[[generic-templates.templates.tag.link-atom]]
 ==== templates.tag.link-atom
 
 Description:: Generate a `link` tag for an atom feed.
@@ -2697,7 +2697,7 @@ templates.tag.link-atom { href = "/feed.atom"; }
 ---
 
 
-[[templates.tag.link-css]]
+[[generic-templates.templates.tag.link-css]]
 ==== templates.tag.link-css
 
 Description:: Generate a `link` tag for a css file.
@@ -2726,7 +2726,7 @@ templates.tag.link-css { href = "/css/style.css"; }
 ---
 
 
-[[templates.tag.script]]
+[[generic-templates.templates.tag.script]]
 ==== templates.tag.script
 
 Description:: Template generating a `script` tag.
@@ -2762,7 +2762,7 @@ templates.tag.script {
 ---
 
 
-[[templates.taxonomy.full]]
+[[generic-templates.templates.taxonomy.full]]
 ==== templates.taxonomy.full
 
 Description:: Template displaying a taxonomy information.
@@ -2823,7 +2823,7 @@ templates.taxonomy.full (getProp "tags" (mkTaxonomyData {
 ---
 
 
-[[templates.taxonomy.term.full]]
+[[generic-templates.templates.taxonomy.term.full]]
 ==== templates.taxonomy.term.full
 
 Description:: Template displaying a taxonomy term information.
@@ -2888,7 +2888,7 @@ templates.taxonomy.term.full {
 ---
 
 
-[[templates.taxonomy.term-list]]
+[[generic-templates.templates.taxonomy.term-list]]
 ==== templates.taxonomy.term-list
 
 Description:: Template transforming raw taxonomy data.
@@ -2949,7 +2949,7 @@ templates.taxonomy.term-list (getProp "tags" (mkTaxonomyData {
 ---
 
 
-[[templates.taxonomy.value.term-list]]
+[[generic-templates.templates.taxonomy.value.term-list]]
 ==== templates.taxonomy.value.term-list
 
 Description:: Template generating a list of taxonomy terms data for a taxonomy value (page).
@@ -2997,7 +2997,7 @@ templates.taxonomy.value.term-list {
 ---
 
 
-[[templates.url]]
+[[generic-templates.templates.url]]
 ==== templates.url
 
 Description:: Generate a full url from a path or a page by using `conf.siteUrl`.
@@ -3289,7 +3289,7 @@ posts = mkPageList {
 
 ---
 
-[[theme.itemsPerPage]]
+[[ghostwriter.conf.theme.itemsPerPage]]
 ==== theme.itemsPerPage
 
 Description:: Number of posts per page.
@@ -3305,7 +3305,7 @@ Default::
 
 ---
 
-[[theme.lib.font-awesome.enable]]
+[[ghostwriter.conf.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 
@@ -3321,7 +3321,7 @@ true
 
 ---
 
-[[theme.lib.googlefonts]]
+[[ghostwriter.conf.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 
@@ -3337,7 +3337,7 @@ Default::
 
 ---
 
-[[theme.lib.jquery.enable]]
+[[ghostwriter.conf.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 
@@ -3353,7 +3353,7 @@ true
 
 ---
 
-[[theme.site.copyright]]
+[[ghostwriter.conf.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright.
@@ -3370,7 +3370,7 @@ Default::
 
 ---
 
-[[theme.site.description]]
+[[ghostwriter.conf.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description.
@@ -3387,7 +3387,7 @@ Default::
 
 ---
 
-[[theme.site.title]]
+[[ghostwriter.conf.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -3403,7 +3403,7 @@ Default::
 
 ---
 
-[[theme.social.email]]
+[[ghostwriter.conf.theme.social.email]]
 ==== theme.social.email
 
 Description:: GitHub link
@@ -3419,7 +3419,7 @@ null
 
 ---
 
-[[theme.social.github]]
+[[ghostwriter.conf.theme.social.github]]
 ==== theme.social.github
 
 Description:: GitHub link
@@ -3435,7 +3435,7 @@ null
 
 ---
 
-[[theme.social.gitlab]]
+[[ghostwriter.conf.theme.social.gitlab]]
 ==== theme.social.gitlab
 
 Description:: GitHub link
@@ -3451,7 +3451,7 @@ null
 
 ---
 
-[[theme.social.google-plus]]
+[[ghostwriter.conf.theme.social.google-plus]]
 ==== theme.social.google-plus
 
 Description:: Google plus link
@@ -3467,7 +3467,7 @@ null
 
 ---
 
-[[theme.social.linked-in]]
+[[ghostwriter.conf.theme.social.linked-in]]
 ==== theme.social.linked-in
 
 Description:: Linked in link
@@ -3483,7 +3483,7 @@ null
 
 ---
 
-[[theme.social.stack-overflow]]
+[[ghostwriter.conf.theme.social.stack-overflow]]
 ==== theme.social.stack-overflow
 
 Description:: Stack overflow link
@@ -3499,7 +3499,7 @@ null
 
 ---
 
-[[theme.social.twitter]]
+[[ghostwriter.conf.theme.social.twitter]]
 ==== theme.social.twitter
 
 Description:: Twitter link
@@ -3530,7 +3530,7 @@ null
 ---
 
 
-[[templates.index]]
+[[ghostwriter.templates.index]]
 ==== templates.index
 
 
@@ -3538,7 +3538,7 @@ null
 ---
 
 
-[[templates.page.full]]
+[[ghostwriter.templates.page.full]]
 ==== templates.page.full
 
 
@@ -3546,7 +3546,7 @@ null
 ---
 
 
-[[templates.partials.content]]
+[[ghostwriter.templates.partials.content]]
 ==== templates.partials.content
 
 
@@ -3554,7 +3554,7 @@ null
 ---
 
 
-[[templates.partials.content-post]]
+[[ghostwriter.templates.partials.content-post]]
 ==== templates.partials.content-post
 
 
@@ -3562,7 +3562,7 @@ null
 ---
 
 
-[[templates.partials.content-pre]]
+[[ghostwriter.templates.partials.content-pre]]
 ==== templates.partials.content-pre
 
 
@@ -3570,7 +3570,7 @@ null
 ---
 
 
-[[templates.partials.head.css-custom]]
+[[ghostwriter.templates.partials.head.css-custom]]
 ==== templates.partials.head.css-custom
 
 
@@ -3578,7 +3578,7 @@ null
 ---
 
 
-[[templates.partials.head.title-post-extra]]
+[[ghostwriter.templates.partials.head.title-post-extra]]
 ==== templates.partials.head.title-post-extra
 
 
@@ -3586,7 +3586,7 @@ null
 ---
 
 
-[[templates.partials.html]]
+[[ghostwriter.templates.partials.html]]
 ==== templates.partials.html
 
 
@@ -3594,7 +3594,7 @@ null
 ---
 
 
-[[templates.partials.pager]]
+[[ghostwriter.templates.partials.pager]]
 ==== templates.partials.pager
 
 
@@ -3602,7 +3602,7 @@ null
 ---
 
 
-[[templates.post.full]]
+[[ghostwriter.templates.post.full]]
 ==== templates.post.full
 
 
@@ -3610,7 +3610,7 @@ null
 ---
 
 
-[[templates.post.list]]
+[[ghostwriter.templates.post.list]]
 ==== templates.post.list
 
 
@@ -3795,7 +3795,7 @@ image::imgs/hyde.png[Hyde,align="center"]
 
 ---
 
-[[theme.colorScheme]]
+[[hyde.conf.theme.colorScheme]]
 ==== theme.colorScheme
 
 Description:: Selects the color scheme. Set to `null` for default black scheme.
@@ -3811,7 +3811,7 @@ null
 
 ---
 
-[[theme.itemsPerPage]]
+[[hyde.conf.theme.itemsPerPage]]
 ==== theme.itemsPerPage
 
 Description:: Number of posts per page.
@@ -3827,7 +3827,7 @@ Default::
 
 ---
 
-[[theme.layout.reverse]]
+[[hyde.conf.theme.layout.reverse]]
 ==== theme.layout.reverse
 
 Description:: Whether to enable reverse layout.
@@ -3850,7 +3850,7 @@ true
 
 ---
 
-[[theme.site.copyright]]
+[[hyde.conf.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright.
@@ -3867,7 +3867,7 @@ Default::
 
 ---
 
-[[theme.site.description]]
+[[hyde.conf.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description.
@@ -3884,7 +3884,7 @@ Default::
 
 ---
 
-[[theme.site.title]]
+[[hyde.conf.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -3915,7 +3915,7 @@ Default::
 ---
 
 
-[[templates.e404]]
+[[hyde.templates.e404]]
 ==== templates.e404
 
 
@@ -3923,7 +3923,7 @@ Default::
 ---
 
 
-[[templates.index]]
+[[hyde.templates.index]]
 ==== templates.index
 
 
@@ -3931,7 +3931,7 @@ Default::
 ---
 
 
-[[templates.partials.body]]
+[[hyde.templates.partials.body]]
 ==== templates.partials.body
 
 
@@ -3939,7 +3939,7 @@ Default::
 ---
 
 
-[[templates.partials.content]]
+[[hyde.templates.partials.content]]
 ==== templates.partials.content
 
 
@@ -3947,7 +3947,7 @@ Default::
 ---
 
 
-[[templates.partials.content-pre]]
+[[hyde.templates.partials.content-pre]]
 ==== templates.partials.content-pre
 
 
@@ -3955,7 +3955,7 @@ Default::
 ---
 
 
-[[templates.partials.head.css-custom]]
+[[hyde.templates.partials.head.css-custom]]
 ==== templates.partials.head.css-custom
 
 
@@ -3963,7 +3963,7 @@ Default::
 ---
 
 
-[[templates.partials.head.title-post-extra]]
+[[hyde.templates.partials.head.title-post-extra]]
 ==== templates.partials.head.title-post-extra
 
 
@@ -3971,7 +3971,7 @@ Default::
 ---
 
 
-[[templates.partials.pager]]
+[[hyde.templates.partials.pager]]
 ==== templates.partials.pager
 
 
@@ -3979,7 +3979,7 @@ Default::
 ---
 
 
-[[templates.post.full]]
+[[hyde.templates.post.full]]
 ==== templates.post.full
 
 
@@ -3987,7 +3987,7 @@ Default::
 ---
 
 
-[[templates.post.list]]
+[[hyde.templates.post.list]]
 ==== templates.post.list
 
 
@@ -4177,7 +4177,7 @@ image::imgs/nix.png[Nix,align="center"]
 
 ---
 
-[[theme.lib.bootstrap.enable]]
+[[nix.conf.theme.lib.bootstrap.enable]]
 ==== theme.lib.bootstrap.enable
 
 
@@ -4193,7 +4193,7 @@ true
 
 ---
 
-[[theme.lib.font-awesome.enable]]
+[[nix.conf.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 
@@ -4209,7 +4209,7 @@ true
 
 ---
 
-[[theme.lib.googlefonts]]
+[[nix.conf.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 
@@ -4225,7 +4225,7 @@ Default::
 
 ---
 
-[[theme.lib.jquery.enable]]
+[[nix.conf.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 
@@ -4241,7 +4241,7 @@ true
 
 ---
 
-[[theme.site.copyright]]
+[[nix.conf.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright.
@@ -4258,7 +4258,7 @@ Default::
 
 ---
 
-[[theme.site.description]]
+[[nix.conf.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description.
@@ -4275,7 +4275,7 @@ Default::
 
 ---
 
-[[theme.site.title]]
+[[nix.conf.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -4306,7 +4306,7 @@ Default::
 ---
 
 
-[[templates.page.full]]
+[[nix.templates.page.full]]
 ==== templates.page.full
 
 
@@ -4314,7 +4314,7 @@ Default::
 ---
 
 
-[[templates.partials.content]]
+[[nix.templates.partials.content]]
 ==== templates.partials.content
 
 
@@ -4322,7 +4322,7 @@ Default::
 ---
 
 
-[[templates.partials.content-post]]
+[[nix.templates.partials.content-post]]
 ==== templates.partials.content-post
 
 
@@ -4330,7 +4330,7 @@ Default::
 ---
 
 
-[[templates.partials.content-pre]]
+[[nix.templates.partials.content-pre]]
 ==== templates.partials.content-pre
 
 
@@ -4338,7 +4338,7 @@ Default::
 ---
 
 
-[[templates.partials.head.css-custom]]
+[[nix.templates.partials.head.css-custom]]
 ==== templates.partials.head.css-custom
 
 
@@ -4346,7 +4346,7 @@ Default::
 ---
 
 
-[[templates.post.full]]
+[[nix.templates.post.full]]
 ==== templates.post.full
 
 
@@ -4354,7 +4354,7 @@ Default::
 ---
 
 
-[[templates.post.list]]
+[[nix.templates.post.list]]
 ==== templates.post.list
 
 
@@ -4362,7 +4362,7 @@ Default::
 ---
 
 
-[[templates.posts-list]]
+[[nix.templates.posts-list]]
 ==== templates.posts-list
 
 
@@ -4567,7 +4567,7 @@ image::imgs/orbit.png[Orbit,align="center"]
 
 ---
 
-[[theme.colorScheme]]
+[[orbit.conf.theme.colorScheme]]
 ==== theme.colorScheme
 
 Description:: Theme color scheme.
@@ -4583,7 +4583,7 @@ Default::
 
 ---
 
-[[theme.contact.items]]
+[[orbit.conf.theme.contact.items]]
 ==== theme.contact.items
 
 Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
@@ -4613,7 +4613,7 @@ Example::
 
 ---
 
-[[theme.copyright]]
+[[orbit.conf.theme.copyright]]
 ==== theme.copyright
 
 Description:: Footer copyright text.
@@ -4629,7 +4629,7 @@ Default::
 
 ---
 
-[[theme.education.items]]
+[[orbit.conf.theme.education.items]]
 ==== theme.education.items
 
 Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
@@ -4658,7 +4658,7 @@ Example::
 
 ---
 
-[[theme.education.title]]
+[[orbit.conf.theme.education.title]]
 ==== theme.education.title
 
 Description:: Title of the education section.
@@ -4674,7 +4674,7 @@ Default::
 
 ---
 
-[[theme.experiences.icon]]
+[[orbit.conf.theme.experiences.icon]]
 ==== theme.experiences.icon
 
 Description:: Code of the font awesome icon of the experience title.
@@ -4690,7 +4690,7 @@ Default::
 
 ---
 
-[[theme.experiences.items]]
+[[orbit.conf.theme.experiences.items]]
 ==== theme.experiences.items
 
 Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
@@ -4720,7 +4720,7 @@ Example::
 
 ---
 
-[[theme.experiences.title]]
+[[orbit.conf.theme.experiences.title]]
 ==== theme.experiences.title
 
 Description:: Title of the experiences section
@@ -4736,7 +4736,7 @@ Default::
 
 ---
 
-[[theme.interests.items]]
+[[orbit.conf.theme.interests.items]]
 ==== theme.interests.items
 
 Description:: List of interests. If set to the empty list `[]`, the interests area will not be displayed.
@@ -4760,7 +4760,7 @@ Example::
 
 ---
 
-[[theme.interests.title]]
+[[orbit.conf.theme.interests.title]]
 ==== theme.interests.title
 
 Description:: Title of the interests section.
@@ -4776,7 +4776,7 @@ Default::
 
 ---
 
-[[theme.languages.items]]
+[[orbit.conf.theme.languages.items]]
 ==== theme.languages.items
 
 Description:: List of languages as attribute sets, requires `language`, and `level`.  
@@ -4804,7 +4804,7 @@ Example::
 
 ---
 
-[[theme.languages.title]]
+[[orbit.conf.theme.languages.title]]
 ==== theme.languages.title
 
 Description:: Title of the languages section.
@@ -4820,7 +4820,7 @@ Default::
 
 ---
 
-[[theme.profile]]
+[[orbit.conf.theme.profile]]
 ==== theme.profile
 
 Description:: Profile information, must have `name`, `tagline` and `image` attributes.
@@ -4840,7 +4840,7 @@ Default::
 
 ---
 
-[[theme.projects.icon]]
+[[orbit.conf.theme.projects.icon]]
 ==== theme.projects.icon
 
 Description:: Code of the font awesome icon of the projects title.
@@ -4856,7 +4856,7 @@ Default::
 
 ---
 
-[[theme.projects.items]]
+[[orbit.conf.theme.projects.items]]
 ==== theme.projects.items
 
 Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
@@ -4885,7 +4885,7 @@ Example::
 
 ---
 
-[[theme.projects.title]]
+[[orbit.conf.theme.projects.title]]
 ==== theme.projects.title
 
 Description:: Title of the projects section
@@ -4901,7 +4901,7 @@ Default::
 
 ---
 
-[[theme.site.author]]
+[[orbit.conf.theme.site.author]]
 ==== theme.site.author
 
 Description:: Content of the author `meta` tag.
@@ -4917,7 +4917,7 @@ Default::
 
 ---
 
-[[theme.site.description]]
+[[orbit.conf.theme.site.description]]
 ==== theme.site.description
 
 Description:: Content of the description `meta` tag.
@@ -4933,7 +4933,7 @@ Default::
 
 ---
 
-[[theme.site.title]]
+[[orbit.conf.theme.site.title]]
 ==== theme.site.title
 
 Description:: Title of the site.
@@ -4949,7 +4949,7 @@ Default::
 
 ---
 
-[[theme.skills.icon]]
+[[orbit.conf.theme.skills.icon]]
 ==== theme.skills.icon
 
 Description:: Code of the font awesome icon of the skills title.
@@ -4965,7 +4965,7 @@ Default::
 
 ---
 
-[[theme.skills.items]]
+[[orbit.conf.theme.skills.items]]
 ==== theme.skills.items
 
 Description:: List of skills as attribute sets, requires `title` and `level`.  
@@ -4996,7 +4996,7 @@ Example::
 
 ---
 
-[[theme.skills.title]]
+[[orbit.conf.theme.skills.title]]
 ==== theme.skills.title
 
 Description:: Title of the skills section.
@@ -5012,7 +5012,7 @@ Default::
 
 ---
 
-[[theme.summary.content]]
+[[orbit.conf.theme.summary.content]]
 ==== theme.summary.content
 
 Description:: content of the profile area as HTML text.  
@@ -5030,7 +5030,7 @@ null
 
 ---
 
-[[theme.summary.icon]]
+[[orbit.conf.theme.summary.icon]]
 ==== theme.summary.icon
 
 Description:: Code of the font awesome icon of the summary title.
@@ -5046,7 +5046,7 @@ Default::
 
 ---
 
-[[theme.summary.title]]
+[[orbit.conf.theme.summary.title]]
 ==== theme.summary.title
 
 Description:: Title of the summary section
@@ -5077,7 +5077,7 @@ Default::
 ---
 
 
-[[templates.icon.fa]]
+[[orbit.templates.icon.fa]]
 ==== templates.icon.fa
 
 
@@ -5085,7 +5085,7 @@ Default::
 ---
 
 
-[[templates.index]]
+[[orbit.templates.index]]
 ==== templates.index
 
 
@@ -5093,7 +5093,7 @@ Default::
 ---
 
 
-[[templates.partials.contact]]
+[[orbit.templates.partials.contact]]
 ==== templates.partials.contact
 
 
@@ -5101,7 +5101,7 @@ Default::
 ---
 
 
-[[templates.partials.education]]
+[[orbit.templates.partials.education]]
 ==== templates.partials.education
 
 
@@ -5109,7 +5109,7 @@ Default::
 ---
 
 
-[[templates.partials.experiences]]
+[[orbit.templates.partials.experiences]]
 ==== templates.partials.experiences
 
 
@@ -5117,7 +5117,7 @@ Default::
 ---
 
 
-[[templates.partials.footer]]
+[[orbit.templates.partials.footer]]
 ==== templates.partials.footer
 
 
@@ -5125,7 +5125,7 @@ Default::
 ---
 
 
-[[templates.partials.head]]
+[[orbit.templates.partials.head]]
 ==== templates.partials.head
 
 
@@ -5133,7 +5133,7 @@ Default::
 ---
 
 
-[[templates.partials.interests]]
+[[orbit.templates.partials.interests]]
 ==== templates.partials.interests
 
 
@@ -5141,7 +5141,7 @@ Default::
 ---
 
 
-[[templates.partials.js]]
+[[orbit.templates.partials.js]]
 ==== templates.partials.js
 
 
@@ -5149,7 +5149,7 @@ Default::
 ---
 
 
-[[templates.partials.languages]]
+[[orbit.templates.partials.languages]]
 ==== templates.partials.languages
 
 
@@ -5157,7 +5157,7 @@ Default::
 ---
 
 
-[[templates.partials.profile]]
+[[orbit.templates.partials.profile]]
 ==== templates.partials.profile
 
 
@@ -5165,7 +5165,7 @@ Default::
 ---
 
 
-[[templates.partials.projects]]
+[[orbit.templates.partials.projects]]
 ==== templates.partials.projects
 
 
@@ -5173,7 +5173,7 @@ Default::
 ---
 
 
-[[templates.partials.sidebar]]
+[[orbit.templates.partials.sidebar]]
 ==== templates.partials.sidebar
 
 
@@ -5181,7 +5181,7 @@ Default::
 ---
 
 
-[[templates.partials.skills]]
+[[orbit.templates.partials.skills]]
 ==== templates.partials.skills
 
 
@@ -5189,7 +5189,7 @@ Default::
 ---
 
 
-[[templates.partials.summary]]
+[[orbit.templates.partials.summary]]
 ==== templates.partials.summary
 
 
@@ -5330,7 +5330,7 @@ image::imgs/showcase.png[Showcase,align="center"]
 
 ---
 
-[[theme.archives.itemsPerPage]]
+[[showcase.conf.theme.archives.itemsPerPage]]
 ==== theme.archives.itemsPerPage
 
 Description:: Number of posts on the archive page.
@@ -5346,7 +5346,7 @@ Default::
 
 ---
 
-[[theme.index.itemsPerPage]]
+[[showcase.conf.theme.index.itemsPerPage]]
 ==== theme.index.itemsPerPage
 
 Description:: Number of posts on the index page.
@@ -5362,7 +5362,7 @@ Default::
 
 ---
 
-[[theme.site.copyright]]
+[[showcase.conf.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright, added in the footer.
@@ -5378,7 +5378,7 @@ Default::
 
 ---
 
-[[theme.site.description]]
+[[showcase.conf.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description, added in the footer.
@@ -5409,7 +5409,7 @@ Default::
 ---
 
 
-[[templates.archive]]
+[[showcase.templates.archive]]
 ==== templates.archive
 
 
@@ -5417,7 +5417,7 @@ Default::
 ---
 
 
-[[templates.index]]
+[[showcase.templates.index]]
 ==== templates.index
 
 
@@ -5425,7 +5425,7 @@ Default::
 ---
 
 
-[[templates.partials.content]]
+[[showcase.templates.partials.content]]
 ==== templates.partials.content
 
 
@@ -5433,7 +5433,7 @@ Default::
 ---
 
 
-[[templates.partials.content-post]]
+[[showcase.templates.partials.content-post]]
 ==== templates.partials.content-post
 
 
@@ -5441,7 +5441,7 @@ Default::
 ---
 
 
-[[templates.partials.content-pre]]
+[[showcase.templates.partials.content-pre]]
 ==== templates.partials.content-pre
 
 
@@ -5449,7 +5449,7 @@ Default::
 ---
 
 
-[[templates.partials.head.css-custom]]
+[[showcase.templates.partials.head.css-custom]]
 ==== templates.partials.head.css-custom
 
 
@@ -5457,7 +5457,7 @@ Default::
 ---
 
 
-[[templates.partials.sidebar]]
+[[showcase.templates.partials.sidebar]]
 ==== templates.partials.sidebar
 
 
@@ -5465,7 +5465,7 @@ Default::
 ---
 
 
-[[templates.post.draft-icon]]
+[[showcase.templates.post.draft-icon]]
 ==== templates.post.draft-icon
 
 
@@ -5473,7 +5473,7 @@ Default::
 ---
 
 
-[[templates.post.full]]
+[[showcase.templates.post.full]]
 ==== templates.post.full
 
 
@@ -5481,7 +5481,7 @@ Default::
 ---
 
 
-[[templates.post.list]]
+[[showcase.templates.post.list]]
 ==== templates.post.list
 
 
@@ -5489,7 +5489,7 @@ Default::
 ---
 
 
-[[templates.post.preview]]
+[[showcase.templates.post.preview]]
 ==== templates.post.preview
 
 
@@ -5497,7 +5497,7 @@ Default::
 ---
 
 
-[[templates.post.tags-inline]]
+[[showcase.templates.post.tags-inline]]
 ==== templates.post.tags-inline
 
 
@@ -5505,7 +5505,7 @@ Default::
 ---
 
 
-[[templates.taxonomy.full-section]]
+[[showcase.templates.taxonomy.full-section]]
 ==== templates.taxonomy.full-section
 
 
