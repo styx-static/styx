@@ -124,7 +124,14 @@ doc_build () {
 }
 
 realpath() {
-  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+  # based on https://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
+  SOURCE="$1"
+  while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$( readlink "$SOURCE" )"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  done
+  echo "$SOURCE"
 }
 
 #-------------------------------
@@ -139,10 +146,8 @@ version=@version@
 origArgs=("$@")
 # action to execute
 action=
-# directory of this script
-dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 # styx root dir
-root=$(dirname "$dir")
+root=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
 # styx src directory
 srcdir=$(realpath "$root/share/styx-src/src")
 # styx html doc path
