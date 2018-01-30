@@ -6,6 +6,9 @@ with (import ./utils.nix lib);
 with (import ./proplist.nix lib);
 
 let
+  withEmacs = true; # How to propagate from config?
+  emacspkg = pkgs.emacsWithPackages
+      (epkgs: (with epkgs.melpaStablePackages; [ use-package ]));
 
   /* Supported content types
   */
@@ -15,18 +18,24 @@ let
     # markups
     asciidoc = [ "asciidoc" "adoc" ];
     markdown = [ "markdown" "mdown" "md" ];
+    org-mode = if withEmacs then [ "org" ] else [];
     # other
     nix      = [ "nix" ];
     image    = [ "jpeg" "jpg" "png" "gif" "JPEG" "JPG" "PNG" "GIF" ];
   };
 
-  markupExts = ext.asciidoc ++ ext.markdown;
+  markupExts = ext.asciidoc ++ ext.markdown ++ ext.org-mode;
 
   /* Convert commands
   */
   commands = {
     asciidoc = "asciidoctor -b xhtml5 -s -a showtitle -o-";
     markdown = "multimarkdown";
+    org-mode = "bash ${pkgs.styx}/share/styx/tools/emacs-compile";
+  };
+
+  preprocess = {
+    org-mode = "bash ${pkgs.styx}/share/styx/tools/emacs-preprocess";
   };
 
   /* extract exif from an image
@@ -56,8 +65,11 @@ let
         preferLocalBuild = true;
         allowSubstitutes = false;
       } ''
-        python ${pkgs.styx}/share/styx/tools/parser.py < ${fileData.path} > $out
-        '';
+  ${if preprocess ? "${markupType}" then
+        "${preprocess."${markupType}"} ${fileData.path} > preprocessed"
+  else "cp ${fileData.path} preprocessed"}
+        python ${pkgs.styx}/share/styx/tools/parser.py < preprocessed > $out
+  '';
       data = importApply dataFn env;
     in mapAttrs (k: v:
       if   elem k markupAttrs

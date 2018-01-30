@@ -1,4 +1,5 @@
-{ stdenv, caddy, asciidoctor
+{ stdenv, caddy, asciidoctor, withEmacs ? false
+, emacspkg ? null, which
 , file, lessc, sass, multimarkdown
 , linkchecker
 , perlPackages
@@ -27,7 +28,7 @@ stdenv.mkDerivation rec {
     multimarkdown
     perlPackages.ImageExifTool
     (python27.withPackages (ps: [ ps.parsimonious ]))
-  ];
+  ] ++ (if withEmacs then [ emacspkg ] else []);
 
   outputs = [ "out" "lib" "themes" ];
 

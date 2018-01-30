@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+emacs --file "$1" --script $(dirname "$0")/org-support.el -f compile-org-file

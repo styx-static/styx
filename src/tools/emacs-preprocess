@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+emacs -Q --file "$1" --script $(dirname "$0")/org-support.el -f preprocess-org-file
