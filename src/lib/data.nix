@@ -187,7 +187,7 @@ let
         allowSubstitutes = false;
       } ''
   ${if preprocess ? "${markupType}" then
-        "${preprocess."${markupType}"} ${fileData.path} > preprocessed"
+        "${preprocess."${markupType}"} \"${fileData.path}\" > preprocessed"
   else "cp ${fileData.path} preprocessed"}
         python ${pkgs.styx}/share/styx/tools/parser.py < preprocessed > $out
   '';
