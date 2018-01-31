@@ -8,6 +8,7 @@
 , emacsPkg ? (emacsWithPackages (epkgs:
     (with epkgs.melpaPackages; with epkgs.orgPackages;
       [ use-package org htmlize ])))
+, extraPkgs ? null
 , callPackage }:
 
 stdenv.mkDerivation rec {
@@ -33,7 +34,7 @@ stdenv.mkDerivation rec {
     perlPackages.ImageExifTool
     (python27.withPackages (ps: [ ps.parsimonious ]))
     emacsPkg
-  ];
+  ] ++ stdenv.lib.optional (extraPkgs != null) [ extraPkgs ];
 
   outputs = [ "out" "lib" "themes" ];
 
