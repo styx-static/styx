@@ -20,15 +20,7 @@ let
 
   styx-pkgs = rec {
     # styx dev version
-  styx = pkgs.callPackage ../derivation.nix {
-    withEmacs = true;
-    emacspkg = pkgs.emacsWithPackages
-      (epkgs: (with epkgs.melpaPackages; with epkgs.orgPackages; [
-      use-package
-      org-plus-contrib # requires org 9.0+
-      htmlize
-    ]));
-    };
+  styx = pkgs.callPackage ../derivation.nix { };
     # updating callPackage so styx builder use the dev versions
     callPackage = pkgs.lib.callPackageWith (pkgs');
   };

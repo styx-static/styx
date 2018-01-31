@@ -18,7 +18,7 @@ let
     # markups
     asciidoc = [ "asciidoc" "adoc" ];
     markdown = [ "markdown" "mdown" "md" ];
-    org-mode = if withEmacs then [ "org" ] else [];
+    org-mode = [ "org" ];
     # other
     nix      = [ "nix" ];
     image    = [ "jpeg" "jpg" "png" "gif" "JPEG" "JPG" "PNG" "GIF" ];
