@@ -5,7 +5,7 @@ let
 
   # nixpkgs lib
   base = nixpkgs.lib // builtins;
-  pkgs = { inherit styx; inherit (nixpkgs) runCommand writeText; };
+  pkgs = { inherit styx; inherit (nixpkgs) runCommand writeText writeScript bash; };
 
   # Styx lib
   data       = (import ./data.nix) base pkgs;
