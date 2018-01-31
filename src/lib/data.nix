@@ -6,9 +6,10 @@ with (import ./utils.nix lib);
 with (import ./proplist.nix lib);
 
 let
-  withEmacs = true; # How to propagate from config?
-  emacspkg = pkgs.emacsWithPackages
-      (epkgs: (with epkgs.melpaStablePackages; [ use-package ]));
+  org-compile = pkgs.writeScript "org-compile" ''
+    #!${pkgs.bash}/bin/bash
+    emacs -Q --script ${styx-support} --file "$2" -f $1
+  '';
 
   /* Supported content types
   */
