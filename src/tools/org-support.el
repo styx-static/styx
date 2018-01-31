@@ -38,8 +38,7 @@
         (string= lang "dot")
 	;; compiled
 	(string= lang "cpp")
-	(string= lang "C")
-	)))
+	(string= lang "C"))))
 
 (setq org-confirm-babel-evaluate 'ck/org-confirm-babel-evaluate)
 
@@ -68,14 +67,27 @@
 
 ;; (org-export-replace-region-by 'html)
 
-(defun title-text ()
-  (org-export-string-as (jk-org-kwd "TITLE") 'html t))
-
+(defun title-text (&optional throw)
+  "Get the title of the org buffer.
+   When throw is true, throws an error if no title is provided"
+  (let ((title (jk-org-kwd "TITLE")))
+    (if (not (eq title nil))
+	(org-export-string-as title 'html t)
+      (if throw
+	  (error "Missing '#+title:' field!"))
+      "")))
 
 (defun list-tags ()
-  (mapcar (lambda (tag) 
-	    (substring-no-properties (car tag))) 
+  (mapcar (lambda (tag)
+	    (substring-no-properties (car tag)))
 	  (org-global-tags-completion-table)))
+
+(defun is-draft-p ()
+  "Check if the '#+option:' draft is set to t or nil.
+   If it's not defined, nil is assumed"
+  (let ((draft (jk-org-kwd "DRAFT")))
+	(or (string= draft "t")
+	    (string= draft "true"))))
 
 (defun styx-split-before-heading ()
   (save-excursion
@@ -89,8 +101,9 @@
   (let ((buffer-read-only nil))
     (styx-split-before-heading)
     (princ (concat "{---\n"
-		   (format "title = \"%s\";\n" (title-text))
-		   (format "tags = [\"%s\"];\n" (text (org-get-buffer-tags))) 
+		   (format "title = \"%s\";\n" (title-text t))
+		   (format "tags = [\"%s\"];\n" (text (org-get-buffer-tags)))
+		   (format "draft = %s;\n" (if (is-draft-p) "true" "false"))
 		   "---}\n" (buffer-string)))))
 
 (defun jk-org-kwds ()
@@ -104,5 +117,3 @@ from lines like:
 (defun jk-org-kwd (KEYWORD)
   "get the value of a KEYWORD in the form of #+KEYWORD: value"
   (cdr (assoc KEYWORD (jk-org-kwds))))
-
-
