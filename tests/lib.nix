@@ -227,6 +227,44 @@ let
        content = "<p>\nThe answer is 42.\n</p>\n";
        intro = "";
      };
+  } {
+     name = "loadFile - properties-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/properties.org;
+     expected = {
+       title = "Overritten";
+       author = "myself";
+       var = 10;
+       intro = "";
+       content = "";
+     };
+  } {
+     name = "loadFile - sources-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/org-src.org;
+     expected = {
+       intro = "";
+       content = ''<pre class="example">
+The answer is 42
+
+</pre>
+'';
+     };
+  } {
+     name = "loadFile - macro-org";
+    function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/macro.org;
+     expected = {
+       intro = "";
+       content = ''<p>
+This is working
+</p>
+
+<p>
+"This is working"
+</p>
+'';
+     };
   }
   ];
 
