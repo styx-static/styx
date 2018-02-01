@@ -22,67 +22,13 @@ let
   ">>>"
   "The string used by styx to separate intro from content")
 
+(defvar org-abstract-block-regexp
+  "^\\([ \t]*\\)#\\+begin_abstract[ \t]*\\([^\000]*?\n\\)??[ \t]*#\\+end_abstract"
+  "Regexp used to identify code blocks.")
+
 (defvar default-org-export-properties
   '("EMAIL" "TITLE" "AUTHOR" "LANGUAGE" "DATE" "CREATOR")
   "Properties exported to styx by default")
-
-(defun cleanup-styx-vars (vars)
-  "Remove the `STYX' prefix from all #+stix-name: variable"
-  (mapcar (lambda (cell)
-	    (cons (car (cdr (split-string (car cell) "-")))
-		  (cdr cell)))
-	  vars))
-
-(defun org-options-list ()
-  (remove-if-not (lambda (el)
-		   (member (car el) default-org-export-properties))
-		 (jk-org-kwds)))
-
-(defun title-text (&optional throw)
-  "Get the title of the org buffer.
-     When throw is true, throws an error if no title is provided"
-  (let ((title (jk-org-kwd "TITLE")))
-    (if (not (eq title nil))
-  	(org-export-string-as title 'html t)
-      (if throw
-  	  (error "Missing '#+title:' field!"))
-      "")))
-
-(defun is-draft-p ()
-  "Check if the '#+option:' draft is set to t or nil.
-     If it's not defined, nil is assumed"
-  (let ((draft (jk-org-kwd "DRAFT")))
-    (or (string= draft "t")
-  	(string= draft "true"))))
-
-(defun styx-split-before-heading ()
-  (save-excursion
-    (outline-next-heading)
-    (insert (concat styx-intro-splitter "\n"))))
-
-(defun preprocess-org-file ()
-  (interactive)
-  (message "preprocessing")
-  (org-mode)
-  (let ((buffer-read-only nil))
-    (styx-split-before-heading)
-    (princ (concat "{---\n"
-		   (format-styx-properties
-		    (kvplist->alist
-		     (org-combine-plists
-		      (kvalist->plist (org-options-list))
-		      (kvalist->plist (cleanup-styx-vars (get-styx-options (jk-org-kwds)))))))
-  		   "---}\n" (buffer-string)))))
-
-(defun compile-org-file ()
-  (interactive)
-  (message "compiling")
-  (org-mode)
-  (org-html-export-as-html nil nil nil t nil)
-  (princ (buffer-string)))
-
-;; # (format "tags = [\"%s\"];\n" (text (org-get-buffer-tags)))
-
 
 (defun jk-org-kwds ()
   "parse the buffer and return a cons list of (property . value)
@@ -96,10 +42,48 @@ let
   "get the value of a KEYWORD in the form of #+KEYWORD: value"
   (cdr (assoc KEYWORD (jk-org-kwds))))
 
+(defun cleanup-styx-vars (vars)
+  "Remove the `STYX' prefix from all #+stix-name: variable"
+  (mapcar (lambda (cell)
+	    (cons (mapconcat 'identity
+              (cdr (split-string (car cell) "-")) "-")
+		  (cdr cell)))
+	  vars))
+
+(defun org-options-list ()
+    "Find the default export properties in the buffer, as defineed
+       by `defult-org-export-properties', and returns them in plist"
+    (remove nil
+            (mapcar (lambda (el)
+                      (when (member (car el) default-org-export-properties)
+                        (cons (car el) (prin1-to-string (format "%s" (cdr el))))))
+                    (jk-org-kwds))))
+
+(defun styx-split-before-heading ()
+  "Insert `styx-intro-splitter' before the first heading.
+   Remember that this point will be cutted, so any property
+   defined before this will not apply to the export"
+  (save-excursion
+    (goto-char (point-min))
+    ;; (outline-next-heading)
+    (insert (concat styx-intro-splitter "\n"))))
+
+(defun move-abstract-to-the-beginning ()
+  "Look for a #+(BEGIN/END)_ABSTRACT block and moves it to
+   the beginning of the buffer"
+   (if (re-search-forward org-abstract-block-regexp nil t)
+   (save-excursion
+   (let ((beg (match-beginning 0))
+   (end (match-end 0)))
+   (kill-region beg end)
+   (goto-char (point-min))
+   (yank)
+   (insert "\n")))))
+
 (defun get-styx-options (assoc-list)
+  "Filter `assoc-list' to properties prefixed by `STYX'"
   (cl-remove-if-not (lambda (el) (string-prefix-p "STYX-" (car el)))
 		    assoc-list))
-
 
 (defun format-styx-properties (alist)
   "Create the styx header based on the peoperties in alist"
@@ -108,12 +92,7 @@ let
    (mapcar
     (lambda (option)
       (format "%s = %s;\n"
-	      (downcase (symbol-name (car option)))
-	      (if (string= (cdr option) "t")
-		  "true"
-		(if (string= (cdr option) "nil")
-		    "false"
-		  (prin1-to-string (cdr option))))))
+	      (downcase (symbol-name (car option))) (cdr option)))
     alist)))
 
 (org-babel-do-load-languages
@@ -125,6 +104,40 @@ let
 ;; Another option would be to set this to t, and let the user override
 ;; it on a per-file basis like http://irreal.org/blog/?p=206
 (setq org-confirm-babel-evaluate nil)
+
+;; Interactive functions called by styx during the export If you
+;; entirely replace the config file, you need to provide an
+;; alternative to those
+(defun preprocess-org-file ()
+  "Parses the org-mode file, converting org's #+styx-properties:
+  to styx, and preparing split points. The buffer is then printed
+  to stdout.
+
+  Read `format-styx-properties' on the properties
+  conversion is done"
+  (interactive)
+  ;; (message "preprocessing") ; debug
+  (org-mode)
+  (let ((buffer-read-only nil))
+    (styx-split-before-heading)
+    (move-abstract-to-the-beginning)
+    (princ (concat "{---\n"
+		   (format-styx-properties
+		    (kvplist->alist
+		     (org-combine-plists
+		      (kvalist->plist (org-options-list))
+		      (kvalist->plist (cleanup-styx-vars
+				       (get-styx-options (jk-org-kwds)))))))
+  		   "---}\n" (buffer-string)))))
+
+(defun compile-org-file ()
+  "Export the org-mode buffer to html, and print it to stdout"
+  (interactive)
+  ;; (message "compiling") ; debug
+  (org-mode)
+  (org-html-export-as-html nil nil nil t nil)
+  (princ (buffer-string)))
+;; # (format "tags = [\"%s\"];\n" (text (org-get-buffer-tags)))
 '';
 
   /* Supported content types

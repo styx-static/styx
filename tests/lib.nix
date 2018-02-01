@@ -182,7 +182,53 @@ let
          <p>The answer is 42.</p>
        '';
      };
-   } ];
+  } ] ++ [ # org-mode tests
+    {
+     name = "loadFile - simple-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/simple.org;
+     expected = {
+      content = "<p>\nContent\n</p>\n";
+      intro = "";
+     };
+  } {
+     name = "loadFile - intro-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/simple-intro.org;
+     expected = {
+      intro = "<div class=\"abstract\">\n<p>\nContent\n</p>\n\n</div>\n";
+      content = "";
+     };
+  } {
+     name = "loadFile - meta-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/meta.org;
+     expected = {
+       content = "<p>\nContent\n</p>\n";
+       foo = "bar";
+       intro = "";
+     };
+  } {
+     name = "loadFile - embedded-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/embedded.org;
+     expected = {
+       intro = "";
+       content = "<p>\n2 + 2 = 4\nAnswer is 42 and foo is bar\n</p>\n";
+     };
+  } {
+     name = "loadFile - complex-org";
+     function = "lib.data.loadFile";
+     code = mkLoadFileTest ./data/complex.org;
+     expected = {
+       foo = "The answer";
+       bar = "answer";
+       baz = 40;
+       content = "<p>\nThe answer is 42.\n</p>\n";
+       intro = "";
+     };
+  }
+  ];
 
 in {
   inherit failures report results functions tests coverage;

@@ -1,0 +1,5 @@
+#+styx-foo: "The ${bar}"
+#+styx-bar: "answer"
+#+styx-baz: 40
+
+{{ "{{ meta.foo }} is {{ toString (meta.baz + env.buz) }}." }}
