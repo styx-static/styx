@@ -7,7 +7,7 @@
 , emacsWithPackages
 , emacsPkg ? (emacsWithPackages (epkgs:
     (with epkgs.melpaPackages; with epkgs.orgPackages;
-      [ use-package org htmlize ])))
+      [ use-package org htmlize kv ])))
 , extraPkgs ? null
 , callPackage }:
 

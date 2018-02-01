@@ -13,123 +13,119 @@ let
 
   styx-support = pkgs.writeText "styx-support.el" ''
 (require 'package)
-  (package-initialize)
-  (require 'use-package)
-  (use-package org)
+(package-initialize)
+(require 'org)
+(require 'kv)
+(require 'cl)
 
-  (defvar styx-intro-splitter
-    ">>>"
-    "The string used by styx to separate intro from content")
+(defvar styx-intro-splitter
+  ">>>"
+  "The string used by styx to separate intro from content")
 
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(; Scripting
-     (sh . t)
-     (shell . t)))
+(defvar default-org-export-properties
+  '("EMAIL" "TITLE" "AUTHOR" "LANGUAGE" "DATE" "CREATOR")
+  "Properties exported to styx by default")
 
-  (defun ck/org-confirm-babel-evaluate (lang body)
-    (not (or
-          ;; Scripting
-          (string= lang "sh")
-          (string= lang "shell")
-  	(string= lang "bash")
-          ;; (string= lang "shell")
-          (string= lang "emacs-lisp")
-          (string= lang "perl")
-          (string= lang "ruby")
-          ;; Math
-          (string= lang "octave")
-          (string= lang "maxima")
-          (string= lang "R")
-          (string= lang "python")
-          (string= lang "ipython")
-          (string= lang "jupyter")
-  	(string= lang "jupyter-julia")
-  	(string= lang "jupyter-python")
-  	(string= lang "jupiter-R")
-          (string= lang "julia")
-          (string= lang "latex")
-          (string= lang "dot")
-  	;; compiled
-  	(string= lang "cpp")
-  	(string= lang "C"))))
+(defun cleanup-styx-vars (vars)
+  "Remove the `STYX' prefix from all #+stix-name: variable"
+  (mapcar (lambda (cell)
+	    (cons (car (cdr (split-string (car cell) "-")))
+		  (cdr cell)))
+	  vars))
 
-  (setq org-confirm-babel-evaluate 'ck/org-confirm-babel-evaluate)
+(defun org-options-list ()
+  (remove-if-not (lambda (el)
+		   (member (car el) default-org-export-properties))
+		 (jk-org-kwds)))
 
-  (defun compile-org-file ()
-    (interactive)
-    (message "compiling")
-    (org-mode)
-    (org-html-export-as-html nil nil nil t nil)
-    (princ (buffer-string)))
-
-  (defun text (input)
-    (mapconcat 'identity (mapcar (lambda (tag)
-  				 (substring-no-properties (car tag)))
-  			       input)  "\" \""))
-
-  ;; buffer must be writeable in order to call org-export-get-environment,
-  ;; wrap it with this
-  (defun ro-export-get-environment (&optional params)
-    (let ((buffer-read-only nil))
-      (org-export-get-environment params)))
-
-  (defun plist-get-as-text (plist attr)
-    "Get attributes from the output of org-export-get-environment"
-    (let ((str (car (plist-get plist attr))))
-      (if str (substring-no-properties str) nil)))
-
-  (defun title-text (&optional throw)
-    "Get the title of the org buffer.
+(defun title-text (&optional throw)
+  "Get the title of the org buffer.
      When throw is true, throws an error if no title is provided"
-    (let ((title (jk-org-kwd "TITLE")))
-      (if (not (eq title nil))
+  (let ((title (jk-org-kwd "TITLE")))
+    (if (not (eq title nil))
   	(org-export-string-as title 'html t)
-        (if throw
+      (if throw
   	  (error "Missing '#+title:' field!"))
-          "")))
+      "")))
 
-  (defun list-tags ()
-    (mapcar (lambda (tag)
-  	    (substring-no-properties (car tag)))
-  	  (org-global-tags-completion-table)))
-
-  (defun is-draft-p ()
-    "Check if the '#+option:' draft is set to t or nil.
+(defun is-draft-p ()
+  "Check if the '#+option:' draft is set to t or nil.
      If it's not defined, nil is assumed"
-    (let ((draft (jk-org-kwd "DRAFT")))
-      (or (string= draft "t")
+  (let ((draft (jk-org-kwd "DRAFT")))
+    (or (string= draft "t")
   	(string= draft "true"))))
 
-  (defun styx-split-before-heading ()
-    (save-excursion
-      (outline-next-heading)
-      (insert (concat styx-intro-splitter "\n"))))
+(defun styx-split-before-heading ()
+  (save-excursion
+    (outline-next-heading)
+    (insert (concat styx-intro-splitter "\n"))))
 
-  (defun preprocess-org-file ()
-    (interactive)
-    (message "preprocessing")
-    (org-mode)
-    (let ((buffer-read-only nil))
-      (styx-split-before-heading)
-      (princ (concat "{---\n"
-  		   (format "title = \"%s\";\n" (title-text t))
-  		   (format "tags = [\"%s\"];\n" (text (org-get-buffer-tags)))
-  		   (format "draft = %s;\n" (if (is-draft-p) "true" "false"))
+(defun preprocess-org-file ()
+  (interactive)
+  (message "preprocessing")
+  (org-mode)
+  (let ((buffer-read-only nil))
+    (styx-split-before-heading)
+    (princ (concat "{---\n"
+		   (format-styx-properties
+		    (kvplist->alist
+		     (org-combine-plists
+		      (kvalist->plist (org-options-list))
+		      (kvalist->plist (cleanup-styx-vars (get-styx-options (jk-org-kwds)))))))
   		   "---}\n" (buffer-string)))))
 
-  (defun jk-org-kwds ()
-    "parse the buffer and return a cons list of (property . value)
+(defun compile-org-file ()
+  (interactive)
+  (message "compiling")
+  (org-mode)
+  (org-html-export-as-html nil nil nil t nil)
+  (princ (buffer-string)))
+
+;; # (format "tags = [\"%s\"];\n" (text (org-get-buffer-tags)))
+
+
+(defun jk-org-kwds ()
+  "parse the buffer and return a cons list of (property . value)
   from lines like:
   #+PROPERTY: value"
-    (org-element-map (org-element-parse-buffer 'element) 'keyword
-      (lambda (keyword) (cons (org-element-property :key keyword)
+  (org-element-map (org-element-parse-buffer 'element) 'keyword
+    (lambda (keyword) (cons (org-element-property :key keyword)
   			    (org-element-property :value keyword)))))
 
-  (defun jk-org-kwd (KEYWORD)
-    "get the value of a KEYWORD in the form of #+KEYWORD: value"
-    (cdr (assoc KEYWORD (jk-org-kwds))))
-  '';
+(defun jk-org-kwd (KEYWORD)
+  "get the value of a KEYWORD in the form of #+KEYWORD: value"
+  (cdr (assoc KEYWORD (jk-org-kwds))))
+
+(defun get-styx-options (assoc-list)
+  (cl-remove-if-not (lambda (el) (string-prefix-p "STYX-" (car el)))
+		    assoc-list))
+
+
+(defun format-styx-properties (alist)
+  "Create the styx header based on the peoperties in alist"
+  (apply
+   'concat
+   (mapcar
+    (lambda (option)
+      (format "%s = %s;\n"
+	      (downcase (symbol-name (car option)))
+	      (if (string= (cdr option) "t")
+		  "true"
+		(if (string= (cdr option) "nil")
+		    "false"
+		  (prin1-to-string (cdr option))))))
+    alist)))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(; Scripting
+   (sh . t)
+   (shell . t)))
+
+;; Another option would be to set this to t, and let the user override
+;; it on a per-file basis like http://irreal.org/blog/?p=206
+(setq org-confirm-babel-evaluate nil)
+'';
 
   /* Supported content types
   */
