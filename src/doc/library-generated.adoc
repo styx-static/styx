@@ -3123,15 +3123,15 @@ Load themes data.
 ==== Arguments (Attribute Set)
 
 
-===== extraConf
+===== decls
 
-A list of configuration attribute sets or configuration files to merge to themes configuration.
+A declaration set to merge into to themes configuration.
 
-Type: `[ Attrs ]`. 
+Type: `Attrs`. 
 
 Optional, defaults to `[  ]`.
 
-===== extraEnv
+===== env
 
 An attribute set to merge to the environment, the environment is used in templates and returned in the `env` attribute.
 
@@ -3139,7 +3139,7 @@ Type: `Attrs`.
 
 Optional, defaults to `{ }`.
 
-===== styxLib
+===== lib
 
 The styx library.
 
@@ -3173,10 +3173,13 @@ A theme data attribute set containing:
 [source, nix]
 .Code
 ----
-themesData = styxLib.themes.load {
-  inherit styxLib themes;
-  extraEnv  = { inherit data pages; };
-  extraConf = [ ./conf.nix extraConf ];
+themesData = lib.themes.load {
+  inherit lib themes;
+  env  = { inherit data pages; };
+  decls = lib.utils.merge [
+    (import ./conf.nix {/* ... */})
+    extraConf
+  ];
 };
 
 ----
@@ -3206,7 +3209,7 @@ Load a theme data.
 ==== Arguments (Attribute Set)
 
 
-===== styxLib
+===== lib
 
 The styx library.
 

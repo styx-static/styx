@@ -1,9 +1,9 @@
 # Page functions
 
-lib:
-with lib;
-with import ./utils.nix lib;
-with import ./proplist.nix lib;
+args:
+with args.lib;
+with import ./utils.nix args;
+with import ./proplist.nix args;
 
 rec {
 
