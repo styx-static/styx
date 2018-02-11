@@ -1,8 +1,8 @@
 # Page and site generation functions
 
-lib: pkgs:
+{ pkgs, conf, lib }@args:
 with lib;
-with import ./utils.nix lib;
+with import ./utils.nix args;
 
 rec {
 
@@ -133,7 +133,6 @@ rec {
       let
         env = {
           meta = { platforms = lib.platforms.all; } // meta;
-          buildInputs = [ pkgs.styx ];
           preferLocalBuild = true;
           allowSubstitutes = false;
         };
@@ -145,7 +144,7 @@ rec {
 
         # check if a file is a text file
         text_file () {
-          file $1 | grep text | cut -d: -f1
+          ${pkgs.file}/bin/file $1 | grep text | cut -d: -f1
         }
 
         # run substitutions on a file
@@ -192,7 +191,7 @@ rec {
                   path=$(echo "$path" | sed -r 's/[^.]+$/css/')
                   [ -f "$out/$path" ] && rm $out/$path
                   (
-                    lessc $input 2>/dev/null > $out/$path
+                    ${pkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$path
                     if [ ! -s "$out/$path" ]; then
                       echo "Warning: could not build '$path'"
                     fi
@@ -205,7 +204,7 @@ rec {
                   path=$(echo "$path" | sed -r 's/[^.]+$/css/')
                   [ -f "$out/$path" ] && rm $out/$path
                   (
-                    sass $input 2>/dev/null > "$out/$path"
+                    ${pkgs.sass}/bin/sass $input 2>/dev/null > "$out/$path"
                     if [ ! -s "$out/$path" ]; then
                       echo "Warning: could not build '$path'"
                       rm $out/$path

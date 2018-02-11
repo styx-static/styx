@@ -1,4 +1,5 @@
-{ lib }:
+{ lib
+, ... }:
 {
   /* URL of the site, must be set to the url of the domain the site will be deployed.
      Should not end with a '/'.

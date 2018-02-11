@@ -16,15 +16,13 @@
 let
   pkgs = import (import ../nix/sources.nix {}).nixpkgs {};
 
-  pkgs' = pkgs // styx-pkgs;
-
   styx-pkgs = rec {
     # styx dev version
     styx = pkgs.callPackage ../derivation.nix {};
 
     # updating callPackage so styx builder use the dev versions
-    callPackage = pkgs.lib.callPackageWith (pkgs');
+    #callPackage = pkgs.lib.callPackageWith (pkgs');
   };
 
 in
-  pkgs'
+  pkgs // styx-pkgs

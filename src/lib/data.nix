@@ -1,46 +1,20 @@
 # Data functions
 
-lib: pkgs:
+{ pkgs, conf, lib }@args:
 with lib;
-with (import ./utils.nix lib);
-with (import ./proplist.nix lib);
+with (import ./utils.nix args);
+with (import ./proplist.nix args);
 
 let
 
-  /* Supported content types
-  */
-  supportedFiles = flatten (attrValues ext);
+  markupFiles = mapAttrs (n: v: v.extensions) conf.lib.data.markup;
+  markupExts  = flatten (attrValues markupFiles);
 
-  ext = {
-    # markups
-    asciidoc = [ "asciidoc" "adoc" ];
-    markdown = [ "markdown" "mdown" "md" ];
-    # other
-    nix      = [ "nix" ];
-    image    = [ "jpeg" "jpg" "png" "gif" "JPEG" "JPG" "PNG" "GIF" ];
-  };
+  supportedFiles = {
+    "nix" = ["nix"];
+  } // markupFiles;
+  supportedExts  = flatten (attrValues supportedFiles);
 
-  markupExts = ext.asciidoc ++ ext.markdown;
-
-  /* Convert commands
-  */
-  commands = {
-    asciidoc = "asciidoctor -b xhtml5 -s -a showtitle -o-";
-    markdown = "multimarkdown";
-  };
-
-  /* extract exif from an image
-  */
-  parseImageFile = fileData:
-    let
-      path = "${fileData.dir + "/${fileData.name}"}";
-      data = pkgs.runCommand "parsed-data.nix" {
-        buildInputs = [ pkgs.styx ];
-      } ''
-        # dirty hack, turning floating numbers into strings as nix does not support floating numbers
-        exiftool -j ${path} | sed -r "s/(^.*)([[:digit:]]+\.[[:digit:]]+)(,?)$/\1\"\2\"\3/" > $out
-      '';
-  in head (fromJSON (readFile data));
 
   /* parse markup file to a nix file
   */
@@ -49,15 +23,13 @@ let
   , env
   }:
     let
-      markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) ext));
+      markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) markupFiles));
       markupAttrs = [ "intro" "pages" "content" ];
       dataFn = pkgs.runCommand "parsed-data.nix" {
-        buildInputs = [ pkgs.styx ];
         preferLocalBuild = true;
         allowSubstitutes = false;
-      } ''
-        python ${pkgs.styx}/share/styx/tools/parser.py < ${fileData.path} > $out
-        '';
+      } 
+      (conf.lib.data.parser.command fileData.path);
       data = importApply dataFn env;
     in mapAttrs (k: v:
       if   elem k markupAttrs
@@ -77,9 +49,8 @@ let
       m    = match "^([0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}:[0-9]{2})?)?\-?(.*)$" fileData.basename;
       date = if m != null && (elemAt m 0)  != null then { date = (elemAt m 0); } else {};
       data =      if elem fileData.ext markupExts then parseMarkupFile { inherit fileData env; }
-             else if elem fileData.ext ext.image  then parseImageFile  fileData
-             else if elem fileData.ext ext.nix    then importApply fileData.path env
-             else trace "Warning: File '${fileData.path}' is not in a supported file format, its contents will be ignored." {};
+             else if fileData.ext == "nix"        then importApply fileData.path env
+             else trace "Warning: File '${fileData.path}' is not in a supported file format and will be ignored." {};
     in
       { inherit fileData; } // date // data;
 
@@ -88,14 +59,12 @@ let
   markupToHtml = markup: text:
     let
       data = pkgs.runCommand "markup-data.html" {
-        buildInputs = [ pkgs.styx ];
         preferLocalBuild = true;
         allowSubstitutes = false;
         inherit text;
         passAsFile = [ "text" ];
-      } ''
-        ${commands."${markup}"} $textPath > $out
-      '';
+      } 
+      (conf.lib.data.markup."${markup}".command "$textPath");
     in readFile data;
 
   /* extract a file data
@@ -119,7 +88,7 @@ let
           ext = elemAt m 1;
           path = "${dir}/${k}";
         in
-        if (v == "regular") && (m != null) && (elem ext supportedFiles)
+        if (v == "regular") && (m != null) && (elem ext supportedExts)
            then getFileData path
            else trace "Warning: File '${path}' is not in a supported file format and will be ignored." null
       ) (readDir dir);
@@ -249,83 +218,6 @@ rec {
     let
       extraArgs = removeAttrs args [ "file" "env" ];
     in (parseFile { fileData = getFileData file; inherit env; }) // extraArgs;
-  };
-
-
-/*
-===============================================================
-
- markdownToHtml
-
-===============================================================
-*/
-
-  markdownToHtml = documentedFunction {
-    description = "Convert markdown text to HTML.";
-
-    arguments = [
-      {
-        name = "text";
-        description = "Text in markdown format";
-        type = "String";
-      }
-    ];
-
-    return = "`String`";
-
-    examples = [ (mkExample {
-      literalCode = ''
-        markdownToHtml "Hello `markdown`!"
-      '';
-      code =
-        markdownToHtml "Hello `markdown`!"
-      ;
-      expected = ''
-        <p>Hello <code>markdown</code>!</p>
-      '';
-    })];
-
-    function = markupToHtml "markdown";
-  };
-
-
-
-/*
-===============================================================
-
- asciidocToHtml
-
-===============================================================
-*/
-
-  asciidocToHtml = documentedFunction {
-    description = "Convert asciidoc text to HTML.";
-
-    arguments = [
-      {
-        name = "text";
-        description = "Text in asciidoc format.";
-        type = "String";
-      }
-    ];
-
-    examples = [ (mkExample {
-      literalCode = ''
-        asciidocToHtml "Hello `asciidoc`!"
-      '';
-      code =
-        asciidocToHtml "Hello `asciidoc`!"
-      ;
-      expected = ''
-        <div class="paragraph">
-        <p>Hello <code>asciidoc</code>!</p>
-        </div>
-      '';
-    }) ];
-
-    return = "`String`";
-
-    function = markupToHtml "asciidoc";
   };
 
 
