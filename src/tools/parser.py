@@ -27,7 +27,7 @@ class MarkupParser(NodeVisitor):
              nix_close = "}}" 
          """
         ast = Grammar(grammar).parse(text)
-        self.meta = "";
+        self.meta   = "";
         self.markup = "";
         self.result = self.visit(ast)
      

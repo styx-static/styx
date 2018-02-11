@@ -1,18 +1,16 @@
-{ stdenv
-, styx, writeText, runCommand
+{ writeText
 , asciidoctor
-, site
-, pkgs
-}:
+, stdenv
+, styx
+, site }:
 
-let
-  styxLib = import styx.lib { lib = pkgs.lib; inherit styx runCommand writeText; };
-in with styxLib;
+with site.styx.lib;
+
 let
 
   mkScreenshotPath = t: "imgs/${t.meta.id}.png";
 
-  themesData = styxLib.themes.load { inherit styxLib; themes = site.themes; };
+  themesData = site.styx.themes;
 
   themes = reverseList themesData.themes;
 
@@ -214,8 +212,6 @@ let
   '';
 
 in
-
-with styxLib;
 
 stdenv.mkDerivation rec {
   name    = "styx-docs";

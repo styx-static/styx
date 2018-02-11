@@ -1,8 +1,8 @@
 # Template functions
 
-lib:
-with lib;
-with (import ./utils.nix lib);
+args:
+with args.lib;
+with (import ./utils.nix args);
 rec {
 
 /*

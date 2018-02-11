@@ -1,7 +1,7 @@
 # utilities
 
-lib:
-with lib;
+args:
+with args.lib;
 
 let
   documentedFunction' = data:
@@ -483,6 +483,20 @@ in rec {
       in flatten (f [] s);
   };
 
+
+/*
+===============================================================
+
+ isPath
+
+===============================================================
+*/
+
+  isPath = documentedFunction {
+    description = "Check if the parameter is a path";
+
+    function = x: (! isAttrs x) && types.path.check x;
+  };
 
 
 /*

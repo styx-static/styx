@@ -1,8 +1,8 @@
 # conf
 
-lib:
-with lib;
-with (import ./utils.nix lib);
+args:
+with args.lib;
+with (import ./utils.nix args);
 
 rec {
 
@@ -84,6 +84,37 @@ rec {
             in mapAttrs g set;
           result = recurse set;
       in recurse decls;
+
+  };
+
+/*
+===============================================================
+
+ mergeConfs
+
+===============================================================
+*/
+
+  mergeConfs = documentedFunction {
+
+    description = ''
+      Merge a list of configurations.
+    '';
+
+    arguments = [
+      {
+        name = "confs";
+        description = "List of configurations.";
+        type = "[ Attrs | Path ]";
+      }
+    ];
+
+    return = ''
+      The merged configuration set.
+    '';
+
+    function = confs:
+      merge (map (c: if isPath c then importApply c args else c) confs);
 
   };
 

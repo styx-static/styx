@@ -115,8 +115,9 @@ EOF
 # build the site in the nix store
 store_build () {
   extraConf+=("renderDrafts = $renderDrafts;")
-  extraFlags+=("--arg" "extraConf" "{ $(IFS=; echo "${extraConf[@]}") }"); shift 2
-  nix-build -A site "$builder" --no-out-link "${extraFlags[@]}"
+  extraFlags+=("--arg" "pkgs" "(let pkgs = import @nixpkgs@ {}; in pkgs.extend(_: _: {styx = pkgs.callPackage @src@/derivation.nix {};}))");
+  extraFlags+=("--arg" "extraConf" "{ $(IFS=; echo "${extraConf[@]}") }");
+  nix-build -A site "$1" --no-out-link "${extraFlags[@]}"
 }
 
 doc_build () {
@@ -148,14 +149,10 @@ origArgs=("$@")
 action=
 # styx root dir
 root=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
-# styx src directory
-srcdir=$(realpath "$root/share/styx-src/src")
 # styx html doc path
 doc=$(realpath "$root/share/doc/styx/index.html")
-# styx builder
-builder="$srcdir/nix/site-builder.nix"
 # doc builder
-doc_builder="$srcdir/nix/site-doc-builder.nix"
+doc_builder="$root/share/styx/nix/site-doc-builder.nix"
 # debug mode
 debug=
 # extra arguments to be appended to the nix-build command
@@ -359,7 +356,7 @@ if [ "$action" = new ] && [ "$newCommand" = site ]; then
   check_dir $target "Error: Cannot create a new site in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{themes,data}
-  cp -r $srcdir/scaffold/new-site/* "$target/"
+  cp -r $root/share/styx/scaffold/new-site/* "$target/"
   chmod -R u+rw "$target"
   echo "Styx site initialized in '$target'."
   exit 0
@@ -393,7 +390,7 @@ if [ "$action" = "gen-sample-data" ]; then
   target="$in/data/sample"
   check_dir $target "Error: '$target' directory exists, aborting."
   mkdir -p $target
-  cp -r $srcdir/scaffold/sample-data/* "$target"
+  cp -r $root/share/styx/scaffold/sample-data/* "$target"
   chmod -R u+rw "$target"
   echo "Sample data created in '$target'."
   exit 0
@@ -474,8 +471,7 @@ if [ "$action" = build ]; then
     extraConf+=("siteUrl = \"$siteUrl\";")
   fi
   echo "Building the site..."
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
-  path=$(store_build)
+  path=$(store_build $(realpath "$in/$siteFile"))
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -506,11 +502,10 @@ fi
 
 if [ "$action" = store-path ]; then
   check_styx $in $siteFile
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   if [ -n "$siteUrl" ]; then
     extraConf+=("siteUrl = \"$siteUrl\";")
   fi
-  path=$(store_build)
+  path=$(store_build $(realpath "$in/$siteFile"))
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -531,8 +526,7 @@ if [ "$action" = serve ]; then
     elif [ -n "$siteUrl" ]; then
       extraConf+=("siteUrl = \"$siteUrl\";")
     fi
-    extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
-    path=$(store_build)
+    path=$(store_build $(realpath "$in/$siteFile"))
     if [ $? -ne 0 ]; then
       nix_error
     fi
@@ -560,8 +554,7 @@ if [ "$action" = linkcheck ]; then
   if [ -z $buildPath ]; then
     check_styx $in $siteFile
     extraConf+=("siteUrl = \"http://$serverHost:$port\";")
-    extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
-    path=$(store_build)
+    path=$(store_build $(realpath "$in/$siteFile"))
     if [ $? -ne 0 ]; then
       nix_error
     fi
@@ -591,9 +584,8 @@ if [ "$action" = live ]; then
   # get last change
   lastChange=$(last_timestamp)
   # building to result a first time
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   extraConf+=("siteUrl = \"http://$serverHost:$port\";")
-  path=$(store_build)
+  path=$(store_build $(realpath "$in/$siteFile"))
   if [ $? -ne 0 ]; then
     nix_error
   fi
@@ -706,8 +698,7 @@ if [ "$action" = deploy ]; then
       # building
       if [ -z $buildPath ]; then
         echo "Building the site"
-        extraFlags+=("--arg" "siteFile" "$siteDir/$siteFile")
-        path=$(store_build)
+        path=$(store_build $(realpath "$in/$siteFile"))
         if [ $? -ne 0 ]; then
           nix_error
           exit 1
