@@ -2,7 +2,7 @@
 
 === GitHub pages
 
-Styx support basic deployment to GitHub pages.
+Styx supports basic deployment to GitHub pages.
 
 This is a two step process:
 
@@ -11,7 +11,7 @@ This is a two step process:
 
 ==== Initialization
 
-`styx deploy --init-gh-pages` command will prepare the repository for GitHub deployment. This command will do the following:
+The `styx deploy --init-gh-pages` command will prepare the repository for GitHub deployment. This command will do the following:
 
 - create a `gh-pages` directory
 - add the `gh-pages` folder to `.gitignore`
@@ -20,7 +20,7 @@ This is a two step process:
 
 ==== Update the gh-pages branch
 
-`styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder with the generated static site and commit it to the `gh-pages` branch.
+The `styx deploy --gh-pages` command will build the site, and update the `gh-pages` folder with the generated static site and commit it to the `gh-pages` branch.
 
 Then changes can be pushed with the following commands:
 
@@ -69,13 +69,13 @@ link:http://nixos.org/nixops/[NixOps] is a deployment tool for NixOS configurati
 }
 ----
 
-<1> Creating a machine named `webserver` to the deployment.
-<2> Set up deployment information, this example deploy on a VirtualBox machine.
-<3> Opening the port 80 on the `webserver` machine.
+<1> Create a machine named `webserver` for deployment.
+<2> Set up deployment information, for this example deploy on a VirtualBox machine.
+<3> Open port 80 on the `webserver` machine.
 <4> Nginx settings.
-<5> Setting Nginx root location to the styx site package. Remote repositories can be fetched with nixpkgs `fetch*` functions.
+<5> Set the Nginx root location to the styx site package. Remote repositories can be fetched with nixpkgs `fetch*` functions.
 
-NOTE: The NixOps link:http://nixos.org/nixops/manual/[manual] provide information about all the deployment options.
+NOTE: The NixOps link:http://nixos.org/nixops/manual/[manual] provides information about all the deployment options.
 
 Then the site can be deployed via NixOps with the following set of commands:
 
@@ -85,7 +85,7 @@ $ nixops create -d styx-site nixops-expression.nix # <1>
 $ nixops deploy -d styx-site # <2>
 ----
 
-<1> This command create a new NixOps deployment, the `-d` flag specify the deployment name. +
+<1> This command creates a new NixOps deployment, the `-d` flag specify the deployment name. +
 The deployment information can be queried with the `nixops info -d styx-site`. +
 `nixops-expression.nix` is a file containing the nix expression for the deployment like the one showed in the <<nixops-example,example>>.
 <2> This command will create the VirtualBox machine and deploy the configuration into it. +
@@ -96,7 +96,7 @@ The deployement machine IP can be found with the `nixops info -d styx-site`.
 === Amazon S3 Bucket
 
 Amazon S3 buckets can be used to host static websites.
-The aws cli tool can be used in conjunction with styx to upload a styx website to a S3 bucket.
+The AWS CLI tool can be used in conjunction with styx to upload a styx website to a S3 bucket.
 
 [source, sh]
 .Deploying a styx website to S3

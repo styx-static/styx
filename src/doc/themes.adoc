@@ -37,12 +37,12 @@ This command will generate the following files in `./themes/my-theme`:
 See <<themes.structure>> for details.
 
 NOTE: Site and themes both have `conf.nix` files, their purpose is different and should not be confused. +
-Theme `conf.nix` **define** the configuration interface, and site `conf.nix` settings **use** this interface to customize the theme.
+The theme's `conf.nix` *defines* the configuration interface, and the site's `conf.nix` settings *use* this interface to customize the theme.
 
 === Using themes
 
 Declaring used themes is done in the <<site.nix-themes,theme section>> of `site.nix`.
-Path or packages can be used.
+Paths or packages can be used.
 
 [source, nix]
 .Using a local my-site theme and the generic-templates theme
@@ -81,10 +81,10 @@ themes
 
 <1> Theme directory.
 <2> `conf.nix` defines the theme configuration interface options (optional).
-<3> `meta.nix` defines the theme meta information, this is file is **required** and **must** define a `id` attribute.
+<3> `meta.nix` defines the theme meta information, this file is *required* and *must* define an `id` attribute.
 <4> `lib.nix` defines the theme extra library as a set (optional).
 <5> `files` is a directory holding static files for the themes. All the files in this directory will be copied in the generated site (optional).
-<6> `templates` is a directory storing all the templates files (optional).
+<6> `templates` is a directory storing all the template files (optional).
 
 
 [[themes.configuration]]
@@ -109,7 +109,7 @@ In its simplest form, `conf.nix` should be an attribute set defining theme optio
 This configuration is merged in the `conf` variable `theme` key after theme loading, and can be used from the site configuration (site `conf.nix`).
 
 [source, nix]
-.Usage of a theme configuration option in a **site** conf.nix
+.Usage of a theme configuration option in a *site* conf.nix
 ----
 {
   theme.site.title = "My Agency";
@@ -123,7 +123,7 @@ This configuration is merged in the `conf` variable `theme` key after theme load
 
 See link:https://nixos.org/nixos/manual/index.html#sec-option-declarations[NixOS manual option declaration chapter] for `mkOption` usage details.
 
-This have two benefits:
+This has two benefits:
 
 - Site configuration, site root `conf.nix`, will be type checked.
 - Documentation will be automatically generated for the configuration interface.
@@ -131,7 +131,7 @@ This have two benefits:
 On the other hand, typing a theme configuration interface is verbose and can be an overkill for a private theme. +
 Typing is not required, but should be done for themes that are part of the `styx-themes` theme set or meant to be shared.
 
-WARNING: `types.submodule` type is **not** supported.
+WARNING: `types.submodule` type is *not* supported.
 
 [source, nix]
 .Example of a theme conf.nix with typing
@@ -194,12 +194,12 @@ Other attributes of the `meta` set are totally optional and can be set at will t
 
 - `name`: Theme name, can contain any character.
 - `license`: A license from `lib.licenses`.
-- `demoPage`: Url of the theme example site live demo.
-- `homepage`: Url of the theme.
+- `demoPage`: URL of the theme example site live demo.
+- `homepage`: URL of the theme.
 - `screenshot`: Path to a screenshot of the theme example site.
-- `description`: A single line theme description, asciidoc markup can be used.
-- `longDescription`: Free length site description, asciidoc markup can be used.
-- `documentation`: Theme documentation, asciidoc markup should be used.
+- `description`: A single line theme description, AsciiDoc markup can be used.
+- `longDescription`: Free length site description, AsciiDoc markup can be used.
+- `documentation`: Theme documentation, AsciiDoc markup should be used.
 
 [source, nix]
 .Example of a simple theme meta.nix
@@ -237,7 +237,7 @@ NOTE: If multiple themes are enabled, every theme `file` directory contents will
 
 ==== Special files
 
-Styx automatically convert `sass`, `scss` and `less` files to css during site generation.
+Styx automatically converts SASS, SCSS and LESS files to CSS during site generation.
 
 [[themes.library]]
 === Library
@@ -246,7 +246,7 @@ Themes can provide a function library that can be used in `site.nix` or in templ
 
 To provide a library, a theme must have a `lib.nix` file containing an attribute set of functions.
 
-To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.ID` where `ID` is the theme id as a natural choice.
+To be sure a theme library functions will not override default functions it is best practice to put the functions in a dedicated namespace, `theme.ID` where `ID` is the theme ID as a natural choice.
 
 [source, nix]
 .Example of a theme lib.nix
@@ -266,11 +266,11 @@ include::themes/templates.adoc[]
 [[themes.combining]]
 === Combining Themes
 
-In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the last theme in the list to declare it will be used.
+In `site.nix`, themes are declared as a list. If multiple themes in the list provide the same file or template, the last theme in the list will be used.
 
 This allows to build new themes based on other themes, like the showcase theme is built on the base of the generic-templates theme.
 
-To combine themes, it is just needed to declare multiple themes in `site.nix`. If multiple themes define the same asset, asset from the later theme in the list will be used.
+To combine themes, it is just needed to declare multiple themes in `site.nix`. If multiple themes define the same `asset`, `asset` from the latter theme in the list will be used.
 
 [source, nix]
 .Combining generic-templates and my-theme
@@ -281,8 +281,8 @@ themes = [
 ];
 ----
 
-If generic-templates and my-theme both defines `templates/partials/content.nix`, the one from my-theme will be used. +
-Any used asset that is not defined in my-theme, will be used from generic-templates.
+If `generic-templates` and `my-theme` both define `templates/partials/content.nix`, the one from `my-theme` will be used. +
+Any used asset that is not defined in my-theme will be used from generic-templates.
 
 NOTE: There is no limit in the number of themes that can be combined.
 

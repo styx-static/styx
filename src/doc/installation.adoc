@@ -1,6 +1,6 @@
 == Installation
 
-The only requirement to install Styx is the link:http://nixos.org/nix/[Nix package manager].
+The only requirement for installing Styx is the link:http://nixos.org/nix/[Nix package manager].
 Refer to the link:http://nixos.org/nix/manual/#chap-installation[Nix installation instructions] to install Nix.
 
 It is possible to install styx with the following command:

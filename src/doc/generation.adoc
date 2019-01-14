@@ -1,6 +1,6 @@
 == Site Generation
 
-Site generation consists in a call to link:library.html#lib.generation.mkSite[`mkSite`], and the preparation of its arguments.
+Site generation consists of a call to link:library.html#lib.generation.mkSite[`mkSite`], and the preparation of its arguments.
 
 [source, nix]
 .Standard call to mkSite
@@ -61,11 +61,11 @@ TIP: Substitutions are specially useful for resolving in-site links with `conf.s
 
 === Special files
 
-Styx automatically convert `sass`, `scss` and `less` files to css during site generation.
+Styx automatically converts SASS, SCSS and LESS files to css during site generation.
 
 === Hooks
 
-`mkSite` provide two hooks to customize the site generation process:
+`mkSite` provides two hooks to customize the site generation process:
 
 - `preGen`: A string or multiline string with shell commands to run before generating the site.
 - `postGen`: A string or multiline string with shell commands to run after generating the site.

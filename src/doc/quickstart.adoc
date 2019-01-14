@@ -9,7 +9,7 @@ The styx showcase theme example site can be previewed by the following command:
 $ styx preview-theme showcase
 ----
 
-This command download the showcase theme in the nix store, build the site also in the nix store and launch the preview from there. +
+This command downloads the showcase theme to the nix store, builds the site (also in the nix store) and launches the preview from there.
 
 The showcase example site will be accessible at link:http://127.0.0.1:8080[http://127.0.0.1:8080]. Check the posts as they provide some information about how styx works.
 
@@ -30,7 +30,7 @@ $ cd my-site # <2>
 
 A `readme.md` file will be available in the `my-site` directory giving basic instructions. Also the `styx doc` command will launch the documentation in a browser.
 
-It is recommended to read the <<sitenix,site.nix>> section of this documentation to get familiar on how `site.nix` is structured and works.
+It is recommended to read the <<sitenix,site.nix>> section of this documentation to get familiar with how `site.nix` is structured and works.
 
-Each theme of the `styx-themes` set provides and example site with a `site.nix` that can be checked in the link:./styx-themes.html[themes documentation].
+Each theme of the `styx-themes` set provides an example site with a `site.nix` that can be checked in the link:./styx-themes.html[themes documentation].
 
