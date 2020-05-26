@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   src = stdenv.lib.cleanSource ./.;
 
-  server = "${caddy.bin}/bin/caddy";
+  server = "${caddy}/bin/caddy";
   linkcheck = "${linkchecker}/bin/linkchecker";
 
   nativeBuildInputs = [ asciidoctor ];
