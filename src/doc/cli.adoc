@@ -48,7 +48,7 @@ NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` 
 
 The `store-path` command is used to build a Styx site in the nix store and return the store path.
 
-`styx store-path`:: Build the Styx site in the nix-store and returns the full store path..
+`styx store-path`:: Build the Styx site in the nix-store and return the full store path..
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `store-path` command.
 
@@ -112,7 +112,7 @@ The server can be stopped by pressing kbd:[Ctrl+C].
 
 NOTE: The `nix-build` `--show-trace`, `--arg NAME VALUE`, `--argstr NAME VALUE` and `-I PATH` flags can be used with the `serve` command.
 
-NOTE: Styx use the link:https://caddyserver.com/[caddy server], even if it is performant server, `styx serve` launchs it without any special settings. +
+NOTE: Styx uses the link:https://caddyserver.com/[caddy server], even if it is a performant server, `styx serve` launches it without any special settings. +
 For production environments it is recommended to use a carefully configured server over `styx serve`.
 
 
@@ -136,13 +136,13 @@ NOTE: On macOS, run `BROWSER=open styx site-doc` to use the default browser.
 
 === Gen-sample-data
 
-The `gen-sample-data` command can be used to generate sample data, useful to create themes example sites.
+The `gen-sample-data` command can be used to generate sample data, useful for creating themes example sites.
 
 `styx gen-data`:: Generate sample data in `./data`.
 
 === Deploy
 
-The `deploy` command is used to deploy A styx site on a remote server.
+The `deploy` command is used to deploy a styx site on a remote server.
 Currently only GitHub pages are supported.
 
 For more details see the <<Deployment>> section.

@@ -8,15 +8,15 @@ Pages are declared in a `pages` an attribute set. Every page or list of pages de
 
 Pages are passed to the `generateFunction` through the `pageList` argument that turn each page into a text file.
 
-TIP: Pages are usually generated as html documents, but any kind of text file can be generated from a page attribute set.
+TIP: Pages are usually generated as HTML documents, but any kind of text file can be generated from a page attribute set.
 
 
 === The page attribute set
 
-The page attribute set is an attribute set that must defines at least three attributes:
+The page attribute set is an attribute set that must define at least three attributes:
 
-* `layout`: A function that take the `template` result as a parameter and return the source of the file to generate.
-* `template`: A function that take the page attribute set as a parameter and returns an updated attribute set.
+* `layout`: A function taking the `template` result as a parameter and returning the source of the file to generate.
+* `template`: A function taking the page attribute set as a parameter and returning an updated attribute set.
 * `path`: The path of the page to generate, must start with a `/`.
 
 NOTE: These attributes are the strict minimum, but many templates will require extra attributes like `content` or `title`.
@@ -39,9 +39,9 @@ In an standard `site.nix`, `template` and `layout` would be attributes from the 
 
 Page attribute sets are often augmented by various attributes or merged with data sets.
 
-NOTE: `mkSite` evaluate `page.layout (page.template page)` and output the result in `page.path` for every page in its `pageList` argument.
+NOTE: `mkSite` evaluates `page.layout (page.template page)` and outputs the result in `page.path` for every page in its `pageList` argument.
 
-TIP: As many pages tends to use the same layout, the `layout` attribute is usually set in one go to all templates in the "site" section with link:library.html#lib.pages.pagesToList[pagesToList] `default` parameter. +
+TIP: As many pages tend to use the same layout, the `layout` attribute is usually set in one go to all templates in the "site" section with link:library.html#lib.pages.pagesToList[pagesToList] `default` parameter. +
 Usually, only pages that use a different layout explicitly declares it in `pages`. +
 The following examples will omit the `layout` attribute like often done in a normal `site.nix`.
 
@@ -80,7 +80,7 @@ The `//` operator will merge the `data.about` data set in the `pages.about` page
 
 === Bypassing the layout
 
-For pages which the template generate the full page source like for RSS feeds, applying a layout is not needed. +
+Pages, for which the template generates the full page source, like for RSS feeds, needn't apply a layout.
 In such cases, the `lib.id` function, a function that return its parameter without changing it can be used as a "transparent" layout.
 
 [source, nix]
@@ -98,7 +98,7 @@ NOTE: The `id` function is defined as `x: x`.
 
 === Split pages
 
-Split pages refers to a list of data split though multiple similar pages.
+Split pages refer to a list of data split though multiple similar pages.
 
 A common example of split page is a blog archive page, where the posts are listed through multiple pages.
 
@@ -197,7 +197,7 @@ pages = {
 
 NOTE: To see how to generate taxonomy data, refer to <<Taxonomies>>.
 
-Taxonomies pages can be generated from a taxonomy data structure with the link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages] function.
+Taxonomy pages can be generated from a taxonomy data structure with the link:library.html#lib.pages.mkTaxonomyPages[mkTaxonomyPages] function.
 
 [source, nix]
 ----

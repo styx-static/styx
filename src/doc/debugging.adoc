@@ -6,7 +6,7 @@ It can be installed with `nix-env` or used in a temporary environment with `nix-
 [source, shell]
 .Starting nix-repl in a nix-shell
 ----
-$ nix-shell -p nix-repl --run 'nix-repl "<nixpkgs>"'
+$ nix-shell -p nix-repl --run 'nix repl "<nixpkgs>"'
 ----
 
 
@@ -15,7 +15,7 @@ $ nix-shell -p nix-repl --run 'nix-repl "<nixpkgs>"'
 [source]
 .Inspecting the `conf` configuration set
 ----
-$ nix-repl "<nixpkgs>"
+$ nix repl "<nixpkgs>"
 
 nix-repl> site = callPackage (import ./site.nix) {}
 
@@ -28,7 +28,7 @@ nix-repl> site.conf
 [source]
 .Using parseDate
 ----
-$ nix-repl "<nixpkgs>"
+$ nix repl "<nixpkgs>"
 
 nix-repl> site = callPackage (import ./site.nix) {}
 
@@ -42,7 +42,7 @@ nix-repl> with (site.lib.parseDate "2016-05-18T12:40:21"); "${date.lit}, ${time}
 [source]
 .Rendering a page source
 ----
-$ nix-repl "<nixpkgs>"
+$ nix repl "<nixpkgs>"
 
 nix-repl> showcase = callPackage (import "${(import styx.themes).showcase}/example/site.nix") {}
 

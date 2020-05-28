@@ -13,7 +13,7 @@
 [preface]
 == Preface
 
-The library contains various functions that can be used through `site.nix` and templates.
+The library contains various functions that can be used in `site.nix` and templates.
 
 This file is generated with a link:https://github.com/styx-static/styx/blob/master/scripts/library-doc.nix[nix expression].
 

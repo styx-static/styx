@@ -1,7 +1,7 @@
 == Basics
 
-Styx is using the Nix expression language.
-The Nix expression language is a lazy evaluated functional language with uncommon semantics. +
+Styx uses the Nix expression language.
+The Nix expression language is a lazily evaluated functional language with uncommon semantics. +
 It is recommended to read the link:http://nixos.org/nix/manual/#ch-expression-language[Nix expression language chapter] of the Nix manual to get more familiar with it.
 
 === Hello world!
@@ -35,15 +35,15 @@ rec { # <2>
 <1> `site.nix` is a function written in the nix language. Nix functions have the `{ arg1 ? default, arg2, ..., argN, ... }: body` pattern. +
 The arguments of the function are the dependencies needed to build the site. +
 `@args` refers to the whole argument set.
-<2> `{` is starting a set. `rec` makes the set recursive, meaning that attributes can refers each other.
+<2> `{` starts a set. `rec` makes the set recursive, meaning that attributes can refer to each other.
 <3> This imports the styx library in a `lib` attribute.
-<4> This declare an `index` attribute as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
-<5> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `path`. This line declares the `layout` attribute that is a function that take the `template` argument and return the page source. +
+<4> This declares an `index` attribute as an attribute set. An attribute set is a basic key-value structure. `index` will be the only page generated.
+<5> To generate a page, styx requires a few attributes to be set, namely `layout`, `template` and `path`. This line declares the `layout` attribute that is a function that takes the `template` argument and returns the page source. +
 `template:` form is different from the first point function head, this function use a simple parameter (Point one was using a deconstructed attribute set parameter).
-<6> This declare a `template` attribute. `template` is a function that takes the page attribute set, `page` in this case as a parameter and generate a result that will be passed to the `layout` function.
-<7> This declare a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
-<8> This declare a `path` attribute. The `path` attribute is used to specify the path of the page to be generated.
-<9> This generate the site by using the library `mkSite` function, its parameter is an attribute set with the argument `pageList` being a list of the single `index` page.
+<6> This declares a `template` attribute. `template` is a function that takes the page attribute set, `page` (in this case as a parameter) and generates a result that will be passed to the `layout` function.
+<7> This declares a `content` attribute. This is not mandatory, and could have been integrated in the `template` key. But most of styx data fetchers will add a `content` attribute to the page set containing the fetched content.
+<8> This declares a `path` attribute. The `path` attribute is used to specify the path of the page to be generated.
+<9> This generates the site by using the library `mkSite` function, its parameter is an attribute set with the argument `pageList` being a list of the single `index` page.
 
 Everything is ready, the "Hello world!" site preview can be generated.
 
@@ -56,10 +56,10 @@ $ styx preview
 
 
 TIP: Even if this is a simple example, nix language semantics can be confusing. +
-In a nutshell to build a site, `mkSite` evaluates `page.layout (page.template page)` and output the result in `page.path` for every page in `pageList`. +
+In a nutshell, to build a site, `mkSite` evaluates `page.layout (page.template page)` and output the result in `page.path` for every page in `pageList`. +
 That is the reason `layout`, `template` and `path` are required attributes of a page set.
 
-NOTE: Nix expression language is lazily evaluated, so infinite data structures are not a problem (unless some code try to evaluate them).
+NOTE: Nix expression language is lazily evaluated, so infinite data structures are not a problem (unless some code tries to evaluate them).
 
 === Files
 
@@ -93,7 +93,7 @@ It is even possible to change the name of `site.nix`. In that case the `--file` 
 
 The `site.nix` used in the <<Hello world!>> example contains only enough code to generate a single page. A standard `site.nix` is usually more structured.
 
-A complex example of a `site.nix` if the showcase theme example `site.nix` that use almost every feature available.
+A complex example of a `site.nix` if the showcase theme example `site.nix` that uses almost every feature available.
 
 A standard `site.nix` is divided in multiple sections, each section handling a particular topic. +
 Standard sections are:
@@ -143,7 +143,7 @@ Themes are detailed in the <<Themes>> section.
 .Standard themes section
 ----
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Theme setup
 
 -----------------------------------------------------------------------------*/
 
@@ -158,17 +158,17 @@ Themes are detailed in the <<Themes>> section.
     styx-themes.generic-templates
   ];
 
-  /* Loading the themes data
+  /* Load the theme data
   */
-  themesData = styxLib.themes.load {
+  themeData = styxLib.themes.load {
     inherit styxLib themes;
     extraEnv = { inherit data pages; }; # <3>
     extraConf = [ ./conf.nix extraConf ]; # <4>
   };
 
-  /* Bringing the themes data to the scope
+  /* Bring the theme data into scope
   */
-  inherit (themesData) conf lib files templates env; # <5>
+  inherit (themeData) conf lib files templates env; # <5>
 ----
 
 <1> Importing the styx-themes.
@@ -176,7 +176,7 @@ Themes are detailed in the <<Themes>> section.
 Themes can be paths like `./themes/my-site` or packages from the `styx-themes` set.
 <3> Extra variables to add to the template environment.
 <4> Extra configuration sets to merge with the themes configurations, can be files or paths, head of the list have lower priority.
-<5> Bringing the `themesData` attributes in the scope.
+<5> Bringing the `themeData` attributes in the scope.
 
 [[site.nix-data]]
 ==== Data
@@ -199,7 +199,7 @@ The <<Data>> section explains in detail how to manage data.
   };
 ----
 
-<1> Example of loading a markdown file with the `loadFile` function.
+<1> Example of loading a Markdown file with the `loadFile` function.
 
 [[site.nix-pages]]
 ==== Pages
@@ -238,7 +238,7 @@ IMPORTANT: `path` must start with a `/`.
 [[site.nix-site]]
 ==== Site
 
-This is the final part and shortest section of `site.nix`. This section consists in a call to link:library.html#lib.generation.mkSite[`mkSite`].
+This is the final part and shortest section of `site.nix`. This section consists of a call to link:library.html#lib.generation.mkSite[`mkSite`].
 
 [source, nix]
 .Standard mkSite section
@@ -256,7 +256,7 @@ This is the final part and shortest section of `site.nix`. This section consists
 }
 ----
 
-<1> `mkSite` requires pages as a list, so `pagesToList` convert the pages attribute set to a list.
+<1> `mkSite` requires pages as a list, so `pagesToList` converts the pages attribute set to a list.
 
 NOTE: `files` is generated in the theme section using enabled themes. +
 `inherit` is a shorthand for writing sets, `{ inherit a; }` is equivalent to `{ a = a; }`.
@@ -274,7 +274,7 @@ NOTE: `files` is generated in the theme section using enabled themes. +
 `mkSite` is a function:
 
 - taking at least a list of pages to generate as the `pageList` argument.
-- that evaluate each page set by evaluating `page.layout (page.template page)` and output the result in `page.path`.
+- evaluating each page set by evaluating `page.layout (page.template page)` and outputting the result in `page.path`.
 - returning a generated static site directory.
 
 NOTE: `mkSite` is a wrapper for nixpkgs `runCommand` function.

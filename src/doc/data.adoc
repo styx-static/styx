@@ -20,8 +20,8 @@ An example of such usage is a navbar declared as a list of page attributes sets.
 
 The styx data library provides functions to import external data:
 
-- link:library.html#lib.data.loadFile[loadFile]: load a single data file and return it as an attribute set.
-- link:library.html#lib.data.loadDir[loadDir]: to load all the files in a directory and return them as a list of attributes set. (non-recursive)
+- link:library.html#lib.data.loadFile[loadFile]: load a single data file and return it as an attribute set
+- link:library.html#lib.data.loadDir[loadDir]: to load all the files in a directory and return them as a list of attributes sets (non-recursive)
 
 The data loading functions return a set per file loaded and do a few things:
 
@@ -42,13 +42,13 @@ NOTE: Nix data should be imported with the `import` function, that return the da
 
 === Formats
 
-This section present the data file formats supported by styx.
+This sections present the data file formats supported by styx.
 
-==== Asciidoc
+==== AsciiDoc
 
 link:https://en.wikipedia.org/wiki/AsciiDoc[AsciiDoc] is a simple but complete markup language.
 
-It is the format of choice for complex posts or pages as it has more functionalities than markdown.
+It is the format of choice for complex posts or pages as it has more functionalities than Markdown.
 
 [source, asciidoc]
 .AsciiDoc example
@@ -58,11 +58,11 @@ It is the format of choice for complex posts or pages as it has more functionali
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
 ----
 
-The converted html will be in the `content` attribute of the data attribute set.
+The converted HTML will be in the `content` attribute of the data attribute set.
 
-TIP: It is possible to add extra data to an asciidoc file by using <<Metadata>>.
+TIP: It is possible to add extra data to an AsciiDoc file by using <<Metadata>>.
 
-NOTE: link:http://asciidoctor.org/[Asciidoctor] is used to convert asciidoc.
+NOTE: link:http://asciidoctor.org/[Asciidoctor] is used to convert AsciiDoc.
 
 ==== Markdown
 
@@ -78,11 +78,11 @@ It is the format of choice for posts or pages as it allows to write content in a
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
 ----
 
-The converted html will be in the `content` attribute of the data attribute set.
+The converted HTML will be in the `content` attribute of the data attribute set.
 
-TIP: It is possible to add extra data to a markdown file by using <<Metadata>>.
+TIP: It is possible to add extra data to a Markdown file by using <<Metadata>>.
 
-NOTE: link:http://fletcherpenney.net/multimarkdown/[MultiMarkdown] is used to convert markdown.
+NOTE: link:http://fletcherpenney.net/multimarkdown/[MultiMarkdown] is used to convert Markdown.
 
 ==== Nix
 
@@ -113,7 +113,7 @@ Which one to choose is really a matter of choice but:
 [[data.drafts]]
 === Managing drafts
 
-There a two main approaches to manage drafts with styx:
+There a two main approaches to managing drafts with styx:
 
 1. Managing drafts with metadata.
 2. Managing drafts in a separate directory.
@@ -163,7 +163,7 @@ It is also possible to manage drafts in a separate directory. In this case `opti
   };
 ----
 
-To "publish" a draft, the content file should be moved in the non draft directory.
+To "publish" a draft, the content file should be moved to the non draft directory.
 
 [[data.embedded-nix]]
 === Embedded nix
@@ -178,7 +178,7 @@ It is possible to embed nix expressions in markup files by surrounding them by `
 {{ toString (2 + 2) }}
 ----
 
-`env` parameter used in `loadFile` or `loadDir` function is insered in the scope, so `lib` functions or templates can be called. +
+The `env` parameter used in the `loadFile` or `loadDir` function is brought into scope, so `lib` functions or templates can be called. +
 This is specially useful to embed external media in content.
 
 
@@ -210,7 +210,7 @@ Asciidoctor automatically escape HTML. This feature can be disabled by surroundi
 
 Metadata is the way to attach Nix data to markup files.
 
-A metadata block is a Nix attribute set which opening is `{---` and closing `---}`. +
+A metadata block is a Nix attribute set opened by `{---` and closed by `---}`. +
 
 [source,markdown]
 .Adding metadata to a markdown file
@@ -251,7 +251,7 @@ NOTE: `intro` field contents are included in the `content` field.
 [[data.multipage]]
 === Multipage data
 
-It is possible to split markup file in multiple pages by using the `<<<` separator.
+It is possible to split a markup file in multiple pages by using the `<<<` separator.
 
 [source,markdown]
 .Splitting a markdown file in 3 pages
@@ -287,14 +287,14 @@ For example, the `mkPagesList` or `mkMultipages` function can generate pages fro
 Taxonomies are a way to group and structure data.
 
 Styx taxonomies uses a two layers grouping system: taxonomies and terms. +
-The **taxonomy** layer group the content declaring a specific data attribute, and the **term** layer group the contents in the taxonomy depending of the values set to that specific attribute.
+The *taxonomy* layer groups the content declaring a specific data attribute, and the *term* layer groups the contents in the taxonomy depending on the values set to that specific attribute.
 
 A common example of taxonomy is tags, `tags` will be the taxonomy and `sports` or `technology` will be the terms.
 
 Taxonomy are organized in the following structure:
 
 * Taxonomy: Name of the grouping characteristic, for example `tags`.
-* Term: Groups in the taxonomy, for `tags` it will the values tags can take, for example `sports` or `technology`.
+* Term: Groups in the taxonomy, for `tags` it will contain the values tags can take, for example `sports` or `technology`.
 * Values: Objects grouped by a taxonomy term, for example all the posts with the `technology` tag.
 
 ==== Creating a taxonomy data structure
@@ -322,7 +322,7 @@ This will generate a taxonomy data structure where:
 
 Then, the taxonomy related pages can be generated in the page section using the `mkTaxonomyPages` function.
 
-NOTE: This example use `pages` and not `data` attribute sets because data attribute sets do not have a `path` field making it impossible to generate links to them. +
+NOTE: This example uses the `pages` and not `data` attribute sets because data attribute sets do not have a `path` field making it impossible to generate links to them. +
 Using data attribute sets such as `data.posts` would make it impossible to generate pages from the taxonomy with `mkTaxonomyPages`.
 
 ====
@@ -352,7 +352,7 @@ The taxonomy data structure uses property lists, lists of attribute sets with a 
 
 ==== Adding taxonomy to data
 
-Adding taxonomy fields to a content consists in adding a metadata attribute with taxonomy name containing a list of terms.
+Adding taxonomy fields to a content requires adding a metadata attribute with a taxonomy name containing a list of terms.
 
 [source,markdown]
 .Setting tags to a markdown file
