@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/styx-static/styx.svg?branch=master)](https://travis-ci.org/styx-static/styx)
+![Build Status](https://github.com/styx-static/styx/workflows/Build/badge.svg)
 
 # Styx
 
