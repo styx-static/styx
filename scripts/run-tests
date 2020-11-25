@@ -18,7 +18,7 @@ nixpkgsDir=$(realpath "$styxDir/nixpkgs")
 echo ""
 
 echo "Main tests:"
-if nix-build "$testsDir" --no-out-link; then
+if nix-build "$testsDir" --no-out-link --show-trace; then
   echo "  success"
 else
   echo "  failure"
