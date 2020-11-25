@@ -1,4 +1,5 @@
-{ pkgs ? import <nixpkgs> {}
+{ sources ? import ../../nix/sources.nix {}
+, nixpkgs ? import sources.nixpkgs {}
 , siteFile }:
 
 pkgs.callPackage (import ./site-doc.nix) {

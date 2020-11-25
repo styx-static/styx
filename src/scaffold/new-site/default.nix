@@ -11,6 +11,7 @@
   In case styx was installed directly with nix-env, you MUST explicitely set the styx version here.
 
 */
-{ pkgs ? import <nixpkgs> {} }:
+{ sources ? import ../../../nix/sources.nix {}
+, nixpkgs ? import sources.nixpkgs {}:
 
 (pkgs.callPackage (import ./site.nix) {}).site
