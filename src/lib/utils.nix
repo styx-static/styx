@@ -535,15 +535,15 @@ in rec {
       ;
       expected = ''
       [ {
-        "a" = {
-          "b" = {
-            "c" = true;
+        a = {
+          b = {
+            c = true;
           };
         };
       } {
-        "x" = {
-          "y" = {
-            "z" = [ 1 2 3 ];
+        x = {
+          y = {
+            z = [ 1 2 3 ];
           };
         };
       } ]'';
@@ -564,8 +564,8 @@ in rec {
         else if isAttrs  x then ''
         {
         ${indent (n+1)}${concatStringsSep "\n${indent (n+1)}" (mapAttrsToList (k: v:
-          let k' = if (match "^(.+)\\.(.+)$" k) != null
-                   || (match "^(.+)\\s(.+)$" k) != null
+          let k' = if (match "^(.+)[.](.+)$" k) != null
+                   || (match "^(.+)[ \t\r\n](.+)$" k) != null
                    then ''"${k}"''
                    else k;
           in
