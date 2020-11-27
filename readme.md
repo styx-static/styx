@@ -11,7 +11,7 @@ Among others, styx have the following features:
 
 ### Easy to install
 
-Styx has no other depency than nix, if nix is installed, `nix-env -iA styx` is all that is required to install styx.
+Styx has no other dependency than nix, if nix is installed, `nix-env -iA styx` is all that is required to install styx.
 
 ### Multiple content support
 
