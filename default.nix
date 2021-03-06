@@ -1,6 +1,4 @@
 { sources ? import ./nix/sources.nix {}
-, pkgs ? import sources.nixpkgs {}
-, old-pkgs ? import sources.nixpkgs-old {}}:
+, pkgs ? import sources.nixpkgs {} }:
 
-# Use old caddy until updated to use v2 of the API.
-pkgs.callPackage ./derivation.nix { caddy = old-pkgs.pkgs.caddy; }
+pkgs.callPackage ./derivation.nix {}

@@ -12,6 +12,6 @@
 
 */
 { sources ? import ../../../nix/sources.nix {}
-, nixpkgs ? import sources.nixpkgs {}}:
+, nixpkgs ? import sources.nixpkgs {}:
 
 (pkgs.callPackage (import ./site.nix) {}).site
