@@ -1,7 +1,10 @@
-styx:
+# to allow for pure eval args can be
+# just styx or attrset with pkgs and styx
+args:
 let
   # For runCommand and writeText
-  nixpkgs = import <nixpkgs> {};
+  nixpkgs = if args ? pkgs then args.pkgs else import <nixpkgs> {};
+  styx = if args ? styx then args.styx else args;
 
   # nixpkgs lib
   base = nixpkgs.lib // builtins;
