@@ -1,0 +1,6 @@
+#+MACRO: example This is working
+#+MACRO: example2 "This is working"
+
+{{{example}}}
+
+{{{example2}}}

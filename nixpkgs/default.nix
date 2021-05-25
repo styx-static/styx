@@ -20,8 +20,7 @@ let
 
   styx-pkgs = rec {
     # styx dev version
-    styx = pkgs.callPackage ../derivation.nix {};
-
+  styx = pkgs.callPackage ../derivation.nix { };
     # updating callPackage so styx builder use the dev versions
     callPackage = pkgs.lib.callPackageWith (pkgs');
   };

@@ -1,0 +1,3 @@
+#+BEGIN_SRC emacs-lisp :exports results
+(format "The answer is %s" (+ 2 40))
+#+END_SRC
