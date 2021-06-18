@@ -5,7 +5,7 @@
 }:
 
 let
-  styxLib = import styx.lib { lib = stdenv.lib; inherit styx runCommand writeText; };
+  styxLib = import styx.lib { lib = pkgs.lib; inherit styx runCommand writeText; };
 in with styxLib;
 let
 

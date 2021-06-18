@@ -1,4 +1,4 @@
-{ stdenv, caddy, asciidoctor
+{ lib, stdenv, caddy, asciidoctor
 , file, lessc, sass, multimarkdown
 , linkchecker
 , perlPackages
@@ -10,9 +10,9 @@ stdenv.mkDerivation rec {
   allowSubstitutes = false;
 
   name    = "styx-${version}";
-  version = stdenv.lib.fileContents ./VERSION;
+  version = lib.fileContents ./VERSION;
 
-  src = stdenv.lib.cleanSource ./.;
+  src = lib.cleanSource ./.;
 
   server = "${caddy}/bin/caddy";
   linkcheck = "${linkchecker}/bin/linkchecker";
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     cp -r themes/* $themes
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Nix based static site generator";
     maintainers = with maintainers; [ ericsagnes ];
     platforms   = platforms.all;
