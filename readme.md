@@ -1,21 +1,28 @@
-![Build Status](https://github.com/styx-static/styx/workflows/Build/badge.svg)
-
 # Styx
+
+![Build Status](https://github.com/styx-static/styx/workflows/Build/badge.svg)
 
 The purely functional static site generator in Nix expression language.
 
 
 ## Features
 
-Among others, styx have the following features:
+Among others, Styx have the following features:
 
-### Easy to install
+### Easy to get started
 
-Styx has no other dependency than nix, if nix is installed, `nix-env -iA styx` is all that is required to install styx.
+Styx has no other dependency than Nix, if Nix is installed, run the following to use Styx:
+
+```ShellSession
+# if using flakes
+$ nix shell github:styx-static/styx
+# otherwise
+$ nix-shell -p styx
+```
 
 ### Multiple content support
 
-Styx support content in Markdown, AsciiDoc and nix format.
+Styx supports content in Markdown, AsciiDoc and Nix format.
 Styx also extends AsciiDoc and Markdown with custom operators that can split a single markup file into many pages.
 
 ### Embedded nix
@@ -24,12 +31,12 @@ Nix can be [embedded in markup files](https://styx-static.github.io/styx-theme-s
 
 ### Handling of sass/scss
 
-Upon site rendering, styx will automatically convert SASS and SCSS files.
+Upon site rendering, Styx will automatically convert SASS and SCSS files.
 
 ### Template framework
 
 The `generic-template` theme provides a template framework that can be leveraged to easily create new themes or sites.
-Thank to this a theme like Hyde consists only in about 120 lines of nix templates.
+Thank to this a theme like Hyde consists only in about 120 lines of Nix templates.
 
 ### Configuration interface
 
@@ -49,12 +56,12 @@ Official themes can also be used without any implicit installation, declaring th
 ### Documentation
 
 Styx embeds its complete documentation that can be viewed at any time by running `styx doc`.
-A very unique feature of styx is that it can generate the documentation for a site with the `styx site-doc`.
+A very unique feature of Styx is that it can generate the documentation for a site with the `styx site-doc`.
 
 
 ## Install
 
-Use `nix-env` to install styx, or `nix-shell` to just test without installing it:
+Use `nix-env` to install Styx, or `nix-shell` to just test without installing it:
 
 ```sh
 $ nix-env -iA styx
@@ -82,7 +89,7 @@ $ styx --help
 
 ## Examples
 
-The official styx site is an example of a basic software site with release news. It has some interesting features like:
+The official Styx site is an example of a basic software site with release news. It has some interesting features like:
 
 - generating the documentation for every version of styx
 - generating a page for every official theme
