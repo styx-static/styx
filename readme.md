@@ -7,7 +7,7 @@ The purely functional static site generator in Nix expression language.
 
 ## Features
 
-Among others, Styx have the following features:
+Among others, Styx has the following features:
 
 ### Easy to get started
 
