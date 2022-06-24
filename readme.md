@@ -2,12 +2,12 @@
 
 ![Build Status](https://github.com/styx-static/styx/workflows/Build/badge.svg)
 
-The purely functional static site generator in Nix expression language.
+The purely functional static site generator written in the Nix expression language.
 
 
 ## Features
 
-Among others, Styx has the following features:
+Among other things, Styx has the following features:
 
 ### Easy to get started
 
