@@ -2,7 +2,7 @@
 , file, lessc, sass, multimarkdown
 , linkchecker
 , perlPackages
-, python27
+, python3
 , callPackage }:
 
 stdenv.mkDerivation rec {
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     asciidoctor
     multimarkdown
     perlPackages.ImageExifTool
-    (python27.withPackages (ps: [ ps.parsimonious ]))
+    (python3.withPackages (ps: [ ps.parsimonious ]))
   ];
 
   outputs = [ "out" "lib" "themes" ];
