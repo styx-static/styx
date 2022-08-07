@@ -11,7 +11,7 @@
 */
 let
   pkgs = import ../nixpkgs;
-  lib  = (import pkgs.styx {}).lib;
+  lib  = (import pkgs.styx {inherit pkgs;}).lib;
 in with lib;
 let
   namespaces = [

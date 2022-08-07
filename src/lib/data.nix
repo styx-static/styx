@@ -29,7 +29,7 @@ let
         preferLocalBuild = true;
         allowSubstitutes = false;
       } 
-      (conf.lib.data.markup."${markup}".parser fileData.path);
+      (conf.lib.data.markup."${markupType}".parser fileData.path);
       data = importApply dataFn env;
     in mapAttrs (k: v:
       if   elem k markupAttrs
