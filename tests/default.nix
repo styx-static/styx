@@ -50,7 +50,7 @@ rec {
       ${styx}/bin/styx new site my-site --in $out
       sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
     '';
-    in (pkgs.callPackage (import "${site}/my-site/site.nix") {}).site;
+    in (pkgs.callPackage (import "${site}/my-site/site.nix") {inherit pkgs;}).site;
 
   new-theme = pkgs.runCommand "styx-new-theme" defaultEnv ''
     mkdir $out
