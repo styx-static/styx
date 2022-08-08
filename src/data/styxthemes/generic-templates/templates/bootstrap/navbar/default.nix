@@ -45,7 +45,7 @@ in with env.lib; documentedTemplate {
     };
     brand = {
       description = "HTML code of the brand section.";
-      default = env.lib.literalExample "templates.bootstrap.navbar.brand";
+      default = env.lib.literalExpression "templates.bootstrap.navbar.brand";
       type = "String";
     };
     content = {
