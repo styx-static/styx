@@ -16,6 +16,40 @@ File automatically generated, do not edit
 
 :sectnums!:
 
+[[lib.conf.mergeConfs]]
+=== mergeConfs
+
+==== Description
+
+Merge a list of configurations.
+
+
+==== Arguments (Standard)
+
+
+===== confs
+
+List of configurations.
+
+Type: `[ Attrs | Path ]`. 
+
+==== Return
+
+The merged configuration set.
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
 [[lib.conf.parseDecls]]
 === parseDecls
 
@@ -3768,6 +3802,27 @@ isExample (mkExample {
 ----
 true
 ----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.utils.isPath]]
+=== isPath
+
+==== Description
+
+Check if the parameter is a path
 
 
 

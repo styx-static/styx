@@ -1,7 +1,7 @@
 # conf
 
-args:
-with args.lib;
+{lib, ...}@args:
+with lib;
 with (import ./utils.nix args);
 
 rec {
@@ -27,12 +27,12 @@ rec {
       optionFn = {
         description = "Function to convert options.";
         type = "Option -> a";
-        default = literalExample "lib.id";
+        default = literalExpression "lib.id";
       };
       valueFn = {
         description = "Function to convert values.";
         type = "a -> b";
-        default = literalExample "lib.id";
+        default = literalExpression "lib.id";
       };
     };
 

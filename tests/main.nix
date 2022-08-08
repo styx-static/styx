@@ -2,20 +2,19 @@
 
    run all tests with:
 
-     nix-build tests
+     nix flake check # on: x86_64-linux
+     nix flake check --impure # on: others
 
    Open a theme example site in a browser with (many links will be broken):
 
-     $BROWSER $(nix-build -A showcase-site ./tests)/index.html
+     nix run .#showcase # on: x86_64-linux
+     nix run .#showcase --impure # on: others
 
 */
-let pkgs = import ../nixpkgs;
-in
-
-with pkgs.lib;
+{ pkgs, lib }: with lib;
 let
 
-  styx-themes = import pkgs.styx.themes;
+  styx-themes = removeAttrs pkgs.styx.themes ["outPath"];
 
   themes-sites = mapAttrs' (n: v:
     nameValuePair "${n}-site"
@@ -50,7 +49,7 @@ rec {
       ${styx}/bin/styx new site my-site --in $out
       sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
     '';
-    in (pkgs.callPackage (import "${site}/my-site/site.nix") {inherit pkgs;}).site;
+    in (pkgs.callPackage (import "${site}/my-site/site.nix") {}).site;
 
   new-theme = pkgs.runCommand "styx-new-theme" defaultEnv ''
     mkdir $out

@@ -1,7 +1,7 @@
 # Page functions
 
-args:
-with args.lib;
+{lib, ...}@args:
+with lib;
 with import ./utils.nix args;
 with import ./proplist.nix args;
 
@@ -98,7 +98,7 @@ rec {
           Must set `itemsNb`, the number of item to have on the page, and `path` to generate valid pages.
         '';
         type = "Int -> Data -> Page";
-        example = literalExample ''
+        example = literalExpression ''
           index: data: {
             itemsNb = if index == 1 then 3 else 5;
             path = if index == 1 then "/index.html" else "/archive-''${toString index}.html";
@@ -124,7 +124,7 @@ rec {
           });
         }
       '';
-      displayCode = map (x: x // { pages = literalExample "[ ... ]"; });
+      displayCode = map (x: x // { pages = literalExpression "[ ... ]"; });
       code =
         mkSplitCustom {
           data = map (x: { id = x; }) (range 1 4);
@@ -223,7 +223,7 @@ rec {
           basePath = "/test";
         }
       '';
-      displayCode = map (x: x // { pages = literalExample "[ ... ]"; });
+      displayCode = map (x: x // { pages = literalExpression "[ ... ]"; });
       code =
         mkSplit {
           data = map (x: { id = x; }) (range 1 4);
@@ -283,7 +283,7 @@ rec {
       pageFn= {
         description = "Function to generate extra attributes to merge to the page.";
         type = "Int -> Data -> Page";
-        default = literalExample ''
+        default = literalExpression ''
           index: data:
             optionalAttrs (basePath != null) {
               path = mkSplitPagePath { inherit index; pre = basePath; };
@@ -379,12 +379,12 @@ rec {
       pageFn = {
         description = "Function to generate extra attributes of normal pages.";
         type = ''(Data -> Attrs)'';
-        default = literalExample ''data: { path = "''${pathPrefix}''${data.fileData.basename}.html"; }'';
+        default = literalExpression ''data: { path = "''${pathPrefix}''${data.fileData.basename}.html"; }'';
       };
       multipageFn = {
         description = "Function to generate extra attributes of mutipages.";
         type = "Int -> Data -> Attrs";
-        default = literalExample ''
+        default = literalExpression ''
           index: data: {
             path = mkSplitPagePath { pre = "''${pathPrefix}''${data.fileData.basename}"; inherit index; };
           }
@@ -537,12 +537,12 @@ rec {
       taxonomyPageFn = {
         description = "Function to add extra attributes to the taxonomy page set.";
         type = ''(String -> Page)'';
-        default = literalExample ''taxonomy: {}'';
+        default = literalExpression ''taxonomy: {}'';
       };
       termPageFn = {
         description = "Function to add extra attributes to the taxonomy page set.";
         type = ''(String -> String -> Page)'';
-        default = literalExample ''taxonomy: term: {}'';
+        default = literalExpression ''taxonomy: term: {}'';
       };
       taxonomyTemplate = {
         description = "Template used for taxonomy pages.";

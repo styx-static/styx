@@ -103,9 +103,6 @@ This repository is also a playground for more exotic nix usages and experiments:
 
 - [derivation.nix](./derivation.nix) is the main builder for styx, it builds the command line interface, the library, styx themes and the documentation.
 
-
-- [script/run-tests](./scripts/run-tests) is a thin wrapper to `nix-build` that will run [library](./tests/lib.nix) and [functionality tests](./tests/default.nix).
-
 - Library functions and theme templates use special functions (`documentedFunction` and `documentedTemplate`) that allow automatically generating documentation and tests.
 The code used to generate tests from `documentedFunctions` can be found in [tests/lib.nix](./tests/lib.nix).
 Library function tests can print a coverage or a report (with pretty printing):

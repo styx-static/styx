@@ -120,7 +120,7 @@ Default::
 ==== theme.footer.quicklinks
 
 Description:: Footer links.
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -149,7 +149,7 @@ Example::
 ==== theme.footer.social
 
 Description:: Social media links to display in the footer.
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -755,7 +755,7 @@ Default::
 ==== theme.lib.googlefonts
 
 Description:: Google Fonts to load, for available fonts see https://fonts.google.com/.
-Type:: list of strings
+Type:: list of string
 Default::
 +
 [source, nix]
@@ -801,7 +801,7 @@ true
 ==== theme.lib.highlightjs.extraLanguages
 
 Description:: Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.
-Type:: list of strings
+Type:: list of string
 Default::
 +
 [source, nix]
@@ -958,6 +958,12 @@ null
 
 Description:: idsite of the website you are tracking in Piwik.
 Type:: string
+Default::
++
+[source, nix]
+----
+""
+----
 
 
 
@@ -991,6 +997,12 @@ true
 
 Description:: Piwik url.
 Type:: string
+Default::
++
+[source, nix]
+----
+""
+----
 
 
 
@@ -4589,7 +4601,7 @@ Default::
 Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
 If set to the empty list `[]`, the skills area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4635,7 +4647,7 @@ Default::
 Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
 If set to the empty list `[]`, the education area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4696,7 +4708,7 @@ Default::
 Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
 If set to the empty list `[]`, the experiences area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4741,7 +4753,7 @@ Default::
 
 Description:: List of interests. If set to the empty list `[]`, the interests area will not be displayed.
 
-Type:: list of strings
+Type:: list of string
 Default::
 +
 [source, nix]
@@ -4782,7 +4794,7 @@ Default::
 Description:: List of languages as attribute sets, requires `language`, and `level`.  
 If set to the empty list `[]`, the languages area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4862,7 +4874,7 @@ Default::
 Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
 If set to the empty list `[]`, the projects area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4971,7 +4983,7 @@ Default::
 Description:: List of skills as attribute sets, requires `title` and `level`.  
 If set to the empty list `[]`, the skills area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]

@@ -57,5 +57,5 @@ nix-repl> site.conf
 Please run the tests before any commit:
 
 ```
-$ scripts/run-tests
+$ nix flake check
 ```

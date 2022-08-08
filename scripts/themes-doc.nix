@@ -1,25 +1,14 @@
-/* Expression to generate the themes documentation
-*/
-{ pkgs ? import ../nixpkgs }:
+{ pkgs, lib}: with lib;
 
-with pkgs.lib;
-
-let
-  styxLib = with pkgs; callPackage styx.lib styx;
-
-  mockSite = { data = {}; pages = {}; };
-
-  themes = reverseList (attrValues (import pkgs.styx.themes));
-
-  themesData = (styxLib.themes.load {
-    inherit themes styxLib;
-    extraConf = [ { siteUrl = "http://domain.org"; } ];
-    extraEnv = mockSite;
-  });
-in pkgs.callPackage ../src/nix/site-doc.nix {
-  site = {
-    inherit (themesData) conf lib files templates;
-    inherit (mockSite) data pages;
-    inherit themes;
+pkgs.callPackage ../src/nix/site-doc.nix {
+  site = rec {
+    styx = import pkgs.styx {
+      inherit pkgs;
+      config = [{ siteUrl = "http://domain.org"; }];
+      themes = reverseList (attrValues (removeAttrs pkgs.styx.themes ["outPath"]));
+      env = { data = {}; pages = {}; };
+    };
+    # Propagating initialized data
+    inherit (styx.themes) conf files templates env lib;
   };
 }
