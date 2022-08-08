@@ -101,10 +101,12 @@ with lib;
       url = mkOption {
         description = "Piwik url.";
         type = types.str;
+        default = "";
       };
       IDsite = mkOption {
         description = "idsite of the website you are tracking in Piwik.";
         type = types.str;
+        default = "";
       };
     };
 
