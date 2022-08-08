@@ -1,7 +1,7 @@
 # utilities
 
-args:
-with args.lib;
+{lib, ...}:
+with lib;
 
 let
   documentedFunction' = data:
@@ -273,7 +273,7 @@ in rec {
     , examples ? []
     , notes ? null
     }@data:
-      data // { _type = "docFunction"; __functor = _: function; };
+      data // { _type = "docFunction"; __functor = self: self.function; };
   };
 
 
@@ -565,7 +565,7 @@ in rec {
 
     function = expr:
       let indent = n: concatStrings (genList (x: " ") (n*2));
-          isLit = x: isAttrs x && x ? _type && x._type == "literalExample";
+          isLit = x: isAttrs x && x ? _type && x._type == "literalExpression";
           loop   = n: x:
              if isString x then ''"${replaceStrings [''"''] [''\"''] x}"''
         else if isInt    x then toString x

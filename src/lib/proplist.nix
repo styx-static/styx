@@ -9,8 +9,8 @@
      [ { foo = "bar"; } { baz = "buz"; } ]
 */
 
-args:
-with args.lib;
+{lib, ...}@args:
+with lib;
 with (import ./utils.nix args);
 
 rec {

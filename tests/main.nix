@@ -2,20 +2,19 @@
 
    run all tests with:
 
-     nix-build tests
+     nix flake check # on: x86_64-linux
+     nix flake check --impure # on: others
 
    Open a theme example site in a browser with (many links will be broken):
 
-     $BROWSER $(nix-build -A showcase-site ./tests)/index.html
+     nix run .#showcase # on: x86_64-linux
+     nix run .#showcase --impure # on: others
 
 */
-let pkgs = import ../nixpkgs;
-in
-
-with pkgs.lib;
+{ pkgs, lib }: with lib;
 let
 
-  styx-themes = import pkgs.styx.themes;
+  styx-themes = removeAttrs pkgs.styx.themes ["outPath"];
 
   themes-sites = mapAttrs' (n: v:
     nameValuePair "${n}-site"

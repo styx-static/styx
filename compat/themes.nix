@@ -5,13 +5,8 @@ let
     if type == "github" then builtins.fetchTarball { url = "https://github.com/repos/${owner}/${repo}/${rev}"; sha256 = narHash; }
     else if type == "path" then builtins.path { inherit path; }
     else throw ''zonc'';
-in
-{
-  pkgs ? import nixpkgs {}
-, styx ? pkgs.callPackage ../derivation.nix {}
-}:
 
-  pkgs.lib.mapAttrs (n: v: let
-    themeSrc = pkgs.fetchFromGitHub v;
-    pkgsWithStyx = pkgs // {inherit styx;};
-  in pkgs.lib.callPackageWith pkgsWithStyx themeSrc {}) (import ./versions.nix)
+  pkgs = (import nixpkgs {
+    system = builtins.currentSystem or "x86_64-linux";
+  }).extend(self: _: { styx = self.callPackage ../derivation.nix {}; });
+in (import ./warn.nix pkgs.lib) (import ../themes { inherit pkgs; inherit (pkgs) styx; })

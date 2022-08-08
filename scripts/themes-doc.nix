@@ -1,8 +1,4 @@
-/* Expression to generate the themes documentation
-*/
-{ pkgs ? import ../nixpkgs }:
-
-with pkgs.lib;
+{ pkgs, lib}: with lib;
 
 let
   styx = import pkgs.styx {
