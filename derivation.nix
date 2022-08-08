@@ -13,13 +13,13 @@ stdenv.mkDerivation rec {
 
   src = lib.cleanSource ./.;
 
-  server = "${caddy}/bin/caddy";
-  linkcheck = "${linkchecker}/bin/linkchecker";
+  server = lib.getExe caddy;
+  linkcheck = lib.getExe linkchecker;
   nixpkgs = pkgs.path;
 
   nativeBuildInputs = [ asciidoctor ];
 
-  outputs = [ "out" "themes" ];
+  # outputs = [ "out" ];
 
   installPhase = ''
     mkdir $out
@@ -41,16 +41,26 @@ stdenv.mkDerivation rec {
     substituteAllInPlace $out/share/doc/styx/library.html
 
     mkdir -p $out/share/styx/scaffold
+    cp flake.lock      $out/share/styx/flake.lock
     cp -r src/scaffold $out/share/styx
     cp -r src/tools    $out/share/styx
     cp -r src/nix      $out/share/styx
 
     mkdir -p $out/lib
     cp -r src/lib/* $out/lib
-
-    mkdir $themes
-    cp -r themes/* $themes
   '';
+
+  passthru = {
+   themes = (import ./themes {
+     inherit pkgs;
+     styx = callPackage ./derivation.nix;
+   }) // {
+     # old theme compatibility
+     outPath = ./compat/themes.nix;
+   };
+   # old theme compatibility
+   lib = ./compat/lib.nix; 
+  };
 
   meta = with lib; {
     description = "Nix based static site generator";

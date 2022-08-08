@@ -124,7 +124,7 @@ rec {
       filterDraftsFn = {
         description = "Function to filter the drafts.";
         type = "Draft -> Bool";
-        default = literalExample ''d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )'';
+        default = literalExpression ''d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )'';
       };
       asAttrs = {
         description = "If set to true, the function will return a set instead of a list. The key will be the file basename, and the value the data set.";
@@ -218,6 +218,83 @@ rec {
     let
       extraArgs = removeAttrs args [ "file" "env" ];
     in (parseFile { fileData = getFileData file; inherit env; }) // extraArgs;
+  };
+
+
+/*
+===============================================================
+
+ markdownToHtml
+
+===============================================================
+*/
+
+  markdownToHtml = documentedFunction {
+    description = "Convert markdown text to HTML.";
+
+    arguments = [
+      {
+        name = "text";
+        description = "Text in markdown format";
+        type = "String";
+      }
+    ];
+
+    return = "`String`";
+
+    examples = [ (mkExample {
+      literalCode = ''
+        markdownToHtml "Hello `markdown`!"
+      '';
+      code =
+        markdownToHtml "Hello `markdown`!"
+      ;
+      expected = ''
+        <p>Hello <code>markdown</code>!</p>
+      '';
+    })];
+
+    function = markupToHtml "markdown";
+  };
+
+
+
+/*
+===============================================================
+
+ asciidocToHtml
+
+===============================================================
+*/
+
+  asciidocToHtml = documentedFunction {
+    description = "Convert asciidoc text to HTML.";
+
+    arguments = [
+      {
+        name = "text";
+        description = "Text in asciidoc format.";
+        type = "String";
+      }
+    ];
+
+    examples = [ (mkExample {
+      literalCode = ''
+        asciidocToHtml "Hello `asciidoc`!"
+      '';
+      code =
+        asciidocToHtml "Hello `asciidoc`!"
+      ;
+      expected = ''
+        <div class="paragraph">
+        <p>Hello <code>asciidoc</code>!</p>
+        </div>
+      '';
+    }) ];
+
+    return = "`String`";
+
+    function = markupToHtml "asciidoc";
   };
 
 

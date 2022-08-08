@@ -1,6 +1,6 @@
 # Page and site generation functions
 
-{ pkgs, conf, lib }@args:
+{ pkgs, lib, ... }@args:
 with lib;
 with import ./utils.nix args;
 
@@ -103,12 +103,12 @@ rec {
       genPageFn = {
         description = "Function to generate a page source from a page attribute set.";
         type = "Page -> String";
-        default = literalExample "lib.generation.generatePage";
+        default = literalExpression "lib.generation.generatePage";
       };
       pagePathFn = {
         description = "Function to generate a page from a page attribute set.";
         type = "Page -> String";
-        default = literalExample "page: page.path";
+        default = literalExpression "page: page.path";
       };
     };
 
@@ -344,7 +344,7 @@ rec {
       default = {
         description = "A function to set default values to the pages, eg: to set the default `layout` template.";
         type = "Locale -> Attrs";
-        default = literalExample "locale: {}";
+        default = literalExpression "locale: {}";
       };
     };
 

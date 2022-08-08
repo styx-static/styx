@@ -16,6 +16,40 @@ File automatically generated, do not edit
 
 :sectnums!:
 
+[[lib.conf.mergeConfs]]
+=== mergeConfs
+
+==== Description
+
+Merge a list of configurations.
+
+
+==== Arguments (Standard)
+
+
+===== confs
+
+List of configurations.
+
+Type: `[ Attrs | Path ]`. 
+
+==== Return
+
+The merged configuration set.
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
 [[lib.conf.parseDecls]]
 === parseDecls
 
@@ -2784,7 +2818,7 @@ This argument can be:
   * `String`: The argument will be added to the page set `content`.
   * `Attribute Set`: The argument will be merged to the page set.
   * `Page -> String`: The `String` argument will be added to the page set `content` attribute.
-  * `Page -> Attrs`: The `Attra` parameter will be merged to the page set.
+  * `Page -> Attrs`: The `Attrs` parameter will be merged to the page set.
 
 
 ==== Return
@@ -3768,6 +3802,27 @@ isExample (mkExample {
 ----
 true
 ----
+
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.utils.isPath]]
+=== isPath
+
+==== Description
+
+Check if the parameter is a path
 
 
 

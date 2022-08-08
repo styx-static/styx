@@ -1,7 +1,7 @@
 # themes
 
-args:
-with args.lib;
+{lib, ...}@args:
+with lib;
 with import ./utils.nix args;
 with import ./conf.nix args;
 with import ./proplist.nix args;

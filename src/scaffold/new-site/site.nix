@@ -27,7 +27,7 @@ rec {
 
     # Loaded themes
     themes = let
-      styx-themes = import pkgs.styx.themes;
+      styx-themes = pkgs.styx.themes;
     in [
       # Declare the used themes here, from a package:
       #   styx-themes.generic-templates

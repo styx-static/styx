@@ -1,18 +1,11 @@
 /* Library tests for Styx
 
-   To see the tests report run:
+   To see the tests reports (failures & coverage) run:
 
-     cat $(nix-build --no-out-link -A report tests/lib.nix)
-
-   To check test coverage run:
-
-     cat $(nix-build --no-out-link -A coverage tests/lib.nix)
+     nix run .#report
 
 */
-let
-  pkgs = import ../nixpkgs;
-  lib  = (import pkgs.styx {inherit pkgs;}).lib;
-in with lib;
+{ pkgs, lib }: with lib;
 let
   namespaces = [
     "conf"
@@ -52,7 +45,7 @@ let
         let
           hasTest = any (ex: ex ? expected);
         in if   isDocFunction fn
-           then if   docFn ? examples && hasTest docFn.examples
+           then if   fn ? examples && hasTest fn.examples
                 then null
                 else name
            else null) functions;
@@ -73,14 +66,15 @@ let
    sep   = "---\n";
    inSep = x: sep + x + sep;
 
-   report = pkgs.writeText "lib-tests-report.txt" ''
+   report = pkgs.writeText "lib-tests-report.md" ''
+     # Styx Library Test Report
      ---
      ${toString (successNb + failuresNb)} tests run.
      - ${toString successNb} success(es).
      - ${toString failuresNb} failure(s).
      ${optionalString (failuresNb > 0) ''
 
-     Failures details:
+     ### Failures details:
 
      ${lsep}${mapTemplate (failure:
        let
@@ -94,7 +88,8 @@ let
      ---
      '';
 
-   coverage = pkgs.writeText "lib-tests-coverage.txt" ''
+   coverage = pkgs.writeText "lib-tests-coverage.md" ''
+     # Styx Library Test Report
      ---
      ${toString (length missingTests)} functions missing tests:
 
@@ -149,6 +144,6 @@ let
    } ];
 
 in {
-  inherit failures report results functions tests coverage;
+  inherit report results functions tests coverage;
   success = failuresNb == 0;
 }

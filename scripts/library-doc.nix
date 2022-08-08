@@ -1,37 +1,25 @@
-let
-  pkgs = import ../nixpkgs;
-  lib = with pkgs; callPackage styx.lib styx;
-in
-
-with pkgs;
-with lib;
+{ pkgs, lib}: with lib;
 
 let
 
-  libs = map (namespace:
+  namespaces = mapAttrs (namespace: _:
     let functions = filter (x: x != {}) (mapAttrsToList (name: fn:
       optionalAttrs (isDocFunction fn)
         ({ fullname = "lib.${namespace}.${name}"; inherit namespace name; } // fn)
     ) lib."${namespace}");
     in {
-      "${namespace}" = {
-        inherit functions;
-        documentation = optionalString (lib."${namespace}" ? _documentation) (lib."${namespace}"._documentation true);
-      };
-    });
-
-  namespaces = fold (x: acc:
-    acc // x
-  ) {} (libs [
-    "conf"
-    "data"
-    "generation"
-    "pages"
-    "proplist"
-    "template"
-    "themes"
-    "utils"
-  ]);
+      inherit functions;
+      documentation = optionalString (lib."${namespace}" ? _documentation) (lib."${namespace}"._documentation true);
+    }) {
+      conf = {};
+      data = {};
+      generation = {};
+      pages = {};
+      proplist = {};
+      template = {};
+      themes = {};
+      utils = {};
+    };
 
   mkFunctionDoc = function:
     ''
@@ -60,7 +48,7 @@ let
              then " (Attribute Set)"
              else " (Standard)";
       isMultiline = arg:
-        let arg' = if is "literalExample" arg
+        let arg' = if is "literalExpression" arg
                    then arg.text
                    else arg;
         in if isString arg'
@@ -102,25 +90,7 @@ let
 
     '';
 
-in stdenv.mkDerivation {
-  name    = "styx-docs";
-
-  preferLocalBuild = true;
-  allowSubstitutes = false;
-
-  unpackPhase = ":";
-
-  buildInputs = [ asciidoctor ];
-
-  doc = writeText "lib.adoc" ''
-
-    ////
-
-    File automatically generated, do not edit
-
-    ////
-
-    ${concatStringsSep "\n" (mapAttrsToList (namespace: data: ''
+  content =  concatStringsSep "\n" (mapAttrsToList (namespace: data: ''
 
     == ${namespace}
 
@@ -134,13 +104,33 @@ in stdenv.mkDerivation {
     ---
 
 
-    '') namespaces)}
+  '') namespaces);
+
+  doc = pkgs.writeText "lib.adoc" ''
+
+    ////
+
+    File automatically generated, do not edit
+
+    ////
+
+    ${content}
 
   '';
 
+in pkgs.stdenv.mkDerivation {
+  name    = "styx-docs";
+
+  preferLocalBuild = true;
+  allowSubstitutes = false;
+
+  unpackPhase = ":";
+
+  buildInputs = [ pkgs.asciidoctor ];
+
   buildPhase = ''
     mkdir build
-    cp $doc build/library-generated.adoc
+    cp ${doc} build/library-generated.adoc
   '';
 
   installPhase = ''
