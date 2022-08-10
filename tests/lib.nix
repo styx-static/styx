@@ -11,7 +11,7 @@
 */
 let
   pkgs = import ../nixpkgs;
-  lib  = with pkgs; import styx.lib styx;
+  lib  = (import pkgs.styx {}).lib;
 in with lib;
 let
   namespaces = [
@@ -112,75 +112,39 @@ let
      ) cleanData;
 
    customTests = [ {
-     name = "loadFile - simple";
+     name = "loadFile - markdown";
      function = "lib.data.loadFile";
-     code = mkLoadFileTest ./data/simple.md;
+     code = mkLoadFileTest ./data/markdown.md;
      expected = {
-       content = "<p>Content</p>\n";
-     };
-   } {
-     name = "loadFile - meta";
-     function = "lib.data.loadFile";
-     code = mkLoadFileTest ./data/meta.md;
-     expected = {
-       content = "<p>Content</p>\n";
-       foo = "bar";
-     };
-   } {
-     name = "loadFile - pages";
-     function = "lib.data.loadFile";
-     code = mkLoadFileTest ./data/pages.md;
-     expected = {
-       pages = [
-         { content = "<p>Page 1</p>\n"; }
-         { content = "<p>Page 2</p>\n"; }
-         { content = "<p>Page 3</p>\n"; }
-       ];
-     };
-   } {
-     name = "loadFile - escape";
-     function = "lib.data.loadFile";
-     code = mkLoadFileTest ./data/escape.md;
-     expected = {
-       content = ''
-         <p>{&#8212;</p>
-
-         <p>-&#8211;}</p>
-
-         <pre><code>&lt;&lt;&lt;
-         </code></pre>
-
-         <pre><code>&gt;&gt;&gt;
-         </code></pre>
-
-         <p>{{ non evaluated nix }}</p>
-
-         <p>this }} is not evaluated</p>
-
-         <p>&#8217; &#8216;&#8217; &#8216;&#8217;&#8217; &#8216;&#8217;&#8216;&#8217;</p>
-       '';
-     };
-   } {
-     name = "loadFile - embedded";
-     function = "lib.data.loadFile";
-     code = mkLoadFileTest ./data/embedded.md;
-     expected = {
-       content = ''
-         <p>2 + 2 = 4
-         Answer is 42 and foo is bar</p>
-       '';
-     };
-   } {
-     name = "loadFile - complex";
-     function = "lib.data.loadFile";
-     code = mkLoadFileTest ./data/complex.md;
-     expected = {
-       foo = "The answer";
        bar = "answer";
        baz = 40;
-       content = ''
-         <p>The answer is 42.</p>
+       foo = "The answer";
+       intro = ''
+         <p>Intro text.</p>
        '';
+       pages = [
+         {
+           content = ''
+             <p>First page</p>
+     
+             <p>The answer is 42.</p>
+           '';
+         }
+         {
+           content = ''
+             <p>Second page.</p>
+     
+             <p>{{ non evaluated nix }}</p>
+     
+             <p>this }} is not evaluated</p>
+           '';
+         }
+         {
+           content = ''
+             <p>Third page.</p>
+           '';
+         }
+       ];
      };
    } ];
 

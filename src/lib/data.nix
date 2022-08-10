@@ -29,7 +29,7 @@ let
         preferLocalBuild = true;
         allowSubstitutes = false;
       } 
-      (conf.lib.data.parser.command fileData.path);
+      (conf.lib.data.markup."${markup}".parser fileData.path);
       data = importApply dataFn env;
     in mapAttrs (k: v:
       if   elem k markupAttrs
@@ -64,7 +64,7 @@ let
         inherit text;
         passAsFile = [ "text" ];
       } 
-      (conf.lib.data.markup."${markup}".command "$textPath");
+      (conf.lib.data.markup."${markup}".converter "$textPath");
     in readFile data;
 
   /* extract a file data

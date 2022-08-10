@@ -2,7 +2,6 @@
 , caddy
 , linkchecker
 , callPackage
-, python27
 , pkgs }:
 
 stdenv.mkDerivation rec {
