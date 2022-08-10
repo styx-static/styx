@@ -29,7 +29,7 @@ let
         preferLocalBuild = true;
         allowSubstitutes = false;
       } 
-      (conf.lib.data.parser.command fileData.path);
+      (conf.lib.data.markup."${markupType}".parser fileData.path);
       data = importApply dataFn env;
     in mapAttrs (k: v:
       if   elem k markupAttrs
@@ -56,7 +56,7 @@ let
 
   /* Convert markup code to HTML
   */
-  markupToHtml = markup: text:
+  markupToHtml = markupType: text:
     let
       data = pkgs.runCommand "markup-data.html" {
         preferLocalBuild = true;
@@ -64,7 +64,7 @@ let
         inherit text;
         passAsFile = [ "text" ];
       } 
-      (conf.lib.data.markup."${markup}".command "$textPath");
+      (conf.lib.data.markup."${markupType}".converter "$textPath");
     in readFile data;
 
   /* extract a file data

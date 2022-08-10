@@ -1,11 +1,11 @@
-{---
-title = "Blog tutorial";
-tags = [ "tutorial" ];
----}
+---
+title: "Blog tutorial"
+tags: [ "tutorial" ]
+---
 
 Tutorial for creating a blog.
 
->>>
+[more]
 
 == Create a new site
 

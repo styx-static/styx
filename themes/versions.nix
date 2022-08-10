@@ -2,14 +2,14 @@
   agency = {
     owner  = "styx-static";
     repo   = "styx-theme-agency";
-    rev    = "bed3e0b";
-    sha256 = "1l9nycm404z4svd9dn6zdsw149j8g9brzw6sb7cfd4kq07d9g98d";
+    rev    = "aa17dfe";
+    sha256 = "053xbjzdxw4rq49lxj19ls2bafb7i477dcycp2s0d1ssi27bxvar";
   };
   generic-templates = {
     owner  = "styx-static";
     repo   = "styx-theme-generic-templates";
-    rev    = "a276f19";
-    sha256 = "1ilazhqgrr1l554xr1sdvnhcb460qs19cdbfj77k5762px0nvk9g";
+    rev    = "2b93dbe";
+    sha256 = "16fx5mni078zbi6wgg4gqy2pa5saipbv6281gj4lwssfb2ighmqd";
   };
   ghostwriter = {
     owner  = "styx-static";
@@ -32,8 +32,8 @@
   orbit = {
     owner  = "styx-static";
     repo   = "styx-theme-orbit";
-    rev    = "974b91a";
-    sha256 = "0mrf4xa9rhm0435y20iv9mvpg48z4m5jxp7mrr0c4ri8xyf6yqm4";
+    rev    = "ae5b309";
+    sha256 = "08xynyr7zrfqlkik8mcpxlwis7qwmfiqriirn9ks4x3vd760k6p4";
   };
   showcase = {
     owner  = "styx-static";
