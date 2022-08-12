@@ -100,7 +100,7 @@ NOTE: Blocks are meant to be flexible. For custom needs it is possible to use a 
 
 ---
 
-[[agency.conf.theme.footer.copyright]]
+[[agency.theme.footer.copyright]]
 ==== theme.footer.copyright
 
 Description:: Footer copyright text.
@@ -116,7 +116,7 @@ Default::
 
 ---
 
-[[agency.conf.theme.footer.quicklinks]]
+[[agency.theme.footer.quicklinks]]
 ==== theme.footer.quicklinks
 
 Description:: Footer links.
@@ -145,7 +145,7 @@ Example::
 
 ---
 
-[[agency.conf.theme.footer.social]]
+[[agency.theme.footer.social]]
 ==== theme.footer.social
 
 Description:: Social media links to display in the footer.
@@ -177,7 +177,7 @@ Example::
 
 ---
 
-[[agency.conf.theme.lib.bootstrap.enable]]
+[[agency.theme.lib.bootstrap.enable]]
 ==== theme.lib.bootstrap.enable
 
 
@@ -193,7 +193,7 @@ true
 
 ---
 
-[[agency.conf.theme.lib.font-awesome.enable]]
+[[agency.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 
@@ -209,7 +209,7 @@ true
 
 ---
 
-[[agency.conf.theme.lib.googlefonts]]
+[[agency.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 
@@ -225,7 +225,7 @@ Default::
 
 ---
 
-[[agency.conf.theme.lib.jquery.enable]]
+[[agency.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 
@@ -241,7 +241,7 @@ true
 
 ---
 
-[[agency.conf.theme.site.author]]
+[[agency.theme.site.author]]
 ==== theme.site.author
 
 Description:: Content of the author `meta` tag.
@@ -257,7 +257,7 @@ Default::
 
 ---
 
-[[agency.conf.theme.site.description]]
+[[agency.theme.site.description]]
 ==== theme.site.description
 
 Description:: Content of the description `meta` tag.
@@ -273,7 +273,7 @@ Default::
 
 ---
 
-[[agency.conf.theme.site.title]]
+[[agency.theme.site.title]]
 ==== theme.site.title
 
 Description:: Title of the site.
@@ -641,7 +641,7 @@ themes = [
 
 ---
 
-[[generic-templates.conf.theme.html.doctype]]
+[[generic-templates.theme.html.doctype]]
 ==== theme.html.doctype
 
 Description:: Doctype declaration to use.
@@ -657,7 +657,7 @@ Default::
 
 ---
 
-[[generic-templates.conf.theme.html.lang]]
+[[generic-templates.theme.html.lang]]
 ==== theme.html.lang
 
 Description:: An ISO 639-1 language code to set to the `html` tag.
@@ -673,7 +673,7 @@ Default::
 
 ---
 
-[[generic-templates.conf.theme.lib.bootstrap.enable]]
+[[generic-templates.theme.lib.bootstrap.enable]]
 ==== theme.lib.bootstrap.enable
 
 Description:: Whether to enable bootstrap.
@@ -696,11 +696,11 @@ true
 
 ---
 
-[[generic-templates.conf.theme.lib.bootstrap.version]]
+[[generic-templates.theme.lib.bootstrap.version]]
 ==== theme.lib.bootstrap.version
 
 Description:: Selects bootstrap version to use.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]
@@ -712,7 +712,7 @@ Default::
 
 ---
 
-[[generic-templates.conf.theme.lib.font-awesome.enable]]
+[[generic-templates.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 Description:: Whether to enable font awesome.
@@ -735,11 +735,11 @@ true
 
 ---
 
-[[generic-templates.conf.theme.lib.font-awesome.version]]
+[[generic-templates.theme.lib.font-awesome.version]]
 ==== theme.lib.font-awesome.version
 
 Description:: Selects font-awesome version to use.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]
@@ -751,7 +751,7 @@ Default::
 
 ---
 
-[[generic-templates.conf.theme.lib.googlefonts]]
+[[generic-templates.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 Description:: Google Fonts to load, for available fonts see https://fonts.google.com/.
@@ -774,7 +774,7 @@ Example::
 
 ---
 
-[[generic-templates.conf.theme.lib.highlightjs.enable]]
+[[generic-templates.theme.lib.highlightjs.enable]]
 ==== theme.lib.highlightjs.enable
 
 Description:: Whether to enable highlightjs.
@@ -797,7 +797,7 @@ true
 
 ---
 
-[[generic-templates.conf.theme.lib.highlightjs.extraLanguages]]
+[[generic-templates.theme.lib.highlightjs.extraLanguages]]
 ==== theme.lib.highlightjs.extraLanguages
 
 Description:: Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.
@@ -820,11 +820,11 @@ Example::
 
 ---
 
-[[generic-templates.conf.theme.lib.highlightjs.style]]
+[[generic-templates.theme.lib.highlightjs.style]]
 ==== theme.lib.highlightjs.style
 
 Description:: Style used by highlight.js, for available styles see https://highlightjs.org/static/demo/.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]
@@ -843,11 +843,11 @@ Example::
 
 ---
 
-[[generic-templates.conf.theme.lib.highlightjs.version]]
+[[generic-templates.theme.lib.highlightjs.version]]
 ==== theme.lib.highlightjs.version
 
 Description:: Selects highlightjs version to use.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]
@@ -859,7 +859,7 @@ Default::
 
 ---
 
-[[generic-templates.conf.theme.lib.jquery.enable]]
+[[generic-templates.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 Description:: Whether to enable jQuery.
@@ -882,11 +882,11 @@ true
 
 ---
 
-[[generic-templates.conf.theme.lib.jquery.version]]
+[[generic-templates.theme.lib.jquery.version]]
 ==== theme.lib.jquery.version
 
 Description:: Selects jQuery version to use.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]
@@ -898,7 +898,7 @@ Default::
 
 ---
 
-[[generic-templates.conf.theme.lib.mathjax.enable]]
+[[generic-templates.theme.lib.mathjax.enable]]
 ==== theme.lib.mathjax.enable
 
 Description:: Whether to enable mathjax.
@@ -921,7 +921,7 @@ true
 
 ---
 
-[[generic-templates.conf.theme.services.disqus.shortname]]
+[[generic-templates.theme.services.disqus.shortname]]
 ==== theme.services.disqus.shortname
 
 Description:: Disqus service shortname. See link:https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-[What's a shortname?] page for details.
@@ -937,7 +937,7 @@ null
 
 ---
 
-[[generic-templates.conf.theme.services.google-analytics.trackingID]]
+[[generic-templates.theme.services.google-analytics.trackingID]]
 ==== theme.services.google-analytics.trackingID
 
 Description:: Google analytics service tracker ID, Google analytics is disabled if set to null.
@@ -953,7 +953,7 @@ null
 
 ---
 
-[[generic-templates.conf.theme.services.piwik.IDsite]]
+[[generic-templates.theme.services.piwik.IDsite]]
 ==== theme.services.piwik.IDsite
 
 Description:: idsite of the website you are tracking in Piwik.
@@ -963,7 +963,7 @@ Type:: string
 
 ---
 
-[[generic-templates.conf.theme.services.piwik.enable]]
+[[generic-templates.theme.services.piwik.enable]]
 ==== theme.services.piwik.enable
 
 Description:: Whether to enable Piwik.
@@ -986,7 +986,7 @@ true
 
 ---
 
-[[generic-templates.conf.theme.services.piwik.url]]
+[[generic-templates.theme.services.piwik.url]]
 ==== theme.services.piwik.url
 
 Description:: Piwik url.
@@ -996,7 +996,7 @@ Type:: string
 
 ---
 
-[[generic-templates.conf.theme.site.title]]
+[[generic-templates.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -3289,11 +3289,11 @@ posts = mkPageList {
 
 ---
 
-[[ghostwriter.conf.theme.itemsPerPage]]
+[[ghostwriter.theme.itemsPerPage]]
 ==== theme.itemsPerPage
 
 Description:: Number of posts per page.
-Type:: integer
+Type:: signed integer
 Default::
 +
 [source, nix]
@@ -3305,7 +3305,7 @@ Default::
 
 ---
 
-[[ghostwriter.conf.theme.lib.font-awesome.enable]]
+[[ghostwriter.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 
@@ -3321,7 +3321,7 @@ true
 
 ---
 
-[[ghostwriter.conf.theme.lib.googlefonts]]
+[[ghostwriter.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 
@@ -3337,7 +3337,7 @@ Default::
 
 ---
 
-[[ghostwriter.conf.theme.lib.jquery.enable]]
+[[ghostwriter.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 
@@ -3353,7 +3353,7 @@ true
 
 ---
 
-[[ghostwriter.conf.theme.site.copyright]]
+[[ghostwriter.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright.
@@ -3370,7 +3370,7 @@ Default::
 
 ---
 
-[[ghostwriter.conf.theme.site.description]]
+[[ghostwriter.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description.
@@ -3387,7 +3387,7 @@ Default::
 
 ---
 
-[[ghostwriter.conf.theme.site.title]]
+[[ghostwriter.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -3403,11 +3403,11 @@ Default::
 
 ---
 
-[[ghostwriter.conf.theme.social.email]]
+[[ghostwriter.theme.social.email]]
 ==== theme.social.email
 
 Description:: GitHub link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3419,11 +3419,11 @@ null
 
 ---
 
-[[ghostwriter.conf.theme.social.github]]
+[[ghostwriter.theme.social.github]]
 ==== theme.social.github
 
 Description:: GitHub link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3435,11 +3435,11 @@ null
 
 ---
 
-[[ghostwriter.conf.theme.social.gitlab]]
+[[ghostwriter.theme.social.gitlab]]
 ==== theme.social.gitlab
 
 Description:: GitHub link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3451,11 +3451,11 @@ null
 
 ---
 
-[[ghostwriter.conf.theme.social.google-plus]]
+[[ghostwriter.theme.social.google-plus]]
 ==== theme.social.google-plus
 
 Description:: Google plus link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3467,11 +3467,11 @@ null
 
 ---
 
-[[ghostwriter.conf.theme.social.linked-in]]
+[[ghostwriter.theme.social.linked-in]]
 ==== theme.social.linked-in
 
 Description:: Linked in link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3483,11 +3483,11 @@ null
 
 ---
 
-[[ghostwriter.conf.theme.social.stack-overflow]]
+[[ghostwriter.theme.social.stack-overflow]]
 ==== theme.social.stack-overflow
 
 Description:: Stack overflow link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3499,11 +3499,11 @@ null
 
 ---
 
-[[ghostwriter.conf.theme.social.twitter]]
+[[ghostwriter.theme.social.twitter]]
 ==== theme.social.twitter
 
 Description:: Twitter link
-Type:: null or string
+Type:: null or Concatenated string
 Default::
 +
 [source, nix]
@@ -3795,7 +3795,7 @@ image::imgs/hyde.png[Hyde,align="center"]
 
 ---
 
-[[hyde.conf.theme.colorScheme]]
+[[hyde.theme.colorScheme]]
 ==== theme.colorScheme
 
 Description:: Selects the color scheme. Set to `null` for default black scheme.
@@ -3811,11 +3811,11 @@ null
 
 ---
 
-[[hyde.conf.theme.itemsPerPage]]
+[[hyde.theme.itemsPerPage]]
 ==== theme.itemsPerPage
 
 Description:: Number of posts per page.
-Type:: integer
+Type:: signed integer
 Default::
 +
 [source, nix]
@@ -3827,7 +3827,7 @@ Default::
 
 ---
 
-[[hyde.conf.theme.layout.reverse]]
+[[hyde.theme.layout.reverse]]
 ==== theme.layout.reverse
 
 Description:: Whether to enable reverse layout.
@@ -3850,7 +3850,7 @@ true
 
 ---
 
-[[hyde.conf.theme.site.copyright]]
+[[hyde.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright.
@@ -3867,7 +3867,7 @@ Default::
 
 ---
 
-[[hyde.conf.theme.site.description]]
+[[hyde.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description.
@@ -3884,7 +3884,7 @@ Default::
 
 ---
 
-[[hyde.conf.theme.site.title]]
+[[hyde.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -4177,7 +4177,7 @@ image::imgs/nix.png[Nix,align="center"]
 
 ---
 
-[[nix.conf.theme.lib.bootstrap.enable]]
+[[nix.theme.lib.bootstrap.enable]]
 ==== theme.lib.bootstrap.enable
 
 
@@ -4193,7 +4193,7 @@ true
 
 ---
 
-[[nix.conf.theme.lib.font-awesome.enable]]
+[[nix.theme.lib.font-awesome.enable]]
 ==== theme.lib.font-awesome.enable
 
 
@@ -4209,7 +4209,7 @@ true
 
 ---
 
-[[nix.conf.theme.lib.googlefonts]]
+[[nix.theme.lib.googlefonts]]
 ==== theme.lib.googlefonts
 
 
@@ -4225,7 +4225,7 @@ Default::
 
 ---
 
-[[nix.conf.theme.lib.jquery.enable]]
+[[nix.theme.lib.jquery.enable]]
 ==== theme.lib.jquery.enable
 
 
@@ -4241,7 +4241,7 @@ true
 
 ---
 
-[[nix.conf.theme.site.copyright]]
+[[nix.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright.
@@ -4258,7 +4258,7 @@ Default::
 
 ---
 
-[[nix.conf.theme.site.description]]
+[[nix.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description.
@@ -4275,7 +4275,7 @@ Default::
 
 ---
 
-[[nix.conf.theme.site.title]]
+[[nix.theme.site.title]]
 ==== theme.site.title
 
 Description:: Site title.
@@ -4567,7 +4567,7 @@ image::imgs/orbit.png[Orbit,align="center"]
 
 ---
 
-[[orbit.conf.theme.colorScheme]]
+[[orbit.theme.colorScheme]]
 ==== theme.colorScheme
 
 Description:: Theme color scheme.
@@ -4583,7 +4583,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.contact.items]]
+[[orbit.theme.contact.items]]
 ==== theme.contact.items
 
 Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
@@ -4613,7 +4613,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.copyright]]
+[[orbit.theme.copyright]]
 ==== theme.copyright
 
 Description:: Footer copyright text.
@@ -4629,7 +4629,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.education.items]]
+[[orbit.theme.education.items]]
 ==== theme.education.items
 
 Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
@@ -4658,7 +4658,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.education.title]]
+[[orbit.theme.education.title]]
 ==== theme.education.title
 
 Description:: Title of the education section.
@@ -4674,7 +4674,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.experiences.icon]]
+[[orbit.theme.experiences.icon]]
 ==== theme.experiences.icon
 
 Description:: Code of the font awesome icon of the experience title.
@@ -4690,7 +4690,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.experiences.items]]
+[[orbit.theme.experiences.items]]
 ==== theme.experiences.items
 
 Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
@@ -4720,7 +4720,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.experiences.title]]
+[[orbit.theme.experiences.title]]
 ==== theme.experiences.title
 
 Description:: Title of the experiences section
@@ -4736,7 +4736,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.interests.items]]
+[[orbit.theme.interests.items]]
 ==== theme.interests.items
 
 Description:: List of interests. If set to the empty list `[]`, the interests area will not be displayed.
@@ -4760,7 +4760,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.interests.title]]
+[[orbit.theme.interests.title]]
 ==== theme.interests.title
 
 Description:: Title of the interests section.
@@ -4776,7 +4776,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.languages.items]]
+[[orbit.theme.languages.items]]
 ==== theme.languages.items
 
 Description:: List of languages as attribute sets, requires `language`, and `level`.  
@@ -4804,7 +4804,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.languages.title]]
+[[orbit.theme.languages.title]]
 ==== theme.languages.title
 
 Description:: Title of the languages section.
@@ -4820,7 +4820,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.profile]]
+[[orbit.theme.profile]]
 ==== theme.profile
 
 Description:: Profile information, must have `name`, `tagline` and `image` attributes.
@@ -4840,7 +4840,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.projects.icon]]
+[[orbit.theme.projects.icon]]
 ==== theme.projects.icon
 
 Description:: Code of the font awesome icon of the projects title.
@@ -4856,7 +4856,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.projects.items]]
+[[orbit.theme.projects.items]]
 ==== theme.projects.items
 
 Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
@@ -4885,7 +4885,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.projects.title]]
+[[orbit.theme.projects.title]]
 ==== theme.projects.title
 
 Description:: Title of the projects section
@@ -4901,7 +4901,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.site.author]]
+[[orbit.theme.site.author]]
 ==== theme.site.author
 
 Description:: Content of the author `meta` tag.
@@ -4917,7 +4917,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.site.description]]
+[[orbit.theme.site.description]]
 ==== theme.site.description
 
 Description:: Content of the description `meta` tag.
@@ -4933,7 +4933,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.site.title]]
+[[orbit.theme.site.title]]
 ==== theme.site.title
 
 Description:: Title of the site.
@@ -4949,7 +4949,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.skills.icon]]
+[[orbit.theme.skills.icon]]
 ==== theme.skills.icon
 
 Description:: Code of the font awesome icon of the skills title.
@@ -4965,7 +4965,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.skills.items]]
+[[orbit.theme.skills.items]]
 ==== theme.skills.items
 
 Description:: List of skills as attribute sets, requires `title` and `level`.  
@@ -4996,7 +4996,7 @@ Example::
 
 ---
 
-[[orbit.conf.theme.skills.title]]
+[[orbit.theme.skills.title]]
 ==== theme.skills.title
 
 Description:: Title of the skills section.
@@ -5012,7 +5012,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.summary.content]]
+[[orbit.theme.summary.content]]
 ==== theme.summary.content
 
 Description:: content of the profile area as HTML text.  
@@ -5030,7 +5030,7 @@ null
 
 ---
 
-[[orbit.conf.theme.summary.icon]]
+[[orbit.theme.summary.icon]]
 ==== theme.summary.icon
 
 Description:: Code of the font awesome icon of the summary title.
@@ -5046,7 +5046,7 @@ Default::
 
 ---
 
-[[orbit.conf.theme.summary.title]]
+[[orbit.theme.summary.title]]
 ==== theme.summary.title
 
 Description:: Title of the summary section
@@ -5330,11 +5330,11 @@ image::imgs/showcase.png[Showcase,align="center"]
 
 ---
 
-[[showcase.conf.theme.archives.itemsPerPage]]
+[[showcase.theme.archives.itemsPerPage]]
 ==== theme.archives.itemsPerPage
 
 Description:: Number of posts on the archive page.
-Type:: integer
+Type:: signed integer
 Default::
 +
 [source, nix]
@@ -5346,11 +5346,11 @@ Default::
 
 ---
 
-[[showcase.conf.theme.index.itemsPerPage]]
+[[showcase.theme.index.itemsPerPage]]
 ==== theme.index.itemsPerPage
 
 Description:: Number of posts on the index page.
-Type:: integer
+Type:: signed integer
 Default::
 +
 [source, nix]
@@ -5362,11 +5362,11 @@ Default::
 
 ---
 
-[[showcase.conf.theme.site.copyright]]
+[[showcase.theme.site.copyright]]
 ==== theme.site.copyright
 
 Description:: Site copyright, added in the footer.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]
@@ -5378,11 +5378,11 @@ Default::
 
 ---
 
-[[showcase.conf.theme.site.description]]
+[[showcase.theme.site.description]]
 ==== theme.site.description
 
 Description:: Site description, added in the footer.
-Type:: string
+Type:: Concatenated string
 Default::
 +
 [source, nix]

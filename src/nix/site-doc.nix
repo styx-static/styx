@@ -2,6 +2,7 @@
 , styx, writeText, runCommand
 , asciidoctor
 , site
+, pkgs
 }:
 
 let
@@ -68,7 +69,7 @@ let
     in "`${arg.name}`::: " + (concatStringsSep " +\n" (filter (x: x != "") [ description type default ]))
     ) args') + "\n";
 
-  mkTemplateDoc = path: template:
+  mkTemplateDoc = id: path: template:
     let
       env' = if   site ? env
              then site.env
@@ -77,7 +78,7 @@ let
     in
     ''
 
-      [[templates.${path}]]
+      [[${id}.templates.${path}]]
       ==== templates.${path}
 
       ${optionalString (isDocTemplate template') ''
@@ -91,8 +92,8 @@ let
 
     '';
 
-  mkConfDoc = path: conf: ''
-    [[theme.${path}]]
+  mkConfDoc = id: path: conf: ''
+    [[${id}.theme.${path}]]
     ==== theme.${path}
 
     ${optionalString (conf ? description) "Description:: ${conf.description}"}
@@ -175,7 +176,7 @@ let
 
       ---
 
-      ${concatStringsSep "" (propMap mkConfDoc (docText (mkDoc theme.decls)))}
+      ${concatStringsSep "" (propMap (mkConfDoc theme.meta.id) (docText (mkDoc theme.decls)))}
 
       ''}
 
@@ -190,7 +191,7 @@ let
 
       ---
 
-      ${concatStringsSep "" (propMap mkTemplateDoc (setToList theme.templates))}
+      ${concatStringsSep "" (propMap (mkTemplateDoc theme.meta.id) (setToList theme.templates))}
 
       :sectnums:
 
