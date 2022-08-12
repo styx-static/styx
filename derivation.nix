@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   allowSubstitutes = false;
 
   name    = "styx-${version}";
-  version = lib.fileContents ./VERSION;
+  version = builtins.unsafeDiscardStringContext (lib.fileContents ./VERSION);
 
   src = lib.cleanSource ./.;
 

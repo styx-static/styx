@@ -179,7 +179,7 @@ let
   # The "config" used by the fetchers
   mkConfig =
     { sourcesFile ? if builtins.pathExists ./sources.json then ./sources.json else null
-    , sources ? if isNull sourcesFile then {} else builtins.fromJSON (builtins.readFile sourcesFile)
+    , sources ? if isNull sourcesFile then {} else builtins.fromJSON (builtins.unsafeDiscardStringContext (builtins.readFile sourcesFile))
     , system ? builtins.currentSystem
     , pkgs ? mkPkgs sources system
     }: rec {
