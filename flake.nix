@@ -8,15 +8,26 @@
     flake = false;
   };
 
-  outputs = { self, utils, nixpkgs, ... }: 
+  inputs.styx-theme-generic-templates = {url = "github:blaggacao/styx-theme-generic-templates"; flake = false;};
+  inputs.styx-theme-hyde = {url = "github:blaggacao/styx-theme-hyde"; flake = false;};
+  inputs.styx-theme-orbit = {url = "github:blaggacao/styx-theme-orbit"; flake = false;};
+  inputs.styx-theme-agency = {url = "github:blaggacao/styx-theme-agency"; flake = false;};
+  inputs.styx-theme-showcase = {url = "github:styx-static/styx-theme-showcase"; flake = false;};
+  inputs.styx-theme-nix = {url = "github:styx-static/styx-theme-nix"; flake = false;};
+  inputs.styx-theme-ghostwriter = {url = "github:styx-static/styx-theme-ghostwriter"; flake = false;};
+
+  outputs = { self, utils, nixpkgs, ... }@inputs:
     # utils.lib.eachDefaultSystem (system:
     utils.lib.eachSystem [
       "x86_64-linux" "i686-linux""aarch64-linux"
       # "x86_64-darwin" "aarch64-darwin"
     ](system:
       let
+        themes = lib.mapAttr (_: v: pkgs.callPackage v {}) (
+          lib.filterAttr (k: v: lib.hasPrefix "styx-theme" k) inputs
+        );
         pkgs = (import nixpkgs { inherit system; }).extend (_: _: { inherit styx; });
-        styx = pkgs.callPackage ./derivation.nix { };
+        styx = pkgs.callPackage ./derivation.nix {};
         inherit (import ./src/default.nix { inherit pkgs; }) lib;
 
         main-tests = import ./tests/main.nix { inherit pkgs lib; };
@@ -73,11 +84,14 @@
 
         inherit lib;
 
+        # bundlers implement renderers for the CLI
+        bundlers = import ./bundlers.nix {inherit pkgs lib themes;};
+        templates.default = {path = ./templates/new-site; description = "Minimal New Styx Site";};
+
+        formatter = pkgs.alejandra;
+
         checks = with (utils.lib.check-utils system);
-          main-tests // {
-            lib-tests = isEqual "lib-tests-${toString lib-tests.success}" "lib-tests-1";
-            # doc-test = isEqual "
-          };
+          main-tests // {lib-tests = isEqual "lib-tests-${toString lib-tests.success}" "lib-tests-1";};
       }
     );
 

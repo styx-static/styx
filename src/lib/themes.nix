@@ -121,9 +121,10 @@ rec {
         in deepSeq typeCheckResult (merge [ theme root ]);
 
       env'   = env // {
-        lib       = lib';
-        conf      = conf';
-        templates = templates';
+        # always prefer explicitly specified values
+        lib       = env.lib or lib';
+        conf      = env.conf or conf';
+        templates = env.templates or templates';
       };
 
       templates' =

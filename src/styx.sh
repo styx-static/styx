@@ -114,14 +114,29 @@ EOF
 
 # build the site in the nix store
 store_build () {
-  extraConf+=("renderDrafts = $renderDrafts;")
-  extraFlags+=("--arg" "pkgs" "(let pkgs = import @nixpkgs@ {}; in pkgs.extend(_: _: {styx = pkgs.callPackage @src@/derivation.nix {};}))");
-  extraFlags+=("--arg" "extraConf" "{ $(IFS=; echo "${extraConf[@]}") }");
-  nix-build -A site "$1" --no-out-link "${extraFlags[@]}"
+  local fragment="$1"
+  if test "$renderDrafts" -eq "true"; then
+    if test "$fragment" -eq ""; then
+      nix bundle --no-out-link --bundler github:divnix/styx#renderWithDrafts .
+    else
+      nix bundle --no-out-link --bundler github:divnix/styx#renderWithDrafts .#"$fragment"
+    fi
+  else
+    if test "$fragment" -eq ""; then
+      nix bundle --no-out-link --bundler github:divnix/styx#render .
+    else
+      nix bundle --no-out-link --bundler github:divnix/styx#render .#"$fragment"
+    fi
+  fi
 }
 
 doc_build () {
-  nix-build "$doc_builder" --no-out-link "${extraFlags[@]}"
+  local fragment="$1"
+  if test "$fragment" -eq ""; then
+    nix bundle --no-out-link --bundler github:divnix/styx#document .
+  else
+    nix bundle --no-out-link --bundler github:divnix/styx#document .#"$fragment"
+  fi
 }
 
 realpath() {
@@ -151,8 +166,6 @@ action=
 root=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
 # styx html doc path
 doc=$(realpath "$root/share/doc/styx/index.html")
-# doc builder
-doc_builder="$root/share/styx/nix/site-doc-builder.nix"
 # debug mode
 debug=
 # extra arguments to be appended to the nix-build command
@@ -186,10 +199,6 @@ output=
 # clean the build
 clean=
 
-# linkchecker program
-linkchecker=@linkcheck@
-# server program
-server=@server@
 # hostname or ip the server is listening on
 serverHost="127.0.0.1"
 # port used by the server
@@ -444,8 +453,6 @@ fi
 #-------------------------------
 
 if [ "$action" = "site-doc" ]; then
-  check_styx $in $siteFile
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
   path=$(doc_build)
   if [ $? -ne 0 ]; then
     nix_error
@@ -534,13 +541,13 @@ if [ "$action" = serve ]; then
     path="$buildPath"
   fi
   if [ -n "$detachServer" ]; then
-    $server file-server --root \"$path\" --listen "$serverHost":"$port" >/dev/null &
+    caddy file-server -root \"$path\" --listen "$serverHost":"$port" >/dev/null &
     serverPid=$!
     echo "server listening on http://$serverHost:$port with pid ${serverPid}"
   else
     echo "server listening on http://$serverHost:$port"
     echo "press Ctrl+C to stop"
-    "$server" file-server --root "$path" --listen "$ServerHost":"$port"
+    $(caddy file-server --root "$path" --listen "$serverHost":"$port")
   fi
 fi
 
@@ -561,11 +568,11 @@ if [ "$action" = linkcheck ]; then
   else
     path="$buildPath"
   fi
-  $server file-server --root \"$path\" --listen "$serverHost":"$port" >/dev/null &
+  caddy file-server --root \"$path\" --listen "$serverHost":"$port" >/dev/null &
   serverPid=$!
   sleep 3
   echo "---"
-  $linkchecker "http://$serverHost:$port"
+  linkchecker "http://$serverHost:$port"
   echo "---"
   disown "$serverPid"
   kill -9 "$serverPid"
@@ -590,7 +597,7 @@ if [ "$action" = live ]; then
     nix_error
   fi
   # start the server
-  $server file-server --root "$path" --listen "$serverHost":"$port" >/dev/null &
+  caddy file-server --root "$path" --listen "$serverHost":"$port" >/dev/null &
   echo "Started live preview on http://$serverHost:$port"
   echo "Press q to quit"
   # saving the pid
@@ -609,7 +616,7 @@ if [ "$action" = live ]; then
         disown "$serverPid"
         kill -9 "$serverPid"
         # start the server
-        $server file-server --root "$path" --listen "$serverHost":"$port" >/dev/null &
+        caddy file-server --root "$path" --listen "$serverHost":"$port" >/dev/null &
         echo "Done!"
         # updating the pid
         serverPid=$!

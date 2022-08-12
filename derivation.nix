@@ -1,8 +1,14 @@
-{ lib, stdenv, asciidoctor
+{ lib
+, stdenv
+, callPackage
+, themes
+
+, writePython3Bin
+
+, asciidoctor
 , caddy
 , linkchecker
-, callPackage
-, pkgs }:
+}:
 
 stdenv.mkDerivation rec {
   preferLocalBuild = true;
@@ -13,11 +19,8 @@ stdenv.mkDerivation rec {
 
   src = lib.cleanSource ./.;
 
-  server = lib.getExe caddy;
-  linkcheck = lib.getExe linkchecker;
-  nixpkgs = pkgs.path;
-
-  nativeBuildInputs = [ asciidoctor ];
+  buildInputs = [ pkgs.caddy pkgs.linkchecker ];
+  nativeBuildInputs = [ pkgs.asciidoctor ];
 
   # outputs = [ "out" ];
 
@@ -25,8 +28,6 @@ stdenv.mkDerivation rec {
     mkdir $out
     install -D -m 777 src/styx.sh $out/bin/styx
 
-    cp src/default.nix $out/default.nix
-    cp src/styx-config.nix $out/styx-config.nix
 
     mkdir -p $out/share/doc/styx
     asciidoctor src/doc/index.adoc       -o $out/share/doc/styx/index.html
@@ -40,31 +41,26 @@ stdenv.mkDerivation rec {
     substituteAllInPlace $out/share/doc/styx/styx-themes.html
     substituteAllInPlace $out/share/doc/styx/library.html
 
-    mkdir -p $out/share/styx/scaffold
-    cp flake.lock      $out/share/styx/flake.lock
-    cp -r src/scaffold $out/share/styx
-    cp -r src/tools    $out/share/styx
-    cp -r src/nix      $out/share/styx
-
-    mkdir -p $out/lib
-    cp -r src/lib/* $out/lib
+    # old pkg functor compatibility
+    cp compat/default.nix $out/default.nix
+    cp flake.lock         $out/flake.lock
+    cp -r src/lib         $out/share/
   '';
 
   passthru = {
-   themes = (import ./themes {
-     inherit pkgs;
-     styx = callPackage ./derivation.nix;
-   }) // {
-     # old theme compatibility
-     outPath = ./compat/themes.nix;
-   };
+   # old pkg functor compatibility
+   pkgfunctor =
    # old theme compatibility
-   lib = ./compat/lib.nix; 
+   themes = ./compat/themes.nix;
+   # old lib compatibility
+   lib = ./compat/lib.nix;
+   asciidoc-parser = writePython3Bin "asciidoc-parser" {libraries = [pkgs.parsimonious];} (lib.fileContent ./src/tools/asciidoc-parser.py);
+   markdown-parser = writePython3Bin "markdown-parser" {libraries = [pkgs.parsimonious];} (lib.fileContent ./src/tools/markdown-parser.py);
   };
 
   meta = with lib; {
     description = "Nix based static site generator";
-    maintainers = with maintainers; [ ericsagnes ];
+    maintainers = with maintainers; [ ericsagnes blaggacao ];
     platforms   = platforms.all;
   };
 }
