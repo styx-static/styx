@@ -1,16 +1,15 @@
-{ writeText
-, asciidoctor
-, stdenv
-, styx
-, site }:
+{ stdenv
+, pkgs
+, site
+, styx }:
 
-with site.styx.lib;
+with styx.lib;
 
 let
 
   mkScreenshotPath = t: "imgs/${t.meta.id}.png";
 
-  themesData = site.styx.themes;
+  themesData = styx.themes;
 
   themes = reverseList themesData.themes;
 
@@ -220,9 +219,9 @@ stdenv.mkDerivation rec {
   preferLocalBuild = true;
   allowSubstitutes = false;
 
-  buildInputs = [ asciidoctor ];
+  buildInputs = [ pkgs.asciidoctor ];
 
-  doc = writeText "site.adoc" ''
+  doc = pkgs.writeText "site.adoc" ''
 
     ////
 
@@ -272,7 +271,7 @@ stdenv.mkDerivation rec {
       ''
     ) themes}
     cp build/index.html $out/
-    cp -r ${styx}/share/doc/styx/highlight $out/
-    cp ${writeText "themes.adoc" themesDoc} $out/themes-generated.adoc
+    cp -r ${pkgs.styx}/share/doc/styx/highlight $out/
+    cp ${pkgs.writeText "themes.adoc" themesDoc} $out/themes-generated.adoc
   '';
 }

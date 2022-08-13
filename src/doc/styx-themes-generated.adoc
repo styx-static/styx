@@ -120,7 +120,7 @@ Default::
 ==== theme.footer.quicklinks
 
 Description:: Footer links.
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -149,7 +149,7 @@ Example::
 ==== theme.footer.social
 
 Description:: Social media links to display in the footer.
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -416,46 +416,39 @@ Default::
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
-}@args:
+}:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [
-    styx-themes.generic-templates
-    ../.
-  ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      styx-themes.generic-templates
+      ../.
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates env;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -755,7 +748,7 @@ Default::
 ==== theme.lib.googlefonts
 
 Description:: Google Fonts to load, for available fonts see https://fonts.google.com/.
-Type:: list of strings
+Type:: list of string
 Default::
 +
 [source, nix]
@@ -801,7 +794,7 @@ true
 ==== theme.lib.highlightjs.extraLanguages
 
 Description:: Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.
-Type:: list of strings
+Type:: list of string
 Default::
 +
 [source, nix]
@@ -958,6 +951,12 @@ null
 
 Description:: idsite of the website you are tracking in Piwik.
 Type:: string
+Default::
++
+[source, nix]
+----
+""
+----
 
 
 
@@ -991,6 +990,12 @@ true
 
 Description:: Piwik url.
 Type:: string
+Default::
++
+[source, nix]
+----
+""
+----
 
 
 
@@ -1195,7 +1200,10 @@ Description:: Generates a navbar.
 Arguments (Attribute Set)::
 `brand`::: HTML code of the brand section. +
 Type: `String`.  +
-Optional, defaults to `templates.bootstrap.navbar.brand`.
+Optional, defaults to `{
+  _type = "literalExpression";
+  text = "templates.bootstrap.navbar.brand";
+}`.
 `content`::: Content of the navbar, usually a list of `templates.bootstrap.navbar.*` templates calls. +
 Type: `String`. 
 `extraClasses`::: Extra CSS classes to add to the navbar. +
@@ -3061,44 +3069,34 @@ http://domain.org/about.html
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
 }@args:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [ ../. ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
+    # Loaded themes
+    themes = [ ../. ];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -3634,46 +3632,39 @@ null
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
-}@args:
+}:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [ 
-    styx-themes.generic-templates
-    ../.
-  ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      styx-themes.generic-templates
+      ../.
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates env;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -3683,10 +3674,10 @@ rec {
 
   data = with lib; {
     # loading a single page
-    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
 
     menu = [
       (head pages.index)
@@ -4011,46 +4002,39 @@ Default::
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
-}@args:
+}:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [
-    styx-themes.generic-templates
-    ../.
-  ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      styx-themes.generic-templates
+      ../.
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates env;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -4060,10 +4044,10 @@ rec {
 
   data = with lib; {
     # loading a single page
-    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
+    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
 
     # menu declaration
     menu = [ pages.about ];
@@ -4386,46 +4370,39 @@ Default::
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
-}@args:
+}:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [
-    styx-themes.generic-templates
-    ../.
-  ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      styx-themes.generic-templates
+      ../.
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates env;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -4438,10 +4415,10 @@ rec {
     index = loadFile { file = ./data/index.nix; inherit env; };
 
     # loading a single page
-    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
 
     # menu declaration
     menu = with pages; [
@@ -4587,9 +4564,8 @@ Default::
 ==== theme.contact.items
 
 Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
-If set to the empty list `[]`, the skills area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4633,9 +4609,8 @@ Default::
 ==== theme.education.items
 
 Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
-If set to the empty list `[]`, the education area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4694,9 +4669,8 @@ Default::
 ==== theme.experiences.items
 
 Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
-If set to the empty list `[]`, the experiences area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4739,9 +4713,9 @@ Default::
 [[orbit.theme.interests.items]]
 ==== theme.interests.items
 
-Description:: List of interests. If set to the empty list `[]`, the interests area will not be displayed.
+Description:: List of interests.
 
-Type:: list of strings
+Type:: list of string
 Default::
 +
 [source, nix]
@@ -4780,9 +4754,8 @@ Default::
 ==== theme.languages.items
 
 Description:: List of languages as attribute sets, requires `language`, and `level`.  
-If set to the empty list `[]`, the languages area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4820,6 +4793,70 @@ Default::
 
 ---
 
+[[orbit.theme.lib.bootstrap.enable]]
+==== theme.lib.bootstrap.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[orbit.theme.lib.font-awesome.enable]]
+==== theme.lib.font-awesome.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
+[[orbit.theme.lib.googlefonts]]
+==== theme.lib.googlefonts
+
+
+
+Default::
++
+[source, nix]
+----
+[ "Roboto:400,500,400italic,300italic,300,500italic,700,700italic,900,900italic" ]
+----
+
+
+
+---
+
+[[orbit.theme.lib.jquery.enable]]
+==== theme.lib.jquery.enable
+
+
+
+Default::
++
+[source, nix]
+----
+true
+----
+
+
+
+---
+
 [[orbit.theme.profile]]
 ==== theme.profile
 
@@ -4830,7 +4867,7 @@ Default::
 [source, nix]
 ----
 {
-  image = "profile.png";
+  image = "/assets/images/profile.png";
   name = "John Doe";
   tagline = "Full Stack Developer";
 }
@@ -4860,9 +4897,8 @@ Default::
 ==== theme.projects.items
 
 Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
-If set to the empty list `[]`, the projects area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -4969,9 +5005,8 @@ Default::
 ==== theme.skills.items
 
 Description:: List of skills as attribute sets, requires `title` and `level`.  
-If set to the empty list `[]`, the skills area will not be displayed.
 
-Type:: list of attribute sets
+Type:: list of attribute set
 Default::
 +
 [source, nix]
@@ -5016,7 +5051,6 @@ Default::
 ==== theme.summary.content
 
 Description:: content of the profile area as HTML text.  
-if set to `null`, the summary area will not be displayed.
 
 Type:: null or string
 Default::
@@ -5077,96 +5111,112 @@ Default::
 ---
 
 
-[[orbit.templates.icon.fa]]
-==== templates.icon.fa
+[[orbit.templates.blocks.contact]]
+==== templates.blocks.contact
 
 
 
 ---
 
 
-[[orbit.templates.index]]
-==== templates.index
+[[orbit.templates.blocks.education]]
+==== templates.blocks.education
 
 
 
 ---
 
 
-[[orbit.templates.partials.contact]]
-==== templates.partials.contact
+[[orbit.templates.blocks.experiences]]
+==== templates.blocks.experiences
 
 
 
 ---
 
 
-[[orbit.templates.partials.education]]
-==== templates.partials.education
+[[orbit.templates.blocks.interests]]
+==== templates.blocks.interests
 
 
 
 ---
 
 
-[[orbit.templates.partials.experiences]]
-==== templates.partials.experiences
+[[orbit.templates.blocks.languages]]
+==== templates.blocks.languages
 
 
 
 ---
 
 
-[[orbit.templates.partials.footer]]
-==== templates.partials.footer
+[[orbit.templates.blocks.profile]]
+==== templates.blocks.profile
 
 
 
 ---
 
 
-[[orbit.templates.partials.head]]
-==== templates.partials.head
+[[orbit.templates.blocks.projects]]
+==== templates.blocks.projects
 
 
 
 ---
 
 
-[[orbit.templates.partials.interests]]
-==== templates.partials.interests
+[[orbit.templates.blocks.skills]]
+==== templates.blocks.skills
 
 
 
 ---
 
 
-[[orbit.templates.partials.js]]
-==== templates.partials.js
+[[orbit.templates.blocks.summary]]
+==== templates.blocks.summary
 
 
 
 ---
 
 
-[[orbit.templates.partials.languages]]
-==== templates.partials.languages
+[[orbit.templates.partials.content-post]]
+==== templates.partials.content-post
 
 
 
 ---
 
 
-[[orbit.templates.partials.profile]]
-==== templates.partials.profile
+[[orbit.templates.partials.content-pre]]
+==== templates.partials.content-pre
 
 
 
 ---
 
 
-[[orbit.templates.partials.projects]]
-==== templates.partials.projects
+[[orbit.templates.partials.head.css-custom]]
+==== templates.partials.head.css-custom
+
+
+
+---
+
+
+[[orbit.templates.partials.head.meta]]
+==== templates.partials.head.meta
+
+
+
+---
+
+
+[[orbit.templates.partials.js-custom]]
+==== templates.partials.js-custom
 
 
 
@@ -5175,22 +5225,6 @@ Default::
 
 [[orbit.templates.partials.sidebar]]
 ==== templates.partials.sidebar
-
-
-
----
-
-
-[[orbit.templates.partials.skills]]
-==== templates.partials.skills
-
-
-
----
-
-
-[[orbit.templates.partials.summary]]
-==== templates.partials.summary
 
 
 
@@ -5213,45 +5247,39 @@ Default::
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
-}@args:
+}:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [
-    ../.
-  ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      styx-themes.generic-templates
+      ../.
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates env;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -5271,9 +5299,23 @@ rec {
 
   pages = {
     index = {
+      title    = "Home";
       path     = "/index.html";
-      template = templates.index;
-      layout   = lib.id;
+      template = templates.block-page.full;
+      layout   = templates.layout;
+      blocks   = [
+        (templates.blocks.summary conf.theme.summary)
+        (templates.blocks.experiences conf.theme.experiences)
+        (templates.blocks.projects conf.theme.projects)
+        (templates.blocks.skills conf.theme.skills)
+      ];
+      sidebar-blocks = [
+        (templates.blocks.profile conf.theme.profile)
+        (templates.blocks.contact conf.theme.contact)
+        (templates.blocks.education conf.theme.education)
+        (templates.blocks.languages conf.theme.languages)
+        (templates.blocks.interests conf.theme.interests)
+      ];
     };
   };
 
@@ -5529,46 +5571,39 @@ Default::
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
-}@args:
+}:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [
-    styx-themes.generic-templates
-    ../.
-  ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      styx-themes.generic-templates
+      ../.
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates env;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
@@ -5579,10 +5614,10 @@ rec {
   data = with lib; {
 
     # loading a single page
-    about  = loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
 
     # Navbar data
     navbar = [

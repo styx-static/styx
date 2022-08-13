@@ -1,6 +1,7 @@
 let
   pkgs = import ../nixpkgs;
-  lib = with pkgs; callPackage styx.lib styx;
+  inherit (import pkgs.styx {inherit pkgs;})
+    lib;
 in
 
 with pkgs;
