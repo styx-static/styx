@@ -2,43 +2,43 @@
   agency = {
     owner  = "styx-static";
     repo   = "styx-theme-agency";
-    rev    = "aa17dfe";
-    sha256 = "053xbjzdxw4rq49lxj19ls2bafb7i477dcycp2s0d1ssi27bxvar";
+    rev    = "91a3c8b1361c9f63089b81a26007aa16b4331d5d";
+    sha256 = "03x67l47zd24l2s72bq5zgm3z8wcwx2pyb26h96xp283n7jzxvjv";
   };
   generic-templates = {
     owner  = "styx-static";
     repo   = "styx-theme-generic-templates";
-    rev    = "2b93dbe";
-    sha256 = "16fx5mni078zbi6wgg4gqy2pa5saipbv6281gj4lwssfb2ighmqd";
+    rev    = "88fed5d41c6a0c5f3e5e2c65c011e075e2c95443";
+    sha256 = "1dc05cc2hpj6i14nxihnwis8cy5v2f9w7i71ql31l4rby6shnwfs";
   };
   ghostwriter = {
     owner  = "styx-static";
     repo   = "styx-theme-ghostwriter";
-    rev    = "00ace0c";
-    sha256 = "1dah97sv13cbv9sj73njdpcnvhhhnigxi27d94y8l2v5k68b1620";
+    rev    = "3dfba1e08a559cac85c0d9453e885f92ffb5d57a";
+    sha256 = "0mhyyxyagjbw9lslrgmp04p6xpgcjrk5jvg2hp82zrxj2vslszm2";
   };
   hyde = {
     owner  = "styx-static";
     repo   = "styx-theme-hyde";
-    rev    = "8769efa";
-    sha256 = "0dz2cvg8jrw12cldgsah8098dk9ai4mxk9k76r78q0l26xfa9lw5";
+    rev    = "c9d1febf764f7a4bb2a5c9d65e96dab7bec9216d";
+    sha256 = "09jzsi8whx3rzgz9aminqn58nhjdqdrngd1szyahkbrz9wmf56bq";
   };
   nix = {
     owner  = "styx-static";
     repo   = "styx-theme-nix";
-    rev    = "99096b0";
-    sha256 = "1r7ljzicv6qn3h3wfh3pg7jyiplxni6v52ixkx6b1xifiqmlnq63";
+    rev    = "d680cf442fe1864114883aa1c8532a34bc591fe2";
+    sha256 = "1jz8gam1css94x26kliq2dvrrjsf1f7lhdzz4hnzg9g51d9w2k7a";
   };
   orbit = {
     owner  = "styx-static";
     repo   = "styx-theme-orbit";
-    rev    = "ae5b309";
-    sha256 = "08xynyr7zrfqlkik8mcpxlwis7qwmfiqriirn9ks4x3vd760k6p4";
+    rev    = "6fc9c18b9604302bb9944eac748eb8a85f02d7d0";
+    sha256 = "01x1wwcc71fp294svka5cwxgl2l8lp2lxca19v48rkgdxx58gd0n";
   };
   showcase = {
     owner  = "styx-static";
     repo   = "styx-theme-showcase";
-    rev    = "246f7a2";
-    sha256 = "0m2cw05n9vpm9mnq3dpjgrykbnb8v991g9f1bszw81l7amlc3g5n";
+    rev    = "6bbab02f249846049efdb1134bf8bd2d0c4344ac";
+    sha256 = "17s93w33hxbbni2a0zn0jy1g9vx08l6w79lil90ixam09caz2nxb";
   };
 }
