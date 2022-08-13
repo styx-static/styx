@@ -127,9 +127,9 @@ This is the recomended way to manage draft contents. Drafts and regular posts ar
 [source, markdown]
 .Mardown file marked as draft
 ----
-{---
-draft = true;
----}
+---
+draft: true
+---
 # Lorem ipsum
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus aliquet justo ac lacinia.
@@ -210,15 +210,15 @@ Asciidoctor automatically escape HTML. This feature can be disabled by surroundi
 
 Metadata is the way to attach Nix data to markup files.
 
-A metadata block is a Nix attribute set opened by `{---` and closed by `---}`. +
+A metadata block is a yaml attribute set opened by `---` and closed by `---`. +
 
 [source,markdown]
 .Adding metadata to a markdown file
 ----
-{---
-date = "2016-10-10";
-tags = [ "foo" "bar" ];
----}
+---
+date: "2016-10-10"
+tags: [ "foo" "bar" ]
+---
 
 # Lorem ipsum
 
@@ -232,14 +232,14 @@ Metadata attributes will automatically be added to the data attribute set.
 
 It is possible to declare a section on an imported markup file as the introduction.
 
-Introduction and main contents are separated by `>>>`, content prior the separator will be inserted in the `intro` attribute of the data set. +
+Introduction and main contents are separated by `[more]` (asciidoc) or `+++<!-- more -->+++` (markdown), content prior the separator will be inserted in the `intro` attribute of the data set. +
 
 [source,markdown]
 .Adding an introduction to a markdown file
 ----
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
->>>
+<!-- more -->
 
 # Lorem ipsum
 

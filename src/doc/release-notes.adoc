@@ -2,6 +2,136 @@
 
 :sectnums!:
 
+[[v0.7.5]]
+=== Styx 0.7.5 - 2022/08/17
+
+==== Highlights:
+
+* Cleanup the codebase via a new `site.nix` & `conf.nix` interface
+* Implemet a new frontmatter parser for `markdown` & `asciidoc`
+
+==== Breaking Changes:
+
+===== Metadata
+
+The metadata format is now normal frontmatter written in `yaml` between opening and closing `---`
+at the beginning of the file.
+
+Furthermore, `intro` is no more separated by `>>>`, but for markwdown with `<!-- more -->` and for asciidoc with `[more]`.
+
+[source, markdown]
+.Pre 0.7.5 frontmatter
+----
+{---
+draft = true;
+---}
+----
+
+[source, markdown]
+.Post 0.7.5 frontmatter
+----
+---
+draft: true
+---
+----
+
+===== Site Loading
+
+`site.nix` format have been simplified. Required arguments are now `pkgs` and `extraConf`.
+`conf.nix` format now receives, both, `lib` & `pkgs`.
+
+The site loading mechanism has changed, see the comparison below.
+
+[source, nix]
+.Pre 0.7.5 conf.nix
+----
+{ lib }:
+----
+
+[source, nix]
+.Post 0.7.5 conf.nix
+----
+{ lib, pkgs }:
+----
+
+[source, nix]
+.Pre 0.7.5 site.nix
+----
+{ styx
+, extraConf ? {}
+}:
+
+rec {
+
+  /* Importing styx library
+  */
+  styxLib = import styx.lib styx;
+
+
+  /* Importing styx themes from styx
+  */
+  styx-themes = import styx.themes;
+
+  /* list the themes to load, paths or packages can be used
+     items at the end of the list have higher priority
+  */
+  themes = [
+  ];
+
+  /* Loading the themes data
+  */
+  themesData = styxLib.themes.load {
+    inherit styxLib themes;
+    extraEnv = { inherit data pages; };
+    extraConf = [ ./conf.nix extraConf ];
+  };
+
+  /* Bringing the themes data to the scope
+  */
+  inherit (themesData) conf lib files templates env;
+----
+
+[source, nix]
+.Post 0.7.5 site.nix
+----
+{ pkgs ? import <nixpkgs> {}
+, extraConf ? {}
+}:
+
+rec {
+
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
+
+    # Used configuration
+    config = [
+      ./conf.nix
+      extraConf
+    ];
+
+    # Loaded themes
+    themes = let
+      styx-themes = import pkgs.styx.themes;
+    in [
+      # Declare the used themes here, from a package:
+      #   styx-themes.generic-templates
+      # Or from a local path
+      #   ./themes/my-theme
+
+    ];
+
+    # Environment propagated to templates
+    env = { inherit data pages; };
+  };
+
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
+
+----
+
+
+
 [[v0.7.2]]
 === Styx 0.7.2 - 2020/06/02
 
