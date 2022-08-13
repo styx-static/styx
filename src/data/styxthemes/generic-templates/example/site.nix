@@ -3,44 +3,34 @@
 
    Initialization of Styx, should not be edited
 -----------------------------------------------------------------------------*/
-{ styx
+{ pkgs ? import <nixpkgs> {}
 , extraConf ? {}
 }@args:
 
 rec {
 
-  /* Importing styx library
-  */
-  styxLib = import styx.lib styx;
-
-
 /*-----------------------------------------------------------------------------
-   Themes setup
+   Setup
 
+   This section setup required variables
 -----------------------------------------------------------------------------*/
 
-  /* Importing styx themes from styx
-  */
-  styx-themes = import styx.themes;
+  styx = import pkgs.styx {
+    # Used packages
+    inherit pkgs;
 
-  /* list the themes to load, paths or packages can be used
-     items at the end of the list have higher priority
-  */
-  themes = [ ../. ];
+    # Used configuration
+    config = [./conf.nix extraConf];
 
+    # Loaded themes
+    themes = [ ../. ];
 
-  /* Loading the themes data
-  */
-  themesData = styxLib.themes.load {
-    inherit styxLib themes;
-    extraEnv  = { inherit data pages; };
-    extraConf = [ ./conf.nix extraConf ];
+    # Environment propagated to templates
+    env = { inherit data pages; };
   };
 
-  /* Bringing the themes data to the scope
-  */
-  inherit (themesData) conf lib files templates;
-
+  # Propagating initialized data
+  inherit (styx.themes) conf files templates env lib;
 
 /*-----------------------------------------------------------------------------
    Data
