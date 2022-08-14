@@ -13,7 +13,7 @@ Among other things, Styx has the following features:
 
 Styx has no other dependency than Nix, if Nix is installed, run the following to use Styx:
 
-```ShellSession
+```bash
 # if using flakes
 $ nix shell github:styx-static/styx
 # otherwise
