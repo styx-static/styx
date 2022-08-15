@@ -10,35 +10,6 @@
     flake = false;
   };
 
-  inputs.styx-theme-generic-templates = {
-    url = "github:styx-static/styx-theme-generic-templates";
-    flake = false;
-  };
-  inputs.styx-theme-hyde = {
-    url = "github:styx-static/styx-theme-hyde";
-    flake = false;
-  };
-  inputs.styx-theme-orbit = {
-    url = "github:styx-static/styx-theme-orbit";
-    flake = false;
-  };
-  inputs.styx-theme-agency = {
-    url = "github:styx-static/styx-theme-agency";
-    flake = false;
-  };
-  inputs.styx-theme-showcase = {
-    url = "github:styx-static/styx-theme-showcase";
-    flake = false;
-  };
-  inputs.styx-theme-nix = {
-    url = "github:styx-static/styx-theme-nix";
-    flake = false;
-  };
-  inputs.styx-theme-ghostwriter = {
-    url = "github:styx-static/styx-theme-ghostwriter";
-    flake = false;
-  };
-
   outputs = {std, ...} @ inputs:
     std.growOn {
       inherit inputs;
