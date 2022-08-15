@@ -1,3 +1,11 @@
+# divnix/std
+.std
+
+# nixos/nix
 result*
-*.swp
-dev-parser.nix
+
+# nixago: ignore-linked-files
+adrgen.config.yml
+lefthook.yml
+treefmt.toml
+.conform.yaml

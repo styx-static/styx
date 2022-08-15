@@ -1,98 +1,78 @@
 {
   description = "The purely functional static site generator in Nix expression language.";
 
-  inputs.utils.url = "github:numtide/flake-utils";
+  inputs.std.url = "github:divnix/std";
+  inputs.std.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
   inputs.flake-compat = {
     url = "github:edolstra/flake-compat";
     flake = false;
   };
 
-  inputs.styx-theme-generic-templates = {url = "github:blaggacao/styx-theme-generic-templates"; flake = false;};
-  inputs.styx-theme-hyde = {url = "github:blaggacao/styx-theme-hyde"; flake = false;};
-  inputs.styx-theme-orbit = {url = "github:blaggacao/styx-theme-orbit"; flake = false;};
-  inputs.styx-theme-agency = {url = "github:blaggacao/styx-theme-agency"; flake = false;};
-  inputs.styx-theme-showcase = {url = "github:styx-static/styx-theme-showcase"; flake = false;};
-  inputs.styx-theme-nix = {url = "github:styx-static/styx-theme-nix"; flake = false;};
-  inputs.styx-theme-ghostwriter = {url = "github:styx-static/styx-theme-ghostwriter"; flake = false;};
+  inputs.styx-theme-generic-templates = {
+    url = "github:styx-static/styx-theme-generic-templates";
+    flake = false;
+  };
+  inputs.styx-theme-hyde = {
+    url = "github:styx-static/styx-theme-hyde";
+    flake = false;
+  };
+  inputs.styx-theme-orbit = {
+    url = "github:styx-static/styx-theme-orbit";
+    flake = false;
+  };
+  inputs.styx-theme-agency = {
+    url = "github:styx-static/styx-theme-agency";
+    flake = false;
+  };
+  inputs.styx-theme-showcase = {
+    url = "github:styx-static/styx-theme-showcase";
+    flake = false;
+  };
+  inputs.styx-theme-nix = {
+    url = "github:styx-static/styx-theme-nix";
+    flake = false;
+  };
+  inputs.styx-theme-ghostwriter = {
+    url = "github:styx-static/styx-theme-ghostwriter";
+    flake = false;
+  };
 
-  outputs = { self, utils, nixpkgs, ... }@inputs:
-    # utils.lib.eachDefaultSystem (system:
-    utils.lib.eachSystem [
-      "x86_64-linux" "i686-linux""aarch64-linux"
-      # "x86_64-darwin" "aarch64-darwin"
-    ](system:
-      let
-        themes = lib.mapAttr (_: v: pkgs.callPackage v {}) (
-          lib.filterAttr (k: v: lib.hasPrefix "styx-theme" k) inputs
-        );
-        pkgs = (import nixpkgs { inherit system; }).extend (_: _: { inherit styx; });
-        styx = pkgs.callPackage ./derivation.nix {};
-        inherit (import ./src/default.nix { inherit pkgs; }) lib;
-
-        main-tests = import ./tests/main.nix { inherit pkgs lib; };
-        lib-tests = import ./tests/lib.nix { inherit pkgs lib; };
-
-        report = pkgs.writeScriptBin "testresult" "${lib.getExe pkgs.bat} ${lib-tests.report} ${lib-tests.coverage}";
-        showcase = pkgs.writeScriptBin "showcase-site" "xdg-open ${main-tests.showcase-site}/index.html";
-        update-doc = let
-          library-doc = import ./scripts/library-doc.nix { inherit pkgs lib; };
-          themes-doc = import ./scripts/themes-doc.nix { inherit pkgs lib; };
-        in pkgs.writeScriptBin "update-doc" ''
-          repoRoot="$(git rev-parse --show-toplevel)"
-          target="$(readlink -f -- "$repoRoot/src/doc/")"
-
-          if ! cmp "${themes-doc}/themes-generated.adoc" "$target/styx-themes-generated.adoc"
-          then
-            cp ${themes-doc}/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
-            cp ${themes-doc}/imgs/* $target/imgs/ --no-preserve=all
-            echo "Themes documentation updated!"
-          fi
-
-          if ! cmp "${library-doc}/library-generated.adoc" "$target/library-generated.adoc"
-          then
-            cp ${library-doc}/library-generated.adoc $target/library-generated.adoc --no-preserve=all
-            echo "Library documentation updated!"
-          fi
-        '';
-
-        update-themes = pkgs.writeScriptBin "update-themes" ''
-          repoRoot="$(git rev-parse --show-toplevel)"
-          target="$(readlink -f -- "$repoRoot/themes/versions.nix")"
-          source="$(readlink -f -- "$repoRoot/themes/revs.csv")"
-          touch "$target"
-          echo "{" > "$target"
-          while IFS=, read owner theme rev
-          do
-            hash="$(${lib.getExe pkgs.nix-prefetch-git} --url "https://github.com/$owner/styx-theme-$theme.git" --rev "$rev" --no-deepClone --quiet | jq -r '.sha256')"
-            cat <<EOF >> "$target"
-            $theme = {
-              owner  = "$owner";
-              repo   = "styx-theme-$theme";
-              rev    = "$rev";
-              sha256 = "$hash";
-            };
-          EOF
-          done < "$source"
-
-          echo "}" >> "$target"
-        '';
-      in
-      {
-        packages = { inherit styx report showcase update-doc update-themes; default = styx;};
-        hydraJobs = { inherit styx; };
-
-        inherit lib;
-
-        # bundlers implement renderers for the CLI
-        bundlers = import ./bundlers.nix {inherit pkgs lib themes;};
-        templates.default = {path = ./templates/new-site; description = "Minimal New Styx Site";};
-
-        formatter = pkgs.alejandra;
-
-        checks = with (utils.lib.check-utils system);
-          main-tests // {lib-tests = isEqual "lib-tests-${toString lib-tests.success}" "lib-tests-1";};
-      }
-    );
-
+  outputs = {std, ...} @ inputs:
+    std.growOn {
+      inherit inputs;
+      cellsFrom = ./src;
+      organelles = with std.clades; [
+        # ./app
+        (installables "cli")
+        (runnables "parsers")
+        # ./renderers
+        (functions "site")
+        (functions "docs")
+        (functions "styxlib")
+        (functions "docslib")
+        # ./data
+        (functions "styxthemes")
+        {
+          name = "presets";
+          clade = "paths";
+        }
+        # all ...
+        (functions "types")
+        # ./automation
+        (devshells "devshells")
+        (runnables "jobs")
+      ];
+    }
+    # soil
+    {
+      bundlers = std.harvest inputs.self [["renderers" "site"] ["renderers" "docs"]];
+      themes = std.harvest inputs.self ["data" "styxthemes"];
+      templates = std.harvest inputs.self ["data" "presets"];
+      hydraJobs = std.harvest inputs.self [["app" "cli"] ["app" "parsers"]];
+      packages = std.harvest inputs.self ["automation" "jobs"];
+      # checks = with (utils.lib.check-utils system);
+      #   main-tests // {lib-tests = isEqual "lib-tests-${toString lib-tests.success}" "lib-tests-1";};
+    };
 }
