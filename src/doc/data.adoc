@@ -82,7 +82,7 @@ The converted HTML will be in the `content` attribute of the data attribute set.
 
 TIP: It is possible to add extra data to a Markdown file by using <<Metadata>>.
 
-NOTE: link:http://fletcherpenney.net/multimarkdown/[MultiMarkdown] is used to convert Markdown.
+NOTE: link:http://pandoc.net/[Pandoc] is used to convert Markdown.
 
 ==== Nix
 
