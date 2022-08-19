@@ -29,7 +29,7 @@
           description = "Supported extensions for markdown files.";
         };
         converter = lib.mkOption {
-          default = f: "${pkgs.multimarkdown}/bin/multimarkdown ${f} > $out";
+          default = f: "${pkgs.pandoc}/bin/pandoc ${f} > $out";
           type = with lib.types; functionTo str;
           description = "Command to convert asciidoc as a function that take the path of the file to convert as parameter.";
         };
