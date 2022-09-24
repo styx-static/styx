@@ -50,6 +50,8 @@ stdenv.mkDerivation rec {
 
     mkdir $themes
     cp -r themes/* $themes
+
+    ln -sT $src $out/share/styx-src
   '';
 
   meta = with lib; {
