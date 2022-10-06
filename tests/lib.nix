@@ -126,16 +126,13 @@ let
          {
            content = ''
              <p>First page</p>
-     
              <p>The answer is 42.</p>
            '';
          }
          {
            content = ''
              <p>Second page.</p>
-     
              <p>{{ non evaluated nix }}</p>
-     
              <p>this }} is not evaluated</p>
            '';
          }
