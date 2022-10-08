@@ -188,8 +188,7 @@ clean=
 
 # linkchecker program
 linkchecker=linkchecker
-# server program
-server=caddy
+
 # hostname or ip the server is listening on
 serverHost="127.0.0.1"
 # port used by the server
@@ -534,13 +533,13 @@ if [ "$action" = serve ]; then
     path="$buildPath"
   fi
   if [ -n "$detachServer" ]; then
-    $server file-server -root \"$path\" -listen "$serverHost":"$port" >/dev/null &
+    caddy file-server -root \"$path\" -listen "$serverHost":"$port" >/dev/null &
     serverPid=$!
     echo "server listening on http://$serverHost:$port with pid ${serverPid}"
   else
     echo "server listening on http://$serverHost:$port"
     echo "press Ctrl+C to stop"
-    $($server file-server -root "$path" -listen "$serverHost":"$port")
+    $(caddy file-server -root "$path" -listen "$serverHost":"$port")
   fi
 fi
 
@@ -561,7 +560,7 @@ if [ "$action" = linkcheck ]; then
   else
     path="$buildPath"
   fi
-  $server file-server -root \"$path\" -listen "$serverHost":"$port" >/dev/null &
+  caddy file-server -root \"$path\" -listen "$serverHost":"$port" >/dev/null &
   serverPid=$!
   sleep 3
   echo "---"
@@ -590,7 +589,7 @@ if [ "$action" = live ]; then
     nix_error
   fi
   # start the server
-  $server file-server -root "$path" -listen "$serverHost":"$port" >/dev/null &
+  caddy file-server -root "$path" -listen "$serverHost":"$port" >/dev/null &
   echo "Started live preview on http://$serverHost:$port"
   echo "Press q to quit"
   # saving the pid
@@ -609,7 +608,7 @@ if [ "$action" = live ]; then
         disown "$serverPid"
         kill -9 "$serverPid"
         # start the server
-        $server file-server -root "$path" -listen "$serverHost":"$port" >/dev/null &
+        caddy file-server -root "$path" -listen "$serverHost":"$port" >/dev/null &
         echo "Done!"
         # updating the pid
         serverPid=$!
