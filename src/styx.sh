@@ -187,9 +187,9 @@ output=
 clean=
 
 # linkchecker program
-linkchecker=@linkcheck@
+linkchecker=linkchecker
 # server program
-server=@server@
+server=caddy
 # hostname or ip the server is listening on
 serverHost="127.0.0.1"
 # port used by the server
