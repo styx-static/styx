@@ -124,7 +124,7 @@ rec {
       filterDraftsFn = {
         description = "Function to filter the drafts.";
         type = "Draft -> Bool";
-        default = literalExample ''d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )'';
+        default = literalExpression ''d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )'';
       };
       asAttrs = {
         description = "If set to true, the function will return a set instead of a list. The key will be the file basename, and the value the data set.";

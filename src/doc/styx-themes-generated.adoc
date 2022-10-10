@@ -1200,10 +1200,7 @@ Description:: Generates a navbar.
 Arguments (Attribute Set)::
 `brand`::: HTML code of the brand section. +
 Type: `String`.  +
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "templates.bootstrap.navbar.brand";
-}`.
+Optional, defaults to `templates.bootstrap.navbar.brand`.
 `content`::: Content of the navbar, usually a list of `templates.bootstrap.navbar.*` templates calls. +
 Type: `String`. 
 `extraClasses`::: Extra CSS classes to add to the navbar. +

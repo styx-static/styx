@@ -61,7 +61,7 @@ let
              then " (Attribute Set)"
              else " (Standard)";
       isMultiline = arg:
-        let arg' = if is "literalExample" arg
+        let arg' = if is "literalExpression" arg
                    then arg.text
                    else arg;
         in if isString arg'
