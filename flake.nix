@@ -14,7 +14,7 @@
     std.growOn {
       inherit inputs;
       cellsFrom = ./src;
-      organelles = with std.clades; [
+      cellBlocks = with std.blockTypes; [
         # ./app
         (installables "cli")
         (runnables "parsers")
