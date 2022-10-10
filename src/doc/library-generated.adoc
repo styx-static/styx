@@ -73,10 +73,7 @@ Function to convert options.
 
 Type: `Option -> a`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "lib.id";
-}`.
+Optional, defaults to `lib.id`.
 
 ===== valueFn
 
@@ -84,10 +81,7 @@ Function to convert values.
 
 Type: `a -> b`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "lib.id";
-}`.
+Optional, defaults to `lib.id`.
 
 ==== Return
 
@@ -359,10 +353,7 @@ Function to filter the drafts.
 
 Type: `Draft -> Bool`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "d: !( ( !(attrByPath [\"conf\" \"renderDrafts\"] false env) ) && (attrByPath [\"draft\"] false d) )";
-}`.
+Optional, defaults to `d: !( ( !(attrByPath ["conf" "renderDrafts"] false env) ) && (attrByPath ["draft"] false d) )`.
 
 ==== Return
 
@@ -786,10 +777,7 @@ A function to set default values to the pages, eg: to set the default `layout` t
 
 Type: `Locale -> Attrs`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "locale: {}";
-}`.
+Optional, defaults to `locale: {}`.
 
 ===== locales
 
@@ -911,10 +899,7 @@ Function to generate a page source from a page attribute set.
 
 Type: `Page -> String`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "lib.generation.generatePage";
-}`.
+Optional, defaults to `lib.generation.generatePage`.
 
 ===== meta
 
@@ -938,10 +923,7 @@ Function to generate a page from a page attribute set.
 
 Type: `Page -> String`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "page: page.path";
-}`.
+Optional, defaults to `page: page.path`.
 
 ===== postGen
 
@@ -1118,14 +1100,17 @@ Function to generate extra attributes to merge to the page.
 
 Type: `Int -> Data -> Page`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "index: data:
+Optional, defaults to:
+
+[source, nix]
+----
+index: data:
   optionalAttrs (basePath != null) {
     path = mkSplitPagePath { inherit index; pre = basePath; };
   }
-";
-}`.
+
+----
+
 
 ===== pages
 
@@ -1199,13 +1184,16 @@ Function to generate extra attributes of mutipages.
 
 Type: `Int -> Data -> Attrs`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "index: data: {
-  path = mkSplitPagePath { pre = \"${pathPrefix}${data.fileData.basename}\"; inherit index; };
+Optional, defaults to:
+
+[source, nix]
+----
+index: data: {
+  path = mkSplitPagePath { pre = "${pathPrefix}${data.fileData.basename}"; inherit index; };
 }
-";
-}`.
+
+----
+
 
 ===== pageFn
 
@@ -1213,10 +1201,7 @@ Function to generate extra attributes of normal pages.
 
 Type: `(Data -> Attrs)`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "data: { path = \"${pathPrefix}${data.fileData.basename}.html\"; }";
-}`.
+Optional, defaults to `data: { path = "${pathPrefix}${data.fileData.basename}.html"; }`.
 
 ===== pathPrefix
 
@@ -1386,10 +1371,7 @@ mkSplit {
   } {
     id = 2;
   } ];
-  pages = {
-    _type = "literalExpression";
-    text = "[ ... ]";
-  };
+  pages = [ ... ];
   path = "/test.html";
 } {
   index = 2;
@@ -1398,10 +1380,7 @@ mkSplit {
   } {
     id = 4;
   } ];
-  pages = {
-    _type = "literalExpression";
-    text = "[ ... ]";
-  };
+  pages = [ ... ];
   path = "/test-2.html";
 } ]
 ----
@@ -1449,14 +1428,17 @@ Must set `itemsNb`, the number of item to have on the page, and `path` to genera
 
 Type: `Int -> Data -> Page`. 
 
-Example: `{
-  _type = "literalExpression";
-  text = "index: data: {
+Example:
+
+[source, nix]
+----
+index: data: {
   itemsNb = if index == 1 then 3 else 5;
-  path = if index == 1 then \"/index.html\" else \"/archive-${toString index}.html\";
+  path = if index == 1 then "/index.html" else "/archive-${toString index}.html";
 }
-";
-}`.
+
+----
+
 
 ==== Return
 
@@ -1490,10 +1472,7 @@ mkSplitCustom {
   items = [ {
     id = 1;
   } ];
-  pages = {
-    _type = "literalExpression";
-    text = "[ ... ]";
-  };
+  pages = [ ... ];
   path = "/index.html";
 } {
   index = 2;
@@ -1502,20 +1481,14 @@ mkSplitCustom {
   } {
     id = 3;
   } ];
-  pages = {
-    _type = "literalExpression";
-    text = "[ ... ]";
-  };
+  pages = [ ... ];
   path = "/archive-2.html";
 } {
   index = 3;
   items = [ {
     id = 4;
   } ];
-  pages = {
-    _type = "literalExpression";
-    text = "[ ... ]";
-  };
+  pages = [ ... ];
   path = "/archive-3.html";
 } ]
 ----
@@ -1643,10 +1616,7 @@ Function to add extra attributes to the taxonomy page set.
 
 Type: `(String -> Page)`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "taxonomy: {}";
-}`.
+Optional, defaults to `taxonomy: {}`.
 
 ===== taxonomyTemplate
 
@@ -1660,10 +1630,7 @@ Function to add extra attributes to the taxonomy page set.
 
 Type: `(String -> String -> Page)`. 
 
-Optional, defaults to `{
-  _type = "literalExpression";
-  text = "taxonomy: term: {}";
-}`.
+Optional, defaults to `taxonomy: term: {}`.
 
 ===== termTemplate
 
