@@ -48,8 +48,8 @@ stdenv.mkDerivation rec {
     mkdir -p $out/lib
     cp -r src/lib/* $out/lib
 
-    mkdir $themes
-    cp -r themes/* $themes
+    mkdir -p $themes
+    cp -r src/data/styxthemes/* $themes
 
     ln -sT $src $out/share/styx-src
   '';

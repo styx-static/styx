@@ -2,15 +2,7 @@
 
 ## Themes update
 
-1. Manually update the themes in `themes/rev.csv`
-
-2. Generate the theme version hashes
-
-    ```sh
-    $ ./scripts/update-themes-hashes
-    ```
-
-3. Update the documentation
+1. Update the documentation
 
     ```sh
     ./scripts/update-doc
