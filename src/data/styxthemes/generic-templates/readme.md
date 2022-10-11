@@ -14,7 +14,6 @@ $ styx preview --in $(nix-build -A styx-themes.generic-templates '<nixpkgs>')/ex
 
 Theme documentation can be found in [documentation.adoc](./documentation.adoc).
 
-
 ## Preview
 
 ![Preview](/screen.png)

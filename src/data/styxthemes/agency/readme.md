@@ -10,7 +10,7 @@ Originally made by [digitalcraftsman](https://github.com/digitalcraftsman).
 
 ---
 
-## Acknowledgements 
+## Acknowledgements
 
 Thanks to
 
