@@ -1,3 +1,11 @@
 result*
 *.swp
 dev-parser.nix
+
+# divnix/std
+.std
+
+# nixago: ignore-linked-files
+lefthook.yml
+treefmt.toml
+.conform.yaml
