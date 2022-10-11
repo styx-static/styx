@@ -27,6 +27,7 @@
     # soil
     {
       formatter = std.harvest nixpkgs.legacyPackages ["alejandra"];
+      devShells = std.harvest self ["_automation" "devshells"];
     }
     (utils.lib.eachDefaultSystem (
       system: let
