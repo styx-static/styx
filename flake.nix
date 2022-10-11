@@ -18,10 +18,13 @@
       inherit inputs;
       cellsFrom = std.incl ./src [
         ./src/_automation
+        ./src/data
       ];
       cellBlocks = with std.blockTypes; [
-        # ./_automation
+        # ./src/_automation
         (devshells "devshells")
+        # ./src/data
+        (functions "styxthemes")
       ];
     }
     # soil

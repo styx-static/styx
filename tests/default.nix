@@ -27,7 +27,8 @@ in
           })
           .site
       )
-      styx-themes;
+      (filterAttrs (n: _: n != "__functor")
+        styx-themes);
 
     defaultEnv = {
       preferLocalBuild = true;
