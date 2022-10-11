@@ -11,14 +11,18 @@
   in
     call siteFnOrFile;
 in {
-  theme = siteFn:
+  theme = siteFn: args: let
+    site' = callStyxSite siteFn args;
+  in
     import ./theme.nix {
       inherit inputs cell;
-      site = callStyxSite siteFn {};
+      site = site' // {loaded = site'.loaded or site'.styx.themes;};
     };
-  library = siteFn:
+  library = siteFn: args: let
+    site' = callStyxSite siteFn args;
+  in
     import ./library.nix {
       inherit inputs cell;
-      site = callStyxSite siteFn {};
+      site = site' // {loaded = site'.loaded or site'.styx.themes;};
     };
 }

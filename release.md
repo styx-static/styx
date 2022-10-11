@@ -5,7 +5,7 @@
 1. Update the documentation
 
    ```sh
-   ./scripts/update-doc
+   nix run .#update-doc
    ```
 
 ## Styx

@@ -155,7 +155,7 @@ root=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
 # styx html doc path
 doc=$(realpath "$root/share/doc/styx/index.html")
 # doc builder
-doc_builder="$root/share/styx/nix/site-doc-builder.nix"
+doc_builder="$root/share/styx/src/renderers/doc-builder-compat.nix"
 # debug mode
 debug=
 # extra arguments to be appended to the nix-build command
