@@ -120,7 +120,7 @@ Default::
 ==== theme.footer.quicklinks
 
 Description:: Footer links.
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -149,7 +149,7 @@ Example::
 ==== theme.footer.social
 
 Description:: Social media links to display in the footer.
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -4641,7 +4641,7 @@ Default::
 
 Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.
 
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -4686,7 +4686,7 @@ Default::
 
 Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.
 
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -4746,7 +4746,7 @@ Default::
 
 Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.
 
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -4831,7 +4831,7 @@ Default::
 
 Description:: List of languages as attribute sets, requires `language`, and `level`.
 
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -4974,7 +4974,7 @@ Default::
 
 Description:: List of projects as attribute sets, requires `title`, `url` and `content`.
 
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]
@@ -5082,7 +5082,7 @@ Default::
 
 Description:: List of skills as attribute sets, requires `title` and `level`.
 
-Type:: list of attribute set
+Type:: list of (attribute set)
 Default::
 +
 [source, nix]

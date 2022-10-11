@@ -19,18 +19,24 @@
       cellsFrom = std.incl ./src [
         ./src/_automation
         ./src/data
+        ./src/renderers
       ];
       cellBlocks = with std.blockTypes; [
         # ./src/_automation
         (devshells "devshells")
+        (runnables "tasks")
         # ./src/data
         (functions "styxthemes")
+        # ./src/renderers
+        (functions "docs")
+        (functions "docslib")
       ];
     }
     # soil
     {
       formatter = std.harvest nixpkgs.legacyPackages ["alejandra"];
       devShells = std.harvest self ["_automation" "devshells"];
+      packages = std.harvest self ["_automation" "tasks"];
     }
     (utils.lib.eachDefaultSystem (
       system: let

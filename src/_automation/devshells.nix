@@ -26,7 +26,16 @@ in
         presets.nixago.editorconfig
         presets.nixago.lefthook
       ];
-      commands = [];
+      commands = [
+        {
+          category = "dev";
+          package = nixpkgs.pandoc;
+        }
+        {
+          category = "dev";
+          package = nixpkgs.asciidoctor;
+        }
+      ];
       imports = [];
     };
   }
