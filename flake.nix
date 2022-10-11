@@ -16,7 +16,9 @@
   } @ inputs:
     std.growOn {
       inherit inputs;
-      cellsFrom = std.incl (std.incl ./src [./src/_automation]) [./src/_automation];
+      cellsFrom = std.incl ./src [
+        ./src/_automation
+      ];
       cellBlocks = with std.blockTypes; [
         # ./_automation
         (devshells "devshells")
