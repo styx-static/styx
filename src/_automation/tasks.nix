@@ -13,6 +13,33 @@
 
   l = nixpkgs.lib // builtins;
 in {
+  run-tests = let
+  in
+    nixpkgs.writeScriptBin "run-tests" ''
+      echo ""
+
+      echo "Main tests:"
+      if nix-build "${inputs.self + /tests}" --no-out-link --show-trace; then
+        echo "  success"
+      else
+        echo "  failure"
+        exit 1
+      fi
+
+      echo ""
+
+      echo "Library tests:"
+
+      if [ "$(nix-instantiate --eval -A success ${inputs.self + /tests/lib.nix} --read-write-mode)" = "true" ]; then
+        echo "  success";
+      else
+        cat $(nix-build --no-out-link -A report ${inputs.self + /tests/lib.nix})
+        exit 1
+      fi
+
+      echo ""
+      echo "Finished"
+    '';
   update-doc = let
     site = {...}: rec {
       loaded =
