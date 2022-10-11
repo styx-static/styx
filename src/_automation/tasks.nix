@@ -30,8 +30,8 @@ in {
         pageList = styxlib.generation.pagesToList {inherit (loaded.env) pages;};
       };
     };
-    doc-theme = docs.theme site;
-    doc-library = docs.library site;
+    doc-theme = docs.theme site {};
+    doc-library = docs.library site {};
   in
     nixpkgs.writeScriptBin "update-doc" ''
       repoRoot="$(git rev-parse --show-toplevel)"

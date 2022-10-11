@@ -43,10 +43,9 @@ stdenv.mkDerivation rec {
     substituteAllInPlace $out/share/doc/styx/styx-themes.html
     substituteAllInPlace $out/share/doc/styx/library.html
 
-    mkdir -p $out/share/styx/scaffold
-    cp -r src/scaffold $out/share/styx
-    cp -r src/tools    $out/share/styx
-    cp -r src/nix      $out/share/styx
+    mkdir -p $out/share/styx
+    cp -r src     $out/share/styx
+    cp -r nix     $out/share/styx
 
     mkdir -p $out/lib
     cp -r src/lib/* $out/lib
