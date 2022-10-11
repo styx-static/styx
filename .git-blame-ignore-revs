@@ -1,0 +1,8 @@
+# tree fromatting all the nix files (treefmt)
+b80e05c1fdb3c336be0fdca3f6086d0f2276335e
+# tree fromatting all the css & js files (treefmt)
+234a62389163ba72c12b1450b9c25c83e7b418f1
+# tree fromatting all the py & sh files (treefmt)
+fd8085661af4c746cf12a81e0db9699a09a19558
+# tree fromatting all the md files except some test data (treefmt)
+1c0dbe2922ba14e6b6d4e6f585b9c0eb3b234fc9
