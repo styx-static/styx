@@ -813,7 +813,7 @@ pagelist = localesToPageList {
 ----
 localesToPageList {
   locales = {
-    eng = rec { 
+    eng = rec {
       code   = "eng";
       prefix = "/${code}";
       pages = {
@@ -3535,7 +3535,7 @@ The first matched attribute set, or throw an error if no result has been found.
 [source, nix]
 .Code
 ----
-find { uid = "bar"; } [ 
+find { uid = "bar"; } [
   { uid = "foo"; }
   { uid = "bar"; content = "hello!"; }
   { uid = "baz"; }

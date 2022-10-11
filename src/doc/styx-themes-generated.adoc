@@ -411,22 +411,24 @@ Default::
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -444,76 +446,93 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
-  data = with lib; {
+  data = with lib;
+    {
+      /*
+      Menu using blocks
+      */
+      menu = let
+        mkBlockSet = blocks:
+          map (
+            id:
+              (lib.find {inherit id;} blocks)
+              // {
+                navbarClass = "page-scroll";
+                url = "/#${id}";
+              }
+          );
+      in
+        (mkBlockSet pages.index.blocks ["services" "portfolio" "about" "team" "contact"])
+        ++ [
+          {
+            title = "Styx";
+            url = "https://styx-static.github.io/styx-site/";
+          }
+        ];
+    }
+    // (lib.loadDir {
+      dir = ./data;
+      inherit env;
+      asAttrs = true;
+    });
 
-    /* Menu using blocks
-    */
-    menu = let
-      mkBlockSet = blocks:
-        map (id:
-          (lib.find { inherit id; } blocks) // { navbarClass = "page-scroll"; url = "/#${id}"; }
-        );
-    in
-      (mkBlockSet pages.index.blocks [ "services" "portfolio" "about" "team" "contact" ])
-      ++ [
-        { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
-      ];
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-  } // (lib.loadDir { dir = ./data; inherit env; asAttrs = true; });
-
-
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = rec {
     index = {
-      title    = "Home";
-      path     = "/index.html";
+      title = "Home";
+      path = "/index.html";
       template = templates.block-page.full;
-      layout   = templates.layout;
-      blocks   = let
-        darken = d: d // { class = "bg-light-gray"; };
-      in with templates.blocks; [
-        (banner            data.main-banner)
-        (services          data.services)
-        (portfolio (darken data.portfolio))
-        (timeline          data.about)
-        (team      (darken data.team))
-        (clients           data.clients)
-        (contact           data.contact) 
-      ];
+      layout = templates.layout;
+      blocks = let
+        darken = d: d // {class = "bg-light-gray";};
+      in
+        with templates.blocks; [
+          (banner data.main-banner)
+          (services data.services)
+          (portfolio (darken data.portfolio))
+          (timeline data.about)
+          (team (darken data.team))
+          (clients data.clients)
+          (contact data.contact)
+        ];
     };
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site rendering
 
-/*-----------------------------------------------------------------------------
-   Site rendering
-
------------------------------------------------------------------------------*/
+  -----------------------------------------------------------------------------
+  */
 
   # converting pages attribute set to a list
   pageList = lib.pagesToList {
     inherit pages;
-    default = { layout = templates.layout; };
+    default = {layout = templates.layout;};
   };
 
-  site = lib.mkSite { inherit files pageList; };
-
+  site = lib.mkSite {inherit files pageList;};
 }
 
 ----
@@ -3061,22 +3080,24 @@ http://domain.org/about.html
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}@args:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+} @ args: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -3086,80 +3107,84 @@ rec {
     config = [./conf.nix extraConf];
 
     # Loaded themes
-    themes = [ ../. ];
+    themes = [../.];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = {
-    navbar = with pages; [ theme basic starter ];
+    navbar = with pages; [theme basic starter];
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
-
-  /* http://getbootstrap.com/getting-started/#examples
+  /*
+  http://getbootstrap.com/getting-started/#examples
   */
 
   pages = rec {
-
     basic = {
-      layout   = templates.layout;
+      layout = templates.layout;
       template = templates.examples.basic;
-      path     = "/basic.html";
+      path = "/basic.html";
       # example of adding extra css / js to a page
       #extraJS  = [ { src = "/pop.js"; crossorigin = "anonymous"; } ];
       #extraCSS = [ { href = "/pop.css"; } ];
-      title    = "Bootstrap 101 Template";
+      title = "Bootstrap 101 Template";
       navbarTitle = "Basic";
     };
 
     starter = {
-      layout   = templates.layout;
+      layout = templates.layout;
       template = templates.examples.starter;
-      path     = "/starter.html";
-      title    = "Starter Template for Bootstrap";
+      path = "/starter.html";
+      title = "Starter Template for Bootstrap";
       navbarTitle = "Starter";
     };
 
     theme = {
-      layout   = templates.layout;
+      layout = templates.layout;
       template = templates.examples.theme;
-      path     = "/index.html";
-      title    = "Theme Template for Bootstrap";
+      path = "/index.html";
+      title = "Theme Template for Bootstrap";
       navbarTitle = "Theme";
     };
-
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site
 
-/*-----------------------------------------------------------------------------
-   Site
-
------------------------------------------------------------------------------*/
-
-  /* Converting the pages attribute set to a list
+  -----------------------------------------------------------------------------
   */
-  pageList = lib.pagesToList { inherit pages; };
 
-  /* Generating the site
+  /*
+  Converting the pages attribute set to a list
   */
-  site = lib.mkSite { inherit files pageList; };
+  pageList = lib.pagesToList {inherit pages;};
 
+  /*
+  Generating the site
+  */
+  site = lib.mkSite {inherit files pageList;};
 }
 
 ----
@@ -3357,7 +3382,7 @@ Default::
 +
 [source, nix]
 ----
-"&copy; 2017. All rights reserved. 
+"&copy; 2017. All rights reserved.
 "
 ----
 
@@ -3624,22 +3649,24 @@ null
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -3657,24 +3684,32 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = with lib; {
     # loading a single page
-    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    about = loadFile {
+      file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md";
+      inherit env;
+    };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts = sortBy "date" "dsc" (loadDir {
+      dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts";
+      inherit env;
+    });
 
     menu = [
       (head pages.index)
@@ -3689,63 +3724,69 @@ rec {
     };
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = with lib; rec {
     index = mkSplit {
-      title        = "Home";
-      basePath     = "/index";
+      title = "Home";
+      basePath = "/index";
       itemsPerPage = conf.theme.itemsPerPage;
-      template     = templates.index;
-      data         = posts.list;
+      template = templates.index;
+      data = posts.list;
     };
-    
-    /* Feed page
+
+    /*
+    Feed page
     */
     feed = {
-      path     = "/feed.xml";
+      path = "/feed.xml";
       template = templates.feed.atom;
       # Bypassing the layout
-      layout   = id;
-      items    = take 10 posts.list;
+      layout = id;
+      items = take 10 posts.list;
     };
 
-    about = {
-      path     = "/about.html";
-      template = templates.page.full;
-    } // data.about;
+    about =
+      {
+        path = "/about.html";
+        template = templates.page.full;
+      }
+      // data.about;
 
     posts = mkPageList {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
+      data = data.posts;
+      pathPrefix = "/posts/";
+      template = templates.post.full;
       # Attach the author to every blog post
-      author      = data.author;
+      author = data.author;
     };
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site
 
-/*-----------------------------------------------------------------------------
-   Site
+  -----------------------------------------------------------------------------
+  */
 
------------------------------------------------------------------------------*/
-
-  /* Converting the pages attribute set to a list
+  /*
+  Converting the pages attribute set to a list
   */
   pageList = lib.pagesToList {
     inherit pages;
-    default = { layout = templates.layout; };
+    default = {layout = templates.layout;};
   };
 
-  /* Generating the site
+  /*
+  Generating the site
   */
-  site =  (lib.mkSite { inherit files pageList; });
-
+  site = lib.mkSite {inherit files pageList;};
 }
 
 ----
@@ -3847,7 +3888,7 @@ Default::
 +
 [source, nix]
 ----
-"&copy; 2017. All rights reserved. 
+"&copy; 2017. All rights reserved.
 "
 ----
 
@@ -3994,22 +4035,24 @@ Default::
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -4027,100 +4070,114 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = with lib; {
     # loading a single page
-    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data//pages/about.md"; inherit env; };
+    about = loadFile {
+      file = "${pkgs.styx}/share/styx/scaffold/sample-data//pages/about.md";
+      inherit env;
+    };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts = sortBy "date" "dsc" (loadDir {
+      dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts";
+      inherit env;
+    });
 
     # menu declaration
-    menu = [ pages.about ];
+    menu = [pages.about];
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = with lib; rec {
-
-    /* Index page
-       Splitting a list of items through multiple pages
-       For more complex needs, mkSplitCustom is available
+    /*
+    Index page
+    Splitting a list of items through multiple pages
+    For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title        = "Home";
-      basePath     = "/index";
+      title = "Home";
+      basePath = "/index";
       itemsPerPage = conf.theme.itemsPerPage;
-      template     = templates.index;
-      data         = posts.list;
+      template = templates.index;
+      data = posts.list;
     };
 
-    /* About page
-       Example of generating a page from imported data
+    /*
+    About page
+    Example of generating a page from imported data
     */
-    about = {
-      path     = "/about.html";
-      template = templates.page.full;
-    } // data.about;
+    about =
+      {
+        path = "/about.html";
+        template = templates.page.full;
+      }
+      // data.about;
 
-    /* Feed page
+    /*
+    Feed page
     */
     feed = {
-      path     = "/feed.xml";
+      path = "/feed.xml";
       template = templates.feed.atom;
       # Bypassing the layout
-      layout   = id;
-      items    = take 10 posts.list;
+      layout = id;
+      items = take 10 posts.list;
     };
 
-    /* 404 error page
+    /*
+    404 error page
     */
     e404 = {
-      path     = "/404.html";
+      path = "/404.html";
       template = templates.e404;
     };
 
-    /* Posts pages
+    /*
+    Posts pages
     */
     posts = mkPageList {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
-      breadcrumbs = [ (head pages.index) ];
+      data = data.posts;
+      pathPrefix = "/posts/";
+      template = templates.post.full;
+      breadcrumbs = [(head pages.index)];
     };
-
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site rendering
 
-/*-----------------------------------------------------------------------------
-   Site rendering
-
------------------------------------------------------------------------------*/
+  -----------------------------------------------------------------------------
+  */
 
   # converting pages attribute set to a list
   pageList = lib.pagesToList {
     inherit pages;
-    default = { layout = templates.layout; };
+    default = {layout = templates.layout;};
   };
 
-  site = lib.mkSite { inherit files pageList; };
-
+  site = lib.mkSite {inherit files pageList;};
 }
 
 ----
@@ -4231,7 +4288,7 @@ Default::
 +
 [source, nix]
 ----
-"&copy; 2017. All rights reserved. 
+"&copy; 2017. All rights reserved.
 "
 ----
 
@@ -4362,22 +4419,24 @@ Default::
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -4395,116 +4454,136 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = with lib; {
-    # Loading the index page data 
-    index = loadFile { file = ./data/index.nix; inherit env; };
+    # Loading the index page data
+    index = loadFile {
+      file = ./data/index.nix;
+      inherit env;
+    };
 
     # loading a single page
-    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    about = loadFile {
+      file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md";
+      inherit env;
+    };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts = sortBy "date" "dsc" (loadDir {
+      dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts";
+      inherit env;
+    });
 
     # menu declaration
     menu = with pages; [
-      (about // { navbarTitle = "~/about"; })
-      ((head postsList) // { navbarTitle = "~/posts"; })
+      (about // {navbarTitle = "~/about";})
+      ((head postsList) // {navbarTitle = "~/posts";})
     ];
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = with lib; rec {
-
-    /* Custom index page
-       See data/index.nix for the details
+    /*
+    Custom index page
+    See data/index.nix for the details
     */
-    index = {
-      title    = "styx@styx ~ $";
-      path     = "/index.html";
-      template = id;
-    } // data.index;
+    index =
+      {
+        title = "styx@styx ~ $";
+        path = "/index.html";
+        template = id;
+      }
+      // data.index;
 
-    /* About page
-       Example of generating a page from imported data
+    /*
+    About page
+    Example of generating a page from imported data
     */
-    about = {
-      path     = "/about.html";
-      template = templates.page.full;
-    } // data.about;
+    about =
+      {
+        path = "/about.html";
+        template = templates.page.full;
+      }
+      // data.about;
 
-    /* Feed page
+    /*
+    Feed page
     */
     feed = {
-      path     = "/feed.xml";
+      path = "/feed.xml";
       template = templates.feed.atom;
       # Bypassing the layout
-      layout   = id;
-      items    = take 10 posts.list;
+      layout = id;
+      items = take 10 posts.list;
     };
 
-    /* 404 error page
+    /*
+    404 error page
     */
     e404 = {
-      path     = "/404.html";
+      path = "/404.html";
       template = templates.e404;
     };
 
-    /* Posts lists
+    /*
+    Posts lists
     */
     postsList = mkSplit {
-      title        = "Posts";
-      basePath     = "/posts/index";
+      title = "Posts";
+      basePath = "/posts/index";
       itemsPerPage = 3;
-      template     = templates.posts-list;
-      data         = posts.list;
+      template = templates.posts-list;
+      data = posts.list;
     };
 
-    /* Posts pages
+    /*
+    Posts pages
     */
     posts = mkPageList {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
+      data = data.posts;
+      pathPrefix = "/posts/";
+      template = templates.post.full;
     };
-
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site rendering
 
-/*-----------------------------------------------------------------------------
-   Site rendering
-
------------------------------------------------------------------------------*/
+  -----------------------------------------------------------------------------
+  */
 
   # converting pages attribute set to a list
   pageList = lib.pagesToList {
     inherit pages;
-    default = { layout = templates.layout; };
+    default = {layout = templates.layout;};
   };
 
   site = lib.mkSite {
     inherit pageList;
     # Loading custom files
-    files = files ++ [ ./files ];
+    files = files ++ [./files];
   };
-
 }
 
 ----
@@ -4560,7 +4639,7 @@ Default::
 [[orbit.theme.contact.items]]
 ==== theme.contact.items
 
-Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
+Description:: List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.
 
 Type:: list of attribute set
 Default::
@@ -4605,7 +4684,7 @@ Default::
 [[orbit.theme.education.items]]
 ==== theme.education.items
 
-Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.  
+Description:: List of education items as attribute sets, requires `degree`, `college` and `dates`.
 
 Type:: list of attribute set
 Default::
@@ -4665,7 +4744,7 @@ Default::
 [[orbit.theme.experiences.items]]
 ==== theme.experiences.items
 
-Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
+Description:: List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.
 
 Type:: list of attribute set
 Default::
@@ -4750,7 +4829,7 @@ Default::
 [[orbit.theme.languages.items]]
 ==== theme.languages.items
 
-Description:: List of languages as attribute sets, requires `language`, and `level`.  
+Description:: List of languages as attribute sets, requires `language`, and `level`.
 
 Type:: list of attribute set
 Default::
@@ -4893,7 +4972,7 @@ Default::
 [[orbit.theme.projects.items]]
 ==== theme.projects.items
 
-Description:: List of projects as attribute sets, requires `title`, `url` and `content`.  
+Description:: List of projects as attribute sets, requires `title`, `url` and `content`.
 
 Type:: list of attribute set
 Default::
@@ -5001,7 +5080,7 @@ Default::
 [[orbit.theme.skills.items]]
 ==== theme.skills.items
 
-Description:: List of skills as attribute sets, requires `title` and `level`.  
+Description:: List of skills as attribute sets, requires `title` and `level`.
 
 Type:: list of attribute set
 Default::
@@ -5047,7 +5126,7 @@ Default::
 [[orbit.theme.summary.content]]
 ==== theme.summary.content
 
-Description:: content of the profile area as HTML text.  
+Description:: content of the profile area as HTML text.
 
 Type:: null or string
 Default::
@@ -5239,22 +5318,24 @@ Default::
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -5272,35 +5353,38 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = {
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = {
     index = {
-      title    = "Home";
-      path     = "/index.html";
+      title = "Home";
+      path = "/index.html";
       template = templates.block-page.full;
-      layout   = templates.layout;
-      blocks   = [
+      layout = templates.layout;
+      blocks = [
         (templates.blocks.summary conf.theme.summary)
         (templates.blocks.experiences conf.theme.experiences)
         (templates.blocks.projects conf.theme.projects)
@@ -5316,14 +5400,17 @@ rec {
     };
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site rendering
 
-/*-----------------------------------------------------------------------------
-   Site rendering
+  -----------------------------------------------------------------------------
+  */
 
------------------------------------------------------------------------------*/
-
-  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
-
+  site = lib.mkSite {
+    inherit files;
+    pageList = [pages.index];
+  };
 }
 
 ----
@@ -5563,22 +5650,24 @@ Default::
 
 [source, nix]
 ----
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -5596,138 +5685,157 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = with lib; {
-
     # loading a single page
-    about  = loadFile { file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+    about = loadFile {
+      file = "${pkgs.styx}/share/styx/scaffold/sample-data/pages/about.md";
+      inherit env;
+    };
 
     # loading a list of contents
-    posts  = sortBy "date" "dsc" (loadDir { dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts"; inherit env; });
+    posts = sortBy "date" "dsc" (loadDir {
+      dir = "${pkgs.styx}/share/styx/scaffold/sample-data/posts";
+      inherit env;
+    });
 
     # Navbar data
     navbar = [
       pages.about
       (head pages.postsArchive)
-      (pages.feed // { navbarTitle = "RSS"; })
-      { title = "Styx"; url = "https://styx-static.github.io/styx-site/"; }
+      (pages.feed // {navbarTitle = "RSS";})
+      {
+        title = "Styx";
+        url = "https://styx-static.github.io/styx-site/";
+      }
     ];
 
     # posts taxonomies
     taxonomies.posts = mkTaxonomyData {
       data = pages.posts.list;
-      taxonomies = [ "tags" "level" ];
+      taxonomies = ["tags" "level"];
     };
-
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = with lib.pages; rec {
-
-    /* Index page
-       Example of splitting a list of items through multiple pages
-       For more complex needs, mkSplitCustom is available
+    /*
+    Index page
+    Example of splitting a list of items through multiple pages
+    For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title           = conf.theme.site.title;
-      basePath        = "/index";
-      itemsPerPage    = conf.theme.index.itemsPerPage;
-      template        = templates.index;
-      data            = pages.posts.list;
+      title = conf.theme.site.title;
+      basePath = "/index";
+      itemsPerPage = conf.theme.index.itemsPerPage;
+      template = templates.index;
+      data = pages.posts.list;
       breadcrumbTitle = templates.icon.font-awesome "home";
     };
 
-    /* About page
-       Example of generating a page from a piece of data
+    /*
+    About page
+    Example of generating a page from a piece of data
     */
-    about = {
-      path        = "/about.html";
-      template    = templates.page.full;
-      # setting breadcrumbs
-      breadcrumbs = [ (lib.head index) ];
-    } // data.about;
+    about =
+      {
+        path = "/about.html";
+        template = templates.page.full;
+        # setting breadcrumbs
+        breadcrumbs = [(lib.head index)];
+      }
+      // data.about;
 
-    /* RSS feed page
+    /*
+    RSS feed page
     */
     feed = {
-      path     = "/feed.xml";
+      path = "/feed.xml";
       template = templates.feed.atom;
       # Bypassing the layout
-      layout   = lib.id;
-      items    = lib.take 10 pages.posts.list;
+      layout = lib.id;
+      items = lib.take 10 pages.posts.list;
     };
 
-    /* 404 error page
+    /*
+    404 error page
     */
     e404 = {
-      path     = "/404.html";
+      path = "/404.html";
       template = templates.e404;
-      title    = "404";
+      title = "404";
     };
 
-    /* Posts pages (as a list of pages)
+    /*
+    Posts pages (as a list of pages)
 
-       mkPageList is a convenience function to generate a list of page from a
-       list of data
+    mkPageList is a convenience function to generate a list of page from a
+    list of data
     */
     posts = mkPageList {
-      data        = data.posts;
-      pathPrefix  = "/posts/";
-      template    = templates.post.full;
-      breadcrumbs = [ (lib.head index) ];
+      data = data.posts;
+      pathPrefix = "/posts/";
+      template = templates.post.full;
+      breadcrumbs = [(lib.head index)];
     };
 
     postsArchive = mkSplit {
-      title        = "Archives";
-      basePath     = "/archive/post";
-      template     = templates.archive;
-      breadcrumbs  = [ (lib.head index) ];
+      title = "Archives";
+      basePath = "/archive/post";
+      template = templates.archive;
+      breadcrumbs = [(lib.head index)];
       itemsPerPage = conf.theme.archives.itemsPerPage;
-      data         = pages.posts.list;
+      data = pages.posts.list;
     };
 
-    /* Taxonomy related pages
+    /*
+    Taxonomy related pages
     */
     taxonomies = mkTaxonomyPages {
-      data             = data.taxonomies.posts;
+      data = data.taxonomies.posts;
       taxonomyTemplate = templates.taxonomy.full;
-      termTemplate     = templates.taxonomy.term.full;
+      termTemplate = templates.taxonomy.term.full;
     };
-
   };
 
-  /* Sitemap
-     The sitemap is out of the pages attribute set because it has to loop
-     through all the pages
+  /*
+  Sitemap
+  The sitemap is out of the pages attribute set because it has to loop
+  through all the pages
   */
   sitemap = {
-    path     = "/sitemap.xml";
+    path = "/sitemap.xml";
     template = templates.sitemap;
-    layout   = lib.id;
-    pages    = pageList;
+    layout = lib.id;
+    pages = pageList;
   };
 
-/*-----------------------------------------------------------------------------
-   Site rendering
+  /*
+    -----------------------------------------------------------------------------
+     Site rendering
 
------------------------------------------------------------------------------*/
+  -----------------------------------------------------------------------------
+  */
 
   # converting pages attribute set to a list
   pageList = lib.pagesToList {
@@ -5735,7 +5843,8 @@ rec {
     default.layout = templates.layout;
   };
 
-  /* Substitutions
+  /*
+  Substitutions
   */
   substitutions = {
     siteUrl = conf.siteUrl;
@@ -5743,10 +5852,9 @@ rec {
 
   site = lib.mkSite {
     inherit files substitutions;
-    pageList = pageList ++ [ sitemap ];
-    meta = (import ./meta.nix) { inherit lib; };
+    pageList = pageList ++ [sitemap];
+    meta = (import ./meta.nix) {inherit lib;};
   };
-
 }
 
 ----
