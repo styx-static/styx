@@ -1,19 +1,21 @@
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -33,48 +35,51 @@ rec {
       #   styx-themes.generic-templates
       # Or from a local path
       #   ./themes/my-theme
-
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-/*-----------------------------------------------------------------------------
-   Data
-
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = {
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = rec {
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site
 
-/*-----------------------------------------------------------------------------
-   Site
-
------------------------------------------------------------------------------*/
-
-  /* Converting the pages attribute set to a list
+  -----------------------------------------------------------------------------
   */
-  pageList = lib.pagesToList { inherit pages; };
 
-  /* Generating the site
+  /*
+  Converting the pages attribute set to a list
   */
-  site = lib.mkSite { inherit files pageList; };
+  pageList = lib.pagesToList {inherit pages;};
 
+  /*
+  Generating the site
+  */
+  site = lib.mkSite {inherit files pageList;};
 }

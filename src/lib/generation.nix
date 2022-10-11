@@ -1,18 +1,18 @@
 # Page and site generation functions
-
-{ pkgs, conf, lib }@args:
+{
+  pkgs,
+  conf,
+  lib,
+} @ args:
 with lib;
-with import ./utils.nix args;
+with import ./utils.nix args; rec {
+  /*
+  ===============================================================
 
-rec {
+   generatePage
 
-/*
-===============================================================
-
- generatePage
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   generatePage = documentedFunction {
     description = "Function to generate a page source, used by `mkSite`.";
@@ -25,46 +25,45 @@ rec {
       }
     ];
 
-    examples = [ (mkExample {
-      literalCode = ''
-        generatePage {
-          layout = template: "<html><body>''${template}</body></html>";
-          template = page: '''
-            <h1>Styx example page</h1>
-            ''${page.content}
-          ''';
-          content = "<p>Hello world!</p>";
-        };
-      '';
-      code =
-        generatePage {
+    examples = [
+      (mkExample {
+        literalCode = ''
+          generatePage {
+            layout = template: "<html><body>''${template}</body></html>";
+            template = page: '''
+              <h1>Styx example page</h1>
+              ''${page.content}
+            ''';
+            content = "<p>Hello world!</p>";
+          };
+        '';
+        code = generatePage {
           layout = template: "<html><body>${template}</body></html>";
           template = page: ''
             <h1>Styx example page</h1>
             ${page.content}
           '';
           content = "<p>Hello world!</p>";
-        }
-      ;
-      expected = ''
-        <html><body><h1>Styx example page</h1>
-        <p>Hello world!</p>
-        </body></html>'';
-    }) ];
+        };
+        expected = ''
+          <html><body><h1>Styx example page</h1>
+          <p>Hello world!</p>
+          </body></html>'';
+      })
+    ];
 
     return = "Page source";
 
     function = page: page.layout (page.template page);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   mkSite
 
- mkSite
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   mkSite = documentedFunction {
     description = "Generate a site, this is the main function of a styx site.";
@@ -112,32 +111,33 @@ rec {
       };
     };
 
-    examples = [ (mkExample {
-      literalCode = ''
-        mkSite { pageList = [ pages.index ]; }
-      '';
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          mkSite { pageList = [ pages.index ]; }
+        '';
+      })
+    ];
 
     return = "The site derivation.";
 
     function = {
-      meta ? {}
-    , files ? []
-    , pageList ? []
-    , substitutions ? {}
-    , preGen  ? ""
-    , postGen ? ""
-    , genPageFn ? generatePage
-    , pagePathFn ? (page: page.path)
-    }:
-      let
-        env = {
-          meta = { platforms = lib.platforms.all; } // meta;
-          preferLocalBuild = true;
-          allowSubstitutes = false;
-        };
-        name = meta.name or "styx-site";
-      in
+      meta ? {},
+      files ? [],
+      pageList ? [],
+      substitutions ? {},
+      preGen ? "",
+      postGen ? "",
+      genPageFn ? generatePage,
+      pagePathFn ? (page: page.path),
+    }: let
+      env = {
+        meta = {platforms = lib.platforms.all;} // meta;
+        preferLocalBuild = true;
+        allowSubstitutes = false;
+      };
+      name = meta.name or "styx-site";
+    in
       pkgs.runCommand name env ''
         shopt -s globstar
         mkdir -p $out
@@ -151,15 +151,15 @@ rec {
         # output results to subs
         run_subs () {
           cp $1 subs && chmod u+rw subs
-          ${concatMapStringsSep "\n" (set:
-            let key   = head (attrNames  set);
-                value = head (attrValues set);
-            in
-            ''
-              substituteInPlace subs \
-                --subst-var-by "${key}" "${toString value}"
-            ''
-          ) (setToList substitutions)}
+          ${concatMapStringsSep "\n" (
+          set: let
+            key = head (attrNames set);
+            value = head (attrValues set);
+          in ''
+            substituteInPlace subs \
+              --subst-var-by "${key}" "${toString value}"
+          ''
+        ) (setToList substitutions)}
         }
 
         ${preGen}
@@ -167,95 +167,96 @@ rec {
         # FILES
         # files are copied only if necessary, else they are just linked from the source
         ${concatMapStringsSep "\n" (filesDir: ''
-          for file in ${filesDir}/**/*; do
+            for file in ${filesDir}/**/*; do
 
-            # Ignoring folders
-            if [ -d "$file" ]; then continue; fi
+              # Ignoring folders
+              if [ -d "$file" ]; then continue; fi
 
-            # output path
-            path=$(realpath -s --relative-to="${filesDir}" "$file")
-            mkdir -p $(dirname $out/$path)
+              # output path
+              path=$(realpath -s --relative-to="${filesDir}" "$file")
+              mkdir -p $(dirname $out/$path)
 
-            if [ $(text_file $file) ]; then
-              input=$file
-              hasSubs=
-              run_subs $file
+              if [ $(text_file $file) ]; then
+                input=$file
+                hasSubs=
+                run_subs $file
 
-              if [ $(cmp --silent subs $file || echo 1) ]; then
-                input=subs
-                hasSubs=1
-              fi
+                if [ $(cmp --silent subs $file || echo 1) ]; then
+                  input=subs
+                  hasSubs=1
+                fi
 
-              case "$file" in
-                *.less)
-                  path=$(echo "$path" | sed -r 's/[^.]+$/css/')
-                  [ -f "$out/$path" ] && rm $out/$path
-                  (
-                    ${pkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$path
-                    if [ ! -s "$out/$path" ]; then
-                      echo "Warning: could not build '$path'"
-                    fi
-                  ) || (
+                case "$file" in
+                  *.less)
+                    path=$(echo "$path" | sed -r 's/[^.]+$/css/')
                     [ -f "$out/$path" ] && rm $out/$path
-                    echo "Warning: could not build '$path'"
-                  )
-                ;;
-                *.s[ac]ss)
-                  path=$(echo "$path" | sed -r 's/[^.]+$/css/')
-                  [ -f "$out/$path" ] && rm $out/$path
-                  (
-                    ${pkgs.sass}/bin/sass $input 2>/dev/null > "$out/$path"
-                    if [ ! -s "$out/$path" ]; then
+                    (
+                      ${pkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$path
+                      if [ ! -s "$out/$path" ]; then
+                        echo "Warning: could not build '$path'"
+                      fi
+                    ) || (
+                      [ -f "$out/$path" ] && rm $out/$path
                       echo "Warning: could not build '$path'"
-                      rm $out/$path
-                    fi
-                  ) || (
+                    )
+                  ;;
+                  *.s[ac]ss)
+                    path=$(echo "$path" | sed -r 's/[^.]+$/css/')
+                    [ -f "$out/$path" ] && rm $out/$path
+                    (
+                      ${pkgs.sass}/bin/sass $input 2>/dev/null > "$out/$path"
+                      if [ ! -s "$out/$path" ]; then
+                        echo "Warning: could not build '$path'"
+                        rm $out/$path
+                      fi
+                    ) || (
+                      [ -f "$out/$path" ] && rm "$out/$path"
+                      echo "Warning: could not build '$path'"
+                    )
+                  ;;
+                  *)
                     [ -f "$out/$path" ] && rm "$out/$path"
-                    echo "Warning: could not build '$path'"
-                  )
-                ;;
-                *)
-                  [ -f "$out/$path" ] && rm "$out/$path"
-                  if [ "$hasSubs" ]; then
-                    cp "$input" "$out/$path"
-                  else
-                    ln -s "$input" "$out/$path"
-                  fi;
-                ;;
-              esac
+                    if [ "$hasSubs" ]; then
+                      cp "$input" "$out/$path"
+                    else
+                      ln -s "$input" "$out/$path"
+                    fi;
+                  ;;
+                esac
 
-            else
-              [ -f "$out/$path" ] && rm "$out/$path"
-              ln -s "$file" "$out/$path"
-            fi
-          done;
-        '') files}
+              else
+                [ -f "$out/$path" ] && rm "$out/$path"
+                ln -s "$file" "$out/$path"
+              fi
+            done;
+          '')
+          files}
 
         # PAGES
         ${concatMapStringsSep "\n" (page: ''
-          outPath="$out${pagePathFn page}"
-          page=${pkgs.writeText "${name}-page" (genPageFn page)}
-          mkdir -p "$(dirname "$outPath")"
-          run_subs "$page"
-          if [ $(cmp --silent subs $page || echo 1) ]; then
-            cp "subs" "$outPath"
-          else
-            ln -s "$page" "$outPath"
-          fi
-        '') pageList}
+            outPath="$out${pagePathFn page}"
+            page=${pkgs.writeText "${name}-page" (genPageFn page)}
+            mkdir -p "$(dirname "$outPath")"
+            run_subs "$page"
+            if [ $(cmp --silent subs $page || echo 1) ]; then
+              cp "subs" "$outPath"
+            else
+              ln -s "$page" "$outPath"
+            fi
+          '')
+          pageList}
 
         ${postGen}
       '';
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   pagesToList
 
- pagesToList
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   pagesToList = documentedFunction {
     description = "Convert a set of pages to a list of pages.";
@@ -274,64 +275,77 @@ rec {
 
     return = "`[ Page ]`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        pagelist = pagestolist {
-          inherit pages;
-          default.layout = templates.layout;
+    examples = [
+      (mkExample {
+        literalCode = ''
+          pagelist = pagestolist {
+            inherit pages;
+            default.layout = templates.layout;
+          };
+        '';
+      })
+      (mkExample {
+        literalCode = ''
+          pagesToList {
+            pages = {
+              foo = { path = "/foo.html"; };
+              bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
+            };
+            default = {
+              baz = "baz";
+            };
+          }
+        '';
+        code = pagesToList {
+          pages = {
+            foo = {path = "/foo.html";};
+            bar = [{path = "/bar-1.html";} {path = "/bar-2.html";}];
+          };
+          default = {
+            baz = "baz";
+          };
         };
-      '';
-    }) (mkExample {
-      literalCode = ''
-        pagesToList {
-          pages = {
-            foo = { path = "/foo.html"; };
-            bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
-          };
-          default = {
+        expected = [
+          {
             baz = "baz";
-          };
-        }
-      '';
-      code =
-        pagesToList {
-          pages = {
-            foo = { path = "/foo.html"; };
-            bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
-          };
-          default = {
+            path = "/foo.html";
+          }
+          {
             baz = "baz";
-          };
-        }
-      ;
-      expected = [
-        { baz = "baz"; path = "/foo.html"; }
-        { baz = "baz"; path = "/bar-1.html"; }
-        { baz = "baz"; path = "/bar-2.html"; }
-      ];
-    }) ];
+            path = "/bar-1.html";
+          }
+          {
+            baz = "baz";
+            path = "/bar-2.html";
+          }
+        ];
+      })
+    ];
 
     function = {
-      pages
-    , default ? {}
-    }:
-      let pages' = attrValues pages;
-      in fold (p: acc:
-           if isList p
-           then acc ++ (map (x: recursiveUpdate default x) p)
-           else if is "pages" p 
-                then acc ++ (map (x: recursiveUpdate default x) p.pages)
-                else acc ++ [(recursiveUpdate default p)]
-         ) [] pages';
+      pages,
+      default ? {},
+    }: let
+      pages' = attrValues pages;
+    in
+      fold (
+        p: acc:
+          if isList p
+          then acc ++ (map (x: recursiveUpdate default x) p)
+          else if is "pages" p
+          then acc ++ (map (x: recursiveUpdate default x) p.pages)
+          else acc ++ [(recursiveUpdate default p)]
+      ) []
+      pages';
   };
 
-/*
-===============================================================
+  /*
+  ===============================================================
 
- localesToPageList
+   localesToPageList
 
-===============================================================
-*/
+  ===============================================================
+  */
 
   localesToPageList = documentedFunction {
     description = "Convert a set of locales to a list of pages.";
@@ -350,85 +364,106 @@ rec {
 
     return = "`[ Page ]`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        pagelist = localesToPageList {
-          inherit locales;
-          default = locale: {
-            layout = locale.env.templates.layout;
+    examples = [
+      (mkExample {
+        literalCode = ''
+          pagelist = localesToPageList {
+            inherit locales;
+            default = locale: {
+              layout = locale.env.templates.layout;
+            };
           };
-        };
-      '';
-    }) (mkExample {
-      literalCode = ''
-        localesToPageList {
+        '';
+      })
+      (mkExample {
+        literalCode = ''
+          localesToPageList {
+            locales = {
+              eng = rec {
+                code   = "eng";
+                prefix = "/''${code}";
+                pages = {
+                  foo = { path = "/foo.html"; };
+                  bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
+                };
+              };
+              fre = rec {
+                code = "fre";
+                prefix = "/''${code}";
+                pages = {
+                  foo = { path = prefix + "/foo.html"; };
+                  bar = [ { path = prefix + "/bar-1.html"; } { path = prefix + "/bar-2.html"; } ];
+                };
+              };
+            };
+            default = locale: {
+              baz = "''${locale.code}-baz";
+            };
+          }
+        '';
+        code = localesToPageList {
           locales = {
-            eng = rec { 
-              code   = "eng";
-              prefix = "/''${code}";
+            eng = rec {
+              code = "eng";
+              prefix = "/${code}";
               pages = {
-                foo = { path = "/foo.html"; };
-                bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
+                foo = {path = "/foo.html";};
+                bar = [{path = "/bar-1.html";} {path = "/bar-2.html";}];
               };
             };
             fre = rec {
               code = "fre";
-              prefix = "/''${code}";
-              pages = {
-                foo = { path = prefix + "/foo.html"; };
-                bar = [ { path = prefix + "/bar-1.html"; } { path = prefix + "/bar-2.html"; } ];
-              };
-            };
-          };
-          default = locale: {
-            baz = "''${locale.code}-baz";
-          };
-        }
-      '';
-      code =
-        localesToPageList {
-          locales = {
-            eng = rec { 
-              code   = "eng";
               prefix = "/${code}";
               pages = {
-                foo = { path = "/foo.html"; };
-                bar = [ { path = "/bar-1.html"; } { path = "/bar-2.html"; } ];
-              };
-            };
-            fre = rec {
-              code = "fre";
-              prefix = "/${code}";
-              pages = {
-                foo = { path = prefix + "/foo.html"; };
-                bar = [ { path = prefix + "/bar-1.html"; } { path = prefix + "/bar-2.html"; } ];
+                foo = {path = prefix + "/foo.html";};
+                bar = [{path = prefix + "/bar-1.html";} {path = prefix + "/bar-2.html";}];
               };
             };
           };
           default = locale: {
             baz = "${locale.code}-baz";
           };
-        }
-      ;
-      expected = [ 
-        { baz = "eng-baz"; path = "/foo.html"; }
-        { baz = "eng-baz"; path = "/bar-1.html"; }
-        { baz = "eng-baz"; path = "/bar-2.html"; }
-        { baz = "fre-baz"; path = "/fre/foo.html"; }
-        { baz = "fre-baz"; path = "/fre/bar-1.html"; }
-        { baz = "fre-baz"; path = "/fre/bar-2.html"; }
-      ];
-    }) ];
+        };
+        expected = [
+          {
+            baz = "eng-baz";
+            path = "/foo.html";
+          }
+          {
+            baz = "eng-baz";
+            path = "/bar-1.html";
+          }
+          {
+            baz = "eng-baz";
+            path = "/bar-2.html";
+          }
+          {
+            baz = "fre-baz";
+            path = "/fre/foo.html";
+          }
+          {
+            baz = "fre-baz";
+            path = "/fre/bar-1.html";
+          }
+          {
+            baz = "fre-baz";
+            path = "/fre/bar-2.html";
+          }
+        ];
+      })
+    ];
 
     function = {
-      locales
-    , default ? (locale: {})
+      locales,
+      default ? (locale: {}),
     }:
-      flatten (mapAttrsToList (_: locale:
-        pagesToList {
-          pages   = locale.pages;
-          default = default locale;
-        }
-      ) locales);
+      flatten (mapAttrsToList (
+          _: locale:
+            pagesToList {
+              pages = locale.pages;
+              default = default locale;
+            }
+        )
+        locales);
   };
 }

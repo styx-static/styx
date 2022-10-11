@@ -1,10 +1,9 @@
-{ lib }:
-with lib;
-{
-  /* Javascript and CSS Libraries using CDN
+{lib}:
+with lib; {
+  /*
+  Javascript and CSS Libraries using CDN
   */
   lib = {
-
     # using https://www.bootstrapcdn.com/
     bootstrap = {
       enable = mkEnableOption "bootstrap";
@@ -51,7 +50,7 @@ with lib;
       extraLanguages = mkOption {
         default = [];
         description = "Extra languages to highlight, for available languages see https://highlightjs.org/static/demo/.";
-        example = [ "nix" ];
+        example = ["nix"];
         type = with types; listOf str;
       };
     };
@@ -60,13 +59,12 @@ with lib;
       description = "Google Fonts to load, for available fonts see https://fonts.google.com/.";
       type = with types; listOf str;
       default = [];
-      example = [ "Barrio" "Fjalla One" ];
+      example = ["Barrio" "Fjalla One"];
     };
 
     mathjax = {
       enable = mkEnableOption "mathjax";
     };
-
   };
 
   site.title = mkOption {
@@ -78,7 +76,7 @@ with lib;
   html = {
     doctype = mkOption {
       description = "Doctype declaration to use.";
-      type = types.enum [ "html5" "html4" "xhtml1" ];
+      type = types.enum ["html5" "html4" "xhtml1"];
       default = "html5";
     };
 
@@ -116,5 +114,4 @@ with lib;
       default = null;
     };
   };
-
 }

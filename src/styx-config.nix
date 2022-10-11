@@ -1,8 +1,7 @@
-{ lib
-, pkgs }:
-
 {
-  
+  lib,
+  pkgs,
+}: {
   lib.data = {
     markup = {
       asciidoc = {
@@ -17,7 +16,7 @@
           description = "Command to convert asciidoc as a function that take the path of the file to convert as parameter.";
         };
         parser = lib.mkOption {
-          default = f: "${pkgs.python3.withPackages (ps: [ ps.parsimonious ])}/bin/python ${pkgs.styx}/share/styx/tools/asciidoc-parser.py < ${f} > $out";
+          default = f: "${pkgs.python3.withPackages (ps: [ps.parsimonious])}/bin/python ${pkgs.styx}/share/styx/tools/asciidoc-parser.py < ${f} > $out";
           type = with lib.types; functionTo str;
           description = "Command to parse asciidoc to a styx page attribute set as a function that take the path of the file to parse as parameter.";
         };
@@ -34,7 +33,7 @@
           description = "Command to convert asciidoc as a function that take the path of the file to convert as parameter.";
         };
         parser = lib.mkOption {
-          default = f: "${pkgs.python3.withPackages (ps: [ ps.parsimonious ])}/bin/python ${pkgs.styx}/share/styx/tools/markdown-parser.py < ${f} > $out";
+          default = f: "${pkgs.python3.withPackages (ps: [ps.parsimonious])}/bin/python ${pkgs.styx}/share/styx/tools/markdown-parser.py < ${f} > $out";
           type = with lib.types; functionTo str;
           description = "Command to parse asciidoc to a styx page attribute set as a function that take the path of the file to parse as parameter.";
         };

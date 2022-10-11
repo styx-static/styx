@@ -1,49 +1,48 @@
 # themes
-
 args:
 with args.lib;
 with import ./utils.nix args;
 with import ./conf.nix args;
-with import ./proplist.nix args;
-
-let
-  /* Recursively fetches a directory of templates
-     return a recursive set of { NAME = FILE }
+with import ./proplist.nix args; let
+  /*
+  Recursively fetches a directory of templates
+  return a recursive set of { NAME = FILE }
   */
-  fetchTemplateDir = dir:
-    let
-      f = path: dir:
-        mapAttrs' (k: v:
-          let
-            nixFile = match "^(.+)\.nix$" k;
-          in
+  fetchTemplateDir = dir: let
+    f = path: dir:
+      mapAttrs' (
+        k: v: let
+          nixFile = match "^(.+)\.nix$" k;
+        in
           if v == "directory"
-             then nameValuePair k (f (path ++ [ dir ]) (dir + "/${k}"))
-             else if nixFile != null then nameValuePair (elemAt nixFile 0) (dir + "/${k}")
-             # non-nix files
-             else nameValuePair k null
-        )
-        (readDir dir);
-      # removing any non-nix files
-      cleanup = filterAttrsRecursive (n: v: v != null);
-    in
-      cleanup (f [ dir ] dir);
+          then nameValuePair k (f (path ++ [dir]) (dir + "/${k}"))
+          else if nixFile != null
+          then nameValuePair (elemAt nixFile 0) (dir + "/${k}")
+          # non-nix files
+          else nameValuePair k null
+      )
+      (readDir dir);
+    # removing any non-nix files
+    cleanup = filterAttrsRecursive (n: v: v != null);
+  in
+    cleanup (f [dir] dir);
 
-  /* find a file in a theme
-     return null if not found
+  /*
+  find a file in a theme
+  return null if not found
   */
-  findInTheme = t: f: if dirContains t.path f then t.path + "/${f}" else null;
+  findInTheme = t: f:
+    if dirContains t.path f
+    then t.path + "/${f}"
+    else null;
+in rec {
+  /*
+  ===============================================================
 
-in
-rec {
+   load
 
-/*
-===============================================================
-
- load
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   load = documentedFunction {
     description = ''
@@ -85,71 +84,85 @@ rec {
       * `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `templates`.
     '';
 
-    examples = [ (mkExample {
-      literalCode = ''
-        themesData = lib.themes.load {
-          inherit lib themes;
-          env  = { inherit data pages; };
-          decls = lib.utils.merge [
-            (import ./conf.nix {/* ... */})
-            extraConf
-          ];
-        };
-      '';
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          themesData = lib.themes.load {
+            inherit lib themes;
+            env  = { inherit data pages; };
+            decls = lib.utils.merge [
+              (import ./conf.nix {/* ... */})
+              extraConf
+            ];
+          };
+        '';
+      })
+    ];
 
     function = {
-      lib
-    , themes ? []
-    , decls ? {}
-    , env ? {}
-    }:
-    let
-      themesData = map (theme: loadData { inherit theme lib; }) themes;
-      lib'   = merge ([ lib ] ++ (getAttrs "lib" themesData));
+      lib,
+      themes ? [],
+      decls ? {},
+      env ? {},
+    }: let
+      themesData = map (theme: loadData {inherit theme lib;}) themes;
+      lib' = merge ([lib] ++ (getAttrs "lib" themesData));
       decls' = merge (getAttrs "decls" themesData);
-      docs   = merge (getAttrs "docs" themesData);
-      files  = getAttrs "files" themesData;
+      docs = merge (getAttrs "docs" themesData);
+      files = getAttrs "files" themesData;
 
-      conf' =
-        let
-          root = parseDecls { inherit decls; optionFn = o: if o ? default then o.default else null; };
-          theme.theme = parseDecls { decls = decls'; optionFn = o: if o ? default then o.default else null; };
-          typeCheckResult = if   theme ? theme
-                            then typeCheck decls' theme.theme
-                            else null;
-        in deepSeq typeCheckResult (merge [ theme root ]);
+      conf' = let
+        root = parseDecls {
+          inherit decls;
+          optionFn = o:
+            if o ? default
+            then o.default
+            else null;
+        };
+        theme.theme = parseDecls {
+          decls = decls';
+          optionFn = o:
+            if o ? default
+            then o.default
+            else null;
+        };
+        typeCheckResult =
+          if theme ? theme
+          then typeCheck decls' theme.theme
+          else null;
+      in
+        deepSeq typeCheckResult (merge [theme root]);
 
-      env'   = env // {
-        lib       = lib';
-        conf      = conf';
-        templates = templates';
-      };
+      env' =
+        env
+        // {
+          lib = lib';
+          conf = conf';
+          templates = templates';
+        };
 
-      templates' =
-        let templatesSet = merge (getAttrs "templates" themesData);
-        in  mapAttrsRecursive (path: template: template env') templatesSet;
-
+      templates' = let
+        templatesSet = merge (getAttrs "templates" themesData);
+      in
+        mapAttrsRecursive (path: template: template env') templatesSet;
     in {
       inherit docs files;
-      lib       = lib';
-      decls     = decls';
-      env       = env';
-      conf      = conf';
+      lib = lib';
+      decls = decls';
+      env = env';
+      conf = conf';
       templates = templates';
-      themes    = themesData;
+      themes = themesData;
     };
-
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   loadData
 
- loadData
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   loadData = documentedFunction {
     description = ''
@@ -182,48 +195,49 @@ rec {
     '';
 
     function = {
-      theme
-    , lib
-    }:
-      let
-        confFile     = findInTheme { path = theme; } "conf.nix";
-        libFile      = findInTheme { path = theme; } "lib.nix";
-        filesDir     = findInTheme { path = theme; } "files";
-        templatesDir = findInTheme { path = theme; } "templates";
-        exampleFile  = findInTheme { path = theme; } "example/site.nix";
-        arg          = { inherit lib; };
-        meta         = importApply (theme + "/meta.nix") arg;
-      in {
+      theme,
+      lib,
+    }: let
+      confFile = findInTheme {path = theme;} "conf.nix";
+      libFile = findInTheme {path = theme;} "lib.nix";
+      filesDir = findInTheme {path = theme;} "files";
+      templatesDir = findInTheme {path = theme;} "templates";
+      exampleFile = findInTheme {path = theme;} "example/site.nix";
+      arg = {inherit lib;};
+      meta = importApply (theme + "/meta.nix") arg;
+    in
+      {
         # meta information
-        meta  = { name = meta.id; } // meta;
+        meta = {name = meta.id;} // meta;
         # id
-        id    = meta.id;
+        id = meta.id;
         # path
-        path  = toPath theme;
+        path = toPath theme;
       }
       # function library
-      // optionalAttrs (libFile != null) 
-           { lib = importApply libFile arg; }
+      // optionalAttrs (libFile != null)
+      {lib = importApply libFile arg;}
       # configuration interface declarations and documentation
       // (optionalAttrs (confFile != null)
-           rec { decls = importApply confFile arg; docs = mkDoc decls; })
+        rec {
+          decls = importApply confFile arg;
+          docs = mkDoc decls;
+        })
       // (optionalAttrs (exampleFile != null)
-           { exampleSrc = readFile exampleFile; })
+        {exampleSrc = readFile exampleFile;})
       // (optionalAttrs (templatesDir != null)
-           { templates = (mapAttrsRecursive (path: value: import value) (fetchTemplateDir templatesDir)); })
+        {templates = mapAttrsRecursive (path: value: import value) (fetchTemplateDir templatesDir);})
       // (optionalAttrs (filesDir != null)
-           { files = filesDir; });
-
+        {files = filesDir;});
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   mkDoc
 
- mkDoc
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   mkDoc = documentedFunction {
     description = ''
@@ -240,53 +254,59 @@ rec {
 
     return = "A documentation set.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        mkDoc {
-          foo.bar = 1;
+    examples = [
+      (mkExample {
+        literalCode = ''
+          mkDoc {
+            foo.bar = 1;
+            title = mkOption {
+              description = "Title";
+              type = types.str;
+            };
+          }
+        '';
+        code = mkDoc {
           title = mkOption {
             description = "Title";
             type = types.str;
           };
-        }
-      '';
-      code =
-        mkDoc {
-          title = mkOption {
-            description = "Title";
-            type = types.str;
-          };
           foo.bar = 1;
-        }
-      ;
-      expected = {
-        foo.bar = {
-          _type = "option";
-          default = 1;
         };
-        title = {
-          _type = "option";
-          description = "Title";
-          type = "string";
+        expected = {
+          foo.bar = {
+            _type = "option";
+            default = 1;
+          };
+          title = {
+            _type = "option";
+            description = "Title";
+            type = "string";
+          };
         };
-      };
-    }) ];
+      })
+    ];
 
-    function = decls: parseDecls {
-      inherit decls;
-      optionFn = (o: o // (if o ? type then { type = o.type.description; } else {}));
-      valueFn  = (v: mkOption { default = v; });
-    };
+    function = decls:
+      parseDecls {
+        inherit decls;
+        optionFn = o:
+          o
+          // (
+            if o ? type
+            then {type = o.type.description;}
+            else {}
+          );
+        valueFn = v: mkOption {default = v;};
+      };
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   docText
 
- docText
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   docText = documentedFunction {
     description = "Convert a documentation set to a property list to generate documention.";
@@ -301,53 +321,55 @@ rec {
 
     return = "A prepared documentation property list.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        docText (mkDoc {
+    examples = [
+      (mkExample {
+        literalCode = ''
+          docText (mkDoc {
+            title = mkOption {
+              description = "Title";
+              type = types.str;
+            };
+            foo.bar = 1;
+          })
+        '';
+        code = docText (mkDoc {
           title = mkOption {
             description = "Title";
             type = types.str;
           };
           foo.bar = 1;
-        })
-      '';
-      code =
-        docText (mkDoc {
-          title = mkOption {
-            description = "Title";
-            type = types.str;
-          };
-          foo.bar = 1;
-        })
-      ;
-      expected = [ {
-        "foo.bar" = {
-          default = 1;
-        };
-      } {
-        title = {
-          description = "Title";
-          type = "string";
-        };
-      } ];
-    }) ];
+        });
+        expected = [
+          {
+            "foo.bar" = {
+              default = 1;
+            };
+          }
+          {
+            title = {
+              description = "Title";
+              type = "string";
+            };
+          }
+        ];
+      })
+    ];
 
-    function = docSet:
-      let
+    function = docSet: let
       f = path: set:
-        map (key:
-          let
+        map (
+          key: let
             value = set.${key};
-            newPath = path ++ [ key ];
+            newPath = path ++ [key];
             pathString = concatStringsSep "." newPath;
           in
-          if isOption value
-             then { "${pathString}" = removeAttrs value [ "_type" ]; }
-          else if isAttrs value
-             then f newPath value
-             else { "${pathString}" = value; }
+            if isOption value
+            then {"${pathString}" = removeAttrs value ["_type"];}
+            else if isAttrs value
+            then f newPath value
+            else {"${pathString}" = value;}
         ) (attrNames set);
-      in flatten (f [] docSet);
+    in
+      flatten (f [] docSet);
   };
-
 }

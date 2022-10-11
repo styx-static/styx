@@ -1,6 +1,8 @@
-{ conf, templates, ... }:
-block:
 {
+  conf,
+  templates,
+  ...
+}: block: {
   content = ''
     <div class="profile-container">
     <img class="profile" src="${templates.url block.image}" alt="${block.name}" />

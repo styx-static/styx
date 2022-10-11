@@ -1,12 +1,17 @@
-{ templates, lib, ... }:
+{
+  templates,
+  lib,
+  ...
+}:
 with lib;
-normalTemplate (data: {
-  content = templates.blocks.basic (data // {
-    content = ''
-      <div class="row">
-        <div class="col-lg-12">
-          <ul class="timeline">
-            ${mapTemplateWithIndex (index: event: ''
+  normalTemplate (data: {
+    content = templates.blocks.basic (data
+      // {
+        content = ''
+          <div class="row">
+            <div class="col-lg-12">
+              <ul class="timeline">
+                ${mapTemplateWithIndex (index: event: ''
               <li${optionalString (isOdd index) " ${htmlAttr "class" "timeline-inverted"}"}>
                 <div class="timeline-image">
                   <img class="img-circle img-responsive" src="${templates.url event.img}" alt="">
@@ -21,18 +26,19 @@ normalTemplate (data: {
                   </div>
                 </div>
               </li>
-            '') data.items}
-            ${optionalString (data ? endpoint) ''
+            '')
+            data.items}
+                ${optionalString (data ? endpoint) ''
             <li class="timeline-inverted">
               <div class="timeline-image">
                 <h4>${data.endpoint}</h4>
               </div>
               </li>
-            ''}
-          </ul>
-        </div>
-      </div>
-    '';
-  });
-  extraCSS = { href = templates.url "/css/timeline.css"; };
-})
+          ''}
+              </ul>
+            </div>
+          </div>
+        '';
+      });
+    extraCSS = {href = templates.url "/css/timeline.css";};
+  })

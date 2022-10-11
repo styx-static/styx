@@ -7,7 +7,7 @@
     lib.highlightjs = {
       enable = true;
       style = "github";
-      extraLanguages = [ "nix" ];
+      extraLanguages = ["nix"];
     };
   };
 }

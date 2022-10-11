@@ -1,9 +1,8 @@
-{ lib }:
-with lib;
-{
-  
-/* General settings
-*/
+{lib}:
+with lib; {
+  /*
+  General settings
+  */
   site = {
     title = mkOption {
       default = "The Agency";
@@ -22,10 +21,11 @@ with lib;
     };
   };
 
-/* Footer
+  /*
+  Footer
 
-   This section control the links and copyright in the footer
-*/
+  This section control the links and copyright in the footer
+  */
   footer = {
     copyright = mkOption {
       default = "Published under the Apache License 2.0.";
@@ -37,9 +37,18 @@ with lib;
       type = with types; listOf attrs;
       default = [];
       example = [
-        { icon = "fa-twitter";  link ="#"; }
-        { icon = "fa-facebook"; link ="#"; }
-        { icon = "fa-linkedin"; link ="#"; }
+        {
+          icon = "fa-twitter";
+          link = "#";
+        }
+        {
+          icon = "fa-facebook";
+          link = "#";
+        }
+        {
+          icon = "fa-linkedin";
+          link = "#";
+        }
       ];
     };
     quicklinks = mkOption {
@@ -47,8 +56,14 @@ with lib;
       type = with types; listOf attrs;
       default = [];
       example = [
-        { text = "Privacy Policy"; link ="#"; }
-        { text = "Terms of Use";   link ="#"; }
+        {
+          text = "Privacy Policy";
+          link = "#";
+        }
+        {
+          text = "Terms of Use";
+          link = "#";
+        }
       ];
     };
   };

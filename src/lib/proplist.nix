@@ -1,20 +1,17 @@
-/* library to deal with properties (single key attribute set), and property lists
+/*
+library to deal with properties (single key attribute set), and property lists
 
-   Property example:
+Property example:
 
-     { foo = "bar"; }
+  { foo = "bar"; }
 
-   Property list example:
+Property list example:
 
-     [ { foo = "bar"; } { baz = "buz"; } ]
+  [ { foo = "bar"; } { baz = "buz"; } ]
 */
-
 args:
 with args.lib;
-with (import ./utils.nix args);
-
-rec {
-
+with (import ./utils.nix args); rec {
   _documentation = _: ''
     The proplist namespace contains functions to manipulate property lists, list of attribute set with only one attribute.
 
@@ -28,13 +25,13 @@ rec {
     ----
   '';
 
-/*
-===============================================================
+  /*
+  ===============================================================
 
- propKey
+   propKey
 
-===============================================================
-*/
+  ===============================================================
+  */
 
   propKey = documentedFunction {
     description = "Get the key of a property.";
@@ -49,27 +46,27 @@ rec {
 
     return = "Key of the property.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        propKey { name = "Alice"; }
-      '';
-      code =
-        propKey { name = "Alice"; }
-      ;
-      expected = "name";
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          propKey { name = "Alice"; }
+        '';
+        code =
+          propKey {name = "Alice";};
+        expected = "name";
+      })
+    ];
 
     function = prop: head (attrNames prop);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   propValue
 
- propValue
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   propValue = documentedFunction {
     description = "Get the value of a property.";
@@ -84,27 +81,27 @@ rec {
 
     return = "The value of the property.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        propValue { name = "Alice"; }
-      '';
-      code =
-        propValue { name = "Alice"; }
-      ;
-      expected = "Alice";
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          propValue { name = "Alice"; }
+        '';
+        code =
+          propValue {name = "Alice";};
+        expected = "Alice";
+      })
+    ];
 
     function = prop: head (attrValues prop);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   isDefined
 
- isDefined
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   isDefined = documentedFunction {
     description = "Check if a property with a key exists in a property list.";
@@ -124,31 +121,32 @@ rec {
 
     return = "`Bool`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        isDefined "name" [ { name = "Alice"; } ]
-      '';
-      code =
-        isDefined "name" [ { name = "Alice"; } ]
-      ;
-      expected = true;
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          isDefined "name" [ { name = "Alice"; } ]
+        '';
+        code =
+          isDefined "name" [{name = "Alice";}];
+        expected = true;
+      })
+    ];
 
-    function = key: list:
-        let keys = map propKey list;
-      in if (length list) > 0
-            then elem key keys
-            else false;
+    function = key: list: let
+      keys = map propKey list;
+    in
+      if (length list) > 0
+      then elem key keys
+      else false;
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   getValue
 
- getValue
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   getValue = documentedFunction {
     description = "Get a value from a property in a property list by the key name.";
@@ -168,27 +166,27 @@ rec {
 
     return = "The value of the property.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        getValue "name" [ { name = "Alice"; } ]
-      '';
-      code =
-        getValue "name" [ { name = "Alice"; } ]
-      ;
-      expected = "Alice";
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          getValue "name" [ { name = "Alice"; } ]
+        '';
+        code =
+          getValue "name" [{name = "Alice";}];
+        expected = "Alice";
+      })
+    ];
 
     function = key: list: head (catAttrs key list);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   getProp
 
- getProp
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   getProp = documentedFunction {
     description = "Get a property in a property list by the key name.";
@@ -208,27 +206,27 @@ rec {
 
     return = "`Property`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        getProp "name" [ { name = "Alice"; } ]
-      '';
-      code =
-        getProp "name" [ { name = "Alice"; } ]
-      ;
-      expected = { name = "Alice"; };
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          getProp "name" [ { name = "Alice"; } ]
+        '';
+        code =
+          getProp "name" [{name = "Alice";}];
+        expected = {name = "Alice";};
+      })
+    ];
 
     function = key: list: head (filter (x: (propKey x) == key) list);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   removeProp
 
- removeProp
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   removeProp = documentedFunction {
     description = "Return a property list where the property with key `key` has been removed.";
@@ -248,27 +246,27 @@ rec {
 
     return = "`PropList`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
-      '';
-      code =
-        removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
-      ;
-      expected = [ { hobby = "Sports"; } ];
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          removeProp "name" [ { name = "Alice"; } { hobby = "Sports"; } ]
+        '';
+        code =
+          removeProp "name" [{name = "Alice";} {hobby = "Sports";}];
+        expected = [{hobby = "Sports";}];
+      })
+    ];
 
     function = key: list: filter (p: (propKey p) != key) list;
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   propMap
 
- propMap
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   propMap = documentedFunction {
     description = "Map for property lists.";
@@ -288,27 +286,27 @@ rec {
 
     return = "`[ a ]`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        propMap (k: v: "''${k}: ''${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
-      '';
-      code =
-        propMap (k: v: "${k}: ${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
-      ;
-      expected = [ "name: Alice" "hobby: Sports" ];
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          propMap (k: v: "''${k}: ''${v}") [ { name = "Alice"; } { hobby = "Sports"; } ]
+        '';
+        code =
+          propMap (k: v: "${k}: ${v}") [{name = "Alice";} {hobby = "Sports";}];
+        expected = ["name: Alice" "hobby: Sports"];
+      })
+    ];
 
     function = f: list: map (p: f (propKey p) (propValue p)) list;
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   propFlatten
 
- propFlatten
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   propFlatten = documentedFunction {
     description = "Flatten a property list which values are lists.";
@@ -323,26 +321,29 @@ rec {
 
     return = "The flattened property list.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
-      '';
-      code =
-        propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
-      ;
-      expected = [
-        { foo = [ 1 2 3 4 ]; }
-        { bar = "baz"; }
-      ];
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          propFlatten [ { foo = [ 1 2 ]; } { bar = "baz"; } { foo = [ 3 4 ]; } ]
+        '';
+        code =
+          propFlatten [{foo = [1 2];} {bar = "baz";} {foo = [3 4];}];
+        expected = [
+          {foo = [1 2 3 4];}
+          {bar = "baz";}
+        ];
+      })
+    ];
 
     function = plist:
-      fold (p: acc:
-        let k = propKey p;
-        in if isDefined k acc && isList (propValue p) && isList (getValue k acc)
-           then [ { "${k}" = (propValue p) ++ (getValue k acc); } ] ++ (removeProp k acc)
-           else [ p ] ++ acc
-      ) [] plist;
+      fold (
+        p: acc: let
+          k = propKey p;
+        in
+          if isDefined k acc && isList (propValue p) && isList (getValue k acc)
+          then [{"${k}" = (propValue p) ++ (getValue k acc);}] ++ (removeProp k acc)
+          else [p] ++ acc
+      ) []
+      plist;
   };
-
 }

@@ -1,11 +1,10 @@
-{ lib }:
-{
+{lib}: {
   id = "ghostwriter";
   name = "Ghostwriter";
   license = lib.licenses.mit;
   demoPage = https://styx-static.github.io/styx-theme-ghostwriter;
   homepage = https://github.com/styx-static/styx-theme-ghostwriter;
-  tags = [ "blog" ];
+  tags = ["blog"];
   documentation = lib.readFile ./documentation.adoc;
   screenshot = ./screen.png;
   description = ''

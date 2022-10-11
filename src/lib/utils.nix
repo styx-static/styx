@@ -1,25 +1,24 @@
 # utilities
-
 args:
-with args.lib;
-
-let
+with args.lib; let
   documentedFunction' = data:
-    data // { _type = "docFunction"; __functor = _: data.function; };
-
+    data
+    // {
+      _type = "docFunction";
+      __functor = _: data.function;
+    };
 in rec {
-
   _documentation = _: ''
     This namespace contains generic functions.
   '';
 
-/*
-===============================================================
+  /*
+  ===============================================================
 
- find
+   find
 
-===============================================================
-*/
+  ===============================================================
+  */
 
   find = documentedFunction {
     description = "Find a set in a list of set matching some criteria.";
@@ -39,69 +38,96 @@ in rec {
 
     return = "The first matched attribute set, or throw an error if no result has been found.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        find { uid = "bar"; } [ 
-          { uid = "foo"; }
-          { uid = "bar"; content = "hello!"; }
-          { uid = "baz"; }
-        ]
-      '';
-      code =
-        find { uid = "bar"; } [ 
-          { uid = "foo"; }
-          { uid = "bar"; content = "hello!"; }
-          { uid = "baz"; }
-        ]
-      ;
-      expected = { uid = "bar"; content = "hello!"; };
-    }) (mkExample {
-      literalCode = ''
-        find { number = (x: x > 3); color = "blue"; } [
-          { number = 1; color = "blue"; }
-          { number = 4; color = "red"; }
-          { number = 6; color = "blue"; }
-        ]
-      '';
-      code =
-        find { number = (x: x > 3); color = "blue"; } [
-          { number = 1; color = "blue"; }
-          { number = 4; color = "red"; }
-          { number = 6; color = "blue"; }
-        ]
-      ;
-      expected = { number = 6; color = "blue"; };
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          find { uid = "bar"; } [
+            { uid = "foo"; }
+            { uid = "bar"; content = "hello!"; }
+            { uid = "baz"; }
+          ]
+        '';
+        code = find {uid = "bar";} [
+          {uid = "foo";}
+          {
+            uid = "bar";
+            content = "hello!";
+          }
+          {uid = "baz";}
+        ];
+        expected = {
+          uid = "bar";
+          content = "hello!";
+        };
+      })
+      (mkExample {
+        literalCode = ''
+          find { number = (x: x > 3); color = "blue"; } [
+            { number = 1; color = "blue"; }
+            { number = 4; color = "red"; }
+            { number = 6; color = "blue"; }
+          ]
+        '';
+        code =
+          find {
+            number = x: x > 3;
+            color = "blue";
+          } [
+            {
+              number = 1;
+              color = "blue";
+            }
+            {
+              number = 4;
+              color = "red";
+            }
+            {
+              number = 6;
+              color = "blue";
+            }
+          ];
+        expected = {
+          number = 6;
+          color = "blue";
+        };
+      })
+    ];
 
-    function = criteria: list:
-      let
-        subset = sub: super: fold (a: b: a && b) true (mapAttrsToList (k: v:
-          let
-            v'       = getAttr k super;
-            matching = if isFunction v then v v' else v == v';
-          in hasAttr k super && matching
-          ) sub
+    function = criteria: list: let
+      subset = sub: super:
+        fold (a: b: a && b) true (
+          mapAttrsToList (
+            k: v: let
+              v' = getAttr k super;
+              matching =
+                if isFunction v
+                then v v'
+                else v == v';
+            in
+              hasAttr k super && matching
+          )
+          sub
         );
-        matches = filter (x: subset criteria x) list;
-      in
-        if matches == []
-        then throw ''
+      matches = filter (x: subset criteria x) list;
+    in
+      if matches == []
+      then
+        throw ''
           No items matched the following find criteria:
           ---
           ${prettyNix criteria}
           ---
         ''
-        else head matches;
+      else head matches;
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   is
 
- is
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   is = documentedFunction {
     description = "Check if an attribute set has a certain type.";
@@ -121,28 +147,27 @@ in rec {
 
     return = "`Bool`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        is "foo" { _type = "foo"; }
-      '';
-      code =
-        is "foo" { _type = "foo"; }
-      ;
-      expected = true;
-    })];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          is "foo" { _type = "foo"; }
+        '';
+        code =
+          is "foo" {_type = "foo";};
+        expected = true;
+      })
+    ];
 
     function = type: x: isAttrs x && x ? _type && x._type == type;
   };
 
+  /*
+  ===============================================================
 
+   isExample
 
-/*
-===============================================================
-
- isExample
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   isExample = documentedFunction {
     description = "Check if a set is an example.";
@@ -155,34 +180,32 @@ in rec {
       }
     ];
 
-    examples = [ (mkExample {
-      literalCode = ''
-        isExample (mkExample {
+    examples = [
+      (mkExample {
+        literalCode = ''
+          isExample (mkExample {
+            literalCode = "2 + 2";
+            code = 2 + 2;
+          })
+        '';
+        code = isExample (mkExample {
           literalCode = "2 + 2";
           code = 2 + 2;
-        })
-      '';
-      code =
-        isExample (mkExample {
-          literalCode = "2 + 2";
-          code = 2 + 2;
-        })
-      ;
-      expected = true;
-    })];
+        });
+        expected = true;
+      })
+    ];
 
     function = is "example";
   };
 
+  /*
+  ===============================================================
 
+   isDocExample
 
-/*
-===============================================================
-
- isDocExample
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   isDocFunction = documentedFunction {
     description = "Check if a set is a documented fuction.";
@@ -200,14 +223,13 @@ in rec {
     function = is "docFunction";
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   mkExample
 
- mkExample
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   mkExample = documentedFunction {
     description = "Create an example set.";
@@ -215,22 +237,25 @@ in rec {
     return = "An example attribute set.";
 
     function = {
-      literalCode ? null
-    , code ? null
-    , displayCode ? id
-    , expected ? null
-    }@args:
-    args // { _type = "example"; inherit displayCode; };
+      literalCode ? null,
+      code ? null,
+      displayCode ? id,
+      expected ? null,
+    } @ args:
+      args
+      // {
+        _type = "example";
+        inherit displayCode;
+      };
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   documentedFunction
 
- documentedFunction
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   documentedFunction = documentedFunction' {
     description = "Create a documented function. A documented function is used to automatically generate documentation and tests.";
@@ -266,24 +291,27 @@ in rec {
     return = "The documented function set.";
 
     function = {
-      description
-    , function
-    , arguments ? null
-    , return ? null
-    , examples ? []
-    , notes ? null
-    }@data:
-      data // { _type = "docFunction"; __functor = _: function; };
+      description,
+      function,
+      arguments ? null,
+      return ? null,
+      examples ? [],
+      notes ? null,
+    } @ data:
+      data
+      // {
+        _type = "docFunction";
+        __functor = _: function;
+      };
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   chunksOf
 
- chunksOf
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   chunksOf = documentedFunction {
     description = "Split a list in lists multiple lists of `size` items.";
@@ -305,28 +333,30 @@ in rec {
       A list of lists of `size` size.
     '';
 
-    examples = [ (mkExample {
-      literalCode = "chunksOf 2 [ 1 2 3 4 5 ]";
-      code        = chunksOf 2 [ 1 2 3 4 5 ];
-      expected    = [ [ 1 2 ] [ 3 4 ] [ 5 ] ];
-    })];
+    examples = [
+      (mkExample {
+        literalCode = "chunksOf 2 [ 1 2 3 4 5 ]";
+        code = chunksOf 2 [1 2 3 4 5];
+        expected = [[1 2] [3 4] [5]];
+      })
+    ];
 
-    function = k:
-      let f = ys: xs:
-            if xs == []
-            then ys
-            else f (ys ++ [(take k xs)]) (drop k xs);
-      in f [];
+    function = k: let
+      f = ys: xs:
+        if xs == []
+        then ys
+        else f (ys ++ [(take k xs)]) (drop k xs);
+    in
+      f [];
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   getAttrs
 
- getAttrs
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   getAttrs = documentedFunction {
     description = "Get the attribute values for the `n` attribute name from a `l` list of attribute sets.";
@@ -348,149 +378,171 @@ in rec {
       A list containing the values of `n`.
     '';
 
-    examples = [ (mkExample {
-      literalCode = "getAttrs \"a\" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ]";
-      code        = getAttrs "a" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ];
-      expected    = [ 1 2 4 ];
-    })];
+    examples = [
+      (mkExample {
+        literalCode = "getAttrs \"a\" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ]";
+        code = getAttrs "a" [{a = 1;} {a = 2;} {b = 3;} {a = 4;}];
+        expected = [1 2 4];
+      })
+    ];
 
     function = n: l: map (x: getAttr n x) (filter (x: hasAttr n x) l);
   };
 
-/*
-===============================================================
+  /*
+  ===============================================================
 
- merge
+   merge
 
-===============================================================
-*/
+  ===============================================================
+  */
 
   merge = documentedFunction {
     description = "Merge recursively a list of sets.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        conf = lib.utils.merge [
-          (lib.themes.loadConf { inherit themes; })
-          (import ./conf.nix)
-          extraConf
+    examples = [
+      (mkExample {
+        literalCode = ''
+          conf = lib.utils.merge [
+            (lib.themes.loadConf { inherit themes; })
+            (import ./conf.nix)
+            extraConf
+          ];
+        '';
+      })
+      (mkExample {
+        literalCode = ''
+          merge [ { a = 1; b = 2; } { b = "x"; c = "y"; } ]
+        '';
+        code = merge [
+          {
+            a = 1;
+            b = 2;
+          }
+          {
+            b = "x";
+            c = "y";
+          }
         ];
-      '';
-    }) (mkExample {
-      literalCode = ''
-        merge [ { a = 1; b = 2; } { b = "x"; c = "y"; } ]
-      '';
-      code =
-        merge [ { a = 1; b = 2; } { b = "x"; c = "y"; } ]
-      ;
-      expected = { a = 1; b = "x"; c = "y"; };
-    })];
+        expected = {
+          a = 1;
+          b = "x";
+          c = "y";
+        };
+      })
+    ];
 
-    function = foldl' (set: acc:
+    function = foldl' (
+      set: acc:
         recursiveUpdate set acc
-      ) {};
+    ) {};
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   sortBy
 
- sortBy
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   sortBy = documentedFunction {
     description = "Sort a list of attribute sets by attribute.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
-      '';
-      code =
-        sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
-      ;
-      expected = [ { priority = 2; } { priority = 5; } ];
-    })];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          sortBy "priority" "asc" [ { priority = 5; } { priority = 2; } ]
+        '';
+        code =
+          sortBy "priority" "asc" [{priority = 5;} {priority = 2;}];
+        expected = [{priority = 2;} {priority = 5;}];
+      })
+    ];
 
     function = attribute: order:
       sort (a: b:
-             if order == "asc" then a."${attribute}" < b."${attribute}"
-        else if order == "dsc" then a."${attribute}" > b."${attribute}"
-        else    abort "Sort order must be 'asc' or 'dsc'");
+        if order == "asc"
+        then a."${attribute}" < b."${attribute}"
+        else if order == "dsc"
+        then a."${attribute}" > b."${attribute}"
+        else abort "Sort order must be 'asc' or 'dsc'");
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   dirContains
 
- dirContains
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   dirContains = documentedFunction {
     description = "Check if a path exists in a directory.";
 
-    function = dir: path:
-      let
-        pathArray = filter (x: x != "") (splitString "/" path);
-        loop = base: path:
-          let contents = readDir base;
-          in if hasAttrByPath [ (head path) ] contents
-             then if length path > 1
-                  then loop (base + "/${head path}") (tail path)
-                  else true
-             else false;
-      in loop dir pathArray;
+    function = dir: path: let
+      pathArray = filter (x: x != "") (splitString "/" path);
+      loop = base: path: let
+        contents = readDir base;
+      in
+        if hasAttrByPath [(head path)] contents
+        then
+          if length path > 1
+          then loop (base + "/${head path}") (tail path)
+          else true
+        else false;
+    in
+      loop dir pathArray;
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   setToList
 
- setToList
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   setToList = documentedFunction {
     description = "Convert a deep set to a list of sets where the key is the path.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        setToList { a.b.c = true; d = "foo"; x.y.z = [ 1 2 3 ]; }
-      '';
-      code =
-        setToList { a.b.c = true; d = "foo"; x.y.z = [ 1 2 3 ]; }
-      ;
-      expected = [ { "a.b.c" = true; } { d = "foo"; } { "x.y.z" = [ 1 2 3 ]; } ];
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          setToList { a.b.c = true; d = "foo"; x.y.z = [ 1 2 3 ]; }
+        '';
+        code = setToList {
+          a.b.c = true;
+          d = "foo";
+          x.y.z = [1 2 3];
+        };
+        expected = [{"a.b.c" = true;} {d = "foo";} {"x.y.z" = [1 2 3];}];
+      })
+    ];
 
-    function = s:
-      let
+    function = s: let
       f = path: set:
-        map (key:
-          let
+        map (
+          key: let
             value = set.${key};
-            newPath = path ++ [ key ];
+            newPath = path ++ [key];
             pathString = concatStringsSep "." newPath;
           in
-          if isAttrs value
-             then f newPath value
-             else { "${pathString}" = value; }
+            if isAttrs value
+            then f newPath value
+            else {"${pathString}" = value;}
         ) (attrNames set);
-      in flatten (f [] s);
+    in
+      flatten (f [] s);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   isPath
 
- isPath
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   isPath = documentedFunction {
     description = "Check if the parameter is a path";
@@ -498,14 +550,13 @@ in rec {
     function = x: (! isAttrs x) && types.path.check x;
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   importApply
 
- importApply
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   importApply = documentedFunction {
     description = "Import a nix file `file` and apply the arguments `arg` if it is a function.";
@@ -522,73 +573,89 @@ in rec {
       }
     ];
 
-    function = file: arg:
-      let f = import file;
-      in if isFunction f then f arg else f;
+    function = file: arg: let
+      f = import file;
+    in
+      if isFunction f
+      then f arg
+      else f;
   };
 
+  /*
+  ===============================================================
 
+   prettyNix
 
-/*
-===============================================================
-
- prettyNix
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   prettyNix = documentedFunction {
     description = "Pretty print nix values.";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        prettyNix [ { a.b.c = true; } { x.y.z = [ 1 2 3 ]; } ]
-      '';
-      code =
-        prettyNix [ { a.b.c = true; } { x.y.z = [ 1 2 3 ]; } ]
-      ;
-      expected = ''
-      [ {
-        a = {
-          b = {
-            c = true;
-          };
-        };
-      } {
-        x = {
-          y = {
-            z = [ 1 2 3 ];
-          };
-        };
-      } ]'';
-    }) ];
+    examples = [
+      (mkExample {
+        literalCode = ''
+          prettyNix [ { a.b.c = true; } { x.y.z = [ 1 2 3 ]; } ]
+        '';
+        code =
+          prettyNix [{a.b.c = true;} {x.y.z = [1 2 3];}];
+        expected = ''
+          [ {
+            a = {
+              b = {
+                c = true;
+              };
+            };
+          } {
+            x = {
+              y = {
+                z = [ 1 2 3 ];
+              };
+            };
+          } ]'';
+      })
+    ];
 
-    function = expr:
-      let indent = n: concatStrings (genList (x: " ") (n*2));
-          isLit = x: isAttrs x && x ? _type && x._type == "literalExpression";
-          loop   = n: x:
-             if isString x then ''"${replaceStrings [''"''] [''\"''] x}"''
-        else if isInt    x then toString x
-        else if isNull   x then "null"
-        else if isList   x then ''[ ${concatStringsSep " " (map (loop n) x)} ]''
-        else if isBool   x then toJSON x
-        else if x == {}    then ''{ }''
-        else if isLit    x then x.text
-        else if isDerivation x then "(build of ${x.name})"
-        else if isAttrs  x then ''
-        {
-        ${indent (n+1)}${concatStringsSep "\n${indent (n+1)}" (mapAttrsToList (k: v:
-          let k' = if (match "^(.+)[.](.+)$" k) != null
-                   || (match "^(.+)[ \t\r\n](.+)$" k) != null
-                   then ''"${k}"''
-                   else k;
-          in
-          "${k'} = ${loop (n+1) v};")
-        x)}
-        ${indent n}}''
-        else if isFunction x then ''<function>''
-        else if (typeOf x == "path") then ''`${toString x}`''
+    function = expr: let
+      indent = n: concatStrings (genList (x: " ") (n * 2));
+      isLit = x: isAttrs x && x ? _type && x._type == "literalExpression";
+      loop = n: x:
+        if isString x
+        then ''"${replaceStrings [''"''] [''\"''] x}"''
+        else if isInt x
+        then toString x
+        else if isNull x
+        then "null"
+        else if isList x
+        then ''[ ${concatStringsSep " " (map (loop n) x)} ]''
+        else if isBool x
+        then toJSON x
+        else if x == {}
+        then ''{ }''
+        else if isLit x
+        then x.text
+        else if isDerivation x
+        then "(build of ${x.name})"
+        else if isAttrs x
+        then ''
+          {
+          ${indent (n + 1)}${concatStringsSep "\n${indent (n + 1)}" (mapAttrsToList (k: v: let
+            k' =
+              if
+                (match "^(.+)[.](.+)$" k)
+                != null
+                || (match "^(.+)[ \t\r\n](.+)$" k) != null
+              then ''"${k}"''
+              else k;
+          in "${k'} = ${loop (n + 1) v};")
+          x)}
+          ${indent n}}''
+        else if isFunction x
+        then ''<function>''
+        else if (typeOf x == "path")
+        then ''`${toString x}`''
         else "";
-      in loop 0 expr;
+    in
+      loop 0 expr;
   };
 }

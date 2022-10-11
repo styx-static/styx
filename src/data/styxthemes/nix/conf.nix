@@ -1,6 +1,5 @@
-{ lib }:
-with lib;
-{
+{lib}:
+with lib; {
   site = {
     title = mkOption {
       description = "Site title.";
@@ -18,7 +17,7 @@ with lib;
       description = "Site copyright.";
       type = types.str;
       default = ''
-        &copy; 2017. All rights reserved. 
+        &copy; 2017. All rights reserved.
       '';
     };
   };
