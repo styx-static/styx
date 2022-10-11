@@ -1,14 +1,13 @@
 import re
 import sys
 import textwrap
-from   string import Template
+from string import Template
 
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
 
 class MarkupParser(NodeVisitor):
-
     def __init__(self, text):
         grammar = """
              main          = meta? (nix / markup)*
@@ -34,8 +33,8 @@ class MarkupParser(NodeVisitor):
              nix_expr      = !nix_open !nix_close (esc_nix_close / ~"."s)
              nix_close     = "}}" 
          """
-        self.meta   = "";
-        self.markup = "";
+        self.meta = ""
+        self.markup = ""
         self.result = self.visit(Grammar(grammar).parse(text))
 
     def visit_main(self, node, children):
@@ -45,7 +44,7 @@ class MarkupParser(NodeVisitor):
         return node.text
 
     def visit_meta(self, node, children):
-        self.meta = "".join(filter(lambda x: x != None, children)) 
+        self.meta = "".join(filter(lambda x: x != None, children))
         return ""
 
     def visit_meta_open(self, node, children):
@@ -90,35 +89,36 @@ class MarkupParser(NodeVisitor):
     def generic_visit(self, node, children):
         return "".join(filter(lambda x: x != None, children))
 
+
 def processNixText(text):
     # escaping page sep
     text = text.replace("\<<<", "<<<")
     return text
 
+
 def toNix(meta, markup):
 
-    args = {
-        'meta':    meta,
-        'intro':   "",
-        'content': "",
-        'pages':   ""
-    }
+    args = {"meta": meta, "intro": "", "content": "", "pages": ""}
 
     intro_match = markup.split("\n[more]\n")
     if len(intro_match) > 1:
-      args['intro']   = "intro = ''{}'';".format(intro_match[0])
-      args['content'] = intro_match[1]
+        args["intro"] = "intro = ''{}'';".format(intro_match[0])
+        args["content"] = intro_match[1]
     else:
-      args['content'] = intro_match[0]
+        args["content"] = intro_match[0]
 
-    pages_match = args['content'].split("\n<<<\n")
+    pages_match = args["content"].split("\n<<<\n")
     if len(pages_match) > 1:
-      args['pages']   = "pages = [ ''{}'' ];".format("''\n''".join(map(lambda x: processNixText(x), pages_match)))
-      args['content'] = ""
+        args["pages"] = "pages = [ ''{}'' ];".format(
+            "''\n''".join(map(lambda x: processNixText(x), pages_match))
+        )
+        args["content"] = ""
     else:
-      args['content'] = "content = ''{}'';".format(args['content'])
+        args["content"] = "content = ''{}'';".format(args["content"])
 
-    template = Template(textwrap.dedent("""
+    template = Template(
+        textwrap.dedent(
+            """
       env:
       let meta = rec {
       $meta
@@ -130,10 +130,12 @@ def toNix(meta, markup):
       $intro
       $pages
       } // meta)
-    """))
+    """
+        )
+    )
 
     return template.safe_substitute(**args)
 
 
 m = MarkupParser(sys.stdin.read())
-print(toNix (m.meta, m.result))
+print(toNix(m.meta, m.result))

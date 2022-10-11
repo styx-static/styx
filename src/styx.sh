@@ -8,7 +8,7 @@
 
 # Show help
 display_usage() {
-  cat << EOF
+  cat <<EOF
 Styx $version -- Styx is a functional static site generator in Nix expression language.
 
 Usage:
@@ -59,10 +59,10 @@ Deploy options:
     --site DIR                 Deploy the site in DIR.
 
 EOF
-# Dev options:
-#   --DEBUG                    set -x mode
-#   --build-path PATH          Do not build the site and use PATH instead, used for tests.
-    exit 0
+  # Dev options:
+  #   --DEBUG                    set -x mode
+  #   --build-path PATH          Do not build the site and use PATH instead, used for tests.
+  exit 0
 }
 
 # last changed timestamp
@@ -70,28 +70,28 @@ last_timestamp() {
   find $1 ! -path '*.git/*' ! -name '*.swp' ! -path 'gh-pages/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
 }
 
-nix_error () {
+nix_error() {
   echo "---"
   echo "Error: Site could not been built, fix the errors and run the command again."
   echo "The '--show-trace' flag can be used to show debug information."
   exit 1
 }
 
-check_dir () {
+check_dir() {
   if [ -d "$1" ]; then
     echo $2
     exit 1
   fi
 }
 
-check_styx () {
+check_styx() {
   if [ ! -f "$1/$2" ]; then
     echo "Error: No '$2' in '$1'"
     exit 1
   fi
 }
 
-check_git () {
+check_git() {
   $(git rev-parse --is-inside-work-tree)
   if [ $? -ne 0 ]; then
     echo "Error: '$1' is not a git repository."
@@ -99,9 +99,9 @@ check_git () {
   fi
 }
 
-check_browser () {
+check_browser() {
   if [ -z "$BROWSER" ]; then
-    cat << EOF
+    cat <<EOF
 Error: The 'BROWSER' environment variable is not set, try to re-run the command explicitely setting it:
   BROWSER=firefox styx doc
 
@@ -113,14 +113,17 @@ EOF
 }
 
 # build the site in the nix store
-store_build () {
+store_build() {
   extraConf+=("renderDrafts = $renderDrafts;")
-  extraFlags+=("--arg" "pkgs" "(let pkgs = import @nixpkgs@ {}; in pkgs.extend(_: _: {styx = pkgs.callPackage @src@/derivation.nix {};}))");
-  extraFlags+=("--arg" "extraConf" "{ $(IFS=; echo "${extraConf[@]}") }");
+  extraFlags+=("--arg" "pkgs" "(let pkgs = import @nixpkgs@ {}; in pkgs.extend(_: _: {styx = pkgs.callPackage @src@/derivation.nix {};}))")
+  extraFlags+=("--arg" "extraConf" "{ $(
+    IFS=
+    echo "${extraConf[@]}"
+  ) }")
   nix-build -A site "$1" --no-out-link "${extraFlags[@]}"
 }
 
-doc_build () {
+doc_build() {
   nix-build "$doc_builder" --no-out-link "${extraFlags[@]}"
 }
 
@@ -128,8 +131,8 @@ realpath() {
   # based on https://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
   SOURCE="$1"
   while [ -h "$SOURCE" ]; do
-    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-    SOURCE="$( readlink "$SOURCE" )"
+    DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"
     [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
   done
   echo "$SOURCE"
@@ -207,132 +210,144 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-
 #-------------------------------
 
 # Option parsing
 
 #-------------------------------
 
-
 while [ "$#" -gt 0 ]; do
-  i="$1"; shift 1
+  i="$1"
+  shift 1
   case "$i" in
-# Generic options
-    -h|--help)
-      display_usage
-      exit 0
-      ;;
-    -v|--version)
-      echo -e "styx $version"
-      exit 0
-      ;;
-    -I)
-      extraFlags+=("$i" "$1"); shift 1
-      ;;
-    --arg|--argstr)
-      extraFlags+=("$i" "$1" "$2"); shift 2
-      ;;
-    --show-trace|--quiet|--verbose)
-      extraFlags+=("$i")
-      ;;
-    --in)
-      if [ -e $1 ] && [ -d $1 ]; then
-        in=$(realpath "$1"); shift 1
-        in=${in%/}
-      else
-        echo "--in must be an existing directory."
-        exit 1
-      fi
-      ;;
-    --file)
-      siteFile=$1; shift 1
-      ;;
-# Commands
-    new)
-      action="$i"
-      if [ -n "$1" ] && [[ " ${newCommands[@]} " =~ " $1" ]]; then
-        newCommand="$1"; shift 1
-      else
-        commands=$(printf ", %s" "${newCommands[@]}")
-        echo "Error: new subcommand must one of:${commands:1}."
-        exit 1
-      fi
-
-      if [ -n "$1" ] && [[ $1 != -*  ]]; then
-        name="$1"; shift 1
-      else
-        echo "A name must be provided to 'styx new '$newCommand'"
-        exit 1
-      fi
-      ;;
-    build|serve|deploy|live|gen-sample-data|site-doc|linkcheck|store-path)
-      action="$i"
-      ;;
-    preview)
-      action="serve"
-      siteUrl="PREVIEW"
-      ;;
-    preview-theme)
-      action="$i"
-      theme=$1; shift 1;
-      ;;
-    theme-path)
-      action="$i"
-      theme=$1; shift 1;
-      ;;
-    doc|manual)
-      check_browser
-      $BROWSER $doc &
-      exit 0
-      ;;
-# Build options
-    --drafts)
-      renderDrafts="true"
-      ;;
-    --out)
-      output=$(realpath "$1"); shift 1
-      ;;
-    --clean)
-      clean=1
-      ;;
-# Serve options
-    -p|--port)
-      port="$1"; shift 1
-      ;;
-    --server-host)
-      serverHost="$1"; shift 1
-      ;;
-    --site-url)
-      siteUrl="$1"; shift 1
-      ;;
-    --detach)
-      detachServer=1
-      ;;
-# Deploy options
-    --init-gh-pages)
-      deployAction="init-gh-pages"
-      ;;
-    --gh-pages)
-      deployAction="gh-pages"
-      ;;
-    --site)
-      siteDir=$(realpath "$1"); shift 1
-      ;;
-# Dev options
-    --DEBUG)
-      set -x
-      ;;
-    --build-path)
-      buildPath="$1"; shift 1
-      ;;
-    *)
-      echo "$0: unknown option \`$i'"
+  # Generic options
+  -h | --help)
+    display_usage
+    exit 0
+    ;;
+  -v | --version)
+    echo -e "styx $version"
+    exit 0
+    ;;
+  -I)
+    extraFlags+=("$i" "$1")
+    shift 1
+    ;;
+  --arg | --argstr)
+    extraFlags+=("$i" "$1" "$2")
+    shift 2
+    ;;
+  --show-trace | --quiet | --verbose)
+    extraFlags+=("$i")
+    ;;
+  --in)
+    if [ -e $1 ] && [ -d $1 ]; then
+      in=$(realpath "$1")
+      shift 1
+      in=${in%/}
+    else
+      echo "--in must be an existing directory."
       exit 1
-      ;;
+    fi
+    ;;
+  --file)
+    siteFile=$1
+    shift 1
+    ;;
+    # Commands
+  new)
+    action="$i"
+    if [ -n "$1" ] && [[ " ${newCommands[@]} " =~ " $1" ]]; then
+      newCommand="$1"
+      shift 1
+    else
+      commands=$(printf ", %s" "${newCommands[@]}")
+      echo "Error: new subcommand must one of:${commands:1}."
+      exit 1
+    fi
+
+    if [ -n "$1" ] && [[ $1 != -* ]]; then
+      name="$1"
+      shift 1
+    else
+      echo "A name must be provided to 'styx new '$newCommand'"
+      exit 1
+    fi
+    ;;
+  build | serve | deploy | live | gen-sample-data | site-doc | linkcheck | store-path)
+    action="$i"
+    ;;
+  preview)
+    action="serve"
+    siteUrl="PREVIEW"
+    ;;
+  preview-theme)
+    action="$i"
+    theme=$1
+    shift 1
+    ;;
+  theme-path)
+    action="$i"
+    theme=$1
+    shift 1
+    ;;
+  doc | manual)
+    check_browser
+    $BROWSER $doc &
+    exit 0
+    ;;
+    # Build options
+  --drafts)
+    renderDrafts="true"
+    ;;
+  --out)
+    output=$(realpath "$1")
+    shift 1
+    ;;
+  --clean)
+    clean=1
+    ;;
+    # Serve options
+  -p | --port)
+    port="$1"
+    shift 1
+    ;;
+  --server-host)
+    serverHost="$1"
+    shift 1
+    ;;
+  --site-url)
+    siteUrl="$1"
+    shift 1
+    ;;
+  --detach)
+    detachServer=1
+    ;;
+    # Deploy options
+  --init-gh-pages)
+    deployAction="init-gh-pages"
+    ;;
+  --gh-pages)
+    deployAction="gh-pages"
+    ;;
+  --site)
+    siteDir=$(realpath "$1")
+    shift 1
+    ;;
+    # Dev options
+  --DEBUG)
+    set -x
+    ;;
+  --build-path)
+    buildPath="$1"
+    shift 1
+    ;;
+  *)
+    echo "$0: unknown option \`$i'"
+    exit 1
+    ;;
   esac
 done
-
 
 if [ ! "$action" ]; then
   echo "Error: no command specified."
@@ -343,7 +358,6 @@ fi
 if [ -z "$in" ]; then
   in=$curDir
 fi
-
 
 #-------------------------------
 #
@@ -362,7 +376,6 @@ if [ "$action" = new ] && [ "$newCommand" = site ]; then
   exit 0
 fi
 
-
 #-------------------------------
 #
 # New theme
@@ -374,11 +387,10 @@ if [ "$action" = new ] && [ "$newCommand" = theme ]; then
   check_dir $target "Error: Cannot create a new theme in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{templates,files}
-  echo -e "{ lib }:\n{\n  id = \"$name\";\n}" > "$target/meta.nix"
+  echo -e "{ lib }:\n{\n  id = \"$name\";\n}" >"$target/meta.nix"
   echo "Styx theme initialized in '$target'."
   exit 0
 fi
-
 
 #-------------------------------
 #
@@ -404,13 +416,12 @@ fi
 
 if [ "$action" = "preview-theme" ]; then
   themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
-  in="$(nix-build --no-out-link -A $theme $themesdir 2> /dev/null)/example"
+  in="$(nix-build --no-out-link -A $theme $themesdir 2>/dev/null)/example"
   if [ $? -ne 0 ] || [ -z "$theme" ]; then
     echo "Please select an available theme, available themes are:"
-    while IFS=, read theme rev
-    do
+    while IFS=, read theme rev; do
       echo "- $theme"
-    done < $themesdir/revs.csv
+    done <$themesdir/revs.csv
     exit 1
   fi
   action="serve"
@@ -425,13 +436,12 @@ fi
 
 if [ "$action" = "theme-path" ]; then
   themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
-  path="$(nix-build --no-out-link -A $theme $themesdir 2> /dev/null)"
+  path="$(nix-build --no-out-link -A $theme $themesdir 2>/dev/null)"
   if [ $? -ne 0 ] || [ -z "$theme" ]; then
     echo "Please select an available theme, available themes are:"
-    while IFS=, read theme rev
-    do
+    while IFS=, read theme rev; do
       echo "- $theme"
-    done < $themesdir/revs.csv
+    done <$themesdir/revs.csv
     exit 1
   fi
   echo $path
@@ -571,7 +581,6 @@ if [ "$action" = linkcheck ]; then
   kill -9 "$serverPid"
 fi
 
-
 #-------------------------------
 #
 # Live
@@ -620,7 +629,7 @@ if [ "$action" = live ]; then
       lastChange=$(last_timestamp $in)
     fi
     read -t 1 -N 1 input
-    if [[ $input = "q" ]] || [[ $input = "Q" ]]; then
+    if [[ $input == "q" ]] || [[ $input == "Q" ]]; then
       disown "$serverPid"
       kill -9 "$serverPid"
       echo -e "\rBye!\n"
@@ -629,7 +638,6 @@ if [ "$action" = live ]; then
     fi
   done
 fi
-
 
 #-------------------------------
 #
@@ -644,7 +652,7 @@ if [ "$action" = deploy ]; then
       cd $in
       mkdir gh-pages
       git clone -l $(pwd) ./gh-pages
-      echo gh-pages >> .gitignore
+      echo gh-pages >>.gitignore
       cd gh-pages
       git checkout --orphan gh-pages
       git rm -rf .
@@ -692,7 +700,6 @@ if [ "$action" = deploy ]; then
         fi
       fi
     )
-
 
     (
       # building
