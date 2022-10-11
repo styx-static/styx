@@ -370,7 +370,7 @@ if [ "$action" = new ] && [ "$newCommand" = site ]; then
   check_dir $target "Error: Cannot create a new site in '$target', directory exists."
   mkdir "$target"
   mkdir $target/{themes,data}
-  cp -r $root/share/styx/scaffold/new-site/* "$target/"
+  cp -r $root/share/styx/src/scaffold/new-site/* "$target/"
   chmod -R u+rw "$target"
   echo "Styx site initialized in '$target'."
   exit 0
@@ -402,7 +402,7 @@ if [ "$action" = "gen-sample-data" ]; then
   target="$in/data/sample"
   check_dir $target "Error: '$target' directory exists, aborting."
   mkdir -p $target
-  cp -r $root/share/styx/scaffold/sample-data/* "$target"
+  cp -r $root/share/styx/src/scaffold/sample-data/* "$target"
   chmod -R u+rw "$target"
   echo "Sample data created in '$target'."
   exit 0
