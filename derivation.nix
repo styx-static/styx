@@ -1,14 +1,17 @@
-{ lib, stdenv, asciidoctor
-, caddy
-, linkchecker
-, callPackage
-, pkgs }:
-
+{
+  lib,
+  stdenv,
+  asciidoctor,
+  caddy,
+  linkchecker,
+  callPackage,
+  pkgs,
+}:
 stdenv.mkDerivation rec {
   preferLocalBuild = true;
   allowSubstitutes = false;
 
-  name    = "styx-${version}";
+  name = "styx-${version}";
   version = builtins.unsafeDiscardStringContext (lib.fileContents ./VERSION);
 
   src = lib.cleanSource ./.;
@@ -17,9 +20,9 @@ stdenv.mkDerivation rec {
   linkcheck = "${linkchecker}/bin/linkchecker";
   nixpkgs = pkgs.path;
 
-  nativeBuildInputs = [ asciidoctor ];
+  nativeBuildInputs = [asciidoctor];
 
-  outputs = [ "out" "themes" ];
+  outputs = ["out" "themes"];
 
   installPhase = ''
     mkdir $out
@@ -56,7 +59,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Nix based static site generator";
-    maintainers = with maintainers; [ ericsagnes ];
-    platforms   = platforms.all;
+    maintainers = with maintainers; [ericsagnes];
+    platforms = platforms.all;
   };
 }

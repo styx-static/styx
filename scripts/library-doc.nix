@@ -1,19 +1,23 @@
 let
   pkgs = import ../nixpkgs;
-  inherit (import pkgs.styx {inherit pkgs;})
-    lib;
+  inherit
+    (import pkgs.styx {inherit pkgs;})
+    lib
+    ;
 in
-
-with pkgs;
-with lib;
-
-let
-
-  libs = map (namespace:
-    let functions = filter (x: x != {}) (mapAttrsToList (name: fn:
-      optionalAttrs (isDocFunction fn)
-        ({ fullname = "lib.${namespace}.${name}"; inherit namespace name; } // fn)
-    ) lib."${namespace}");
+  with pkgs;
+  with lib; let
+    libs = map (namespace: let
+      functions = filter (x: x != {}) (mapAttrsToList (
+          name: fn:
+            optionalAttrs (isDocFunction fn)
+            ({
+                fullname = "lib.${namespace}.${name}";
+                inherit namespace name;
+              }
+              // fn)
+        )
+        lib."${namespace}");
     in {
       "${namespace}" = {
         inherit functions;
@@ -21,131 +25,148 @@ let
       };
     });
 
-  namespaces = fold (x: acc:
-    acc // x
-  ) {} (libs [
-    "conf"
-    "data"
-    "generation"
-    "pages"
-    "proplist"
-    "template"
-    "themes"
-    "utils"
-  ]);
+    namespaces =
+      fold (
+        x: acc:
+          acc // x
+      ) {} (libs [
+        "conf"
+        "data"
+        "generation"
+        "pages"
+        "proplist"
+        "template"
+        "themes"
+        "utils"
+      ]);
 
-  mkFunctionDoc = function:
-    ''
+    mkFunctionDoc = function: ''
 
-    :sectnums!:
+      :sectnums!:
 
-    [[${function.fullname}]]
-    === ${function.name}
+      [[${function.fullname}]]
+      === ${function.name}
 
-    ${optionalString (function ? description) "==== Description\n\n${function.description}\n"}
-    ${optionalString (function ? arguments)   (mkFunctionArgs function.arguments)}
-    ${optionalString (function ? return)      "==== Return\n\n${function.return}\n"}
-    ${optionalString (function ? examples)    "==== Example\n\n${concatStringsSep "\n---\n" (map mkFunctionExample function.examples)}\n"}
-    ${optionalString (function ? notes)       "[NOTE]\n====\n${function.notes}\n====\n"}
+      ${optionalString (function ? description) "==== Description\n\n${function.description}\n"}
+      ${optionalString (function ? arguments) (mkFunctionArgs function.arguments)}
+      ${optionalString (function ? return) "==== Return\n\n${function.return}\n"}
+      ${optionalString (function ? examples) "==== Example\n\n${concatStringsSep "\n---\n" (map mkFunctionExample function.examples)}\n"}
+      ${optionalString (function ? notes) "[NOTE]\n====\n${function.notes}\n====\n"}
 
-    :sectnums:
+      :sectnums:
 
     '';
 
-  mkFunctionArgs = args:
-    let
-      args' = if isAttrs args
-              then mapAttrsToList (name: data: data // { inherit name; }) args
-              else args;
-      type = if isAttrs args
-             then " (Attribute Set)"
-             else " (Standard)";
-      isMultiline = arg:
-        let arg' = if is "literalExpression" arg
-                   then arg.text
-                   else arg;
-        in if isString arg'
-           then (match "^.*(\n).*$" arg') != null
-           else false;
-    in "==== Arguments${type}\n\n" + concatStringsSep "\n" (map (arg:
-    let
-      description = optionalString (arg ? description) arg.description;
-      type        = optionalString (arg ? type)        "Type: `${arg.type}`. ";
-      default     = optionalString (arg ? default)
-                    (if isMultiline arg.default
-                     then "Optional, defaults to:\n\n[source, nix]\n----\n${prettyNix arg.default}\n----\n"
-                     else "Optional, defaults to `${prettyNix arg.default}`.");
-      example     = optionalString (arg ? example)
-                    (if isMultiline arg.example
-                     then "Example:\n\n[source, nix]\n----\n${prettyNix arg.example}\n----\n"
-                     else "Example: `${prettyNix arg.example}`.");
-    in "\n===== ${arg.name}\n\n" + (concatStringsSep "\n\n" (filter (x: x != "") [ description type default example ]))
-    ) args') + "\n";
+    mkFunctionArgs = args: let
+      args' =
+        if isAttrs args
+        then mapAttrsToList (name: data: data // {inherit name;}) args
+        else args;
+      type =
+        if isAttrs args
+        then " (Attribute Set)"
+        else " (Standard)";
+      isMultiline = arg: let
+        arg' =
+          if is "literalExpression" arg
+          then arg.text
+          else arg;
+      in
+        if isString arg'
+        then (match "^.*(\n).*$" arg') != null
+        else false;
+    in
+      "==== Arguments${type}\n\n"
+      + concatStringsSep "\n" (map (
+          arg: let
+            description = optionalString (arg ? description) arg.description;
+            type = optionalString (arg ? type) "Type: `${arg.type}`. ";
+            default =
+              optionalString (arg ? default)
+              (
+                if isMultiline arg.default
+                then "Optional, defaults to:\n\n[source, nix]\n----\n${prettyNix arg.default}\n----\n"
+                else "Optional, defaults to `${prettyNix arg.default}`."
+              );
+            example =
+              optionalString (arg ? example)
+              (
+                if isMultiline arg.example
+                then "Example:\n\n[source, nix]\n----\n${prettyNix arg.example}\n----\n"
+                else "Example: `${prettyNix arg.example}`."
+              );
+          in
+            "\n===== ${arg.name}\n\n" + (concatStringsSep "\n\n" (filter (x: x != "") [description type default example]))
+        )
+        args')
+      + "\n";
 
-  mkFunctionExample = example:
-    optionalString (example ? literalCode)
-    ''
-
-      [source, nix]
-      .Code
-      ----
-      ${example.literalCode}
-      ----
-      ${optionalString (example ? code) ''
-
-      [source, nix]
-      .Result
-      ----
-      ${prettyNix (example.displayCode example.code)}
-      ----
+    mkFunctionExample = example:
+      optionalString (example ? literalCode)
       ''
-      }
 
-    '';
+        [source, nix]
+        .Code
+        ----
+        ${example.literalCode}
+        ----
+        ${
+          optionalString (example ? code) ''
 
-in stdenv.mkDerivation {
-  name    = "styx-docs";
+            [source, nix]
+            .Result
+            ----
+            ${prettyNix (example.displayCode example.code)}
+            ----
+          ''
+        }
 
-  preferLocalBuild = true;
-  allowSubstitutes = false;
+      '';
+  in
+    stdenv.mkDerivation {
+      name = "styx-docs";
 
-  unpackPhase = ":";
+      preferLocalBuild = true;
+      allowSubstitutes = false;
 
-  buildInputs = [ asciidoctor ];
+      unpackPhase = ":";
 
-  doc = writeText "lib.adoc" ''
+      buildInputs = [asciidoctor];
 
-    ////
+      doc = writeText "lib.adoc" ''
 
-    File automatically generated, do not edit
+        ////
 
-    ////
+        File automatically generated, do not edit
 
-    ${concatStringsSep "\n" (mapAttrsToList (namespace: data: ''
+        ////
 
-    == ${namespace}
+        ${concatStringsSep "\n" (mapAttrsToList (namespace: data: ''
 
-    ${data.documentation}
+            == ${namespace}
 
-
-    ---
-
-    ${concatStringsSep "\n\n---\n\n" (map mkFunctionDoc data.functions)}
-
-    ---
+            ${data.documentation}
 
 
-    '') namespaces)}
+            ---
 
-  '';
+            ${concatStringsSep "\n\n---\n\n" (map mkFunctionDoc data.functions)}
 
-  buildPhase = ''
-    mkdir build
-    cp $doc build/library-generated.adoc
-  '';
+            ---
 
-  installPhase = ''
-    mkdir $out
-    cp build/* $out
-  '';
-}
+
+          '')
+          namespaces)}
+
+      '';
+
+      buildPhase = ''
+        mkdir build
+        cp $doc build/library-generated.adoc
+      '';
+
+      installPhase = ''
+        mkdir $out
+        cp build/* $out
+      '';
+    }

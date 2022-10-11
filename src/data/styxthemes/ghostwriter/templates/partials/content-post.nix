@@ -1,6 +1,8 @@
-{ conf, templates, ... }:
-args:
-''
+{
+  conf,
+  templates,
+  ...
+}: args: ''
   </div>
   <footer class="footer">
     <div class="container">

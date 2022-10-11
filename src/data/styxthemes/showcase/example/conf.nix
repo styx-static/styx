@@ -7,13 +7,13 @@
   theme = {
     site.title = "Showcase Example";
     lib = {
-      bootstrap.enable    = true;
-      jquery.enable       = true;
+      bootstrap.enable = true;
+      jquery.enable = true;
       font-awesome.enable = true;
       highlightjs = {
         enable = true;
         style = "github";
-        extraLanguages = [ "nix" ];
+        extraLanguages = ["nix"];
       };
       mathjax.enable = true;
     };

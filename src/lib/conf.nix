@@ -1,20 +1,15 @@
 # conf
-
 args:
 with args.lib;
-with (import ./utils.nix args);
+with (import ./utils.nix args); rec {
+  /*
+  ===============================================================
 
-rec {
+   parseDecls
 
-/*
-===============================================================
-
- parseDecls
-
-===============================================================
-*/
+  ===============================================================
+  */
   parseDecls = documentedFunction {
-
     description = ''
       Parse configuration interface declarations.
     '';
@@ -38,24 +33,24 @@ rec {
 
     return = "`Attrs`";
 
-    examples = [ (mkExample {
-      literalCode = ''
-        parseDecls {
-          optionFn = o: option.default;
-          valueFn  = v: v + 1;
-          decls = {
-            a.b.c = mkOption {
-              default = "abc";
-              type = types.str;
+    examples = [
+      (mkExample {
+        literalCode = ''
+          parseDecls {
+            optionFn = o: option.default;
+            valueFn  = v: v + 1;
+            decls = {
+              a.b.c = mkOption {
+                default = "abc";
+                type = types.str;
+              };
+              x.y = 1;
             };
-            x.y = 1;
-          };
-        }
-      '';
-      code =
-        parseDecls {
+          }
+        '';
+        code = parseDecls {
           optionFn = option: option.default;
-          valueFn  = v: v + 1;
+          valueFn = v: v + 1;
           decls = {
             a.b.c = mkOption {
               default = "abc";
@@ -63,40 +58,42 @@ rec {
             };
             x.y = 1;
           };
-        }
-      ;
-      expected = { a.b.c = "abc"; x.y = 2; };
-    }) ];
+        };
+        expected = {
+          a.b.c = "abc";
+          x.y = 2;
+        };
+      })
+    ];
 
     function = {
-        decls
-      , optionFn ? id
-      , valueFn  ? id
-      }:
-        let
-          recurse = set:
-            let
-              g = name: value:
-                if isOption value then optionFn value
-                else if isAttrs value
-                     then recurse value
-                     else valueFn value;
-            in mapAttrs g set;
-          result = recurse set;
-      in recurse decls;
-
+      decls,
+      optionFn ? id,
+      valueFn ? id,
+    }: let
+      recurse = set: let
+        g = name: value:
+          if isOption value
+          then optionFn value
+          else if isAttrs value
+          then recurse value
+          else valueFn value;
+      in
+        mapAttrs g set;
+      result = recurse set;
+    in
+      recurse decls;
   };
 
-/*
-===============================================================
+  /*
+  ===============================================================
 
- mergeConfs
+   mergeConfs
 
-===============================================================
-*/
+  ===============================================================
+  */
 
   mergeConfs = documentedFunction {
-
     description = ''
       Merge a list of configurations.
     '';
@@ -114,21 +111,22 @@ rec {
     '';
 
     function = confs:
-      merge (map (c: if isPath c then importApply c args else c) confs);
-
+      merge (map (c:
+        if isPath c
+        then importApply c args
+        else c)
+      confs);
   };
 
+  /*
+  ===============================================================
 
-/*
-===============================================================
+   typeCheck
 
- typeCheck
-
-===============================================================
-*/
+  ===============================================================
+  */
 
   typeCheck = documentedFunction {
-
     description = ''
       Type check configuration declarations against definitions.
     '';
@@ -151,16 +149,17 @@ rec {
     '';
 
     function = decls: defs:
-      mapAttrsRecursive (path: def:
-        let type = attrByPath (path ++ ["type"]) null decls;
+      mapAttrsRecursive (
+        path: def: let
+          type = attrByPath (path ++ ["type"]) null decls;
         in
-        if isOptionType type
-        then if   type.check def
-             then "check ok"
-             else throw "The configuration option `theme.${showOption path}' is not a ${type.description}."
-        else "no type"
-      ) defs;
-
+          if isOptionType type
+          then
+            if type.check def
+            then "check ok"
+            else throw "The configuration option `theme.${showOption path}' is not a ${type.description}."
+          else "no type"
+      )
+      defs;
   };
-
 }

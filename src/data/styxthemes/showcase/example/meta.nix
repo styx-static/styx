@@ -1,5 +1,4 @@
-{ lib }:
-{
+{lib}: {
   license = lib.licenses.mit;
-  maintainers = with lib.maintainers; [ ericsagnes ];
+  maintainers = with lib.maintainers; [ericsagnes];
 }

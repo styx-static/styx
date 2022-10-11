@@ -1,7 +1,11 @@
-{ conf, lib, templates, ... }:
+{
+  conf,
+  lib,
+  templates,
+  ...
+}:
 with lib;
-page:
-  ''
+  page: ''
     <article class="preview col-md-6">
       <a href="${templates.url page.path}" class="banner" ${optionalString (page ? banner) (htmlAttr "style" "background-image: url(${templates.url page.banner});")}>
       </a>

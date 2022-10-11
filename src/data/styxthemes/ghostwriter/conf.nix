@@ -1,6 +1,5 @@
-{ lib }:
-with lib;
-{
+{lib}:
+with lib; {
   site = {
     title = mkOption {
       description = "Site title.";
@@ -18,13 +17,12 @@ with lib;
       description = "Site copyright.";
       type = types.str;
       default = ''
-        &copy; 2017. All rights reserved. 
+        &copy; 2017. All rights reserved.
       '';
     };
   };
 
   social = {
-
     twitter = mkOption {
       description = "Twitter link";
       type = with types; nullOr string;
@@ -77,6 +75,5 @@ with lib;
   # defaults
   lib.jquery.enable = true;
   lib.font-awesome.enable = true;
-  lib.googlefonts = [ "Open Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic" ];
-
+  lib.googlefonts = ["Open Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic"];
 }

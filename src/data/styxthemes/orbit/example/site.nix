@@ -1,19 +1,21 @@
-/*-----------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------------
    Init
 
    Initialization of Styx, should not be edited
------------------------------------------------------------------------------*/
-{ pkgs ? import <nixpkgs> {}
-, extraConf ? {}
-}:
+-----------------------------------------------------------------------------
+*/
+{
+  pkgs ? import <nixpkgs> {},
+  extraConf ? {},
+}: rec {
+  /*
+    -----------------------------------------------------------------------------
+     Setup
 
-rec {
-
-/*-----------------------------------------------------------------------------
-   Setup
-
-   This section setup required variables
------------------------------------------------------------------------------*/
+     This section setup required variables
+  -----------------------------------------------------------------------------
+  */
 
   styx = import pkgs.styx {
     # Used packages
@@ -31,35 +33,38 @@ rec {
     ];
 
     # Environment propagated to templates
-    env = { inherit data pages; };
+    env = {inherit data pages;};
   };
 
   # Propagating initialized data
   inherit (styx.themes) conf files templates env lib;
 
-/*-----------------------------------------------------------------------------
-   Data
+  /*
+    -----------------------------------------------------------------------------
+     Data
 
-   This section declares the data used by the site
------------------------------------------------------------------------------*/
+     This section declares the data used by the site
+  -----------------------------------------------------------------------------
+  */
 
   data = {
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Pages
 
-/*-----------------------------------------------------------------------------
-   Pages
-
-   This section declares the pages that will be generated
------------------------------------------------------------------------------*/
+     This section declares the pages that will be generated
+  -----------------------------------------------------------------------------
+  */
 
   pages = {
     index = {
-      title    = "Home";
-      path     = "/index.html";
+      title = "Home";
+      path = "/index.html";
       template = templates.block-page.full;
-      layout   = templates.layout;
-      blocks   = [
+      layout = templates.layout;
+      blocks = [
         (templates.blocks.summary conf.theme.summary)
         (templates.blocks.experiences conf.theme.experiences)
         (templates.blocks.projects conf.theme.projects)
@@ -75,12 +80,15 @@ rec {
     };
   };
 
+  /*
+    -----------------------------------------------------------------------------
+     Site rendering
 
-/*-----------------------------------------------------------------------------
-   Site rendering
+  -----------------------------------------------------------------------------
+  */
 
------------------------------------------------------------------------------*/
-
-  site = lib.mkSite { inherit files;  pageList = [ pages.index ]; };
-
+  site = lib.mkSite {
+    inherit files;
+    pageList = [pages.index];
+  };
 }

@@ -1,6 +1,5 @@
-{ lib }:
-with lib;
-{
+{lib}:
+with lib; {
   site = {
     title = mkOption {
       description = "Site title.";
@@ -18,14 +17,14 @@ with lib;
       description = "Site copyright.";
       type = types.str;
       default = ''
-        &copy; 2017. All rights reserved. 
+        &copy; 2017. All rights reserved.
       '';
     };
   };
 
   colorScheme = mkOption {
     description = "Selects the color scheme. Set to `null` for default black scheme.";
-    type = with types; nullOr (enum [ "08" "09" "0a" "0b" "0c" "0d" "0e" "0f" ]);
+    type = with types; nullOr (enum ["08" "09" "0a" "0b" "0c" "0d" "0e" "0f"]);
     default = null;
   };
 

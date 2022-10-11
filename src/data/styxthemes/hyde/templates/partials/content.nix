@@ -1,7 +1,5 @@
-env:
-{ page }:
-''
-<div class="content container">
-${page.content}
-</div>
+env: {page}: ''
+  <div class="content container">
+  ${page.content}
+  </div>
 ''

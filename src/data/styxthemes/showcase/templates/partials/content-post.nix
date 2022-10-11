@@ -1,6 +1,4 @@
-{ conf, ... }:
-args:
-''
+{conf, ...}: args: ''
   <footer>
     <div class="container wrapper">
       <div class="row">

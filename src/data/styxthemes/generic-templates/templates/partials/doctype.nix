@@ -1,6 +1,4 @@
-env:
-
-let
+env: let
   doctypes = {
     html4 = ''
       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
@@ -15,8 +13,9 @@ let
         "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
     '';
   };
-in env.lib.documentedTemplate {
-  description = "Template declaring the doctype, controlled by `conf.theme.html.doctype`.";
-  template = { conf, ... }: doctypes."${conf.theme.html.doctype}";
-  inherit env;
-}
+in
+  env.lib.documentedTemplate {
+    description = "Template declaring the doctype, controlled by `conf.theme.html.doctype`.";
+    template = {conf, ...}: doctypes."${conf.theme.html.doctype}";
+    inherit env;
+  }

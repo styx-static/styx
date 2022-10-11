@@ -1,5 +1,4 @@
-{ lib, ... }:
-{
+{lib, ...}: {
   title = "Round Icons";
   subtitle = "Lorem ipsum dolor sit amet consectetur.";
   date = "2014-07-05";

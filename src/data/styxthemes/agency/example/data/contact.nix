@@ -1,5 +1,4 @@
-{ lib, ... }:
-{
+{lib, ...}: {
   id = "contact";
   title = "Lorem ipsum dolor sit amet consectetur.";
   subtitle = "Lorem ipsum dolor sit amet consectetur.";

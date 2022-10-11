@@ -1,8 +1,8 @@
-{ lib }:
-with lib;
-{
-/* General settings
-*/
+{lib}:
+with lib; {
+  /*
+  General settings
+  */
   site = {
     title = mkOption {
       default = "Orbit theme";
@@ -23,7 +23,7 @@ with lib;
 
   colorScheme = mkOption {
     default = 1;
-    type = types.enum [ 1 2 3 4 5 6 ];
+    type = types.enum [1 2 3 4 5 6];
     description = "Theme color scheme.";
   };
 
@@ -37,14 +37,15 @@ with lib;
     description = "Profile information, must have `name`, `tagline` and `image` attributes.";
     type = types.attrs;
     default = {
-      name    = "John Doe";
+      name = "John Doe";
       tagline = "Full Stack Developer";
-      image   = "/assets/images/profile.png";
+      image = "/assets/images/profile.png";
     };
   };
 
-/* Main contents
-*/
+  /*
+  Main contents
+  */
 
   summary = {
     title = mkOption {
@@ -59,14 +60,15 @@ with lib;
     };
     content = mkOption {
       description = ''
-        content of the profile area as HTML text.  
+        content of the profile area as HTML text.
       '';
       default = null;
       type = with types; nullOr str;
     };
   };
-/* Experiences
-*/
+  /*
+  Experiences
+  */
   experiences = {
     title = mkOption {
       description = "Title of the experiences section";
@@ -80,21 +82,24 @@ with lib;
     };
     items = mkOption {
       description = ''
-        List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.  
+        List of experiences as attribute sets, requires `position`, `dates`, `company` and `content`.
       '';
       type = with types; listOf attrs;
       default = [];
-      example = [ {
-        position = "Lead Developer";
-        dates    = "2015 - Present";
-        company  = "Startup Hubs, San Francisco";
-        content  = "lorem ipsum";
-      } ];
+      example = [
+        {
+          position = "Lead Developer";
+          dates = "2015 - Present";
+          company = "Startup Hubs, San Francisco";
+          content = "lorem ipsum";
+        }
+      ];
     };
   };
 
-/* Projects
-*/
+  /*
+  Projects
+  */
   projects = {
     title = mkOption {
       description = "Title of the projects section";
@@ -108,22 +113,23 @@ with lib;
     };
     items = mkOption {
       description = ''
-        List of projects as attribute sets, requires `title`, `url` and `content`.  
+        List of projects as attribute sets, requires `title`, `url` and `content`.
       '';
       type = with types; listOf attrs;
       default = [];
-      example = [ {
-        title = "Simple FAQ Theme for Hugo";
-        url   = "https://github.com/aerohub/hugo-faq-theme";
-        content  = "lorem ipsum";
-      } ];
+      example = [
+        {
+          title = "Simple FAQ Theme for Hugo";
+          url = "https://github.com/aerohub/hugo-faq-theme";
+          content = "lorem ipsum";
+        }
+      ];
     };
   };
 
-
-/* Skills
-   
-*/
+  /*
+  Skills
+  */
   skills = {
     title = mkOption {
       description = "Title of the skills section.";
@@ -137,35 +143,42 @@ with lib;
     };
     items = mkOption {
       description = ''
-        List of skills as attribute sets, requires `title` and `level`.  
+        List of skills as attribute sets, requires `title` and `level`.
       '';
       type = with types; listOf attrs;
       default = [];
       example = [
-        { skill = "Python & Django";
-          level = "98%"; }
-        { skill = "Javascript & jQuery";
-          level = "50%"; }
+        {
+          skill = "Python & Django";
+          level = "98%";
+        }
+        {
+          skill = "Javascript & jQuery";
+          level = "50%";
+        }
       ];
     };
   };
 
-/* Sidebar contents
-*/
+  /*
+  Sidebar contents
+  */
 
   contact = {
     items = mkOption {
       description = ''
-        List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.  
+        List of contact link as attribute sets, requires `type`, `icon`, `url` and `title`.
       '';
       type = with types; listOf attrs;
       default = [];
-      example = [ {
-        type  = "email";
-        icon  = "envelope";
-        url   = "mailto: yourname@email.com";
-        title = "john.doe@website.com";
-      } ];
+      example = [
+        {
+          type = "email";
+          icon = "envelope";
+          url = "mailto: yourname@email.com";
+          title = "john.doe@website.com";
+        }
+      ];
     };
   };
 
@@ -177,14 +190,16 @@ with lib;
     };
     items = mkOption {
       description = ''
-        List of education items as attribute sets, requires `degree`, `college` and `dates`.  
+        List of education items as attribute sets, requires `degree`, `college` and `dates`.
       '';
       type = with types; listOf attrs;
       default = [];
       example = [
-        { degree  = "MSc in Computer Science";
+        {
+          degree = "MSc in Computer Science";
           college = "University of London";
-          dates   = "2006 - 2010"; }
+          dates = "2006 - 2010";
+        }
       ];
     };
   };
@@ -197,13 +212,15 @@ with lib;
     };
     items = mkOption {
       description = ''
-        List of languages as attribute sets, requires `language`, and `level`.  
+        List of languages as attribute sets, requires `language`, and `level`.
       '';
       type = with types; listOf attrs;
       default = [];
       example = [
-        { language = "English";
-          level    = "Native"; }
+        {
+          language = "English";
+          level = "Native";
+        }
       ];
     };
   };
@@ -228,7 +245,8 @@ with lib;
     };
   };
 
-  /* Defaults
+  /*
+  Defaults
   */
   lib.jquery.enable = true;
   lib.bootstrap.enable = true;
@@ -236,5 +254,4 @@ with lib;
   lib.googlefonts = [
     "Roboto:400,500,400italic,300italic,300,500italic,700,700italic,900,900italic"
   ];
-
 }

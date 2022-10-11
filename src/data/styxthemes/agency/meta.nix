@@ -1,5 +1,4 @@
-{ lib }:
-{
+{lib}: {
   name = "Agency";
   id = "agency";
   license = lib.licenses.asl20;
