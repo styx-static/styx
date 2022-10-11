@@ -13,7 +13,6 @@
  * https://github.com/poole/hyde.
  */
 
-
 /*
  * Contents
  *
@@ -23,7 +22,6 @@
  * Reverse layout
  * Themes
  */
-
 
 /*
  * Global resets
@@ -45,7 +43,6 @@ html {
   }
 }
 
-
 /*
  * Sidebar
  *
@@ -56,7 +53,7 @@ html {
 .sidebar {
   text-align: center;
   padding: 2rem 1rem;
-  color: rgba(255,255,255,.5);
+  color: rgba(255, 255, 255, 0.5);
   background-color: #202020;
 }
 @media (min-width: 48em) {
@@ -108,12 +105,11 @@ a.sidebar-nav-item:focus {
 @media (min-width: 48em) {
   .sidebar-sticky {
     position: absolute;
-    right:  1rem;
+    right: 1rem;
     bottom: 1rem;
-    left:   1rem;
+    left: 1rem;
   }
 }
-
 
 /* Container
  *
@@ -122,7 +118,7 @@ a.sidebar-nav-item:focus {
  */
 
 .content {
-  padding-top:    4rem;
+  padding-top: 4rem;
   padding-bottom: 4rem;
 }
 
@@ -140,7 +136,6 @@ a.sidebar-nav-item:focus {
     margin-right: 4rem;
   }
 }
-
 
 /*
  * Reverse layout
@@ -165,8 +160,6 @@ a.sidebar-nav-item:focus {
     margin-right: 22rem;
   }
 }
-
-
 
 /*
  * Themes

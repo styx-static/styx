@@ -6,26 +6,25 @@
     repository unde https://github.com/IronSummitMedia/startbootstrap-freelancer.
 */
 
-$(function() {
+$(function () {
+  $("input,textarea").jqBootstrapValidation({
+    preventSubmit: true,
+    submitError: function ($form, event, errors) {
+      // additional error messages or events
+    },
 
-    $("input,textarea").jqBootstrapValidation({
-        preventSubmit: true,
-        submitError: function($form, event, errors) {
-            // additional error messages or events
-        },
+    filter: function () {
+      return $(this).is(":visible");
+    },
+  });
 
-        filter: function() {
-            return $(this).is(":visible");
-        },
-    });
-
-    $("a[data-toggle=\"tab\"]").click(function(e) {
-        e.preventDefault();
-        $(this).tab("show");
-    });
+  $('a[data-toggle="tab"]').click(function (e) {
+    e.preventDefault();
+    $(this).tab("show");
+  });
 });
 
 /*When clicking on Full hide fail/success boxes */
-$('#name').focus(function() {
-    $('#success').html('');
+$("#name").focus(function () {
+  $("#success").html("");
 });
