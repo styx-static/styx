@@ -1,6 +1,17 @@
 let
-  pkgs = import <nixpkgs> {};
-  themesdirs = pkgs.lib.filterAttrs (_: v: v == "directory") (builtins.readDir ./.);
-  themes = pkgs.lib.mapAttrs (k: _: ./. + "/${k}") themesdirs;
+  inputs = {nixpkgs = import ./compat.nix;};
+  cell = null;
+
+  call = {
+    inputs,
+    cell,
+  }: let
+    inherit (inputs) nixpkgs;
+    l = inputs.nixpkgs.lib // builtins;
+
+    themesdirs = l.filterAttrs (_: v: v == "directory") (l.readDir ./.);
+    themes = l.mapAttrs (k: _: ./. + "/${k}") themesdirs;
+  in
+    l.mapAttrs (_: v: nixpkgs.callPackage v {}) themes;
 in
-  pkgs.lib.mapAttrs (_: v: pkgs.callPackage v {}) themes
+  call {inherit inputs cell;}
