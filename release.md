@@ -15,7 +15,7 @@
 2. Run the tests
 
    ```sh
-   $ ./scripts/run-tests
+   nix run .#run-tests
    ```
 
 3. Make a commit, and tag it with `vVERSION`, eg: `v0.5.0`
