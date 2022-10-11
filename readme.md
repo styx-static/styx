@@ -4,7 +4,6 @@
 
 The purely functional static site generator written in the Nix expression language.
 
-
 ## Features
 
 Among other things, Styx has the following features:
@@ -58,7 +57,6 @@ Official themes can also be used without any implicit installation, declaring th
 Styx embeds its complete documentation that can be viewed at any time by running `styx doc`.
 A very unique feature of Styx is that it can generate the documentation for a site with the `styx site-doc`.
 
-
 ## Install
 
 Use `nix-env` to install Styx, or `nix-shell` to just test without installing it:
@@ -96,24 +94,22 @@ The official Styx site is an example of a basic software site with release news.
 
 See [site.nix](https://github.com/styx-static/styx-site/blob/master/site.nix) for implementation details.
 
-
 ## As a Nix laboratory
 
 This repository is also a playground for more exotic nix usages and experiments:
 
 - [derivation.nix](./derivation.nix) is the main builder for styx, it builds the command line interface, the library, styx themes and the documentation.
 
-
 - [script/run-tests](./scripts/run-tests) is a thin wrapper to `nix-build` that will run [library](./tests/lib.nix) and [functionality tests](./tests/default.nix).
 
 - Library functions and theme templates use special functions (`documentedFunction` and `documentedTemplate`) that allow automatically generating documentation and tests.
-The code used to generate tests from `documentedFunctions` can be found in [tests/lib.nix](./tests/lib.nix).
-Library function tests can print a coverage or a report (with pretty printing):
+  The code used to generate tests from `documentedFunctions` can be found in [tests/lib.nix](./tests/lib.nix).
+  Library function tests can print a coverage or a report (with pretty printing):
 
-    ```
-    $ cat $(nix-build --no-out-link -A coverage tests/lib.nix)
-    $ cat $(nix-build --no-out-link -A report tests/lib.nix)
-    ```
+      ```
+      $ cat $(nix-build --no-out-link -A coverage tests/lib.nix)
+      $ cat $(nix-build --no-out-link -A report tests/lib.nix)
+      ```
 
 - [scripts/library-doc.nix](./scripts/library-doc.nix) is a nix expression that generate an AsciiDoc documentation from the library `documentedFunction`s ([example](https://styx-static.github.io/styx-site/documentation/library.html)).
 
@@ -125,17 +121,14 @@ Library function tests can print a coverage or a report (with pretty printing):
 
 - styx `propagatedBuildInputs` are taken advantage in `lib.data` conversion functions like `markupToHtml`.
 
-
 ## Links
 
 - [Official site](https://styx-static.github.io/styx-site/)
 - [Documentation](https://styx-static.github.io/styx-site/documentation/)
 
-
 ## Contributing
 
 See [contributing.md](./contributing.md).
-
 
 ## Feedback
 

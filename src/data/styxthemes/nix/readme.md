@@ -7,9 +7,10 @@ Originally made by [LordMathis](https://github.com/LordMathis).
 [Original theme](https://github.com/digitalcraftsman/hugo-agency-theme)
 
 > Nix is a simple, minimal theme for Hugo
+
 ---
 
-## Acknowledgements 
+## Acknowledgements
 
 Thanks to
 
@@ -18,4 +19,3 @@ Thanks to
 ## Preview
 
 ![Preview](/screen.png)
-

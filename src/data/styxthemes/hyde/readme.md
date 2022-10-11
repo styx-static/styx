@@ -8,14 +8,14 @@ Look at the example site to see how to use.
 
 ---
 
-## Acknowledgements 
+## Acknowledgements
 
 ### Author
 
 **Mark Otto**
+
 - <https://github.com/mdo>
 - <https://twitter.com/mdo>
-
 
 ### License
 
