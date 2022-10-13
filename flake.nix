@@ -25,6 +25,8 @@
         # ./src/_automation
         (devshells "devshells")
         (runnables "tasks")
+        (runnables "tests")
+        ({name = "libtests"; type = "unspecified";})
         # ./src/data
         (functions "styxthemes")
         # ./src/renderers

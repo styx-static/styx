@@ -14,28 +14,54 @@
   l = nixpkgs.lib // builtins;
 in {
   run-tests = let
+    run-main = test: ''
+      echo "Run '${test}' ..."
+      if nix build "${inputs.self + "#${nixpkgs.system}._automation.tests.${test}"}" --show-trace; then
+        echo "\e[0;32m  success: ${test}\e[0m"
+      else
+        echo "\e[0;101m  failure: ${test}\e[0m"
+        exit 1
+      fi
+    '';
+    write-report = report: ''
+      nix build "${inputs.self + "#${nixpkgs.system}._automation.tests.${report}"}" --show-trace
+      . ./result
+    '';
   in
     nixpkgs.writeScriptBin "run-tests" ''
       echo ""
-
-      echo "Main tests:"
-      if nix-build "${inputs.self + /tests}" --no-out-link --show-trace; then
-        echo "  success"
-      else
-        echo "  failure"
-        exit 1
-      fi
-
+      echo "------------------------------------------------"
+      echo ""
+      echo "\e[1;93mMain tests:\e[0m"
       echo ""
 
-      echo "Library tests:"
+      ${run-main "new"}
+      ${run-main "new-build"}
+      ${run-main "new-theme"}
+      ${run-main "deploy-gh-pages"}
 
-      if [ "$(nix-instantiate --eval -A success ${inputs.self + /tests/lib.nix} --read-write-mode)" = "true" ]; then
-        echo "  success";
-      else
-        cat $(nix-build --no-out-link -A report ${inputs.self + /tests/lib.nix})
-        exit 1
-      fi
+      echo ""
+      echo "------------------------------------------------"
+      echo ""
+      echo "\e[1;93mTheme tests:\e[0m"
+      echo ""
+
+      ${run-main "generic-templates-site"}
+      ${run-main "agency-site"}
+      ${run-main "ghostwriter-site"}
+      ${run-main "hyde-site"}
+      ${run-main "nix-site"}
+      ${run-main "orbit-site"}
+      ${run-main "showcase-site"}
+
+      echo ""
+      echo "------------------------------------------------"
+      echo ""
+      echo "\e[1;93mLibrary tests:\e[0m"
+      echo ""
+
+      ${write-report "lib-report"}
+      ${write-report "lib-coverage"}
 
       echo ""
       echo "Finished"
