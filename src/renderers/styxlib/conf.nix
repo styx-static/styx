@@ -1,7 +1,8 @@
 # conf
-args:
-with args.lib;
-with (import ./utils.nix args); rec {
+lib: nixpkgs: styxlib:
+with lib;
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.conf uses styxlib.utils";
+with styxlib.utils; rec {
   /*
   ===============================================================
 
@@ -83,39 +84,6 @@ with (import ./utils.nix args); rec {
       result = recurse set;
     in
       recurse decls;
-  };
-
-  /*
-  ===============================================================
-
-   mergeConfs
-
-  ===============================================================
-  */
-
-  mergeConfs = documentedFunction {
-    description = ''
-      Merge a list of configurations.
-    '';
-
-    arguments = [
-      {
-        name = "confs";
-        description = "List of configurations.";
-        type = "[ Attrs | Path ]";
-      }
-    ];
-
-    return = ''
-      The merged configuration set.
-    '';
-
-    function = confs:
-      merge (map (c:
-        if isPath c
-        then importApply c args
-        else c)
-      confs);
   };
 
   /*

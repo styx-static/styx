@@ -3,12 +3,7 @@
   cell,
 }: let
   inherit (inputs) nixpkgs;
-  inherit (cell) docslib;
-
-  styxlib = (import (inputs.self + /src/lib)) {
-    pkgs = nixpkgs;
-    conf = null;
-  };
+  inherit (cell) docslib styxlib;
 
   l = nixpkgs.lib // builtins;
 in {

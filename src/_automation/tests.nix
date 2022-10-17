@@ -5,17 +5,9 @@
   l = inputs.nixpkgs.lib // builtins;
 
   inherit (inputs) nixpkgs;
+  inherit (inputs.cells.renderers) styxlib;
   inherit (inputs.cells.data) styxthemes;
   inherit (inputs.cells.app.cli) styx;
-
-  styxlib = (import "${inputs.self}" {pkgs = nixpkgs // {inherit styx;};}).lib;
-
-  callStyxSite = siteFnOrFile: let
-    call = l.customisation.callPackageWith (
-      nixpkgs.extend (_: _: {inherit styx;})
-    );
-  in
-    call siteFnOrFile;
 
   defaultEnv = {
     preferLocalBuild = true;
@@ -26,7 +18,7 @@
     l.mapAttrs' (
       n: v:
         l.nameValuePair "${n}-site"
-        (callStyxSite (import "${v}/example/site.nix") {
+        (styxlib.callStyxSite (import "${v}/example/site.nix") {
           extraConf = {
             siteUrl = ".";
             renderDrafts = true;
@@ -50,7 +42,7 @@ in
         sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
       '';
     in
-      (callStyxSite (import "${site}/my-site/site.nix") {}).site;
+      (styxlib.callStyxSite (import "${site}/my-site/site.nix") {}).site;
     new-theme = nixpkgs.runCommand "styx-new-theme" defaultEnv ''
       mkdir $out
       ${styx}/bin/styx new site my-site --in $out

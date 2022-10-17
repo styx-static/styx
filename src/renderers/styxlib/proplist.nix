@@ -9,9 +9,10 @@ Property list example:
 
   [ { foo = "bar"; } { baz = "buz"; } ]
 */
-args:
-with args.lib;
-with (import ./utils.nix args); rec {
+lib: styxlib:
+with lib;
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.proplist uses styxlib.utils";
+with styxlib.utils; rec {
   _documentation = _: ''
     The proplist namespace contains functions to manipulate property lists, list of attribute set with only one attribute.
 

@@ -1,20 +1,17 @@
 # Data functions
-{
-  pkgs,
-  conf,
-  lib,
-} @ args:
+lib: nixpkgs: styxlib:
 with lib;
-with (import ./utils.nix args);
-with (import ./proplist.nix args); let
-  markupFiles = mapAttrs (n: v: v.extensions) conf.lib.data.markup;
-  markupExts = flatten (attrValues markupFiles);
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.data uses styxlib.utils";
+assert assertMsg (hasAttr "proplist" styxlib) "styxlib.data uses styxlib.proplist";
+assert assertMsg (hasAttr "config" styxlib) "styxlib.data uses styxlib.config";
+with styxlib.utils;
+with styxlib.proplist; let
+  evaledMarkup = styxlib.config.lib.data.markup;
 
-  supportedFiles =
-    {
-      "nix" = ["nix"];
-    }
-    // markupFiles;
+  evaledMarkupFiles = mapAttrs (n: v: v.extensions) evaledMarkup;
+  evaledMarkupExts = flatten (attrValues evaledMarkupFiles);
+
+  supportedFiles = {"nix" = ["nix"];} // evaledMarkupFiles;
   supportedExts = flatten (attrValues supportedFiles);
 
   /*
@@ -24,14 +21,14 @@ with (import ./proplist.nix args); let
     fileData,
     env,
   }: let
-    markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) markupFiles));
+    markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) evaledMarkupFiles));
     markupAttrs = ["intro" "pages" "content"];
     dataFn =
-      pkgs.runCommand "parsed-data.nix" {
+      nixpkgs.runCommand "parsed-data.nix" {
         preferLocalBuild = true;
         allowSubstitutes = false;
       }
-      (conf.lib.data.markup."${markupType}".parser fileData.path);
+      (evaledMarkup."${markupType}".parser fileData.path);
     data = importApply dataFn env;
   in
     mapAttrs (
@@ -63,7 +60,7 @@ with (import ./proplist.nix args); let
       then {date = elemAt m 0;}
       else {};
     data =
-      if elem fileData.ext markupExts
+      if elem fileData.ext evaledMarkupExts
       then parseMarkupFile {inherit fileData env;}
       else if fileData.ext == "nix"
       then importApply fileData.path env
@@ -76,13 +73,13 @@ with (import ./proplist.nix args); let
   */
   markupToHtml = markupType: text: let
     data =
-      pkgs.runCommand "markup-data.html" {
+      nixpkgs.runCommand "markup-data.html" {
         preferLocalBuild = true;
         allowSubstitutes = false;
         inherit text;
         passAsFile = ["text"];
       }
-      (conf.lib.data.markup."${markupType}".converter "$textPath");
+      (evaledMarkup."${markupType}".converter "$textPath");
   in
     readFile data;
 

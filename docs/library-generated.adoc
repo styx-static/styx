@@ -16,40 +16,6 @@ File automatically generated, do not edit
 
 :sectnums!:
 
-[[lib.conf.mergeConfs]]
-=== mergeConfs
-
-==== Description
-
-Merge a list of configurations.
-
-
-==== Arguments (Standard)
-
-
-===== confs
-
-List of configurations.
-
-Type: `[ Attrs | Path ]`. 
-
-==== Return
-
-The merged configuration set.
-
-
-
-
-
-:sectnums:
-
-
-
----
-
-
-:sectnums!:
-
 [[lib.conf.parseDecls]]
 === parseDecls
 
@@ -3157,11 +3123,11 @@ Load themes data.
 ==== Arguments (Attribute Set)
 
 
-===== decls
+===== config
 
-A declaration set to merge into to themes configuration.
+List of configuration or paths to configuration.
 
-Type: `Attrs`. 
+Type: `[ (Attrs | Path) ]`. 
 
 Optional, defaults to `[  ]`.
 
@@ -3268,6 +3234,40 @@ A theme data attribute set containing:
 * `templates`: Theme templates set, only if the theme provides templates.
 * `files`: Theme static files path, only if the theme provides static files.
 
+
+
+
+
+
+:sectnums:
+
+
+
+---
+
+
+:sectnums!:
+
+[[lib.themes.mergeConfs]]
+=== mergeConfs
+
+==== Description
+
+Merge a list of configurations.
+
+
+==== Arguments (Standard)
+
+
+===== confs
+
+List of configurations.
+
+Type: `[ Attrs | Path ]`. 
+
+==== Return
+
+The merged configuration set.
 
 
 
@@ -3574,62 +3574,6 @@ find { number = (x: x > 3); color = "blue"; } [
   color = "blue";
   number = 6;
 }
-----
-
-
-
-
-
-
-:sectnums:
-
-
-
----
-
-
-:sectnums!:
-
-[[lib.utils.getAttrs]]
-=== getAttrs
-
-==== Description
-
-Get the attribute values for the `n` attribute name from a `l` list of attribute sets.
-
-==== Arguments (Standard)
-
-
-===== n
-
-Attribute name.
-
-Type: `String`. 
-
-===== l
-
-List of attribute sets.
-
-Type: `[ Attrs ]`. 
-
-==== Return
-
-A list containing the values of `n`.
-
-
-==== Example
-
-
-[source, nix]
-.Code
-----
-getAttrs "a" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ]
-----
-
-[source, nix]
-.Result
-----
-[ 1 2 4 ]
 ----
 
 
