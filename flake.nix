@@ -46,6 +46,7 @@
       formatter = std.harvest nixpkgs.legacyPackages ["alejandra"];
       devShells = std.harvest self ["_automation" "devshells"];
       packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
+      hydraJobs = std.harvest self ["app" "cli"];
     }
     (utils.lib.eachDefaultSystem (
       system: let
