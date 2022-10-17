@@ -1,4 +1,3 @@
-import re
 import sys
 import textwrap
 from string import Template
@@ -9,9 +8,9 @@ from parsimonious.nodes import NodeVisitor
 
 class MarkupParser(NodeVisitor):
     def __init__(self, text):
-        grammar = """
+        grammar = r"""
              main          = meta? (nix / markup)*
-             newline       = ~"[\\n\\s]"+
+             newline       = ~"[\n\s]"+
 
              meta          = newline? meta_open meta_content meta_close
              meta_open     = "---"
@@ -23,28 +22,28 @@ class MarkupParser(NodeVisitor):
              meta_prop_sep = ":"
              meta_prop_val = ~"."+
 
-             markup        = (!nix (esc_nix_open / ~"\{{3,}" / ~"."s))+
+             markup        = (!nix (esc_nix_open / ~"{{3,}" / ~"."s))+
 
-             esc_nix_open  = "\\{{"
-             esc_nix_close = "\\}}"
+             esc_nix_open  = "\{{"
+             esc_nix_close = "\}}"
              nix           = nix_open nix_content nix_close
              nix_open      = "{{" !"{"
              nix_content   = (nix / nix_expr)*
              nix_expr      = !nix_open !nix_close (esc_nix_close / ~"."s)
-             nix_close     = "}}" 
+             nix_close     = "}}"
          """
         self.meta = ""
         self.markup = ""
         self.result = self.visit(Grammar(grammar).parse(text))
 
     def visit_main(self, node, children):
-        return "".join(filter(lambda x: x != None, children))
+        return "".join(filter(lambda x: x is not None, children))
 
     def visit_newline(self, node, children):
         return node.text
 
     def visit_meta(self, node, children):
-        self.meta = "".join(filter(lambda x: x != None, children))
+        self.meta = "".join(filter(lambda x: x is not None, children))
         return ""
 
     def visit_meta_open(self, node, children):
@@ -81,32 +80,45 @@ class MarkupParser(NodeVisitor):
         return "".join(children)
 
     def visit_nix_expr(self, node, children):
-        return node.text.replace("\}}", "}}")
+        return node.text.replace(r"\}}", "}}")
 
     def visit_markup(self, node, children):
-        return node.text.replace("''", "'''").replace("\{{", "{{").replace("${", "''${")
+        r1 = node.text.replace("''", "'''")
+        r2 = r1.replace(r"\{{", "{{")
+        r3 = r2.replace("${", "''${")
+        return r3
 
     def generic_visit(self, node, children):
-        return "".join(filter(lambda x: x != None, children))
+        return "".join(filter(lambda x: x is not None, children))
+
+
+def processNixText(text):
+    # escaping page sep
+    text = text.replace(r"\<<<", "<<<")
+    return text
 
 
 def toNix(meta, markup):
 
     args = {"meta": meta, "intro": "", "content": "", "pages": ""}
 
-    intro_match = markup.split("\n<!--more-->\n")
+    intro_match = markup.split("\n[more]\n")
     if len(intro_match) > 1:
         args["intro"] = "intro = ''{}'';".format(intro_match[0])
         args["content"] = intro_match[1]
     else:
         args["content"] = intro_match[0]
 
-    pages_match = args["content"].split("\n---\n---\n")
+    pages_match = args["content"].split("\n<<<\n")
     if len(pages_match) > 1:
-        args["pages"] = "pages = [ ''{}'' ];".format("''\n''".join(pages_match))
+        pages = "pages = [ ''{}'' ];".format(
+            "''\n''".join(map(lambda x: processNixText(x), pages_match))
+        )
+        args["pages"] = pages
         args["content"] = ""
     else:
-        args["content"] = "content = ''{}'';".format(args["content"])
+        content = "content = ''{}'';".format(args["content"])
+        args["content"] = content
 
     template = Template(
         textwrap.dedent(

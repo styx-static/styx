@@ -1,8 +1,17 @@
+/*
+This function sits at the root of the `styx` derivation for compatibility reasons
+when styx is invoked with 'import pkgs.styx'
+
+Therefore, the entire source tree is copied into the derivation.
+
+Callers:
+  - site.nix (import pkgs.styx) -- musn't be impure within this flake, e.g. tests
+*/
 {
   themes ? [],
   config ? [],
   env ? {},
-  pkgs ? import <nixpkgs> {},
+  pkgs ? import ./pkgs.nix,
 }: let
   # base library
   baseLib = pkgs.lib // builtins;
@@ -10,9 +19,9 @@
   # temporary library
   tempLib =
     {
-      conf = import ./lib/conf.nix {lib = baseLib;};
-      utils = import ./lib/utils.nix {lib = baseLib;};
-      themes = import ./lib/themes.nix {lib = baseLib;};
+      conf = import ./src/lib/conf.nix {lib = baseLib;};
+      utils = import ./src/lib/utils.nix {lib = baseLib;};
+      themes = import ./src/lib/themes.nix {lib = baseLib;};
     }
     // pkgs.lib
     // builtins;
@@ -32,7 +41,7 @@
     optionFn = o: o.default;
     inherit decls;
   };
-  lib = import ./lib {inherit pkgs conf;};
+  lib = import ./src/lib {inherit pkgs conf;};
 
   themes' = lib.themes.load {
     inherit themes lib env decls;

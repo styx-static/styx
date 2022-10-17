@@ -20,32 +20,38 @@
         ./src/_automation
         ./src/data
         ./src/renderers
+        ./src/app
       ];
       cellBlocks = with std.blockTypes; [
         # ./src/_automation
         (devshells "devshells")
         (runnables "tasks")
         (runnables "tests")
-        ({name = "libtests"; type = "unspecified";})
+        {
+          name = "libtests";
+          type = "unspecified";
+        }
         # ./src/data
         (functions "styxthemes")
         # ./src/renderers
         (functions "docs")
         (functions "docslib")
+        # ./src/app
+        (installables "cli")
+        (runnables "parsers")
       ];
     }
     # soil
     {
       formatter = std.harvest nixpkgs.legacyPackages ["alejandra"];
       devShells = std.harvest self ["_automation" "devshells"];
-      packages = std.harvest self ["_automation" "tasks"];
+      packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
     }
     (utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
-        styx = pkgs.callPackage ./derivation.nix {};
+        inherit (self.packages.${system}) styx;
       in {
-        packages = {inherit styx;};
         defaultPackage = styx;
         lib = import ./src/lib {inherit pkgs styx;};
       }

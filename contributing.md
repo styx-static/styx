@@ -17,13 +17,20 @@ Clone this repository:
 $ git clone https://github.com/styx-static/styx.git
 ```
 
+### Devshell
+
+Enter the devshell:
+
+```
+$ direnv allow || nix develop -c "$SHELL"
+```
+
 ### Styx
 
 Running styx dev version:
 
 ```
-$ nix-build styx
-$ result/bin/styx --version
+$ nix run . -- --version
 ```
 
 Styx is just a shell script wrapping `nix-build`, the `--DEBUG` flag can be passed to see executed commands (`set -x`).
@@ -33,20 +40,16 @@ Styx is just a shell script wrapping `nix-build`, the `--DEBUG` flag can be pass
 Previewing the dev version showcase theme example site:
 
 ```
-$ $(nix-build --no-out-link)/bin/styx preview-theme showcase
+$ nix run . -- preview-theme showcase
 ```
-
-Decomposing the command:
-
-- `$(nix-build --no-out-link styx)/bin/styx`: build styx dev version from `default.nix`, and call the styx executable in it.
-- `preview-theme showcase`: `preview-theme` is the command to preview a theme example site on a local server.
 
 Loading the showcase example site in `nix repl`:
 
 ```
-$ nix repl ./nixpkgs
+$ nix repl ./repl.nix
+> themes = out.data.styxthemes
 
-nix-repl> site = callPackage (import "${(import styx.themes).showcase}/example/site.nix") {}
+nix-repl> site = import "${themes.showcase}"/example/site.nix {}
 
 nix-repl> site.conf
 { siteUrl = "https://styx-static.github.io/styx-theme-showcase"; theme = { ... }; }

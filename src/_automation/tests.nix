@@ -6,21 +6,14 @@
 
   inherit (inputs) nixpkgs;
   inherit (inputs.cells.data) styxthemes;
+  inherit (inputs.cells.app.cli) styx;
 
-  styxlib =
-    ((import (inputs.self + /src)) {
-      pkgs =
-        nixpkgs
-        // {
-          styx = nixpkgs.callPackage (inputs.self + /derivation.nix) {};
-        };
-    })
-    .lib;
-
-  styx = nixpkgs.callPackage (inputs.self + /derivation.nix) {};
+  styxlib = (import "${inputs.self}" {pkgs = nixpkgs // {inherit styx;};}).lib;
 
   callStyxSite = siteFnOrFile: let
-    call = l.customisation.callPackageWith (import ./tests/compat.nix inputs);
+    call = l.customisation.callPackageWith (
+      nixpkgs.extend (_: _: {inherit styx;})
+    );
   in
     call siteFnOrFile;
 

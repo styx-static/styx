@@ -1,4 +1,4 @@
-#! @shell@
+#! /usr/bin/env bash
 
 #-------------------------------
 
@@ -67,7 +67,7 @@ EOF
 
 # last changed timestamp
 last_timestamp() {
-  find $1 ! -path '*.git/*' ! -name '*.swp' ! -path 'gh-pages/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
+  find "$1" ! -path '*.git/*' ! -name '*.swp' ! -path 'gh-pages/*' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d"."
 }
 
 nix_error() {
@@ -79,7 +79,7 @@ nix_error() {
 
 check_dir() {
   if [ -d "$1" ]; then
-    echo $2
+    echo "$2"
     exit 1
   fi
 }
@@ -92,8 +92,7 @@ check_styx() {
 }
 
 check_git() {
-  $(git rev-parse --is-inside-work-tree)
-  if [ $? -ne 0 ]; then
+  if ! git rev-parse --is-inside-work-tree; then
     echo "Error: '$1' is not a git repository."
     exit 1
   fi
@@ -115,7 +114,7 @@ EOF
 # build the site in the nix store
 store_build() {
   extraConf+=("renderDrafts = $renderDrafts;")
-  extraFlags+=("--arg" "pkgs" "(let pkgs = import @nixpkgs@ {}; in pkgs.extend(_: _: {styx = pkgs.callPackage @src@/derivation.nix {};}))")
+  extraFlags+=("--arg" "pkgs" "$pkgs")
   extraFlags+=("--arg" "extraConf" "{ $(
     IFS=
     echo "${extraConf[@]}"
@@ -146,18 +145,22 @@ realpath() {
 
 # styx version
 version=@version@
-# original arguments
-origArgs=("$@")
 # action to execute
 action=
 # styx root dir
-root=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
+root="$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"
+# styx imports nixpkgs & styx during runtime
+pkgs="$(cat "$root"/pkgs.nix)"
+# styx themes attributeset
+themes="$root/themes-compat.nix"
+# styx new-site path
+newsite=$(realpath "$root/src/scaffold/new-site")
+# styx sample-data path
+sampledata=$(realpath "$root/src/scaffold/sample-data")
 # styx html doc path
 doc=$(realpath "$root/share/doc/styx/index.html")
 # doc builder
-doc_builder="$root/share/styx/src/renderers/doc-builder-compat.nix"
-# debug mode
-debug=
+doc_builder="$root/doc-builder-compat.nix"
 # extra arguments to be appended to the nix-build command
 extraFlags=()
 # extra conf passed to site.nix
@@ -168,9 +171,6 @@ siteFile="site.nix"
 buildPath=
 # draft rendering
 renderDrafts="false"
-
-# default new-theme name
-themeName=
 
 # subcommands of new
 newCommands=("site" "theme")
@@ -190,9 +190,9 @@ output=
 clean=
 
 # linkchecker program
-linkchecker=@linkcheck@
+linkchecker="linkchecker"
 # server program
-server=@server@
+server="caddy"
 # hostname or ip the server is listening on
 serverHost="127.0.0.1"
 # port used by the server
@@ -241,7 +241,7 @@ while [ "$#" -gt 0 ]; do
     extraFlags+=("$i")
     ;;
   --in)
-    if [ -e $1 ] && [ -d $1 ]; then
+    if [ -e "$1" ] && [ -d "$1" ]; then
       in=$(realpath "$1")
       shift 1
       in=${in%/}
@@ -257,7 +257,7 @@ while [ "$#" -gt 0 ]; do
     # Commands
   new)
     action="$i"
-    if [ -n "$1" ] && [[ " ${newCommands[@]} " =~ " $1" ]]; then
+    if [ -n "$1" ] && [[ " ${newCommands[*]} " =~ ^.*" $1 ".*$ ]]; then
       newCommand="$1"
       shift 1
     else
@@ -293,7 +293,7 @@ while [ "$#" -gt 0 ]; do
     ;;
   doc | manual)
     check_browser
-    $BROWSER $doc &
+    $BROWSER "$doc" &
     exit 0
     ;;
     # Build options
@@ -367,10 +367,10 @@ fi
 
 if [ "$action" = new ] && [ "$newCommand" = site ]; then
   target="$in/$name"
-  check_dir $target "Error: Cannot create a new site in '$target', directory exists."
+  check_dir "$target" "Error: Cannot create a new site in '$target', directory exists."
   mkdir "$target"
-  mkdir $target/{themes,data}
-  cp -r $root/share/styx/src/scaffold/new-site/* "$target/"
+  mkdir "$target"/{themes,data}
+  cp -r "$newsite"/* "$target/"
   chmod -R u+rw "$target"
   echo "Styx site initialized in '$target'."
   exit 0
@@ -384,9 +384,9 @@ fi
 
 if [ "$action" = new ] && [ "$newCommand" = theme ]; then
   target="$in/$name"
-  check_dir $target "Error: Cannot create a new theme in '$target', directory exists."
+  check_dir "$target" "Error: Cannot create a new theme in '$target', directory exists."
   mkdir "$target"
-  mkdir $target/{templates,files}
+  mkdir "$target"/{templates,files}
   echo -e "{ lib }:\n{\n  id = \"$name\";\n}" >"$target/meta.nix"
   echo "Styx theme initialized in '$target'."
   exit 0
@@ -400,9 +400,9 @@ fi
 
 if [ "$action" = "gen-sample-data" ]; then
   target="$in/data/sample"
-  check_dir $target "Error: '$target' directory exists, aborting."
-  mkdir -p $target
-  cp -r $root/share/styx/src/scaffold/sample-data/* "$target"
+  check_dir "$target" "Error: '$target' directory exists, aborting."
+  mkdir -p "$target"
+  cp -r "$sampledata"/* "$target"
   chmod -R u+rw "$target"
   echo "Sample data created in '$target'."
   exit 0
@@ -415,13 +415,10 @@ fi
 #-------------------------------
 
 if [ "$action" = "preview-theme" ]; then
-  themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
-  in="$(nix-build --no-out-link -A $theme $themesdir 2>/dev/null)/example"
-  if [ $? -ne 0 ] || [ -z "$theme" ]; then
+
+  if ! in="$(nix-build --no-out-link -A "$theme" "$themes" 2>/dev/null)/example" || [ -z "$theme" ]; then
     echo "Please select an available theme, available themes are:"
-    while IFS=, read theme rev; do
-      echo "- $theme"
-    done <$themesdir/revs.csv
+    nix eval --json -f "$themes" | jq '.'
     exit 1
   fi
   action="serve"
@@ -435,16 +432,13 @@ fi
 #-------------------------------
 
 if [ "$action" = "theme-path" ]; then
-  themesdir="$(nix-build --no-out-link -A themes "$root/share/styx-src")"
-  path="$(nix-build --no-out-link -A $theme $themesdir 2>/dev/null)"
-  if [ $? -ne 0 ] || [ -z "$theme" ]; then
+
+  if ! path="$(nix-build --no-out-link -A "$theme" "$themes" 2>/dev/null)" || [ -z "$theme" ]; then
     echo "Please select an available theme, available themes are:"
-    while IFS=, read theme rev; do
-      echo "- $theme"
-    done <$themesdir/revs.csv
+    nix eval --json -f "$themes" | jq '.'
     exit 1
   fi
-  echo $path
+  echo "$path"
 fi
 
 #-------------------------------
@@ -454,14 +448,13 @@ fi
 #-------------------------------
 
 if [ "$action" = "site-doc" ]; then
-  check_styx $in $siteFile
-  extraFlags+=("--arg" "siteFile" $(realpath "$in/$siteFile"))
-  path=$(doc_build)
-  if [ $? -ne 0 ]; then
+  check_styx "$in" "$siteFile"
+  extraFlags+=("--arg" "siteFile" "$(realpath "$in/$siteFile")")
+  if ! path=$(doc_build); then
     nix_error
   fi
   check_browser
-  $BROWSER $path/index.html &
+  $BROWSER "$path"/index.html &
 fi
 
 #-------------------------------
@@ -471,8 +464,8 @@ fi
 #-------------------------------
 
 if [ "$action" = build ]; then
-  check_styx $in $siteFile
-  if [ -z $output ]; then
+  check_styx "$in" "$siteFile"
+  if [ -z "$output" ]; then
     target=$(realpath "$in/public")
   else
     target=$(realpath "$output")
@@ -481,14 +474,13 @@ if [ "$action" = build ]; then
     extraConf+=("siteUrl = \"$siteUrl\";")
   fi
   echo "Building the site..."
-  path=$(store_build $(realpath "$in/$siteFile"))
-  if [ $? -ne 0 ]; then
+  if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
     nix_error
   fi
   if [ -d "$target" ]; then
-    if [ "$(ls -A $target)" ]; then
+    if [ "$(ls -A "$target")" ]; then
       if [ -n "$clean" ]; then
-        rm -fr $target/*
+        rm -fr "${target:?}"/*
       else
         echo "Warning: output directory '$target' is not empty. Site will be built but old files will not be removed."
         echo "         use the '--clean' flag to remove any file that is not generated by styx in the output directory."
@@ -497,9 +489,9 @@ if [ "$action" = build ]; then
   else
     mkdir -p "$target"
   fi
-  cp -L -r $path/* $target/
+  cp -L -r "$path"/* "$target"/
   # fixing permissions
-  chmod u+rw -R $target/*
+  chmod u+rw -R "$target"/*
   echo "Generated site in '$target'"
   exit 0
 fi
@@ -511,12 +503,11 @@ fi
 #-------------------------------
 
 if [ "$action" = store-path ]; then
-  check_styx $in $siteFile
+  check_styx "$in" "$siteFile"
   if [ -n "$siteUrl" ]; then
     extraConf+=("siteUrl = \"$siteUrl\";")
   fi
-  path=$(store_build $(realpath "$in/$siteFile"))
-  if [ $? -ne 0 ]; then
+  if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
     nix_error
   fi
   echo "$path"
@@ -529,28 +520,27 @@ fi
 #-------------------------------
 
 if [ "$action" = serve ]; then
-  if [ -z $buildPath ]; then
-    check_styx $in $siteFile
+  if [ -z "$buildPath" ]; then
+    check_styx "$in" "$siteFile"
     if [ "$siteUrl" = "PREVIEW" ]; then
       extraConf+=("siteUrl = \"http://$serverHost:$port\";")
     elif [ -n "$siteUrl" ]; then
       extraConf+=("siteUrl = \"$siteUrl\";")
     fi
-    path=$(store_build $(realpath "$in/$siteFile"))
-    if [ $? -ne 0 ]; then
+    if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
       nix_error
     fi
   else
     path="$buildPath"
   fi
   if [ -n "$detachServer" ]; then
-    $server file-server --root \"$path\" --listen "$serverHost":"$port" >/dev/null &
+    $server file-server --root \""$path"\" --listen "$serverHost":"$port" >/dev/null &
     serverPid=$!
     echo "server listening on http://$serverHost:$port with pid ${serverPid}"
   else
     echo "server listening on http://$serverHost:$port"
     echo "press Ctrl+C to stop"
-    "$server" file-server --root "$path" --listen "$ServerHost":"$port"
+    "$server" file-server --root "$path" --listen "$serverHost":"$port"
   fi
 fi
 
@@ -561,17 +551,16 @@ fi
 #-------------------------------
 
 if [ "$action" = linkcheck ]; then
-  if [ -z $buildPath ]; then
-    check_styx $in $siteFile
+  if [ -z "$buildPath" ]; then
+    check_styx "$in" "$siteFile"
     extraConf+=("siteUrl = \"http://$serverHost:$port\";")
-    path=$(store_build $(realpath "$in/$siteFile"))
-    if [ $? -ne 0 ]; then
+    if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
       nix_error
     fi
   else
     path="$buildPath"
   fi
-  $server file-server --root \"$path\" --listen "$serverHost":"$port" >/dev/null &
+  $server file-server --root \""$path"\" --listen "$serverHost":"$port" >/dev/null &
   serverPid=$!
   sleep 3
   echo "---"
@@ -589,28 +578,26 @@ fi
 
 if [ "$action" = live ]; then
   serverPid=
-  check_styx $in $siteFile
+  check_styx "$in" "$siteFile"
   # get last change
   lastChange=$(last_timestamp)
   # building to result a first time
   extraConf+=("siteUrl = \"http://$serverHost:$port\";")
-  path=$(store_build $(realpath "$in/$siteFile"))
-  if [ $? -ne 0 ]; then
+  if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
     nix_error
   fi
   # start the server
-  $server file-server --root "$path" --listen "$serverHost":"$port" >/dev/null &
+  $server file-server --root \""$path"\" --listen "$serverHost":"$port" >/dev/null &
   echo "Started live preview on http://$serverHost:$port"
   echo "Press q to quit"
   # saving the pid
   serverPid=$!
   while true; do
-    curLastChange=$(last_timestamp $in)
+    curLastChange=$(last_timestamp "$in")
     if [ "$curLastChange" -gt "$lastChange" ]; then
       # rebuild
       echo "Change detected, rebuilding..."
-      path=$(store_build)
-      if [ $? -ne 0 ]; then
+      if ! path=$(store_build); then
         echo "There were errors in site generation, server restart is skipped until the site generation success."
       else
         # kill the server
@@ -626,9 +613,9 @@ if [ "$action" = live ]; then
         sleep 3
       fi
       # update the timestamp
-      lastChange=$(last_timestamp $in)
+      lastChange=$(last_timestamp "$in")
     fi
-    read -t 1 -N 1 input
+    read -r -t 1 -N 1 input
     if [[ $input == "q" ]] || [[ $input == "Q" ]]; then
       disown "$serverPid"
       kill -9 "$serverPid"
@@ -647,11 +634,11 @@ fi
 
 if [ "$action" = deploy ]; then
   if [ "$deployAction" == "init-gh-pages" ]; then
-    check_git $in
+    check_git "$in"
     (
-      cd $in
+      cd "$in"
       mkdir gh-pages
-      git clone -l $(pwd) ./gh-pages
+      git clone -l "$(pwd)" ./gh-pages
       echo gh-pages >>.gitignore
       cd gh-pages
       git checkout --orphan gh-pages
@@ -666,33 +653,33 @@ if [ "$action" = deploy ]; then
 
   # gh-pages
   elif [ "$deployAction" == "gh-pages" ]; then
-    if [ -z $siteDir ]; then
+    if [ -z "$siteDir" ]; then
       siteDir="$in"
     fi
-    check_git $in
+    check_git "$in"
     target="$in/gh-pages"
 
     # Precheck of gh-pages
     (
       cd "$in"
       # Handle cases where the gh-pages folder is not present
-      if [ ! -d $target ]; then
+      if [ ! -d "$target" ]; then
         echo "Notice: $target folder does not exists."
         # OK, we need to do something, first check if the gh-pages branch exists
         if git rev-parse --quiet --verify gh-pages; then
           # gh-pages local branch exists, check it out in gh-pages
           echo "Notice: gh-pages branch exists locally, checking it out in $target, and continuing the deployment."
-          mkdir $target
-          git clone -l $in $target
-          (cd $target && git checkout gh-pages)
+          mkdir "$target"
+          git clone -l "$in" "$target"
+          (cd "$target" && git checkout gh-pages)
         else
           # Next, try remotely
           if git show-ref --quiet --verify -- "refs/remotes/origin/gh-pages"; then
             echo "Notice: gh-pages branch exists remotely, checking it out in $target, and continuing deployment. You might be asked for password."
-            mkdir $target
+            mkdir "$target"
             git fetch origin gh-pages:gh-pages
-            git clone -l $in $target
-            (cd $target && git checkout gh-pages)
+            git clone -l "$in" "$target"
+            (cd "$target" && git checkout gh-pages)
           else
             echo "Error: There is no 'gh-pages' branch, run 'styx deploy --init-gh-pages' first to create it."
             exit 1
@@ -703,10 +690,9 @@ if [ "$action" = deploy ]; then
 
     (
       # building
-      if [ -z $buildPath ]; then
+      if [ -z "$buildPath" ]; then
         echo "Building the site"
-        path=$(store_build $(realpath "$in/$siteFile"))
-        if [ $? -ne 0 ]; then
+        if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
           nix_error
           exit 1
         fi
