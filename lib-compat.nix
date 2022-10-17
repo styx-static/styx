@@ -12,6 +12,7 @@ Callers:
   config ? [],
   env ? {},
   pkgs ? import ./pkgs.nix,
+  debug ? false,
 }: let
   # configuration set
   styxlib = import ./src/renderers/styxlib.nix {
@@ -36,7 +37,7 @@ Callers:
     inherit themes env config;
   };
 in
-  pkgs.lib.trace "site config: ${pkgs.lib.generators.toPretty {} loaded.lib.config}" {
+  pkgs.lib.traceIf debug "site config: ${pkgs.lib.generators.toPretty {} loaded.lib.config}" {
     inherit (loaded) lib conf decls;
     themes = loaded;
   }
