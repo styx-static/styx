@@ -71,4 +71,7 @@
       themes = "${l.toString inputs.self}/themes-compat.nix";
     };
   };
-in {inherit styx;}
+in {
+  inherit styx;
+  default = styx;
+}

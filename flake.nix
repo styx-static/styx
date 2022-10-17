@@ -50,7 +50,7 @@
       formatter = std.harvest nixpkgs.legacyPackages ["alejandra"];
       devShells = std.harvest self ["_automation" "devshells"];
       packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
-      hydraJobs = std.harvest self ["app" "cli"];
+      hydraJobs = std.winnow (n: _: n != "default") self ["app" "cli"];
       templates = (std.harvest inputs.self ["data" "presets"]).x86_64-linux; # picked one system; doesn't matter
     }
     (utils.lib.eachDefaultSystem (
@@ -58,7 +58,6 @@
         pkgs = import nixpkgs {inherit system;};
         inherit (self.packages.${system}) styx;
       in {
-        defaultPackage = styx;
         lib = import ./src/lib {inherit pkgs styx;};
       }
     ));
