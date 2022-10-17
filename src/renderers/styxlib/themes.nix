@@ -1,9 +1,12 @@
 # themes
-args:
-with args.lib;
-with import ./utils.nix args;
-with import ./conf.nix args;
-with import ./proplist.nix args; let
+lib: styxlib:
+with lib;
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.themes uses styxlib.utils";
+assert assertMsg (hasAttr "proplist" styxlib) "styxlib.themes uses styxlib.proplist";
+assert assertMsg (hasAttr "conf" styxlib) "styxlib.themes uses styxlib.conf";
+with styxlib.utils;
+with styxlib.proplist;
+with styxlib.conf; let
   /*
   Recursively fetches a directory of templates
   return a recursive set of { NAME = FILE }
@@ -36,126 +39,6 @@ with import ./proplist.nix args; let
     then t.path + "/${f}"
     else null;
 in rec {
-  /*
-  ===============================================================
-
-   load
-
-  ===============================================================
-  */
-
-  load = documentedFunction {
-    description = ''
-      Load themes data.
-    '';
-
-    arguments = {
-      lib = {
-        description = "The styx library.";
-        type = "Attrs";
-      };
-      themes = {
-        description = "List of themes, local themes or packages.";
-        type = "[ (Path | Package) ]";
-        default = {};
-      };
-      decls = {
-        description = "A declaration set to merge into to themes configuration.";
-        type = "Attrs";
-        default = [];
-      };
-      env = {
-        description = "An attribute set to merge to the environment, the environment is used in templates and returned in the `env` attribute.";
-        type = "Attrs";
-        default = {};
-      };
-    };
-
-    return = ''
-      A theme data attribute set containing:
-
-      * `conf`: Themes configuration merged with `extraConf`.
-      * `lib`: The merged themes library.
-      * `files`: List of static files folder.
-      * `templates`: The merged themes template set.
-      * `themes`: List of themes attribute sets.
-      * `decls`: Themes declaration set.
-      * `docs`: Themes documentation set.
-      * `env`: Generated environment attribute set, `extraEnv` merged with `lib`, `conf` and `templates`.
-    '';
-
-    examples = [
-      (mkExample {
-        literalCode = ''
-          themesData = lib.themes.load {
-            inherit lib themes;
-            env  = { inherit data pages; };
-            decls = lib.utils.merge [
-              (import ./conf.nix {/* ... */})
-              extraConf
-            ];
-          };
-        '';
-      })
-    ];
-
-    function = {
-      lib,
-      themes ? [],
-      decls ? {},
-      env ? {},
-    }: let
-      themesData = map (theme: loadData {inherit theme lib;}) themes;
-      lib' = merge ([lib] ++ (getAttrs "lib" themesData));
-      decls' = merge (getAttrs "decls" themesData);
-      docs = merge (getAttrs "docs" themesData);
-      files = getAttrs "files" themesData;
-
-      conf' = let
-        root = parseDecls {
-          inherit decls;
-          optionFn = o:
-            if o ? default
-            then o.default
-            else null;
-        };
-        theme.theme = parseDecls {
-          decls = decls';
-          optionFn = o:
-            if o ? default
-            then o.default
-            else null;
-        };
-        typeCheckResult =
-          if theme ? theme
-          then typeCheck decls' theme.theme
-          else null;
-      in
-        deepSeq typeCheckResult (merge [theme root]);
-
-      env' =
-        env
-        // {
-          lib = lib';
-          conf = conf';
-          templates = templates';
-        };
-
-      templates' = let
-        templatesSet = merge (getAttrs "templates" themesData);
-      in
-        mapAttrsRecursive (path: template: template env') templatesSet;
-    in {
-      inherit docs files;
-      lib = lib';
-      decls = decls';
-      env = env';
-      conf = conf';
-      templates = templates';
-      themes = themesData;
-    };
-  };
-
   /*
   ===============================================================
 

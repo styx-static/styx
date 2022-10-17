@@ -13,40 +13,30 @@ Callers:
   env ? {},
   pkgs ? import ./pkgs.nix,
 }: let
-  # base library
-  baseLib = pkgs.lib // builtins;
-
-  # temporary library
-  tempLib =
-    {
-      conf = import ./src/lib/conf.nix {lib = baseLib;};
-      utils = import ./src/lib/utils.nix {lib = baseLib;};
-      themes = import ./src/lib/themes.nix {lib = baseLib;};
-    }
-    // pkgs.lib
-    // builtins;
-
-  loadDecls = cs: let
-    f = c:
-      if tempLib.utils.isPath c
-      then tempLib.utils.importApply c {inherit pkgs lib;}
-      else c;
-  in
-    tempLib.utils.merge (map f cs);
-
-  decls = loadDecls ([./styx-config.nix] ++ config);
-
   # configuration set
-  conf = tempLib.conf.parseDecls {
-    optionFn = o: o.default;
-    inherit decls;
+  styxlib = import ./src/renderers/styxlib.nix {
+    inputs = {
+      nixpkgs = pkgs;
+      cells = {
+        data.styxthemes = import ./themes-compat.nix;
+        app = {
+          cli = {inherit (pkgs) styx;};
+          parsers = import ./src/app/parsers.nix {
+            inputs = {nixpkgs = pkgs;};
+            cell = null;
+          };
+        };
+      };
+    };
+    cell = null;
   };
-  lib = import ./src/lib {inherit pkgs conf;};
 
-  themes' = lib.themes.load {
-    inherit themes lib env decls;
+  loaded = styxlib.themes.load {
+    lib = styxlib;
+    inherit themes env config;
   };
-in {
-  inherit lib conf decls;
-  themes = themes';
-}
+in
+  pkgs.lib.trace "site config: ${pkgs.lib.generators.toPretty {} loaded.lib.config}" {
+    inherit (loaded) lib conf decls;
+    themes = loaded;
+  }

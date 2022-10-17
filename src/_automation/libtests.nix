@@ -10,9 +10,19 @@ let
   l = inputs.nixpkgs.lib // builtins;
 
   inherit (inputs) nixpkgs;
+  inherit (inputs.cells.renderers) styxlib;
   inherit (inputs.cells.app.cli) styx;
 
-  styxlib = (import "${inputs.self}" {pkgs = nixpkgs // {inherit styx;};}).lib;
+  decls = styxlib.styxOptions;
+  root = styxlib.conf.parseDecls {
+    inherit decls;
+    optionFn = o:
+      if o ? default
+      then o.default
+      else null;
+  };
+
+  secondStageStyxlib = styxlib.hydrate (_: _: {config = root;});
 
   libs =
     map (x:
@@ -20,7 +30,7 @@ let
         name = "lib.${x}.${k}";
         value = v;
       })
-      styxlib."${x}")
+      secondStageStyxlib."${x}")
     [
       "conf"
       "data"
@@ -44,10 +54,10 @@ let
     };
 
   mkLoadFileTest = file: let
-    data = styxlib.data.loadFile {
+    data = secondStageStyxlib.data.loadFile {
       inherit file;
       env = {
-        lib = styxlib;
+        lib = secondStageStyxlib;
         foo = "bar";
         bar = [1 2 3];
         buz = 2;

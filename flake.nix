@@ -40,6 +40,7 @@
         # ./src/renderers
         (functions "docs")
         (functions "docslib")
+        (functions "styxlib")
         # ./src/app
         (installables "cli")
         (runnables "parsers")

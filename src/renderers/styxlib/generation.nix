@@ -1,11 +1,8 @@
 # Page and site generation functions
-{
-  pkgs,
-  conf,
-  lib,
-} @ args:
+lib: nixpkgs: styxlib:
 with lib;
-with import ./utils.nix args; rec {
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.generation uses styxlib.utils";
+with styxlib.utils; rec {
   /*
   ===============================================================
 
@@ -138,13 +135,13 @@ with import ./utils.nix args; rec {
       };
       name = meta.name or "styx-site";
     in
-      pkgs.runCommand name env ''
+      nixpkgs.runCommand name env ''
         shopt -s globstar
         mkdir -p $out
 
         # check if a file is a text file
         text_file () {
-          ${pkgs.file}/bin/file $1 | grep text | cut -d: -f1
+          ${nixpkgs.file}/bin/file $1 | grep text | cut -d: -f1
         }
 
         # run substitutions on a file
@@ -191,7 +188,7 @@ with import ./utils.nix args; rec {
                     path=$(echo "$path" | sed -r 's/[^.]+$/css/')
                     [ -f "$out/$path" ] && rm $out/$path
                     (
-                      ${pkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$path
+                      ${nixpkgs.lessc}/bin/lessc $input 2>/dev/null > $out/$path
                       if [ ! -s "$out/$path" ]; then
                         echo "Warning: could not build '$path'"
                       fi
@@ -204,7 +201,7 @@ with import ./utils.nix args; rec {
                     path=$(echo "$path" | sed -r 's/[^.]+$/css/')
                     [ -f "$out/$path" ] && rm $out/$path
                     (
-                      ${pkgs.sass}/bin/sass $input 2>/dev/null > "$out/$path"
+                      ${nixpkgs.sass}/bin/sass $input 2>/dev/null > "$out/$path"
                       if [ ! -s "$out/$path" ]; then
                         echo "Warning: could not build '$path'"
                         rm $out/$path
@@ -235,7 +232,7 @@ with import ./utils.nix args; rec {
         # PAGES
         ${concatMapStringsSep "\n" (page: ''
             outPath="$out${pagePathFn page}"
-            page=${pkgs.writeText "${name}-page" (genPageFn page)}
+            page=${nixpkgs.writeText "${name}-page" (genPageFn page)}
             mkdir -p "$(dirname "$outPath")"
             run_subs "$page"
             if [ $(cmp --silent subs $page || echo 1) ]; then

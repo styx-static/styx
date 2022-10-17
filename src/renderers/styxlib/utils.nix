@@ -1,6 +1,6 @@
 # utilities
-args:
-with args.lib; let
+lib:
+with lib; let
   documentedFunction' = data:
     data
     // {
@@ -348,45 +348,6 @@ in rec {
         else f (ys ++ [(take k xs)]) (drop k xs);
     in
       f [];
-  };
-
-  /*
-  ===============================================================
-
-   getAttrs
-
-  ===============================================================
-  */
-
-  getAttrs = documentedFunction {
-    description = "Get the attribute values for the `n` attribute name from a `l` list of attribute sets.";
-
-    arguments = [
-      {
-        name = "n";
-        description = "Attribute name.";
-        type = "String";
-      }
-      {
-        name = "l";
-        description = "List of attribute sets.";
-        type = "[ Attrs ]";
-      }
-    ];
-
-    return = ''
-      A list containing the values of `n`.
-    '';
-
-    examples = [
-      (mkExample {
-        literalCode = "getAttrs \"a\" [ { a = 1; } { a = 2; } { b = 3; } { a = 4; } ]";
-        code = getAttrs "a" [{a = 1;} {a = 2;} {b = 3;} {a = 4;}];
-        expected = [1 2 4];
-      })
-    ];
-
-    function = n: l: map (x: getAttr n x) (filter (x: hasAttr n x) l);
   };
 
   /*

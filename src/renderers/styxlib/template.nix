@@ -1,7 +1,8 @@
 # Template functions
-args:
-with args.lib;
-with (import ./utils.nix args); rec {
+lib: styxlib:
+with lib;
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.template uses styxlib.utils";
+with styxlib.utils; rec {
   /*
   ===============================================================
 
@@ -165,8 +166,8 @@ with (import ./utils.nix args); rec {
 
     function = blocks: {
       content = mapTemplate (b: b.content) blocks;
-      extraJS = flatten (getAttrs "extraJS" blocks);
-      extraCSS = flatten (getAttrs "extraCSS" blocks);
+      extraJS = flatten (catAttrs "extraJS" blocks);
+      extraCSS = flatten (catAttrs "extraCSS" blocks);
     };
   };
 

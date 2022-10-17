@@ -3,11 +3,9 @@
   cell,
 }: let
   inherit (inputs) nixpkgs;
-  inherit (inputs.cells.renderers) docs;
+  inherit (inputs.cells.renderers) docs styxlib;
   inherit (inputs.cells.data) styxthemes;
   inherit (inputs.cells.app.cli) styx;
-
-  styxlib = (import "${inputs.self}" {pkgs = nixpkgs // {inherit styx;};}).lib;
 
   l = nixpkgs.lib // builtins;
 in {

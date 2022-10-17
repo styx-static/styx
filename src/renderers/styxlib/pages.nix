@@ -1,8 +1,10 @@
 # Page functions
-args:
-with args.lib;
-with import ./utils.nix args;
-with import ./proplist.nix args; rec {
+lib: styxlib:
+with lib;
+assert assertMsg (hasAttr "utils" styxlib) "styxlib.pages uses styxlib.utils";
+assert assertMsg (hasAttr "proplist" styxlib) "styxlib.pages uses styxlib.proplist";
+with styxlib.utils;
+with styxlib.proplist; rec {
   /*
   ===============================================================
 
