@@ -154,9 +154,9 @@ pkgs="$(cat "$root"/pkgs.nix)"
 # styx themes attributeset
 themes="$root/themes-compat.nix"
 # styx new-site path
-newsite=$(realpath "$root/src/scaffold/new-site")
+newsite=$(realpath "$root/src/data/presets/new-site")
 # styx sample-data path
-sampledata=$(realpath "$root/src/scaffold/sample-data")
+sampledata=$(realpath "$root/src/data/presets/sample-data")
 # styx html doc path
 doc=$(realpath "$root/share/doc/styx/index.html")
 # doc builder

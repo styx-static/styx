@@ -56,13 +56,13 @@
 
     # loading a single page
     about = loadFile {
-      file = "${pkgs.styx}/src/scaffold/sample-data/pages/about.md";
+      file = "${pkgs.styx}/src/data/presets/sample-data/pages/about.md";
       inherit env;
     };
 
     # loading a list of contents
     posts = sortBy "date" "dsc" (loadDir {
-      dir = "${pkgs.styx}/src/scaffold/sample-data/posts";
+      dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
 

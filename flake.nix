@@ -33,6 +33,10 @@
         }
         # ./src/data
         (functions "styxthemes")
+        {
+          name = "presets";
+          type = "templates";
+        }
         # ./src/renderers
         (functions "docs")
         (functions "docslib")
@@ -47,6 +51,7 @@
       devShells = std.harvest self ["_automation" "devshells"];
       packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
       hydraJobs = std.harvest self ["app" "cli"];
+      templates = (std.harvest inputs.self ["data" "presets"]).x86_64-linux; # picked one system; doesn't matter
     }
     (utils.lib.eachDefaultSystem (
       system: let
