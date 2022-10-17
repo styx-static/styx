@@ -9,7 +9,7 @@ Callers:
   };
   cell = {inherit docslib;};
 
-  docslib = import ./src/doc/docslib.nix {inherit inputs cell;};
-  docs = import ./src/doc/docs/default.nix {inherit inputs cell;};
+  docslib = import ./src/renderers/docslib.nix {inherit inputs cell;};
+  docs = import ./src/renderers/docs/default.nix {inherit inputs cell;};
 in
   docs.theme siteFile {extraConf.siteUrl = "http://domain.org";}
