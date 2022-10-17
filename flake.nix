@@ -1,7 +1,6 @@
 {
   description = "The purely functional static site generator in Nix expression language.";
 
-  inputs.utils.url = "github:numtide/flake-utils";
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
   inputs.std.url = "github:divnix/std";
@@ -11,7 +10,6 @@
   outputs = {
     self,
     std,
-    utils,
     nixpkgs,
   } @ inputs:
     std.growOn {
@@ -52,14 +50,7 @@
       devShells = std.harvest self ["_automation" "devshells"];
       packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
       hydraJobs = std.winnow (n: _: n != "default") self ["app" "cli"];
-      templates = (std.harvest inputs.self ["data" "presets"]).x86_64-linux; # picked one system; doesn't matter
-    }
-    (utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {inherit system;};
-        inherit (self.packages.${system}) styx;
-      in {
-        lib = import ./src/lib {inherit pkgs styx;};
-      }
-    ));
+      templates = (std.harvest self ["data" "presets"]).x86_64-linux; # picked one system; doesn't matter
+      lib = std.harvest self ["renderers" "styxlib"];
+    };
 }
