@@ -1,6 +1,6 @@
 env: let
   template = {lib, ...}:
-    lib.normalTemplate {
+    lib.template.normalTemplate {
       content = ''
         <div>
           <h1>Page not found, Error 404</h1>
@@ -9,8 +9,7 @@ env: let
       title = "404";
     };
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Basic template for error 404 page, can be overriden to fit needs.";
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = "Basic template for error 404 page, can be overriden to fit needs.";
+    inherit env template;
+  }

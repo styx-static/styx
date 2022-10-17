@@ -14,7 +14,7 @@ env: let
     '';
   };
 in
-  env.lib.documentedTemplate {
+  env.lib.template.documentedTemplate {
     description = "Template declaring the doctype, controlled by `conf.theme.html.doctype`.";
     template = {conf, ...}: doctypes."${conf.theme.html.doctype}";
     inherit env;

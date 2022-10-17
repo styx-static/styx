@@ -3,10 +3,9 @@ env: let
     ${page.content}
   '';
 in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template rendering the page `content`.
-      '';
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template rendering the page `content`.
+    '';
+    inherit env template;
+  }

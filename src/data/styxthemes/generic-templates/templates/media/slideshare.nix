@@ -10,7 +10,7 @@ env: let
   }: ''    <iframe src='https://www.slideshare.net/slideshow/embed_code/60836660' width='${toString width}' height='${toString height}' allowfullscreen="allowfullscreen" webkitallowfullscreen="webkitallowfullscreen=" mozallowfullscreen="mozallowfullscreen"></iframe>
   '';
 in
-  env.lib.documentedTemplate {
+  env.lib.template.documentedTemplate {
     description = "Template to embed a slideshare presentation.";
 
     arguments = {

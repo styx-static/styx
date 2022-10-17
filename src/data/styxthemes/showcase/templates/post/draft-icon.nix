@@ -3,4 +3,4 @@
   templates,
   ...
 }: page:
-lib.optionalString (page ? isDraft) (templates.icon.bootstrap "file")
+with lib.lib; optionalString (page ? isDraft) (templates.icon.bootstrap "file")

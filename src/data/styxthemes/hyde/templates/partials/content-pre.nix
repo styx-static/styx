@@ -5,7 +5,7 @@
   data,
   ...
 }: {page}:
-with lib; ''
+with lib.lib; ''
   <div class="sidebar">
     <div class="container sidebar-sticky">
       <div class="sidebar-about">
@@ -21,7 +21,7 @@ with lib; ''
     to = "/";
     content = "Home";
   }}</li>
-        ${mapTemplate (menu: ''
+        ${lib.template.mapTemplate (menu: ''
     <li>${templates.tag.ilink {
       to = menu;
       content = menu.title;

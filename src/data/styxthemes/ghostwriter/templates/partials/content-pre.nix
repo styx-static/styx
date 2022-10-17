@@ -6,7 +6,7 @@
   pages,
   ...
 }: {page}:
-with lib; ''
+with lib.lib; ''
   <div id="wrapper">
   <header class="site-header">
   <div class="container">
@@ -70,7 +70,7 @@ with lib; ''
 
   ${optionalString ((data ? menu) && (isList data.menu) && (length (data.menu) > 0)) ''
     <ul class="site-nav">
-    ${mapTemplate (menu: ''
+    ${lib.template.mapTemplate (menu: ''
         <li class="site-nav-item">${templates.tag.ilink {
           to = menu;
           content = menu.title;

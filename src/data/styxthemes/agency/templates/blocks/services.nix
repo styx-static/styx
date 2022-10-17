@@ -3,14 +3,14 @@
   lib,
   ...
 }:
-with lib;
-  normalTemplate (
+with lib.lib;
+  lib.template.normalTemplate (
     data:
       templates.blocks.basic (data
         // {
           content = ''
             <div class="row text-center">
-              ${mapTemplate (item: ''
+              ${lib.template.mapTemplate (item: ''
                 <div class="col-md-4">
                   <span class="fa-stack fa-4x">
                     <i class="fa fa-circle fa-stack-2x text-primary"></i>

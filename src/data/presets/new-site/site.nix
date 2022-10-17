@@ -76,10 +76,10 @@
   /*
   Converting the pages attribute set to a list
   */
-  pageList = lib.pagesToList {inherit pages;};
+  pageList = lib.generation.pagesToList {inherit pages;};
 
   /*
   Generating the site
   */
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }

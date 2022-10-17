@@ -5,7 +5,7 @@ env: let
     data,
     ...
   }:
-    lib.normalTemplate (
+    lib.template.normalTemplate (
       page:
       /*
       required extra css
@@ -45,8 +45,7 @@ env: let
         ''
     );
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Template for the example site, internal use only.";
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = "Template for the example site, internal use only.";
+    inherit env template;
+  }

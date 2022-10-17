@@ -115,7 +115,7 @@ with styxlib.themes; {
     }: let
       # use secondStageStyxlib to make things like loadFile available
       # in a site's / theme's 'conf.nix' file
-      decls = secondStageStyxlib.mergeConfs ([lib.styxOptions] ++ config);
+      decls = secondStageStyxlib.themes.mergeConfs ([lib.styxOptions] ++ config);
       root = parseDecls {
         inherit decls;
         optionFn = o:

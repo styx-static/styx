@@ -4,8 +4,8 @@
   conf,
   ...
 }: args:
-with lib; let
-  class = htmlAttr "class" (
+with lib.lib; let
+  class = lib.template.htmlAttr "class" (
     (optional (conf.theme.colorScheme != null) "theme-base-${conf.theme.colorScheme}")
     ++ (optional (conf.theme.layout.reverse) "layout-reverse")
   );

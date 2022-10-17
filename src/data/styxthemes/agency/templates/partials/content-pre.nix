@@ -5,7 +5,7 @@
   data,
   ...
 }: {page}:
-with lib;
+with lib.lib;
   templates.bootstrap.navbar.default {
     id = "main-nav";
     brand = ''<a class="navbar-brand page-scroll" href="#page-top">${conf.theme.site.title}</a>'';

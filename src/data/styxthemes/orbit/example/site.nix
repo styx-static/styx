@@ -87,7 +87,7 @@
   -----------------------------------------------------------------------------
   */
 
-  site = lib.mkSite {
+  site = lib.generation.mkSite {
     inherit files;
     pageList = [pages.index];
   };

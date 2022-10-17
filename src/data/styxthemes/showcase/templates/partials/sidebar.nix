@@ -5,7 +5,7 @@
   data,
   ...
 }:
-with lib; ''
+with lib.lib; ''
   <div class="sidebar">
     ${optionalString (data ? taxonomies) ''
     <section>
@@ -17,7 +17,7 @@ with lib; ''
     <section>
       <h2>Recent Posts</h2>
       <ul>
-      ${mapTemplate templates.post.list (take 5 pages.posts.list)}
+      ${lib.template.mapTemplate templates.post.list (take 5 pages.posts.list)}
       </ul>
     </section>
   ''}

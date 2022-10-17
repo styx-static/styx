@@ -4,18 +4,18 @@
   templates,
   ...
 }:
-with lib;
+with lib.lib;
   taxonomyData: ''
     <section class="taxonomy">
-    ${mapTemplate (plist: let
-        taxonomy = proplist.propKey plist;
+    ${lib.template.mapTemplate (plist: let
+        taxonomy = lib.proplist.propKey plist;
       in ''
         <header>${templates.tag.ilink {
-          to = mkTaxonomyPath taxonomy;
+          to = lib.pages.mkTaxonomyPath taxonomy;
           content = taxonomy;
         }}</header>
         <ul class="terms">
-        ${mapTemplate (t: ''
+        ${lib.template.mapTemplate (t: ''
           <li>${templates.tag.ilink {
             to = t.path;
             content = t.term;

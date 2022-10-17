@@ -3,10 +3,10 @@
   templates,
   ...
 }:
-with lib;
-  normalTemplate (banner: {
+with lib.lib;
+  lib.template.normalTemplate (banner: {
     content = ''
-      <div class="banner" ${optionalString (banner ? id) htmlAttr "id" banner.id}>
+      <div class="banner" ${optionalString (banner ? id) lib.template.htmlAttr "id" banner.id}>
         <div class="container">
         ${banner.content}
         </div>

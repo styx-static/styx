@@ -47,7 +47,8 @@
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.data;
+  with lib.lib; {
     # loading a single page
     about = loadFile {
       file = "${pkgs.styx}/src/data/presets/sample-data//pages/about.md";
@@ -55,7 +56,7 @@
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -72,7 +73,8 @@
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib; rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     /*
     Index page
     Splitting a list of items through multiple pages
@@ -135,10 +137,10 @@
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
     default = {layout = templates.layout;};
   };
 
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }

@@ -4,8 +4,8 @@
   templates,
   ...
 }:
-with lib;
-  normalTemplate (page: ''
+with lib.lib;
+  lib.template.normalTemplate (page: ''
     <div id="post-index" class="container" itemscope="" itemtype="https://schema.org/Blog">
 
     <header class="post-header">
@@ -14,7 +14,7 @@ with lib;
     </header>
 
     <ol class="post-list">
-    ${mapTemplate templates.post.list (page.items or [])}
+    ${lib.template.mapTemplate templates.post.list (page.items or [])}
     </ol>
 
     ${optionalString (page ? pages) (templates.partials.pager {

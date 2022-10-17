@@ -1,11 +1,12 @@
-{lib}: {
+{lib}:
+with lib.lib; {
   name = "Agency";
   id = "agency";
-  license = lib.licenses.asl20;
+  license = licenses.asl20;
   demoPage = https://styx-static.github.io/styx-theme-agency;
   homepage = https://github.com/styx-static/styx-theme-agency;
   screenshot = ./screen.png;
-  documentation = lib.readFile ./documentation.adoc;
+  documentation = readFile ./documentation.adoc;
   description = ''
     Port of the https://github.com/digitalcraftsman/hugo-agency-theme[Agency] theme for Styx.
   '';

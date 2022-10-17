@@ -47,7 +47,8 @@
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.lib;
+  with lib.data; {
     # loading a single page
     about = loadFile {
       file = "${pkgs.styx}/src/data/presets/sample-data/pages/about.md";
@@ -55,7 +56,7 @@
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -86,7 +87,8 @@
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib.pages; rec {
+  pages = with lib.lib;
+  with lib.pages; rec {
     /*
     Index page
     Example of splitting a list of items through multiple pages
@@ -110,7 +112,7 @@
         path = "/about.html";
         template = templates.page.full;
         # setting breadcrumbs
-        breadcrumbs = [(lib.head index)];
+        breadcrumbs = [(head index)];
       }
       // data.about;
 
@@ -121,8 +123,8 @@
       path = "/feed.xml";
       template = templates.feed.atom;
       # Bypassing the layout
-      layout = lib.id;
-      items = lib.take 10 pages.posts.list;
+      layout = id;
+      items = take 10 pages.posts.list;
     };
 
     /*
@@ -144,14 +146,14 @@
       data = data.posts;
       pathPrefix = "/posts/";
       template = templates.post.full;
-      breadcrumbs = [(lib.head index)];
+      breadcrumbs = [(head index)];
     };
 
     postsArchive = mkSplit {
       title = "Archives";
       basePath = "/archive/post";
       template = templates.archive;
-      breadcrumbs = [(lib.head index)];
+      breadcrumbs = [(head index)];
       itemsPerPage = conf.theme.archives.itemsPerPage;
       data = pages.posts.list;
     };
@@ -171,10 +173,10 @@
   The sitemap is out of the pages attribute set because it has to loop
   through all the pages
   */
-  sitemap = {
+  sitemap = with lib.lib; {
     path = "/sitemap.xml";
     template = templates.sitemap;
-    layout = lib.id;
+    layout = id;
     pages = pageList;
   };
 
@@ -186,7 +188,7 @@
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
     default.layout = templates.layout;
   };
@@ -198,7 +200,7 @@
     siteUrl = conf.siteUrl;
   };
 
-  site = lib.mkSite {
+  site = lib.generation.mkSite {
     inherit files substitutions;
     pageList = pageList ++ [sitemap];
     meta = (import ./meta.nix) {inherit lib;};

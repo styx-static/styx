@@ -4,11 +4,11 @@
   lib,
   ...
 }: block:
-with lib; {
+with lib.lib; {
   content = ''
     <section class="section experiences-section">
       <h2 class="section-title">${templates.icon.font-awesome block.icon}${block.title}</h2>
-      ${mapTemplate (item: ''
+      ${lib.template.mapTemplate (item: ''
         <div class="item">
           <div class="meta">
             <div class="upper-row">

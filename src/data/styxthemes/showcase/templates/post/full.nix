@@ -5,12 +5,12 @@
   data,
   ...
 }:
-with lib;
-  normalTemplate (
+with lib.lib;
+  lib.template.normalTemplate (
     page: ''
       <article class="full">
 
-        <div class="banner" ${optionalString (page ? banner) (htmlAttr "style" "background-image: url(${templates.url page.banner});")}>
+        <div class="banner" ${optionalString (page ? banner) (lib.template.htmlAttr "style" "background-image: url(${templates.url page.banner});")}>
         </div>
         <header class="post-header">
           <h1>${templates.post.draft-icon page}${page.title}</h1>
@@ -19,7 +19,7 @@ with lib;
         <div class="meta text-muted">
           <p>
             ${templates.icon.font-awesome "calendar-o"}
-            <time datetime="${(parseDate page.date).T}">${with (parseDate page.date); "${D} ${b} ${Y}"}</time>
+            <time datetime="${(lib.template.parseDate page.date).T}">${with (lib.template.parseDate page.date); "${D} ${b} ${Y}"}</time>
           </p>
           ${templates.post.tags-inline page}
         </div>

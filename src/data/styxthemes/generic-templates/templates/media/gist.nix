@@ -8,12 +8,12 @@ env: let
     id,
     file ? null,
   }:
-    with lib;
+    with lib.lib;
       templates.tag.script {
         src = "https://gist.github.com/${user}/${id}.js${optionalString (file != null) "?file=${file}"}";
       };
 in
-  env.lib.documentedTemplate {
+  env.lib.template.documentedTemplate {
     description = "Template to embed a github gist.";
 
     arguments = {

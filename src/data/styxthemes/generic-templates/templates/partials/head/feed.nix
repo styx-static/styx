@@ -5,15 +5,15 @@ env: let
     templates,
     ...
   }: args:
-    lib.optionalString (pages ? feed)
-    (templates.tag.link-atom {
-      href = templates.url pages.feed;
-    });
+    with lib.lib;
+      optionalString (pages ? feed)
+      (templates.tag.link-atom {
+        href = templates.url pages.feed;
+      });
 in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template that will automaticly load `pages.feed` if defined as an atom feed.
-      '';
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template that will automaticly load `pages.feed` if defined as an atom feed.
+    '';
+    inherit env template;
+  }

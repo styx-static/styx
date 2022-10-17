@@ -9,7 +9,7 @@ Returns a page attribute set, merge the data and the template for improved flexi
   lib,
   ...
 }:
-with lib; let
+with lib.lib; let
   /*
   Page data
   Can be customized to fit needs
@@ -52,7 +52,7 @@ with lib; let
     </div>
     <div class="row">
     	<div class="col-xs-12 user-social text-center">
-        ${mapTemplate (s: ''
+        ${lib.template.mapTemplate (s: ''
         <a href="${s.link}" title="${s.title}"><i class="fa fa-${s.icon} fa-3x" aria-hidden="true"></i></a>
       '')
       social}

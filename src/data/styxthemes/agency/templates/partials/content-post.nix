@@ -4,7 +4,7 @@
   templates,
   ...
 }: args:
-with lib; ''
+with lib.lib; ''
   <footer>
     <div class="container">
       <div class="row">
@@ -13,7 +13,7 @@ with lib; ''
         </div>
         <div class="col-md-4">
           <ul class="list-inline social-buttons">
-            ${mapTemplate (item: ''
+            ${lib.template.mapTemplate (item: ''
       <li><a href="${item.link}"><i class="fa ${item.icon}"></i></a></li>
     '')
     conf.theme.footer.social}
@@ -21,7 +21,7 @@ with lib; ''
         </div>
         <div class="col-md-4">
           <ul class="list-inline quicklinks">
-            ${mapTemplate (item: ''
+            ${lib.template.mapTemplate (item: ''
       <li><a href="${item.link}">${item.text}</a></li>
     '')
     conf.theme.footer.quicklinks}

@@ -12,48 +12,47 @@ env: let
     taxonomy,
     page,
   }:
-    with lib;
+    with lib.lib;
       optionals
       (hasAttr taxonomy page)
       map (term: {
-        path = mkTaxonomyTermPath taxonomy term;
+        path = lib.pages.mkTaxonomyTermPath taxonomy term;
         inherit taxonomy term;
       })
       page."${taxonomy}";
 in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template generating a list of taxonomy terms data for a taxonomy value (page).
-      '';
-      arguments = {
-        taxonomy = {
-          description = "Taxonomy name.";
-          type = "String";
-        };
-        page = {
-          description = "Page attribute set.";
-          type = "Page";
-        };
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template generating a list of taxonomy terms data for a taxonomy value (page).
+    '';
+    arguments = {
+      taxonomy = {
+        description = "Taxonomy name.";
+        type = "String";
       };
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.taxonomy.value.term-list {
-              taxonomy = "tags";
-              page = {
-                tags = [ "foo" "bar" ];
-              };
-            }
-          '';
-          code = with env;
-            templates.taxonomy.value.term-list {
-              taxonomy = "tags";
-              page = {
-                tags = ["foo" "bar"];
-              };
+      page = {
+        description = "Page attribute set.";
+        type = "Page";
+      };
+    };
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.taxonomy.value.term-list {
+            taxonomy = "tags";
+            page = {
+              tags = [ "foo" "bar" ];
             };
-        })
-      ];
-      inherit env template;
-    }
+          }
+        '';
+        code = with env;
+          templates.taxonomy.value.term-list {
+            taxonomy = "tags";
+            page = {
+              tags = ["foo" "bar"];
+            };
+          };
+      })
+    ];
+    inherit env template;
+  }

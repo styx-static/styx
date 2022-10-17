@@ -5,7 +5,7 @@
   data,
   ...
 }: {page}:
-with lib;
+with lib.lib;
   templates.bootstrap.navbar.default {
     inverted = true;
     fluid = true;

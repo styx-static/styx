@@ -60,7 +60,7 @@ $ cp $(styx theme-path generic-templates)/templates/partials/content.nix themes/
 <3> Copy the generic-templates `templates/partials/content.nix` to the foo theme. +
 This code use the generic-templates bundled with styx, to use another version clone the link:https://github.com/styx-static/styx-theme-generic-templates[generic-templates repo], select the desired version, and copy the file from there.
 
-NOTE: Every template of this theme use the `documentedTemplate` function that allow to generate template documentation.
+NOTE: Every template of this theme use the `template.documentedTemplate` function that allow to generate template documentation.
 
 [source, nix]
 .Combining generic-templates and my-theme
@@ -72,4 +72,3 @@ themes = [
 ----
 
 :sectnums:
-

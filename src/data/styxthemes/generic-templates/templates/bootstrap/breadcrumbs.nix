@@ -5,10 +5,10 @@ env: let
     templates,
     ...
   }: page:
-    with lib;
+    with lib.lib;
       optionalString (page ? breadcrumbs) ''
         <ol class="breadcrumb">
-        ${mapTemplate (
+        ${lib.template.mapTemplate (
             p: "  <li>${templates.tag.ilink {
               content = p.breadcrumbTitle or p.title;
               to = p;
@@ -19,38 +19,37 @@ env: let
         </ol>
       '';
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Generate a page breadcrumbs; takes a page attribute with a `breadcrumbs` attribute containing a list of pages.";
-      arguments = [
-        {
-          name = "page";
-          description = "The page to generate breadcrumbs from.";
-          type = "Page";
-        }
-      ];
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.bootstrap.breadcrumbs {
-              path = "/about.html";
-              title = "About";
-              breadcrumbs = [ { path = "/"; breadcrumbTitle = "Home"; title = "My site"; } ];
-            }
-          '';
-          code = with env;
-            templates.bootstrap.breadcrumbs {
-              path = "/about.html";
-              title = "About";
-              breadcrumbs = [
-                {
-                  path = "/";
-                  breadcrumbTitle = "Home";
-                  title = "My site";
-                }
-              ];
-            };
-        })
-      ];
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = "Generate a page breadcrumbs; takes a page attribute with a `breadcrumbs` attribute containing a list of pages.";
+    arguments = [
+      {
+        name = "page";
+        description = "The page to generate breadcrumbs from.";
+        type = "Page";
+      }
+    ];
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.bootstrap.breadcrumbs {
+            path = "/about.html";
+            title = "About";
+            breadcrumbs = [ { path = "/"; breadcrumbTitle = "Home"; title = "My site"; } ];
+          }
+        '';
+        code = with env;
+          templates.bootstrap.breadcrumbs {
+            path = "/about.html";
+            title = "About";
+            breadcrumbs = [
+              {
+                path = "/";
+                breadcrumbTitle = "Home";
+                title = "My site";
+              }
+            ];
+          };
+      })
+    ];
+    inherit env template;
+  }

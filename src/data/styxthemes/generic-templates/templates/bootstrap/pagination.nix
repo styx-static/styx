@@ -8,7 +8,7 @@ env: let
     index,
     pagesLimit ? null,
   }:
-    with lib; let
+    with lib.lib; let
       prevHref =
         if (index > 1)
         then templates.url (elemAt pages (index - 2))
@@ -36,8 +36,8 @@ env: let
       optionalString ((length pages) > 1) ''
         <nav aria-label="Page navigation" class="pagination">
         <ul class="pagination">
-        <li${optionalString (index == 1) " ${htmlAttr "class" "disabled"}"}>
-        <a ${htmlAttr "href" prevHref} aria-label="Previous">
+        <li${optionalString (index == 1) " ${lib.template.htmlAttr "class" "disabled"}"}>
+        <a ${lib.template.htmlAttr "href" prevHref} aria-label="Previous">
         <span aria-hidden="true">&laquo;</span>
         </a>
         </li>
@@ -45,14 +45,14 @@ env: let
             i: page: let
               i' = i + offset;
             in ''
-              <li${optionalString (i' == index) " ${htmlAttr "class" "active"}"}>${templates.tag.ilink {
+              <li${optionalString (i' == index) " ${lib.template.htmlAttr "class" "active"}"}>${templates.tag.ilink {
                 to = page;
                 content = toString i';
               }}</li>''
           )
           pages')}
-        <li${optionalString (index == (length pages)) " ${htmlAttr "class" "disabled"}"}>
-        <a ${htmlAttr "href" nextHref} aria-label="Next">
+        <li${optionalString (index == (length pages)) " ${lib.template.htmlAttr "class" "disabled"}"}>
+        <a ${lib.template.htmlAttr "href" nextHref} aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
         </a>
         </li>
@@ -60,38 +60,38 @@ env: let
         </nav>
       '';
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Generate a pagination";
-      arguments = {
-        pages = {
-          description = "List of pages.";
-          type = "[ Page ]";
-        };
-        index = {
-          description = "Index of the current page.";
-          type = "Integer";
-        };
-        pagesLimit = {
-          description = "Maximum number of pages to show in the pagination, if set to `null` all pages are in the pagination.";
-          type = "Null | Int";
-          default = null;
-        };
+  env.lib.template.documentedTemplate {
+    description = "Generate a pagination";
+    arguments = {
+      pages = {
+        description = "List of pages.";
+        type = "[ Page ]";
       };
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.bootstrap.pagination {
-              pages = genList (x: { path = "/#''${toString (x + 1)}"; }) 10;
-              index = 5;
-            }
-          '';
-          code = with env;
-            templates.bootstrap.pagination {
-              pages = genList (x: {path = "/#${toString (x + 1)}";}) 10;
-              index = 5;
-            };
-        })
-      ];
-      inherit env template;
-    }
+      index = {
+        description = "Index of the current page.";
+        type = "Integer";
+      };
+      pagesLimit = {
+        description = "Maximum number of pages to show in the pagination, if set to `null` all pages are in the pagination.";
+        type = "Null | Int";
+        default = null;
+      };
+    };
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.bootstrap.pagination {
+            pages = genList (x: { path = "/#''${toString (x + 1)}"; }) 10;
+            index = 5;
+          }
+        '';
+        code = with env;
+        with env.lib.lib;
+          templates.bootstrap.pagination {
+            pages = genList (x: {path = "/#${toString (x + 1)}";}) 10;
+            index = 5;
+          };
+      })
+    ];
+    inherit env template;
+  }

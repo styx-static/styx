@@ -47,7 +47,8 @@
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.data;
+  with lib.lib; {
     # Loading the index page data
     index = loadFile {
       file = ./data/index.nix;
@@ -61,7 +62,7 @@
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -81,7 +82,8 @@
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib; rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     /*
     Custom index page
     See data/index.nix for the details
@@ -153,12 +155,12 @@
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
     default = {layout = templates.layout;};
   };
 
-  site = lib.mkSite {
+  site = lib.generation.mkSite {
     inherit pageList;
     # Loading custom files
     files = files ++ [./files];

@@ -460,7 +460,8 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  data = with lib;
+  data = with lib.data;
+  with lib.lib;
     {
       /*
       Menu using blocks
@@ -469,7 +470,7 @@ Default::
         mkBlockSet = blocks:
           map (
             id:
-              (lib.find {inherit id;} blocks)
+              (lib.utils.find {inherit id;} blocks)
               // {
                 navbarClass = "page-scroll";
                 url = "/#${id}";
@@ -484,7 +485,7 @@ Default::
           }
         ];
     }
-    // (lib.loadDir {
+    // (loadDir {
       dir = ./data;
       inherit env;
       asAttrs = true;
@@ -498,12 +499,13 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  pages = rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     index = {
       title = "Home";
       path = "/index.html";
       template = templates.block-page.full;
-      layout = templates.layout;
+      inherit (templates) layout;
       blocks = let
         darken = d: d // {class = "bg-light-gray";};
       in
@@ -527,12 +529,12 @@ Default::
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }
 
 ----
@@ -626,7 +628,7 @@ $ cp $(styx theme-path generic-templates)/templates/partials/content.nix themes/
 <3> Copy the generic-templates `templates/partials/content.nix` to the foo theme. +
 This code use the generic-templates bundled with styx, to use another version clone the link:https://github.com/styx-static/styx-theme-generic-templates[generic-templates repo], select the desired version, and copy the file from there.
 
-NOTE: Every template of this theme use the `documentedTemplate` function that allow to generate template documentation.
+NOTE: Every template of this theme use the `template.documentedTemplate` function that allow to generate template documentation.
 
 [source, nix]
 .Combining generic-templates and my-theme
@@ -638,7 +640,6 @@ themes = [
 ----
 
 :sectnums:
-
 
 
 :leveloffset: -2
@@ -2800,7 +2801,7 @@ Example::
 [source, nix]
 .Code
 ----
-pages.taxonomies = mkTaxonomyPages {
+pages.taxonomies = lib.data.mkTaxonomyPages {
   data             = data.taxonomies.posts;
   taxonomyTemplate = templates.taxonomy.full;
   termTemplate     = templates.taxonomy.term.full;
@@ -2816,7 +2817,7 @@ pages.taxonomies = mkTaxonomyPages {
 [source, nix]
 .Code
 ----
-templates.taxonomy.full (getProp "tags" (mkTaxonomyData {
+templates.taxonomy.full (lib.proplist.getProp "tags" (lib.data.mkTaxonomyData {
   data = [
     { tags = [ "foo" "bar" ]; path = "/a.html"; }
     { tags = [ "foo" ];       path = "/b.html"; }
@@ -2880,7 +2881,7 @@ pages.taxonomies = mkTaxonomyPages {
 templates.taxonomy.term.full {
   taxonomy = "tags";
   term = "foo";
-  values = getValue "foo" (getValue "tags" (mkTaxonomyData {
+  values = lib.proplist.getValue "foo" (lib.proplist.getValue "tags" (lib.data.mkTaxonomyData {
     data = [
       { tags = [ "foo" "bar" ]; path = "/a.html"; title = "a"; }
       { tags = [ "foo" ];       path = "/b.html"; title = "b";}
@@ -2926,7 +2927,7 @@ Example::
 [source, nix]
 .Code
 ----
-templates.taxonomy.term-list (getProp "tags" (mkTaxonomyData {
+templates.taxonomy.term-list (lib.proplist.getProp "tags" (lib.data.mkTaxonomyData {
   data = [
     { tags = [ "foo" "bar" ]; path = "/a.html"; }
     { tags = [ "foo" ];       path = "/b.html"; }
@@ -3142,7 +3143,7 @@ http://domain.org/about.html
 
   pages = rec {
     basic = {
-      layout = templates.layout;
+      inherit (templates) layout;
       template = templates.examples.basic;
       path = "/basic.html";
       # example of adding extra css / js to a page
@@ -3153,7 +3154,7 @@ http://domain.org/about.html
     };
 
     starter = {
-      layout = templates.layout;
+      inherit (templates) layout;
       template = templates.examples.starter;
       path = "/starter.html";
       title = "Starter Template for Bootstrap";
@@ -3161,7 +3162,7 @@ http://domain.org/about.html
     };
 
     theme = {
-      layout = templates.layout;
+      inherit (templates) layout;
       template = templates.examples.theme;
       path = "/index.html";
       title = "Theme Template for Bootstrap";
@@ -3179,12 +3180,12 @@ http://domain.org/about.html
   /*
   Converting the pages attribute set to a list
   */
-  pageList = lib.pagesToList {inherit pages;};
+  pageList = lib.generation.pagesToList {inherit pages;};
 
   /*
   Generating the site
   */
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }
 
 ----
@@ -3264,7 +3265,7 @@ data = rec {
     name = "John Doe";
   };
 
-  posts  = sortBy "date" "dsc" (loadDir { dir = ./posts; env = (env // { inherit authors; }); });
+  posts  = lib.utils.sortBy "date" "dsc" (loadDir { dir = ./posts; env = (env // { inherit authors; }); });
 };
 ----
 
@@ -3698,7 +3699,8 @@ null
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.data;
+  with lib.lib; {
     # loading a single page
     about = loadFile {
       file = "${pkgs.styx}/src/data/presets/sample-data/pages/about.md";
@@ -3706,7 +3708,7 @@ null
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -3732,11 +3734,12 @@ null
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib; rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     index = mkSplit {
       title = "Home";
       basePath = "/index";
-      itemsPerPage = conf.theme.itemsPerPage;
+      inherit (conf.theme) itemsPerPage;
       template = templates.index;
       data = posts.list;
     };
@@ -3764,7 +3767,7 @@ null
       pathPrefix = "/posts/";
       template = templates.post.full;
       # Attach the author to every blog post
-      author = data.author;
+      inherit (data) author;
     };
   };
 
@@ -3778,15 +3781,15 @@ null
   /*
   Converting the pages attribute set to a list
   */
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
   /*
   Generating the site
   */
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }
 
 ----
@@ -4084,7 +4087,8 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.data;
+  with lib.lib; {
     # loading a single page
     about = loadFile {
       file = "${pkgs.styx}/src/data/presets/sample-data//pages/about.md";
@@ -4092,7 +4096,7 @@ Default::
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -4109,7 +4113,8 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib; rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     /*
     Index page
     Splitting a list of items through multiple pages
@@ -4118,7 +4123,7 @@ Default::
     index = mkSplit {
       title = "Home";
       basePath = "/index";
-      itemsPerPage = conf.theme.itemsPerPage;
+      inherit (conf.theme) itemsPerPage;
       template = templates.index;
       data = posts.list;
     };
@@ -4172,12 +4177,12 @@ Default::
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }
 
 ----
@@ -4468,7 +4473,8 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.data;
+  with lib.lib; {
     # Loading the index page data
     index = loadFile {
       file = ./data/index.nix;
@@ -4482,7 +4488,7 @@ Default::
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -4502,7 +4508,8 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib; rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     /*
     Custom index page
     See data/index.nix for the details
@@ -4574,12 +4581,12 @@ Default::
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
-  site = lib.mkSite {
+  site = lib.generation.mkSite {
     inherit pageList;
     # Loading custom files
     files = files ++ [./files];
@@ -5383,7 +5390,7 @@ Default::
       title = "Home";
       path = "/index.html";
       template = templates.block-page.full;
-      layout = templates.layout;
+      inherit (templates) layout;
       blocks = [
         (templates.blocks.summary conf.theme.summary)
         (templates.blocks.experiences conf.theme.experiences)
@@ -5407,7 +5414,7 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  site = lib.mkSite {
+  site = lib.generation.mkSite {
     inherit files;
     pageList = [pages.index];
   };
@@ -5699,7 +5706,8 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  data = with lib; {
+  data = with lib.lib;
+  with lib.data; {
     # loading a single page
     about = loadFile {
       file = "${pkgs.styx}/src/data/presets/sample-data/pages/about.md";
@@ -5707,7 +5715,7 @@ Default::
     };
 
     # loading a list of contents
-    posts = sortBy "date" "dsc" (loadDir {
+    posts = lib.utils.sortBy "date" "dsc" (loadDir {
       dir = "${pkgs.styx}/src/data/presets/sample-data/posts";
       inherit env;
     });
@@ -5738,16 +5746,17 @@ Default::
   -----------------------------------------------------------------------------
   */
 
-  pages = with lib.pages; rec {
+  pages = with lib.lib;
+  with lib.pages; rec {
     /*
     Index page
     Example of splitting a list of items through multiple pages
     For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title = conf.theme.site.title;
+      inherit (conf.theme.site) title;
       basePath = "/index";
-      itemsPerPage = conf.theme.index.itemsPerPage;
+      inherit (conf.theme.index) itemsPerPage;
       template = templates.index;
       data = pages.posts.list;
       breadcrumbTitle = templates.icon.font-awesome "home";
@@ -5762,7 +5771,7 @@ Default::
         path = "/about.html";
         template = templates.page.full;
         # setting breadcrumbs
-        breadcrumbs = [(lib.head index)];
+        breadcrumbs = [(head index)];
       }
       // data.about;
 
@@ -5773,8 +5782,8 @@ Default::
       path = "/feed.xml";
       template = templates.feed.atom;
       # Bypassing the layout
-      layout = lib.id;
-      items = lib.take 10 pages.posts.list;
+      layout = id;
+      items = take 10 pages.posts.list;
     };
 
     /*
@@ -5796,15 +5805,15 @@ Default::
       data = data.posts;
       pathPrefix = "/posts/";
       template = templates.post.full;
-      breadcrumbs = [(lib.head index)];
+      breadcrumbs = [(head index)];
     };
 
     postsArchive = mkSplit {
       title = "Archives";
       basePath = "/archive/post";
       template = templates.archive;
-      breadcrumbs = [(lib.head index)];
-      itemsPerPage = conf.theme.archives.itemsPerPage;
+      breadcrumbs = [(head index)];
+      inherit (conf.theme.archives) itemsPerPage;
       data = pages.posts.list;
     };
 
@@ -5823,10 +5832,10 @@ Default::
   The sitemap is out of the pages attribute set because it has to loop
   through all the pages
   */
-  sitemap = {
+  sitemap = with lib.lib; {
     path = "/sitemap.xml";
     template = templates.sitemap;
-    layout = lib.id;
+    layout = id;
     pages = pageList;
   };
 
@@ -5838,7 +5847,7 @@ Default::
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
     default.layout = templates.layout;
   };
@@ -5847,10 +5856,10 @@ Default::
   Substitutions
   */
   substitutions = {
-    siteUrl = conf.siteUrl;
+    inherit (conf) siteUrl;
   };
 
-  site = lib.mkSite {
+  site = lib.generation.mkSite {
     inherit files substitutions;
     pageList = pageList ++ [sitemap];
     meta = (import ./meta.nix) {inherit lib;};

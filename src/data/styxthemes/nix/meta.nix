@@ -1,7 +1,8 @@
-{lib}: {
+{lib}:
+with lib.lib; {
   id = "nix";
   name = "Nix";
-  license = lib.licenses.mit;
+  license = licenses.mit;
   demoPage = https://styx-static.github.io/styx-theme-nix;
   homepage = https://github.com/styx-static/styx-theme-nix;
   tags = ["minimal"];

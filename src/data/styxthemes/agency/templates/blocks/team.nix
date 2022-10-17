@@ -3,13 +3,13 @@
   lib,
   ...
 }:
-with lib;
-  normalTemplate (data: {
+with lib.lib;
+  lib.template.normalTemplate (data: {
     content = templates.blocks.basic (data
       // {
         content = ''
           <div class="row">
-            ${mapTemplate (member: ''
+            ${lib.template.mapTemplate (member: ''
               <div class="col-sm-4">
                 <div class="team-member">
                   <img src="${templates.url member.img}" class="img-responsive img-circle" alt="">
@@ -17,7 +17,7 @@ with lib;
                   <p class="text-muted">${member.title}</p>
                   ${optionalString (member ? social) ''
                 <ul class="list-inline social-buttons">
-                  ${mapTemplate (social: ''
+                  ${lib.template.mapTemplate (social: ''
                     <li><a href="${social.link}"><i class="fa fa-${social.type}"></i></a></li>
                   '')
                   member.social}

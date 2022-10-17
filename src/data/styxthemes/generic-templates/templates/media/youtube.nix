@@ -10,7 +10,7 @@ env: let
   }: ''    <iframe width="${toString width}" height="${toString height}" src="https://www.youtube.com/embed/${id}?ecver=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
   '';
 in
-  env.lib.documentedTemplate {
+  env.lib.template.documentedTemplate {
     description = "Template to embed a Youtube video.";
 
     arguments = {

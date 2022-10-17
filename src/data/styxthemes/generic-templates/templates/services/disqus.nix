@@ -5,7 +5,7 @@ env: let
     lib,
     ...
   }: page:
-    with lib; let
+    with lib.lib; let
       id =
         if page ? disqusID
         then page.disqusID
@@ -36,24 +36,23 @@ env: let
         <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
       '';
 in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template managing link:https://disqus.com/[disqus] integration. +
-        Before using disqus, `conf.theme.services.disqus.shortname` configuration option should be set. +
-        Page unique identifier will be automatically generated, but can be set by adding a `disqusID` attribute to the page.
-      '';
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.services.disqus page
-          '';
-        })
-        (mkExample {
-          literalCode = ''
-            templates.services.disqus (page // { disqusID = "main-thread"; })
-          '';
-        })
-      ];
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template managing link:https://disqus.com/[disqus] integration. +
+      Before using disqus, `conf.theme.services.disqus.shortname` configuration option should be set. +
+      Page unique identifier will be automatically generated, but can be set by adding a `disqusID` attribute to the page.
+    '';
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.services.disqus page
+        '';
+      })
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.services.disqus (page // { disqusID = "main-thread"; })
+        '';
+      })
+    ];
+    inherit env template;
+  }

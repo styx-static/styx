@@ -5,11 +5,11 @@ env: let
     templates,
     ...
   }: page:
-    with lib; ''
+    with lib.lib; ''
       <entry>
         <id>${templates.url page}</id>
         <title>${page.title}</title>
-        <updated>${(parseDate page.date).T}</updated>
+        <updated>${(lib.template.parseDate page.date).T}</updated>
         <link href="${templates.url page}" rel="alternate" type="text/html"/>
         ${optionalString (page ? intro) ''        <summary type="xhtml">
               <div xmlns="http://www.w3.org/1999/xhtml">
@@ -24,11 +24,10 @@ env: let
       </entry>
     '';
 in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template generating an Atom feed entry. +
-        Used in `templates.feed.atom`.
-      '';
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template generating an Atom feed entry. +
+      Used in `templates.feed.atom`.
+    '';
+    inherit env template;
+  }

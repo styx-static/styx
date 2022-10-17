@@ -1,5 +1,5 @@
 {lib, ...}:
-with lib; {
+with lib.lib; {
   # URL of the site, must be set to the url of the domain the site will be deployed
   siteUrl = "https://styx-static.github.io/styx-theme-orbit";
 
@@ -29,8 +29,8 @@ with lib; {
     */
     experiences = {
       items = [
-        (loadFile {file = ./data/experiences/lead-dev.md;})
-        (loadFile {file = ./data/experiences/senior-software-engineer.md;})
+        (lib.data.loadFile {file = ./data/experiences/lead-dev.md;})
+        (lib.data.loadFile {file = ./data/experiences/senior-software-engineer.md;})
       ];
     };
 
@@ -41,9 +41,9 @@ with lib; {
       title = "Projects";
       icon = "archive";
       items = [
-        (loadFile {file = ./data/projects/hugrid.md;})
-        (loadFile {file = ./data/projects/faq.md;})
-        (loadFile {file = ./data/projects/identity.md;})
+        (lib.data.loadFile {file = ./data/projects/hugrid.md;})
+        (lib.data.loadFile {file = ./data/projects/faq.md;})
+        (lib.data.loadFile {file = ./data/projects/identity.md;})
       ];
     };
 
@@ -71,7 +71,7 @@ with lib; {
     summary = {
       icon = "user";
       title = "Career Profile";
-      content = (loadFile {file = ./data/summary.md;}).content;
+      content = (lib.data.loadFile {file = ./data/summary.md;}).content;
     };
 
     /*

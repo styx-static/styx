@@ -4,12 +4,12 @@
   pages,
   ...
 }:
-with lib;
-  lib.normalTemplate (page: ''
+with lib.lib;
+  lib.template.normalTemplate (page: ''
     <h1 class="text-center">${page.title}</h1>
 
     <ul id="post-list">
-    ${mapTemplate templates.post.list page.items}
+    ${lib.template.mapTemplate templates.post.list page.items}
     </ul>
 
     ${optionalString (page ? pages) ''

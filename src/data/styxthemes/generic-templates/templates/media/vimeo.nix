@@ -8,10 +8,10 @@ env: let
     height ? 360,
     width ? 640,
   }:
-    with lib; ''      <iframe src="https://player.vimeo.com/video/${id}" width="${toString width}" height="${toString height}" frameborder="0" webkitallowfullscreen="webkitallowfullscreen=" mozallowfullscreen="mozallowfullscreen=" allowfullscreen="allowfullscreen"></iframe>
+    with lib.lib; ''      <iframe src="https://player.vimeo.com/video/${id}" width="${toString width}" height="${toString height}" frameborder="0" webkitallowfullscreen="webkitallowfullscreen=" mozallowfullscreen="mozallowfullscreen=" allowfullscreen="allowfullscreen"></iframe>
     '';
 in
-  env.lib.documentedTemplate {
+  env.lib.template.documentedTemplate {
     description = "Template to embed a Vimeo video.";
 
     arguments = {

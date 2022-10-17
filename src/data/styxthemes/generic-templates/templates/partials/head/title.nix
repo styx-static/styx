@@ -3,14 +3,15 @@ env: let
     lib,
     conf,
     ...
-  }: {page, ...}: ''
-    <title>${page.title}${lib.optionalString (lib.hasAttrByPath ["theme" "site" "title"] conf) " - ${conf.theme.site.title}"}</title>
-  '';
-in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template rendering the page `head` `title` tag.
+  }:
+    with lib.lib;
+      {page, ...}: ''
+        <title>${page.title}${optionalString (hasAttrByPath ["theme" "site" "title"] conf) " - ${conf.theme.site.title}"}</title>
       '';
-      inherit env template;
-    }
+in
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template rendering the page `head` `title` tag.
+    '';
+    inherit env template;
+  }

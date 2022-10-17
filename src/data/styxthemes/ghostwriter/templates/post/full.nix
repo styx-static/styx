@@ -3,8 +3,8 @@
   templates,
   ...
 }:
-with lib;
-  normalTemplate (page: ''
+with lib.lib;
+  lib.template.normalTemplate (page: ''
     <div class="container">
       <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
         <header class="post-header">
@@ -13,7 +13,7 @@ with lib;
       <p class="post-description" itemprop="description">${page.intro}</p>
     ''}
           <p class="post-date">
-            <span>Published <time datetime="${(parseDate page.date).date.num}" itemprop="datePublished">${with (parseDate page.date); "${b} ${D}, ${YYYY}"}</time></span>
+            <span>Published <time datetime="${(lib.template.parseDate page.date).date.num}" itemprop="datePublished">${with (lib.template.parseDate page.date); "${b} ${D}, ${YYYY}"}</time></span>
             ${optionalString (page ? author) ''
       <span>by</span>
       <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">

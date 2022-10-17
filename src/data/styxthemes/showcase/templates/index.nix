@@ -4,15 +4,14 @@
   lib,
   ...
 }:
-with lib;
-  normalTemplate (page: ''
-    <h1>${page.title}</h1>
-    ${mapTemplate (
-      ps:
-        ''<div class="row">''
-        + (mapTemplate templates.post.preview ps)
-        + "</div>"
-    ) (chunksOf 2 page.items)}
+lib.template.normalTemplate (page: ''
+  <h1>${page.title}</h1>
+  ${lib.template.mapTemplate (
+    ps:
+      ''<div class="row">''
+      + (lib.template.mapTemplate templates.post.preview ps)
+      + "</div>"
+  ) (lib.utils.chunksOf 2 page.items)}
 
-    ${templates.bootstrap.pagination {inherit (page) pages index;}}
-  '')
+  ${templates.bootstrap.pagination {inherit (page) pages index;}}
+'')

@@ -47,7 +47,8 @@
   -----------------------------------------------------------------------------
   */
 
-  data = with lib;
+  data = with lib.data;
+  with lib.lib;
     {
       /*
       Menu using blocks
@@ -56,7 +57,7 @@
         mkBlockSet = blocks:
           map (
             id:
-              (lib.find {inherit id;} blocks)
+              (lib.utils.find {inherit id;} blocks)
               // {
                 navbarClass = "page-scroll";
                 url = "/#${id}";
@@ -71,7 +72,7 @@
           }
         ];
     }
-    // (lib.loadDir {
+    // (loadDir {
       dir = ./data;
       inherit env;
       asAttrs = true;
@@ -85,7 +86,8 @@
   -----------------------------------------------------------------------------
   */
 
-  pages = rec {
+  pages = with lib.pages;
+  with lib.lib; rec {
     index = {
       title = "Home";
       path = "/index.html";
@@ -114,10 +116,10 @@
   */
 
   # converting pages attribute set to a list
-  pageList = lib.pagesToList {
+  pageList = lib.generation.pagesToList {
     inherit pages;
     default = {layout = templates.layout;};
   };
 
-  site = lib.mkSite {inherit files pageList;};
+  site = lib.generation.mkSite {inherit files pageList;};
 }

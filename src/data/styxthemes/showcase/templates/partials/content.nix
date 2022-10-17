@@ -3,7 +3,7 @@
   lib,
   ...
 }: {page}:
-with lib; ''
+with lib.lib; ''
   <div class="page-content">
     <div class="container wrapper">
       <div class="row">

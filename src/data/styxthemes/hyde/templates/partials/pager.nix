@@ -6,7 +6,7 @@
   pages,
   index,
 }:
-with lib; let
+with lib.lib; let
   prevHref =
     if (index > 1)
     then templates.url (elemAt pages (index - 2))

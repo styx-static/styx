@@ -3,16 +3,16 @@
   lib,
   ...
 }:
-with lib;
-  normalTemplate (data: {
+with lib.lib;
+  lib.template.normalTemplate (data: {
     content = templates.blocks.basic (data
       // {
         content = ''
           <div class="row">
             <div class="col-lg-12">
               <ul class="timeline">
-                ${mapTemplateWithIndex (index: event: ''
-              <li${optionalString (isOdd index) " ${htmlAttr "class" "timeline-inverted"}"}>
+                ${lib.template.mapTemplateWithIndex (index: event: ''
+              <li${optionalString (lib.template.isOdd index) " ${lib.template.htmlAttr "class" "timeline-inverted"}"}>
                 <div class="timeline-image">
                   <img class="img-circle img-responsive" src="${templates.url event.img}" alt="">
                 </div>

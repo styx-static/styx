@@ -1,6 +1,6 @@
 {lib, ...}: data:
-with lib; let
-  class = optionalString (data ? class) " ${htmlAttr "class" data.class}";
+with lib.lib; let
+  class = optionalString (data ? class) " ${lib.template.htmlAttr "class" data.class}";
 in ''
   ${data.pre or ""}
   <section id="${data.id}"${class}>

@@ -1,8 +1,9 @@
-{lib}: {
+{lib}:
+with lib.lib; {
   id = "showcase";
   name = "Showcase";
-  license = lib.licenses.mit;
-  maintainers = with lib.maintainers; [ericsagnes];
+  license = licenses.mit;
+  maintainers = with maintainers; [ericsagnes];
   demoPage = https://styx-static.github.io/styx-theme-showcase;
   homepage = https://github.com/styx-static/styx-theme-showcase;
   tags = ["generic-templates"];

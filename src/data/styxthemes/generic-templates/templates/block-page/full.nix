@@ -3,8 +3,4 @@
   templates,
   ...
 }:
-with lib;
-  normalTemplate (
-    page:
-      processBlocks page.blocks
-  )
+lib.template.normalTemplate (page: lib.template.processBlocks page.blocks)

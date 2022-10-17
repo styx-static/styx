@@ -1,7 +1,8 @@
-{lib}: {
+{lib}:
+with lib.lib; {
   id = "orbit";
   name = "Orbit";
-  license = lib.licenses.cc-by-30;
+  license = licenses.cc-by-30;
   demoPage = https://styx-static.github.io/styx-theme-orbit;
   homepage = https://github.com/styx-static/styx-theme-orbit;
   tags = ["resume"];

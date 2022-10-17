@@ -3,8 +3,8 @@
   templates,
   ...
 }:
-with lib;
-  normalTemplate (page: ''
+with lib.lib;
+  lib.template.normalTemplate (page: ''
     <div class="container">
       <article class="post-container post page" itemscope="" itemtype="http://schema.org/BlogPosting">
         <header class="post-header">

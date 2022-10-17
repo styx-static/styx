@@ -3,13 +3,13 @@
   lib,
   ...
 }:
-with lib;
-  normalTemplate (data: {
+with lib.lib;
+  lib.template.normalTemplate (data: {
     content = ''
       <aside class="${data.id}">
         <div class="container">
           <div class="row">
-            ${mapTemplate (item: ''
+            ${lib.template.mapTemplate (item: ''
           <div class="col-md-3 col-sm-6">
             ${optionalString (item ? link) ''<a href="${templates.url item.link}">''}
               <img src="${templates.url item.img}" class="img-responsive img-centered" alt="">

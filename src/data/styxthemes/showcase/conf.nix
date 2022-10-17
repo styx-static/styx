@@ -1,5 +1,5 @@
 {lib}:
-with lib; {
+with lib.lib; {
   site = {
     description = mkOption {
       description = "Site description, added in the footer.";

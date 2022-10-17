@@ -4,12 +4,12 @@
   templates,
   ...
 }: block:
-with lib; {
+with lib.lib; {
   content = ''
     <section class="skills-section section">
       <h2 class="section-title">${templates.icon.font-awesome block.icon}${block.title}</h2>
       <div class="skillset">
-        ${mapTemplate (item: ''
+        ${lib.template.mapTemplate (item: ''
         <div class="item">
           <h3 class="level-title">${item.skill}</h3>
           <div class="level-bar">

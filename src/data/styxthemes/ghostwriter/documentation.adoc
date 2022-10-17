@@ -44,7 +44,7 @@ data = rec {
     name = "John Doe";
   };
 
-  posts  = sortBy "date" "dsc" (loadDir { dir = ./posts; env = (env // { inherit authors; }); });
+  posts  = lib.utils.sortBy "date" "dsc" (loadDir { dir = ./posts; env = (env // { inherit authors; }); });
 };
 ----
 

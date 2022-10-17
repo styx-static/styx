@@ -3,7 +3,7 @@
   templates,
   ...
 }: page:
-with lib;
+with lib.lib;
   optionalString (page ? tags) (
     "<p>${templates.icon.font-awesome "tags"} "
     # generating links separated by /

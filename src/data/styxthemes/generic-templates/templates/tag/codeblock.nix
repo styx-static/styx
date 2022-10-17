@@ -1,29 +1,28 @@
 env: let
-  template = {lib, ...}: {content}: "<pre><code>${lib.escapeHTML content}</pre></code>";
+  template = {lib, ...}: {content}: "<pre><code>${lib.template.escapeHTML content}</pre></code>";
 in
-  with env.lib;
-    documentedTemplate {
-      description = ''
-        Template generating a code block, automatically escape HTML characters.
-      '';
-      arguments = {
-        content = {
-          description = "Codeblock content.";
-          type = "String";
-        };
+  env.lib.template.documentedTemplate {
+    description = ''
+      Template generating a code block, automatically escape HTML characters.
+    '';
+    arguments = {
+      content = {
+        description = "Codeblock content.";
+        type = "String";
       };
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.tag.codeblock {
-              content = "<p>some html</p>";
-            }
-          '';
-          code = with env;
-            templates.tag.codeblock {
-              content = "<p>some html</p>";
-            };
-        })
-      ];
-      inherit env template;
-    }
+    };
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.tag.codeblock {
+            content = "<p>some html</p>";
+          }
+        '';
+        code = with env;
+          templates.tag.codeblock {
+            content = "<p>some html</p>";
+          };
+      })
+    ];
+    inherit env template;
+  }

@@ -5,14 +5,14 @@ env: let
     data,
     ...
   }:
-    with lib; let
+    with lib.lib; let
       pageHeader = t: ''
         <div class="page-header">
           <h1>${t}</h1>
         </div>
       '';
     in
-      normalTemplate (
+      lib.template.normalTemplate (
         page:
         /*
         required extra css
@@ -56,14 +56,14 @@ env: let
               <h3>${templates.icon.bootstrap "picture"} ${templates.icon.bootstrap "tag"}</h3>
               <h4>Code</h4>
               ${templates.tag.codeblock {
-              content = (escapeHTML "<h3>") + ''''${templates.icon.bootstrap "picture"} ''${templates.icon.bootstrap "tag"}'' + (escapeHTML "</h3>");
+              content = (lib.template.escapeHTML "<h3>") + ''''${templates.icon.bootstrap "picture"} ''${templates.icon.bootstrap "tag"}'' + (lib.template.escapeHTML "</h3>");
             }}
 
               ${pageHeader "Font Awesome icons"}
               <h3>${templates.icon.font-awesome "linux"} ${templates.icon.font-awesome "code"}</h3>
               <h4>Code</h4>
               ${templates.tag.codeblock {
-              content = (escapeHTML "<h3>") + ''''${templates.icon.font-awesome "linux"} ''${templates.icon.font-awesome "code"}'' + (escapeHTML "</h3>");
+              content = (lib.template.escapeHTML "<h3>") + ''''${templates.icon.font-awesome "linux"} ''${templates.icon.font-awesome "code"}'' + (lib.template.escapeHTML "</h3>");
             }}
 
               ${pageHeader "Breadcrumbs"}
@@ -139,7 +139,7 @@ env: let
 
               ${pageHeader "Labels"}
               <h3>
-                ${mapTemplate (
+                ${lib.template.mapTemplate (
               t:
                 templates.bootstrap.label {
                   content = t;
@@ -150,7 +150,7 @@ env: let
               <h4>Code</h4>
               ${templates.tag.codeblock {
               content = ''
-                mapTemplate (t:
+                lib.template.mapTemplate (t:
                   templates.bootstrap.label { content = t; type = t; }
                 ) [ "default" "primary" "success" "info" "warning" "danger" ]
               '';
@@ -167,7 +167,7 @@ env: let
               </ul>
               <h4>Code</h4>
               ${templates.tag.codeblock {
-              content = escapeHTML ''
+              content = lib.template.escapeHTML ''
                 <p>
                  <a href="#">Inbox ''${templates.bootstrap.badge 42}</a>
                 </p>
@@ -239,7 +239,7 @@ env: let
           + ''
               <h4>Code</h4>
               ${templates.tag.codeblock {
-              content = escapeHTML ''
+              content = lib.template.escapeHTML ''
                 templates.bootstrap.navbar.default {
                   inverted = true;
                   id = "example1";
@@ -295,7 +295,7 @@ env: let
             }}
               <h4>Code</h4>
               ${templates.tag.codeblock {
-              content = escapeHTML ''
+              content = lib.template.escapeHTML ''
                 ''${templates.bootstrap.alert { type = "success"; content = "<strong>Well done!</strong> You successfully read this important alert message."; } }
                 ''${templates.bootstrap.alert { type = "info";    content = "<strong>Heads up!</strong> This alert needs your attention, but it's not super important."; } }
                 ''${templates.bootstrap.alert { type = "warning"; content = "<strong>Heads up!</strong> This alert needs your attention, but it's not super important."; } }
@@ -377,7 +377,7 @@ env: let
               </div>
               <h4>Code</h4>
               ${templates.tag.codeblock {
-              content = escapeHTML ''
+              content = lib.template.escapeHTML ''
                 <div class="col-sm-4">
                   ''${templates.bootstrap.panel {
                     heading = '''<h3 class="panel-title">Panel title</h3>''';
@@ -413,8 +413,7 @@ env: let
           ''
       );
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Template for the example site, internal use only.";
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = "Template for the example site, internal use only.";
+    inherit env template;
+  }

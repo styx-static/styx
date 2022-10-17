@@ -13,7 +13,7 @@ env: let
       ${brand}
     </div>'';
 in
-  env.lib.documentedTemplate {
+  env.lib.template.documentedTemplate {
     description = "Template used by `bootstrap.navbar.default`, not meant to be used directly.";
     inherit env template;
   }

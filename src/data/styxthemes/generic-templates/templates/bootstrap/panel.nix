@@ -6,7 +6,7 @@ env: let
     listGroup ? null,
     type ? "default",
   }:
-    with lib; let
+    with lib.lib; let
       h = optionalString (heading != null) "<div class=\"panel-heading\">${heading}</div>\n";
       b = optionalString (body != null) "<div class=\"panel-body\">${body}</div>\n";
       l = optionalString (listGroup != null) listGroup;
@@ -14,52 +14,51 @@ env: let
     in
       concatStringsSep "" ["<div class=\"panel panel-${type}\">\n" h b l f ''</div>''];
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Generate a bootstrap panel.";
-      arguments = {
-        heading = {
-          description = "Content of the panel heading, set to `null` to disable the heading.";
-          type = "null | String";
-          default = null;
-        };
-        body = {
-          description = "Content of the panel body, set to `null` to disable the body.";
-          type = "null | String";
-          default = null;
-        };
-        listGroup = {
-          description = "Content of the panel list group, set to `null` to disable the body.";
-          type = "null | String";
-          default = null;
-        };
-        footer = {
-          description = "Content of the panel footer, set to `null` to disable the footer.";
-          type = "null | String";
-          default = null;
-        };
-        type = {
-          description = "Type of the panel.";
-          type = ''"default" | "primary" | "success" | "info" | "warning" | "danger"'';
-          default = "default";
-        };
+  env.lib.template.documentedTemplate {
+    description = "Generate a bootstrap panel.";
+    arguments = {
+      heading = {
+        description = "Content of the panel heading, set to `null` to disable the heading.";
+        type = "null | String";
+        default = null;
       };
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.bootstrap.panel {
-              type    = "danger";
-              heading = '''<h3 class="panel-title">Panel title</h3>''';
-              body    = "Panel content";
-            }
-          '';
-          code = with env;
-            templates.bootstrap.panel {
-              type = "danger";
-              heading = ''<h3 class="panel-title">Panel title</h3>'';
-              body = "Panel content";
-            };
-        })
-      ];
-      inherit env template;
-    }
+      body = {
+        description = "Content of the panel body, set to `null` to disable the body.";
+        type = "null | String";
+        default = null;
+      };
+      listGroup = {
+        description = "Content of the panel list group, set to `null` to disable the body.";
+        type = "null | String";
+        default = null;
+      };
+      footer = {
+        description = "Content of the panel footer, set to `null` to disable the footer.";
+        type = "null | String";
+        default = null;
+      };
+      type = {
+        description = "Type of the panel.";
+        type = ''"default" | "primary" | "success" | "info" | "warning" | "danger"'';
+        default = "default";
+      };
+    };
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.bootstrap.panel {
+            type    = "danger";
+            heading = '''<h3 class="panel-title">Panel title</h3>''';
+            body    = "Panel content";
+          }
+        '';
+        code = with env;
+          templates.bootstrap.panel {
+            type = "danger";
+            heading = ''<h3 class="panel-title">Panel title</h3>'';
+            body = "Panel content";
+          };
+      })
+    ];
+    inherit env template;
+  }

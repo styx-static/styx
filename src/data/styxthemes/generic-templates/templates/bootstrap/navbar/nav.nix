@@ -10,7 +10,7 @@ env: let
     currentPage ? null,
     ...
   }:
-    with lib; let
+    with lib.lib; let
       extraClasses = optionalString (align != null) " navbar-${align}";
       isCurrent = item:
         (currentPage
@@ -21,7 +21,7 @@ env: let
         || (currentPage != null && item ? path && currentPage.path == item.path);
     in ''
       <ul class="nav navbar-nav${extraClasses}">
-      ${mapTemplate (
+      ${lib.template.mapTemplate (
           item:
             if isString item
             then item
@@ -30,59 +30,58 @@ env: let
         items}
       </ul>'';
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Template to generate a navbar navigation list. Meant to be used in `bootstrap.navbar.default` `content` parameter.";
-      arguments = {
-        items = {
-          description = "Items of the navbar.";
-          type = "[ Pages ]";
-        };
-        align = {
-          description = "Alignment of the navigation.";
-          type = ''"right", "left" or null'';
-          default = null;
-        };
-        currentPage = {
-          description = "Current page viewed, used to make active the menu corresponding to the current page.";
-          default = null;
-          type = "Page or null";
-        };
+  env.lib.template.documentedTemplate {
+    description = "Template to generate a navbar navigation list. Meant to be used in `bootstrap.navbar.default` `content` parameter.";
+    arguments = {
+      items = {
+        description = "Items of the navbar.";
+        type = "[ Pages ]";
       };
-      examples = [
-        (mkExample {
-          literalCode = ''
-            templates.bootstrap.navbar.nav {
-              items = [
-              { title = "Home";    path = "/#"; }
-              { title = "About";   path = "/#about"; }
-              { title = "Contact"; path = "/#contact"; }
-              ];
-              currentPage = { title = "Home"; path = "/#"; };
-            }
-          '';
-          code = with env;
-            templates.bootstrap.navbar.nav {
-              items = [
-                {
-                  title = "Home";
-                  path = "/#";
-                }
-                {
-                  title = "About";
-                  path = "/#about";
-                }
-                {
-                  title = "Contact";
-                  path = "/#contact";
-                }
-              ];
-              currentPage = {
+      align = {
+        description = "Alignment of the navigation.";
+        type = ''"right", "left" or null'';
+        default = null;
+      };
+      currentPage = {
+        description = "Current page viewed, used to make active the menu corresponding to the current page.";
+        default = null;
+        type = "Page or null";
+      };
+    };
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''
+          templates.bootstrap.navbar.nav {
+            items = [
+            { title = "Home";    path = "/#"; }
+            { title = "About";   path = "/#about"; }
+            { title = "Contact"; path = "/#contact"; }
+            ];
+            currentPage = { title = "Home"; path = "/#"; };
+          }
+        '';
+        code = with env;
+          templates.bootstrap.navbar.nav {
+            items = [
+              {
                 title = "Home";
                 path = "/#";
-              };
+              }
+              {
+                title = "About";
+                path = "/#about";
+              }
+              {
+                title = "Contact";
+                path = "/#contact";
+              }
+            ];
+            currentPage = {
+              title = "Home";
+              path = "/#";
             };
-        })
-      ];
-      inherit template env;
-    }
+          };
+      })
+    ];
+    inherit template env;
+  }

@@ -6,14 +6,13 @@ env: let
       }
       // attrs);
 in
-  with env.lib;
-    documentedTemplate {
-      description = "Generate a `link` tag for a css file.";
-      examples = [
-        (mkExample {
-          literalCode = ''templates.tag.link-css { href = "/css/style.css"; }'';
-          code = with env; templates.tag.link-css {href = "/css/style.css";};
-        })
-      ];
-      inherit env template;
-    }
+  env.lib.template.documentedTemplate {
+    description = "Generate a `link` tag for a css file.";
+    examples = [
+      (env.lib.utils.mkExample {
+        literalCode = ''templates.tag.link-css { href = "/css/style.css"; }'';
+        code = with env; templates.tag.link-css {href = "/css/style.css";};
+      })
+    ];
+    inherit env template;
+  }

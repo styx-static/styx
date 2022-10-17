@@ -8,7 +8,7 @@
   prevText ? "Previous Page",
   nextText ? "Next Page",
 }:
-with lib;
+with lib.lib;
   optionalString ((length pages) > 1)
   ''
     <nav class="pagination" role="navigation">

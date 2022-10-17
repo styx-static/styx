@@ -1,10 +1,10 @@
 {lib, ...} @ env:
-with lib; {
+with lib.lib; {
   id = "portfolio";
   title = "Portfolio";
   subtitle = "Lorem ipsum dolor sit amet consectetur.";
 
-  items = loadDir {
+  items = lib.data.loadDir {
     dir = ./projects;
     inherit env;
   };

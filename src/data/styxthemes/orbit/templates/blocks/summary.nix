@@ -4,7 +4,7 @@
   templates,
   ...
 }: block:
-with lib; {
+with lib.lib; {
   content = ''
     <section class="section summary-section">
       <h2 class="section-title">${templates.icon.font-awesome block.icon}${block.title}</h2>

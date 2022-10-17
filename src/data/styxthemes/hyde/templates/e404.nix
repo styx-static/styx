@@ -3,7 +3,7 @@
   templates,
   ...
 }:
-lib.normalTemplate {
+lib.template.normalTemplate {
   content = ''
     <h1>404: Page not found</h1>
     <p class="lead">Sorry, we've misplaced that URL or it's pointing to something that doesn't exist. ${templates.tag.ilink {

@@ -4,11 +4,11 @@
   templates,
   ...
 }: block:
-with lib; {
+with lib.lib; {
   content = ''
     <div class="contact-container container-block">
       <ul class="list-unstyled contact-list">
-        ${mapTemplate (item: ''
+        ${lib.template.mapTemplate (item: ''
         <li class="${item.type}">${templates.icon.font-awesome item.icon} <a href="${item.url}">${item.title}</a></li>
       '')
       block.items}
