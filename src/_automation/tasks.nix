@@ -81,17 +81,17 @@ in {
         pageList = styxlib.generation.pagesToList {inherit (loaded.env) pages;};
       };
     };
-    doc-theme = docs.theme site {};
+    doc-site = docs.site site {};
     doc-library = docs.library site {};
   in
     nixpkgs.writeScriptBin "update-doc" ''
       repoRoot="$(git rev-parse --show-toplevel)"
       target="$(readlink -f -- "$repoRoot/docs/")"
 
-      if ! cmp "${doc-theme}/themes-generated.adoc" "$target/styx-themes-generated.adoc"
+      if ! cmp "${doc-site}/themes-generated.adoc" "$target/styx-themes-generated.adoc"
       then
-        cp ${doc-theme}/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
-        cp ${doc-theme}/imgs/* $target/imgs/ --no-preserve=all
+        cp ${doc-site}/themes-generated.adoc $target/styx-themes-generated.adoc --no-preserve=all
+        cp ${doc-site}/imgs/* $target/imgs/ --no-preserve=all
         echo "Themes documentation updated!"
       fi
 

@@ -12,4 +12,4 @@ Callers:
   docslib = import ./src/renderers/docslib.nix {inherit inputs cell;};
   docs = import ./src/renderers/docs/default.nix {inherit inputs cell;};
 in
-  docs.theme siteFile {extraConf.siteUrl = "http://domain.org";}
+  docs.site siteFile {extraConf.siteUrl = "http://domain.org";}

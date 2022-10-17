@@ -11,10 +11,10 @@
   in
     call siteFnOrFile;
 in {
-  theme = siteFn: args: let
+  site = siteFn: args: let
     site' = callStyxSite siteFn args;
   in
-    import ./theme.nix {
+    import ./site.nix {
       inherit inputs cell;
       site = site' // {loaded = site'.loaded or site'.styx.themes;};
     };
