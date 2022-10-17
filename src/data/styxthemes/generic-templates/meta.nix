@@ -4,8 +4,8 @@ with lib.lib; {
   name = "Generic templates";
   license = licenses.mit;
   maintainers = with maintainers; [ericsagnes];
-  demoPage = https://styx-static.github.io/styx-theme-generic-templates;
-  homepage = https://github.com/styx-static/styx-theme-generic-templates;
+  demoPage = "https://styx-static.github.io/styx-theme-generic-templates";
+  homepage = "https://github.com/styx-static/styx-theme-generic-templates";
   tags = ["generic-templates"];
   screenshot = ./screen.png;
   documentation = readFile ./documentation.adoc;

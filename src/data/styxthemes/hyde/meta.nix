@@ -3,8 +3,8 @@ with lib.lib; {
   id = "hyde";
   name = "Hyde";
   license = licenses.mit;
-  demoPage = https://styx-static.github.io/styx-theme-hyde;
-  homepage = https://github.com/styx-static/styx-theme-hyde;
+  demoPage = "https://styx-static.github.io/styx-theme-hyde";
+  homepage = "https://github.com/styx-static/styx-theme-hyde";
   tags = ["blog"];
   screenshot = ./screen.png;
   description = ''

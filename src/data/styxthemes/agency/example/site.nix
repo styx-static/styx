@@ -92,7 +92,7 @@
       title = "Home";
       path = "/index.html";
       template = templates.block-page.full;
-      layout = templates.layout;
+      inherit (templates) layout;
       blocks = let
         darken = d: d // {class = "bg-light-gray";};
       in
@@ -118,7 +118,7 @@
   # converting pages attribute set to a list
   pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
   site = lib.generation.mkSite {inherit files pageList;};

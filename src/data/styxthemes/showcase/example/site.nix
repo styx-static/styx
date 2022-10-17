@@ -95,9 +95,9 @@
     For more complex needs, mkSplitCustom is available
     */
     index = mkSplit {
-      title = conf.theme.site.title;
+      inherit (conf.theme.site) title;
       basePath = "/index";
-      itemsPerPage = conf.theme.index.itemsPerPage;
+      inherit (conf.theme.index) itemsPerPage;
       template = templates.index;
       data = pages.posts.list;
       breadcrumbTitle = templates.icon.font-awesome "home";
@@ -154,7 +154,7 @@
       basePath = "/archive/post";
       template = templates.archive;
       breadcrumbs = [(head index)];
-      itemsPerPage = conf.theme.archives.itemsPerPage;
+      inherit (conf.theme.archives) itemsPerPage;
       data = pages.posts.list;
     };
 
@@ -197,7 +197,7 @@
   Substitutions
   */
   substitutions = {
-    siteUrl = conf.siteUrl;
+    inherit (conf) siteUrl;
   };
 
   site = lib.generation.mkSite {

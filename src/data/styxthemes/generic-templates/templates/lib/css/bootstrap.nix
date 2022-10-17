@@ -8,7 +8,7 @@ env: let
     with lib.lib; let
       cnf = conf.theme.lib.bootstrap;
     in
-      optionalString (cnf.enable == true)
+      optionalString cnf.enable
       (templates.tag.link-css {href = "//maxcdn.bootstrapcdn.com/bootstrap/${cnf.version}/css/bootstrap.min.css";});
 in
   env.lib.template.documentedTemplate {

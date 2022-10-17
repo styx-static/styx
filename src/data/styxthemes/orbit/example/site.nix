@@ -63,7 +63,7 @@
       title = "Home";
       path = "/index.html";
       template = templates.block-page.full;
-      layout = templates.layout;
+      inherit (templates) layout;
       blocks = [
         (templates.blocks.summary conf.theme.summary)
         (templates.blocks.experiences conf.theme.experiences)

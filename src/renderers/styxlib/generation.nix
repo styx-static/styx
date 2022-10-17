@@ -328,9 +328,9 @@ with styxlib.utils; rec {
       fold (
         p: acc:
           if isList p
-          then acc ++ (map (x: recursiveUpdate default x) p)
+          then acc ++ (map (recursiveUpdate default) p)
           else if is "pages" p
-          then acc ++ (map (x: recursiveUpdate default x) p.pages)
+          then acc ++ (map (recursiveUpdate default) p.pages)
           else acc ++ [(recursiveUpdate default p)]
       ) []
       pages';
@@ -457,7 +457,7 @@ with styxlib.utils; rec {
       flatten (mapAttrsToList (
           _: locale:
             pagesToList {
-              pages = locale.pages;
+              inherit (locale) pages;
               default = default locale;
             }
         )

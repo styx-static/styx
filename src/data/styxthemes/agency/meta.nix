@@ -3,8 +3,8 @@ with lib.lib; {
   name = "Agency";
   id = "agency";
   license = licenses.asl20;
-  demoPage = https://styx-static.github.io/styx-theme-agency;
-  homepage = https://github.com/styx-static/styx-theme-agency;
+  demoPage = "https://styx-static.github.io/styx-theme-agency";
+  homepage = "https://github.com/styx-static/styx-theme-agency";
   screenshot = ./screen.png;
   documentation = readFile ./documentation.adoc;
   description = ''

@@ -87,7 +87,7 @@
     index = mkSplit {
       title = "Home";
       basePath = "/index";
-      itemsPerPage = conf.theme.itemsPerPage;
+      inherit (conf.theme) itemsPerPage;
       template = templates.index;
       data = posts.list;
     };
@@ -115,7 +115,7 @@
       pathPrefix = "/posts/";
       template = templates.post.full;
       # Attach the author to every blog post
-      author = data.author;
+      inherit (data) author;
     };
   };
 
@@ -131,7 +131,7 @@
   */
   pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
   /*

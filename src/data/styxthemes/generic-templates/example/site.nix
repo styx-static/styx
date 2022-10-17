@@ -60,7 +60,7 @@
 
   pages = rec {
     basic = {
-      layout = templates.layout;
+      inherit (templates) layout;
       template = templates.examples.basic;
       path = "/basic.html";
       # example of adding extra css / js to a page
@@ -71,7 +71,7 @@
     };
 
     starter = {
-      layout = templates.layout;
+      inherit (templates) layout;
       template = templates.examples.starter;
       path = "/starter.html";
       title = "Starter Template for Bootstrap";
@@ -79,7 +79,7 @@
     };
 
     theme = {
-      layout = templates.layout;
+      inherit (templates) layout;
       template = templates.examples.theme;
       path = "/index.html";
       title = "Theme Template for Bootstrap";

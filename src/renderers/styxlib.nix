@@ -18,7 +18,7 @@
   styxOptions = import ./styxlib/styx-options.nix {inherit inputs cell;};
 
   compat = prev: final: (l.mapAttrs
-    (n: v:
+    (n:
       l.warn ''
 
         The non fully qualified accessor 'styxlib.${n}' is deprecated.
@@ -43,8 +43,7 @@
           then "styxlib.lib.${n}"
           else "couldn't find origin"
         }
-      ''
-      v)
+      '')
     (
       {
         base = l;

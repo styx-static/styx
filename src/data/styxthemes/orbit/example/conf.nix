@@ -71,7 +71,7 @@ with lib.lib; {
     summary = {
       icon = "user";
       title = "Career Profile";
-      content = (lib.data.loadFile {file = ./data/summary.md;}).content;
+      inherit ((lib.data.loadFile {file = ./data/summary.md;})) content;
     };
 
     /*

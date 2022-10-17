@@ -8,7 +8,7 @@ env: let
     with lib.lib; let
       cnf = conf.theme.lib.font-awesome;
     in
-      optionalString (cnf.enable == true)
+      optionalString cnf.enable
       (templates.tag.link-css {href = "//maxcdn.bootstrapcdn.com/font-awesome/${cnf.version}/css/font-awesome.min.css";});
 in
   env.lib.template.documentedTemplate {

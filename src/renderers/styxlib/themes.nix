@@ -93,9 +93,9 @@ in rec {
         # meta information
         meta = {name = meta.id;} // meta;
         # id
-        id = meta.id;
+        inherit (meta) id;
         # path
-        path = toPath theme;
+        path = /. + "${toString theme}";
       }
       # function library
       // optionalAttrs (libFile != null)
@@ -109,7 +109,7 @@ in rec {
       // (optionalAttrs (exampleFile != null)
         {exampleSrc = readFile exampleFile;})
       // (optionalAttrs (templatesDir != null)
-        {templates = mapAttrsRecursive (path: value: import value) (fetchTemplateDir templatesDir);})
+        {templates = mapAttrsRecursive (path: import) (fetchTemplateDir templatesDir);})
       // (optionalAttrs (filesDir != null)
         {files = filesDir;});
   };

@@ -7,7 +7,7 @@
 with lib.lib;
   lib.template.normalTemplate (
     page: let
-      postsByYear = lib.data.groupBy page.items (d: (lib.template.parseDate d.date).Y);
+      postsByYear = lib.data.groupByFlatten page.items (d: (lib.template.parseDate d.date).Y);
     in ''
       <h1>${page.title}${optionalString (page.index > 1) " - ${toString page.index}"}</h1>
 

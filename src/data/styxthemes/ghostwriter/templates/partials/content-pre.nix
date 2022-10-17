@@ -68,13 +68,13 @@ with lib.lib; ''
 
   </div>
 
-  ${optionalString ((data ? menu) && (isList data.menu) && (length (data.menu) > 0)) ''
+  ${optionalString ((data ? menu) && (isList data.menu) && (length data.menu > 0)) ''
     <ul class="site-nav">
     ${lib.template.mapTemplate (menu: ''
         <li class="site-nav-item">${templates.tag.ilink {
           to = menu;
           content = menu.title;
-          title = menu.title;
+          inherit (menu) title;
         }}</li>
       '')
       data.menu}

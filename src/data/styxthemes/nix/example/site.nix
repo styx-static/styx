@@ -157,7 +157,7 @@
   # converting pages attribute set to a list
   pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
   site = lib.generation.mkSite {

@@ -206,8 +206,8 @@ asciidocToHtml "Hello `asciidoc`!"
 
 :sectnums!:
 
-[[lib.data.groupBy]]
-=== groupBy
+[[lib.data.groupByFlatten]]
+=== groupByFlatten
 
 ==== Description
 
@@ -238,7 +238,7 @@ A property list of grouped attribute sets
 [source, nix]
 .Code
 ----
-groupBy [
+groupByFlatten [
   { type = "fruit"; name = "apple"; }
   { type = "fruit"; name = "pear"; }
   { type = "vegetable"; name = "lettuce"; }

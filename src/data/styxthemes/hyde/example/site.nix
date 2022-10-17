@@ -83,7 +83,7 @@
     index = mkSplit {
       title = "Home";
       basePath = "/index";
-      itemsPerPage = conf.theme.itemsPerPage;
+      inherit (conf.theme) itemsPerPage;
       template = templates.index;
       data = posts.list;
     };
@@ -139,7 +139,7 @@
   # converting pages attribute set to a list
   pageList = lib.generation.pagesToList {
     inherit pages;
-    default = {layout = templates.layout;};
+    default = {inherit (templates) layout;};
   };
 
   site = lib.generation.mkSite {inherit files pageList;};

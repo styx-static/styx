@@ -7,11 +7,12 @@ env: let
   }: page:
     with lib.lib; let
       id =
-        if page ? disqusID
-        then page.disqusID
-        else if page ? rootPage
-        then page.rootPage.path
-        else page.path;
+        page.disqusID
+        or (
+          if page ? rootPage
+          then page.rootPage.path
+          else page.path
+        );
       cnf = conf.theme.services.disqus;
     in
       optionalString (cnf.shortname != null)

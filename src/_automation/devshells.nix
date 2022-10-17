@@ -35,6 +35,10 @@ in
           category = "dev";
           package = nixpkgs.asciidoctor;
         }
+        {
+          category = "dev";
+          package = nixpkgs.statix;
+        }
       ];
       imports = [];
     };

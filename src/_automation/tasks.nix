@@ -28,6 +28,14 @@ in {
       echo ""
       echo "------------------------------------------------"
       echo ""
+      echo "\e[1;93mCode Linting:\e[0m"
+      echo ""
+
+      ${l.getExe nixpkgs.statix} check
+
+      echo ""
+      echo "------------------------------------------------"
+      echo ""
       echo "\e[1;93mMain tests:\e[0m"
       echo ""
 
@@ -63,7 +71,7 @@ in {
       echo "Finished"
     '';
   update-doc = let
-    site = {...}: rec {
+    site = _: rec {
       loaded =
         (import inputs.self {
           pkgs = nixpkgs;

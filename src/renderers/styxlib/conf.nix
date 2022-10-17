@@ -116,7 +116,7 @@ with styxlib.utils; rec {
       Throw an error if `defs` do not type-check with `decls`.
     '';
 
-    function = decls: defs:
+    function = decls:
       mapAttrsRecursive (
         path: def: let
           type = attrByPath (path ++ ["type"]) null decls;
@@ -127,7 +127,6 @@ with styxlib.utils; rec {
             then "check ok"
             else throw "The configuration option `theme.${showOption path}' is not a ${type.description}."
           else "no type"
-      )
-      defs;
+      );
   };
 }

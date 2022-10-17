@@ -17,9 +17,7 @@ let
   root = styxlib.conf.parseDecls {
     inherit decls;
     optionFn = o:
-      if o ? default
-      then o.default
-      else null;
+      o.default or null;
   };
 
   secondStageStyxlib = styxlib.hydrate (_: _: {config = root;});
@@ -125,7 +123,8 @@ in rec {
       then extract
       else {})
     functions;
-  in (l.filter (x: x != {}) (l.flatten ex) ++ customTests);
+  in
+    l.filter (x: x != {}) (l.flatten ex) ++ customTests;
 
   missingTests = let
     missing = l.mapAttrsToList (name: fn: let

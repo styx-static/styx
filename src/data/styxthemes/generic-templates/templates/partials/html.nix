@@ -8,11 +8,12 @@ env: let
   }: args:
     with lib.lib; let
       lang =
-        if html ? lang
-        then html.lang
-        else if hasAttrByPath ["html" "lang"] conf.theme
-        then conf.theme.html.lang
-        else "en";
+        html.lang
+        or (
+          if hasAttrByPath ["html" "lang"] conf.theme
+          then conf.theme.html.lang
+          else "en"
+        );
     in ''      <html ${lib.template.htmlAttr "lang" lang}>
         ${
         (templates.partials.head.default args)

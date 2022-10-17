@@ -258,7 +258,7 @@ with styxlib.utils; rec {
       })
     ];
 
-    function = key: list: filter (p: (propKey p) != key) list;
+    function = key: filter (p: (propKey p) != key);
   };
 
   /*
@@ -298,7 +298,7 @@ with styxlib.utils; rec {
       })
     ];
 
-    function = f: list: map (p: f (propKey p) (propValue p)) list;
+    function = f: map (p: f (propKey p) (propValue p));
   };
 
   /*
@@ -336,15 +336,13 @@ with styxlib.utils; rec {
       })
     ];
 
-    function = plist:
-      fold (
-        p: acc: let
-          k = propKey p;
-        in
-          if isDefined k acc && isList (propValue p) && isList (getValue k acc)
-          then [{"${k}" = (propValue p) ++ (getValue k acc);}] ++ (removeProp k acc)
-          else [p] ++ acc
-      ) []
-      plist;
+    function = fold (
+      p: acc: let
+        k = propKey p;
+      in
+        if isDefined k acc && isList (propValue p) && isList (getValue k acc)
+        then [{"${k}" = (propValue p) ++ (getValue k acc);}] ++ (removeProp k acc)
+        else [p] ++ acc
+    ) [];
   };
 }

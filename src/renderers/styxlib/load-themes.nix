@@ -119,9 +119,7 @@ with styxlib.themes; {
       root = parseDecls {
         inherit decls;
         optionFn = o:
-          if o ? default
-          then o.default
-          else null;
+          o.default or null;
       };
       secondStageStyxlib = styxlib.hydrate (_: _: {config = root;});
 
@@ -137,9 +135,7 @@ with styxlib.themes; {
         theme = parseDecls {
           decls = decls';
           optionFn = o:
-            if o ? default
-            then o.default
-            else null;
+            o.default or null;
         };
         typeCheckResult =
           if theme != {}

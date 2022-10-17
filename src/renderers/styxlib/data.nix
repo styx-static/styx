@@ -21,7 +21,7 @@ with styxlib.proplist; let
     fileData,
     env,
   }: let
-    markupType = head (attrNames (filterAttrs (k: v: elem fileData.ext v) evaledMarkupFiles));
+    markupType = head (attrNames (filterAttrs (k: elem fileData.ext) evaledMarkupFiles));
     markupAttrs = ["intro" "pages" "content"];
     dataFn =
       nixpkgs.runCommand "parsed-data.nix" {
@@ -432,7 +432,7 @@ in rec {
                 plist
                 set."${taxonomy}"
             )
-            plist (filter (d: hasAttr taxonomy d) data)
+            plist (filter (hasAttr taxonomy) data)
         ) []
         taxonomies;
       semiCleanTaxonomy = propFlatten rawTaxonomy;
@@ -521,12 +521,12 @@ in rec {
   /*
   ===============================================================
 
-   groupBy
+   groupByFlatten
 
   ===============================================================
   */
 
-  groupBy = documentedFunction {
+  groupByFlatten = documentedFunction {
     description = "Group a list of attribute sets.";
 
     arguments = [
@@ -547,7 +547,7 @@ in rec {
     examples = [
       (mkExample {
         literalCode = ''
-          groupBy [
+          groupByFlatten [
             { type = "fruit"; name = "apple"; }
             { type = "fruit"; name = "pear"; }
             { type = "vegetable"; name = "lettuce"; }
@@ -555,7 +555,7 @@ in rec {
           (s: s.type)
         '';
         code =
-          groupBy [
+          groupByFlatten [
             {
               type = "fruit";
               name = "apple";

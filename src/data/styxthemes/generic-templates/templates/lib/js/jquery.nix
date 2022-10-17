@@ -11,7 +11,7 @@ env: let
     with lib.lib; let
       cnf = conf.theme.lib.jquery;
     in
-      optionalString (cnf.enable == true)
+      optionalString cnf.enable
       (templates.tag.script {
         src = "//code.jquery.com/jquery-${cnf.version}.min.js";
         crossorigin = "anonymous";

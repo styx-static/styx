@@ -108,7 +108,7 @@ in rec {
           )
           sub
         );
-      matches = filter (x: subset criteria x) list;
+      matches = filter (subset criteria) list;
     in
       if matches == []
       then
@@ -393,10 +393,7 @@ in rec {
       })
     ];
 
-    function = foldl' (
-      set: acc:
-        recursiveUpdate set acc
-    ) {};
+    function = foldl' recursiveUpdate {};
   };
 
   /*
@@ -585,7 +582,7 @@ in rec {
         then ''"${replaceStrings [''"''] [''\"''] x}"''
         else if isInt x
         then toString x
-        else if isNull x
+        else if (x == null)
         then "null"
         else if isList x
         then ''[ ${concatStringsSep " " (map (loop n) x)} ]''

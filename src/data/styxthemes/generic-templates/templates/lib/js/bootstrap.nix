@@ -8,7 +8,7 @@ env: let
     with lib.lib; let
       cnf = conf.theme.lib.bootstrap;
     in
-      optionalString (cnf.enable == true)
+      optionalString cnf.enable
       (templates.tag.script {
         src = "//maxcdn.bootstrapcdn.com/bootstrap/${cnf.version}/js/bootstrap.min.js";
         crossorigin = "anonymous";

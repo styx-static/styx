@@ -8,7 +8,7 @@ env: let
     with lib.lib; let
       cnf = conf.theme.lib.highlightjs;
     in
-      optionalString (cnf.enable == true)
+      optionalString cnf.enable
       ((templates.tag.script {
           src = "//cdnjs.cloudflare.com/ajax/libs/highlight.js/${cnf.version}/highlight.min.js";
           crossorigin = "anonymous";

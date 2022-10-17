@@ -1,5 +1,5 @@
 env: let
-  template = {templates, ...}: args: templates.partials.head.meta args;
+  template = {templates, ...}: templates.partials.head.meta;
 in
   env.lib.template.documentedTemplate {
     description = ''

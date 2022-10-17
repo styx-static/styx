@@ -3,8 +3,8 @@ with lib.lib; {
   id = "nix";
   name = "Nix";
   license = licenses.mit;
-  demoPage = https://styx-static.github.io/styx-theme-nix;
-  homepage = https://github.com/styx-static/styx-theme-nix;
+  demoPage = "https://styx-static.github.io/styx-theme-nix";
+  homepage = "https://github.com/styx-static/styx-theme-nix";
   tags = ["minimal"];
   screenshot = ./screen.png;
   description = ''

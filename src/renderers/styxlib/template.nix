@@ -51,7 +51,7 @@ with styxlib.utils; rec {
       examples ? null,
       notes ? null,
     } @ attrs:
-      if attrs.env ? genDoc && attrs.env.genDoc == true
+      if attrs.env ? genDoc && attrs.env.genDoc
       then (attrs // {_type = "docTemplate";})
       else (attrs.template attrs.env);
   };
@@ -757,8 +757,8 @@ with styxlib.utils; rec {
       M = doNotPad MM;
       m = MM;
       m- = M;
-      b = monthConv."${MM}".b;
-      B = monthConv."${MM}".B;
+      inherit (monthConv."${MM}") b;
+      inherit (monthConv."${MM}") B;
       # day
       DD = day;
       D = doNotPad DD;

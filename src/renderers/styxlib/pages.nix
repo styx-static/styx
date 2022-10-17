@@ -165,7 +165,7 @@ with styxlib.proplist; rec {
     }: let
       loop = index: data: pages: let
         index' = index + 1;
-        itemsNb = (pageFn index (head data)).itemsNb;
+        inherit ((pageFn index (head data))) itemsNb;
         items = take itemsNb data;
         pages' = pages ++ [((removeAttrs (pageFn index data) ["itemsNb"]) // {inherit index items;})];
         data' = drop itemsNb data;
@@ -603,7 +603,7 @@ with styxlib.proplist; rec {
         if isAttrs data
         then mapAttrsToList (n: v: v // {_attrName = n;}) data
         else data;
-      cleanlist = l: map (p: removeAttrs p ["_plid"]) l;
+      cleanlist = map (p: removeAttrs p ["_plid"]);
       dirtylist = imap (index: p:
         p
         // {
@@ -614,7 +614,7 @@ with styxlib.proplist; rec {
         })
       raw.list;
       list = cleanlist dirtylist;
-      extra = cleanlist (map (p: p // {pageList = (findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist).pageList;}) raw.extra);
+      extra = cleanlist (map (p: p // {inherit ((findFirst (x: x ? _plid && x._plid == p._plid) "" dirtylist)) pageList;}) raw.extra);
     in
       mkPages ({
           inherit list;
@@ -733,7 +733,7 @@ with styxlib.proplist; rec {
         )
         data;
       termPages = flatten (propMap (
-          taxonomy: terms:
+          taxonomy:
             propMap (
               term: values:
                 extraArgs
@@ -742,10 +742,10 @@ with styxlib.proplist; rec {
                 // {inherit taxonomy term values;}
                 // (termPageFn taxonomy term)
             )
-            terms
         )
         data);
-    in (termPages ++ taxonomyPages);
+    in
+      termPages ++ taxonomyPages;
   };
 
   /*
