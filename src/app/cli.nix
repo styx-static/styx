@@ -28,25 +28,25 @@
 
     installPhase = ''
       mkdir $out
-      install -D -m 777 ${bin}/bin/styx          $out/bin/styx
-      substituteInPlace                          $out/bin/styx                        --subst-var version
+      install -D -m 777 ${bin}/bin/styx       $out/bin/styx
+      substituteInPlace                       $out/bin/styx                        --subst-var version
 
       # Compatibility
       cp -r ${inputs.self}/* $out
 
       # Documentation
-      mkdir -p                                   $out/share/doc/styx
+      mkdir -p                                $out/share/doc/styx
       asciidoctor \
-      ${inputs.self}/src/doc/index.adoc       -o $out/share/doc/styx/index.html
-      substituteInPlace                          $out/share/doc/styx/index.html       --subst-var version
+      ${inputs.self}/docs/index.adoc       -o $out/share/doc/styx/index.html
+      substituteInPlace                       $out/share/doc/styx/index.html       --subst-var version
       asciidoctor \
-      ${inputs.self}/src/doc/styx-themes.adoc -o $out/share/doc/styx/styx-themes.html
-      substituteInPlace                          $out/share/doc/styx/styx-themes.html --subst-var version
+      ${inputs.self}/docs/styx-themes.adoc -o $out/share/doc/styx/styx-themes.html
+      substituteInPlace                       $out/share/doc/styx/styx-themes.html --subst-var version
       asciidoctor \
-      ${inputs.self}/src/doc/library.adoc     -o $out/share/doc/styx/library.html
-      substituteInPlace                          $out/share/doc/styx/library.html     --subst-var version
-      cp -r ${inputs.self}/src/doc/highlight     $out/share/doc/styx/
-      cp -r ${inputs.self}/src/doc/imgs          $out/share/doc/styx/
+      ${inputs.self}/docs/library.adoc     -o $out/share/doc/styx/library.html
+      substituteInPlace                       $out/share/doc/styx/library.html     --subst-var version
+      cp -r ${inputs.self}/docs/highlight     $out/share/doc/styx/
+      cp -r ${inputs.self}/docs/imgs          $out/share/doc/styx/
     '';
 
     # installCheckPhase = ''
