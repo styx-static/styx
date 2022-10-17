@@ -32,7 +32,7 @@
 1. Updating the `styx` expression and test that it works:
 
    ```sh
-   $ $(nix-build -A styx --no-out-link)/bin/styx preview-theme showcase
+   $ nix run . -- preview-theme showcase
    ```
 
 2. Submit a pull request to nixpkgs

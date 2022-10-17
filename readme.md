@@ -59,29 +59,15 @@ A very unique feature of Styx is that it can generate the documentation for a si
 
 ## Install
 
-Use `nix-env` to install Styx, or `nix-shell` to just test without installing it:
+Use `nix profile` to install Styx, or `nix shell` to just test without installing it:
 
 ```sh
-$ nix-env -iA styx
+$ nix profile install github:styx-static/styx
 $ styx --help
 ```
 
 ```sh
-$ nix-shell -p styx
-$ styx --help
-```
-
-The version you will get will depend on the version of nixpkgs used. To get the latest stable release without relying on nixpkgs:
-
-```
-$ nix-env -i $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
-$ styx --help
-```
-
-or
-
-```
-$ nix-shell -p $(nix-build https://github.com/styx-static/styx/archive/latest.tar.gz)
+$ nix shell github:styx-static/styx
 $ styx --help
 ```
 
@@ -105,19 +91,18 @@ This repository is also a playground for more exotic nix usages and experiments:
   Library function tests can print a coverage or a report (with pretty printing):
 
       ```
-      $ cat $(nix-build --no-out-link -A coverage tests/lib.nix)
-      $ cat $(nix-build --no-out-link -A report tests/lib.nix)
+      $ system="$(nix eval --raw --expr "builtins.currentSystem" --impure)"
+      $ nix build .#"$system"._automation.tests.lib-report && cat ./result
+      $ nix build .#"$system"._automation.tests.lib-coverage && cat ./result
       ```
 
-- [scripts/library-doc.nix](./scripts/library-doc.nix) is a nix expression that generate an AsciiDoc documentation from the library `documentedFunction`s ([example](https://styx-static.github.io/styx-site/documentation/library.html)).
+- [src/renderers/docs/library.nix](./src/renderers/docs/library.nix) is a nix expression that generate an AsciiDoc documentation from the library `documentedFunction`s ([example](https://styx-static.github.io/styx-site/documentation/library.html)).
 
-- [scripts/themes-doc.nix](./scripts/themes-doc.nix) and [src/nix/site-doc.nix](./src/nix/site-doc.nix) are nix expressions that automatically generate documentation for styx themes, including configuration interface and templates ([example](https://styx-static.github.io/styx-site/documentation/styx-themes.html)). This feature is leveraged in the `styx site-doc` command to dynamically generate the documentation for a site according to used themes.
+- [src/renderers/docs/theme.nix](./src/renderers/docs/theme.nix) and [src/nix/site-doc.nix](./src/nix/site-doc.nix) are nix expressions that automatically generate documentation for styx themes, including configuration interface and templates ([example](https://styx-static.github.io/styx-site/documentation/styx-themes.html)). This feature is leveraged in the `styx site-doc` command to dynamically generate the documentation for a site according to used themes.
 
-- `lib.prettyNix` is a pure nix function that pretty print nix expressions.
+- [parsimonious](https://github.com/erikrose/parsimonious) is used to do some [voodoo](src/app/parsers/) on markup files to turn them into valid nix expressions, so nix expressions can be embedded in Markdown or AsciiDoc.
 
-- [parsimonious](https://github.com/erikrose/parsimonious) is used to do some [voodoo](src/tools/parser.py) on markup files to turn them into valid nix expressions, so nix expressions can be embedded in Markdown or AsciiDoc.
-
-- styx `propagatedBuildInputs` are taken advantage in `lib.data` conversion functions like `markupToHtml`.
+- [std](https://github.com/divnix/std) is a framework to keep bigger flake projects maintainable.
 
 ## Links
 

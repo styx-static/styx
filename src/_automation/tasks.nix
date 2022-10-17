@@ -5,11 +5,9 @@
   inherit (inputs) nixpkgs;
   inherit (inputs.cells.renderers) docs;
   inherit (inputs.cells.data) styxthemes;
+  inherit (inputs.cells.app.cli) styx;
 
-  styxlib = (import (inputs.self + /src/lib)) {
-    pkgs = nixpkgs;
-    conf = null;
-  };
+  styxlib = (import "${inputs.self}" {pkgs = nixpkgs // {inherit styx;};}).lib;
 
   l = nixpkgs.lib // builtins;
 in {
@@ -69,7 +67,7 @@ in {
   update-doc = let
     site = {...}: rec {
       loaded =
-        (import (inputs.self + /src/default.nix) {
+        (import inputs.self {
           pkgs = nixpkgs;
           themes = l.reverseList (l.attrValues styxthemes);
           env = {

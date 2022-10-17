@@ -10,16 +10,9 @@ let
   l = inputs.nixpkgs.lib // builtins;
 
   inherit (inputs) nixpkgs;
+  inherit (inputs.cells.app.cli) styx;
 
-  styxlib =
-    ((import (inputs.self + /src)) {
-      pkgs =
-        nixpkgs
-        // {
-          styx = nixpkgs.callPackage (inputs.self + /derivation.nix) {};
-        };
-    })
-    .lib;
+  styxlib = (import "${inputs.self}" {pkgs = nixpkgs // {inherit styx;};}).lib;
 
   libs =
     map (x:
