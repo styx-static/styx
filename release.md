@@ -10,7 +10,7 @@
 
 ## Styx
 
-1. Write release notes in `src/doc/release-notes.adoc`
+1. Write release notes in `docs/release-notes.adoc`
 
 2. Run the tests
 

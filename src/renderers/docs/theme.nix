@@ -13,7 +13,7 @@
 
   l = nixpkgs.lib // builtins;
 
-  highlightSrc = inputs.self + /src/doc/highlight;
+  highlightSrc = inputs.self + /docs/highlight;
   themes = l.reverseList site.loaded.themes;
   pages =
     if site ? pages

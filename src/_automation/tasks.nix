@@ -86,7 +86,7 @@ in {
   in
     nixpkgs.writeScriptBin "update-doc" ''
       repoRoot="$(git rev-parse --show-toplevel)"
-      target="$(readlink -f -- "$repoRoot/src/doc/")"
+      target="$(readlink -f -- "$repoRoot/docs/")"
 
       if ! cmp "${doc-theme}/themes-generated.adoc" "$target/styx-themes-generated.adoc"
       then
