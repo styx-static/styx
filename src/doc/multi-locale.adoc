@@ -84,7 +84,7 @@ rec {
     ------------*/
     data = with env; {                                     <7>
       # loading a single page
-      about  = lib.loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+      about  = lib.loadFile { file = "${styx}/src/data/presets/sample-data/pages/about.md"; inherit env; };
     };
 
     /*------------
@@ -123,7 +123,7 @@ rec {
     ------------*/
     data = with env; {
       # loading a single page
-      about  = lib.loadFile { file = "${styx}/share/styx/scaffold/sample-data/pages/about.md"; inherit env; };
+      about  = lib.loadFile { file = "${styx}/data/presets/sample-data/pages/about.md"; inherit env; };
     };
 
     /*------------
