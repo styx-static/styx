@@ -29,36 +29,61 @@
     (l.filterAttrs (n: _: n != "__functor") styxthemes);
 in
   {
-    new = nixpkgs.runCommand "styx-new-site" defaultEnv ''
-      mkdir $out
-      ${styx}/bin/styx new site my-site --in $out
-      ${styx}/bin/styx gen-sample-data  --in $out/my-site
-    '';
-
-    new-build = let
-      site = nixpkgs.runCommand "styx-new-site" defaultEnv ''
-        mkdir $out
-        ${styx}/bin/styx new site my-site --in $out
-        sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' $out/my-site/site.nix
+    new = nixpkgs.writeShellApplication {
+      name = "styx-new-site";
+      text = ''
+        tmptestdir="$(mktemp -d)"
+        mkdir -p "$tmptestdir"
+        echo "staging test inside $tmptestdir ..."
+        ${styx}/bin/styx new site my-site --in "$tmptestdir"
+        ${styx}/bin/styx gen-sample-data  --in "$tmptestdir"/my-site
+        rm -rf "$tmptestdir"
       '';
-    in
-      (styxlib.callStyxSite (import "${site}/my-site/site.nix") {}).site;
-    new-theme = nixpkgs.runCommand "styx-new-theme" defaultEnv ''
-      mkdir $out
-      ${styx}/bin/styx new site my-site --in $out
-      ${styx}/bin/styx new theme my-theme --in $out/my-site/themes
-    '';
-    deploy-gh-pages = nixpkgs.runCommand "styx-deploy-gh" ({buildInputs = [nixpkgs.git];} // defaultEnv) ''
-      mkdir $out
-      cp -r ${styxthemes.showcase}/example/* $out/
-      export HOME=$out
-      export GIT_CONFIG_NOSYSTEM=1
-      git config --global user.name  "styx test"
-      git config --global user.email "styx@test.styx"
-      cd $out && git init && git add . && git commit -m "init repo"
-      ${styx}/bin/styx deploy --init-gh-pages --in $out
-      ${styx}/bin/styx deploy --gh-pages --in $out --build-path "${themes-sites.showcase-site}/"
-    '';
+    };
+
+    new-build = nixpkgs.writeShellApplication {
+      name = "styx-new-site";
+      text = ''
+        tmptestdir="$(mktemp -d)"
+        mkdir -p "$tmptestdir"
+        echo "staging test inside $tmptestdir ..."
+        ${styx}/bin/styx new site my-site --in "$tmptestdir"
+        # shellcheck disable=SC2016
+        sed -i 's/pages = rec {/pages = rec {\nindex = { path="\/index.html"; template = p: "<p>''${p.content}<\/p>"; content="test"; layout = t: "<html>''${t}<\/html>"; };/' "$tmptestdir"/my-site/site.nix
+        ${styx}/bin/styx build --in "$tmptestdir"/my-site
+        rm -rf "$tmptestdir"
+      '';
+    };
+    new-theme = nixpkgs.writeShellApplication {
+      name = "styx-new-theme";
+      text = ''
+        tmptestdir="$(mktemp -d)"
+        mkdir -p "$tmptestdir"
+        echo "staging test inside $tmptestdir ..."
+        ${styx}/bin/styx new site my-site --in "$tmptestdir"
+        ${styx}/bin/styx new theme my-theme --in "$tmptestdir"/my-site/themes
+        rm -rf "$tmptestdir"
+      '';
+    };
+    deploy-gh-pages = nixpkgs.writeShellApplication {
+      name = "styx-deploy-gh";
+      runtimeInputs = [nixpkgs.gitMinimal];
+      text = ''
+        tmptestdir="$(mktemp -d)"
+        mkdir -p "$tmptestdir"
+        echo "staging test inside $tmptestdir ..."
+        cp -r ${styxthemes.showcase}/example/* "$tmptestdir"/
+        export HOME=$tmptestdir
+        export GIT_CONFIG_NOSYSTEM=1
+        git config --global user.name  "styx test"
+        git config --global user.email "styx@test.styx"
+        git config --global init.defaultBranch main
+        cd "$tmptestdir" && git init && git add . && git commit -m "init repo"
+        ${styx}/bin/styx deploy --init-gh-pages --in "$tmptestdir"
+        ${styx}/bin/styx deploy --gh-pages --in "$tmptestdir" --build-path "${themes-sites.showcase-site}/"
+        rm -rf "$tmptestdir"
+      '';
+    };
   }
   // themes-sites
   // {
