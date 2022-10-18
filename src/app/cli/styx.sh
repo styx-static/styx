@@ -143,6 +143,8 @@ realpath() {
 
 #-------------------------------
 
+# nix
+nix="nix --extra-experimental-features nix-command --extra-experimental-features flakes"
 # styx version
 version=@version@
 # action to execute
@@ -153,8 +155,6 @@ root="$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"
 pkgs="$(cat "$root"/pkgs.nix)"
 # styx themes attributeset
 themes="$root/themes-compat.nix"
-# styx new-site path
-newsite=$(realpath "$root/src/data/presets/new-site")
 # styx sample-data path
 sampledata=$(realpath "$root/src/data/presets/sample-data")
 # styx html doc path
@@ -368,10 +368,7 @@ fi
 if [ "$action" = new ] && [ "$newCommand" = site ]; then
   target="$in/$name"
   check_dir "$target" "Error: Cannot create a new site in '$target', directory exists."
-  mkdir "$target"
-  mkdir "$target"/{themes,data}
-  cp -r "$newsite"/* "$target/"
-  chmod -R u+rw "$target"
+  $nix flake new "$target" --template "$root#default"
   echo "Styx site initialized in '$target'."
   exit 0
 fi

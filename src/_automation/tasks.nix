@@ -12,6 +12,15 @@ in {
   run-tests = let
     run-main = test: ''
       echo "Run '${test}' ..."
+      if nix run "${inputs.self + "#${nixpkgs.system}._automation.tests.${test}"}" --show-trace; then
+        echo "\e[0;32m  success: ${test}\e[0m"
+      else
+        echo "\e[0;101m  failure: ${test}\e[0m"
+        exit 1
+      fi
+    '';
+    run-site = test: ''
+      echo "Run '${test}' ..."
       if nix build "${inputs.self + "#${nixpkgs.system}._automation.tests.${test}"}" --show-trace; then
         echo "\e[0;32m  success: ${test}\e[0m"
       else
@@ -50,13 +59,13 @@ in {
       echo "\e[1;93mTheme tests:\e[0m"
       echo ""
 
-      ${run-main "generic-templates-site"}
-      ${run-main "agency-site"}
-      ${run-main "ghostwriter-site"}
-      ${run-main "hyde-site"}
-      ${run-main "nix-site"}
-      ${run-main "orbit-site"}
-      ${run-main "showcase-site"}
+      ${run-site "generic-templates-site"}
+      ${run-site "agency-site"}
+      ${run-site "ghostwriter-site"}
+      ${run-site "hyde-site"}
+      ${run-site "nix-site"}
+      ${run-site "orbit-site"}
+      ${run-site "showcase-site"}
 
       echo ""
       echo "------------------------------------------------"

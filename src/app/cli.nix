@@ -18,7 +18,7 @@
 
     bin = nixpkgs.writeShellApplication {
       name = pname;
-      runtimeInputs = [nixpkgs.caddy nixpkgs.linkchecker nixpkgs.jq];
+      runtimeInputs = [nixpkgs.caddy nixpkgs.linkchecker nixpkgs.jq nixpkgs.nix];
       text = l.fileContents ./cli/styx.sh;
     };
 
