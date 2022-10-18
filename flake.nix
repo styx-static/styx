@@ -51,6 +51,7 @@
       packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
       hydraJobs = std.winnow (n: _: n != "default") self ["app" "cli"];
       templates = (std.harvest self ["data" "presets"]).x86_64-linux; # picked one system; doesn't matter
+      bundlers = std.harvest self [["renderers" "docs"]];
       lib = std.harvest self ["renderers" "styxlib"];
     };
 }

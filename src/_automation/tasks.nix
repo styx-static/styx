@@ -12,7 +12,7 @@ in {
   run-tests = let
     run-main = test: ''
       echo "Run '${test}' ..."
-      if nix build "${inputs.self + "#${nixpkgs.system}._automation.tests.${test}"}" --show-trace; then
+      if nix build --impure --extra-experimental-features recursive-nix --extra-experimental-features impure-derivations --extra-experimental-features ca-derivations "${inputs.self + "#${nixpkgs.system}._automation.tests.${test}"}" --show-trace; then
         echo "\e[0;32m  success: ${test}\e[0m"
       else
         echo "\e[0;101m  failure: ${test}\e[0m"
