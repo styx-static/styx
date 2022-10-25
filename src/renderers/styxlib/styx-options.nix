@@ -26,6 +26,18 @@ in {
           description = "Command to parse asciidoc to a styx page attribute set as a function that take the path of the file to parse as parameter.";
         };
       };
+      quarto = {
+        extensions = l.mkOption {
+          default = ["qmd"];
+          type = with l.types; listOf str;
+          description = "Supported extensions for quarto markdown files.";
+        };
+        render = l.mkOption {
+          default = f: env: "${l.getExe env} render ${f}";
+          type = with l.types; functionTo str;
+          description = "Command to render quatro markdown as a function that take the path of the file to render as parameter.";
+        };
+      };
       markdown = {
         extensions = l.mkOption {
           default = ["md" "mdown" "markdown"];
