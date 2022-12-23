@@ -152,7 +152,7 @@ action=
 # styx root dir
 root="$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"
 # styx imports nixpkgs & styx during runtime
-pkgs="$(cat "$root"/pkgs.nix)"
+pkgs="import $root/pkgs.nix"
 # styx themes attributeset
 themes="$root/themes-compat.nix"
 # styx sample-data path
@@ -577,14 +577,14 @@ if [ "$action" = live ]; then
   serverPid=
   check_styx "$in" "$siteFile"
   # get last change
-  lastChange=$(last_timestamp)
+  lastChange=$(last_timestamp "$in")
   # building to result a first time
   extraConf+=("siteUrl = \"http://$serverHost:$port\";")
   if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
     nix_error
   fi
   # start the server
-  $server file-server --root \""$path"\" --listen "$serverHost":"$port" >/dev/null &
+  $server file-server --root "$path" --listen "$serverHost":"$port" >/dev/null &
   echo "Started live preview on http://$serverHost:$port"
   echo "Press q to quit"
   # saving the pid
@@ -594,7 +594,7 @@ if [ "$action" = live ]; then
     if [ "$curLastChange" -gt "$lastChange" ]; then
       # rebuild
       echo "Change detected, rebuilding..."
-      if ! path=$(store_build); then
+      if ! path=$(store_build "$(realpath "$in/$siteFile")"); then
         echo "There were errors in site generation, server restart is skipped until the site generation success."
       else
         # kill the server
@@ -612,7 +612,7 @@ if [ "$action" = live ]; then
       # update the timestamp
       lastChange=$(last_timestamp "$in")
     fi
-    read -r -t 1 -N 1 input
+    read -r -t 1 -N 1 input || :
     if [[ $input == "q" ]] || [[ $input == "Q" ]]; then
       disown "$serverPid"
       kill -9 "$serverPid"
