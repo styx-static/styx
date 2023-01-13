@@ -5,7 +5,6 @@
 
   inputs.std.url = "github:divnix/std";
   inputs.std.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.std.inputs.mdbook-kroki-preprocessor.follows = "std/blank";
 
   outputs = {
     self,
@@ -50,7 +49,7 @@
       devShells = std.harvest self ["_automation" "devshells"];
       packages = std.harvest self [["_automation" "tasks"] ["app" "cli"]];
       hydraJobs = std.winnow (n: _: n != "default") self ["app" "cli"];
-      templates = (std.harvest self ["data" "presets"]).x86_64-linux; # picked one system; doesn't matter
+      templates = std.pick self ["data" "presets"];
       lib = std.harvest self ["renderers" "styxlib"];
     };
 }
